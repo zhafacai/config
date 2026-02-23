@@ -61,6 +61,7 @@
 						"yt-dlp"
 						"ripgrep"
 						"fd"
+						"openssh"
 						"mpv"
 						"alacritty"
 						"fish"

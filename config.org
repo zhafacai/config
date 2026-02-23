@@ -178,6 +178,7 @@ This repo consists of guix and emacs configuration.
 						"yt-dlp"
 						"ripgrep"
 						"fd"
+						"openssh"
 						"mpv"
 						"alacritty"
 						"fish"
