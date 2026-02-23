@@ -56,6 +56,7 @@
 						;; cli
 						"starship"
 						"make"
+						"unzip"
 						"zoxide"
 						"btop"
 						"yt-dlp"

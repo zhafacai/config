@@ -173,6 +173,7 @@ This repo consists of guix and emacs configuration.
 						;; cli
 						"starship"
 						"make"
+						"unzip"
 						"zoxide"
 						"btop"
 						"yt-dlp"
