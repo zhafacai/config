@@ -434,7 +434,11 @@
   :hook 
   (lispy-mode . lispyville-mode)
   :config
-  (lispyville-set-key-theme))
+  (lispyville-set-key-theme)
+  (evil-define-key '(normal visual) lispyville-mode-map
+    (kbd "M-i") 'lispy-splice)
+  (evil-define-key '(normal visual) lispyville-mode-map
+    (kbd "M-s") nil))
 
 (use-package projectile
   :custom
@@ -444,10 +448,14 @@
   (projectile-mode +1))
 
 (use-package perspective
+  :after consult
   :bind
   ("C-x C-b" . persp-list-buffers)         ; or use a nicer switcher, see below
   :custom
   (persp-mode-prefix-key (kbd "M-p"))  ; pick your own prefix key here
+  :config
+  (consult-customize consult-source-buffer :hidden t :default nil)
+  (add-to-list 'consult-buffer-sources persp-consult-source)
   :init
   (persp-mode))
 

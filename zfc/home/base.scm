@@ -80,6 +80,7 @@
     (append (list (service home-bash-service-type
 			   (home-bash-configuration
 			    (aliases '())
+			    (environment-variables '(("EDITOR" . "emacsclient")))
 			    (bashrc (list (local-file "plain/.bashrc" "bashrc")))
 			    (bash-profile (list (local-file
 						 "plain/.bash_profile"
