@@ -117,7 +117,7 @@
 		  (service home-dbus-service-type)
 		  (service home-fcitx5-service-type
 		    (home-fcitx5-configuration
-		      (gtk-im-module? #t)
+		      (gtk-im-module? #f)
 		      (qt-im-module? #t)
 		      (themes
 		       (list fcitx5-material-color-theme))

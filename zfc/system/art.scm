@@ -52,7 +52,8 @@
  (bootloader (bootloader-configuration
               (bootloader grub-efi-bootloader)
               (targets '("/boot/efi"))
-              (keyboard-layout keyboard-layout)))
+	      (keyboard-layout keyboard-layout)
+	      (extra-initrd "/boot/cryptroot.cpio")))
 
  ;; Specify a mapped device for the encrypted root partition.
  ;; The UUID is that returned by 'cryptsetup luksUUID'.
@@ -60,7 +61,8 @@
   (list (mapped-device
          (source (uuid "5212f095-4ef7-4584-b9f1-93cb96ae6714"))
          (target "cryptroot")
-         (type luks-device-mapping))))
+	 (type luks-device-mapping)
+         (arguments '(#:key-file "/cryptroot.key")))))
 
  (file-systems (append
                 (list (file-system
