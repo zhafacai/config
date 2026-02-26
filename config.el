@@ -995,13 +995,20 @@
 
 
   ;; Volume commands in repeat mode
-  (put 'emms-volume-raise 'repeat-map 'emms-volume-repeat-map)
-  (put 'emms-volume-lower 'repeat-map 'emms-volume-repeat-map)
+  (dolist (elm '(emms-volume-raise
+                 emms-volume-lower
+		 emms-pause
+                 emms-next
+                 emms-previous))
+    (put elm 'repeat-map 'emms-volume-repeat-map))
 
   (defvar emms-volume-repeat-map
     (let ((map (make-sparse-keymap)))
       (define-key map "=" #'emms-volume-raise)
       (define-key map "-" #'emms-volume-lower)
+      (define-key map (kbd "SPC") #'emms-pause)
+      (define-key map "n" #'emms-next)
+      (define-key map "p" #'emms-previous)
       map)
     "Keymap for continuous volume adjustment in EMMS")
 
