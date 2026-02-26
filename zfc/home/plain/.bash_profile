@@ -13,3 +13,4 @@ eval "$(guix package --search-paths \
 
 # Prepend setuid programs.
 export PATH=/run/setuid-programs:$PATH
+source /run/current-system/profile/etc/profile.d/nix.sh

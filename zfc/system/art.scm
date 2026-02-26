@@ -8,6 +8,7 @@
   #:use-module (gnu packages vim)
   #:use-module (gnu services desktop)
   #:use-module (gnu services xorg)
+  #:use-module (gnu services nix)
   #:use-module (gnu services virtualization)
   #:use-module (gnu services guix)
   #:use-module (gnu home)
@@ -102,6 +103,12 @@
 
  (services (append (list (service gnome-desktop-service-type)
 			 (service bluetooth-service-type)
+			 (service nix-service-type
+				  (nix-configuration
+				   (extra-config
+				    '("experimental-features = nix-command flakes\n"
+				      "trusted-users = zfc\n"
+				      "substituters = https://mirrors.ustc.edu.cn/nix-channels/store/ https://cache.nixos.org/\n"))))
 			 (service libvirt-service-type
 				  (libvirt-configuration))
 			 (service virtlog-service-type
