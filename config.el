@@ -452,7 +452,7 @@
   :bind
   ("C-x C-b" . persp-list-buffers)         ; or use a nicer switcher, see below
   :custom
-  (persp-mode-prefix-key (kbd "M-p"))  ; pick your own prefix key here
+  (persp-mode-prefix-key (kbd "M-P"))  ; pick your own prefix key here
   :config
   (consult-customize consult-source-buffer :hidden t :default nil)
   (add-to-list 'consult-buffer-sources persp-consult-source)
@@ -672,6 +672,10 @@
 ;; (use-package eldoc-box
 ;;   :hook
 ;;   (eglot-managed-mode . eldoc-box-hover-at-point-mode))
+
+(use-package flycheck
+  :init
+  (global-flycheck-mode +1))
 
 (use-package treesit
   :straight nil

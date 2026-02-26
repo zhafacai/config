@@ -1108,7 +1108,7 @@ perspective
   :bind
   ("C-x C-b" . persp-list-buffers)         ; or use a nicer switcher, see below
   :custom
-  (persp-mode-prefix-key (kbd "M-p"))  ; pick your own prefix key here
+  (persp-mode-prefix-key (kbd "M-P"))  ; pick your own prefix key here
   :config
   (consult-customize consult-source-buffer :hidden t :default nil)
   (add-to-list 'consult-buffer-sources persp-consult-source)
@@ -1355,6 +1355,11 @@ perspective
 ;; (use-package eldoc-box
 ;;   :hook
 ;;   (eglot-managed-mode . eldoc-box-hover-at-point-mode))
+#+end_src
+#+begin_src emacs-lisp
+(use-package flycheck
+  :init
+  (global-flycheck-mode +1))
 #+end_src
 **** Treesitter
 #+begin_src emacs-lisp :tangle yes
