@@ -637,21 +637,41 @@
 
 (use-package tempel-collection)
 
-(use-package lsp-mode
-  :init
-  (setq lsp-keymap-prefix "C-c l") ;; Setting the prefix for lsp-mode commands
-  :hook ((python-ts-mode . lsp-deferred)
-         (typescript-ts-mode . lsp-deferred)
-         (rust-ts-mode . lsp-deferred)
-         (lsp-mode . lsp-enable-which-key-integration))
+(use-package eglot
+  :straight nil              ;; install from ELPA if missing (usually not needed in Emacs ≥29)
+  :defer t                ;; load only when needed
+
+  ;; 1. Automatically start Eglot in these major modes
+  ;;    (add more modes as you use more languages)
+  :hook
+  ((python-ts-mode       . eglot-ensure)   ;; python-ts-mode or python-mode
+   (rustic-mode           . eglot-ensure)
+   (typescript-ts-mode     . eglot-ensure)
+   (js-ts-mode             . eglot-ensure)
+   (c-mode         . eglot-ensure)
+   (bash-ts-mode           . eglot-ensure))
+
+  ;; 2. Good defaults / tweaks
   :custom
-  (lsp-completion-provider :none) ;; Critical: Disables company, lets Corfu handle it
-  :commands lsp-deferred)
+  (eglot-autoshutdown         t)    ;; kill server when last buffer is closed
+  (eglot-send-changes-idle-time 0.5) ;; send changes faster (default is 0.5 anyway)
+  (eglot-ignored-server-capabilities
+   '(:documentHighlightProvider      ;; disable if too slow/noisy
+     :foldingRangeProvider
+     :inlayHintProvider))            ;; many people disable inlay hints or use a dedicated package
 
+  ;; 3. Optional: better event logging (useful when debugging)
+  ;; :custom (eglot-events-buffer-size 2000000)  ;; bigger log buffer
 
-(use-package lsp-ui :commands lsp-ui-mode)
-;; (use-package dap-mode)
-;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+  ;; 4. Optional: keyboard shortcuts (pick what you like)
+  :bind
+  (:map eglot-mode-map
+	("C-c l r" . eglot-rename)              ;; refactor rename
+	("C-c l a" . eglot-code-actions)))
+(straight-register-package '(project :type built-in))
+;; (use-package eldoc-box
+;;   :hook
+;;   (eglot-managed-mode . eldoc-box-hover-at-point-mode))
 
 (use-package treesit
   :straight nil
@@ -977,6 +997,11 @@
              :host github
              :type git
              :repo "Kodkollektivet/emacs-nm"))
+
+(use-package direnv
+  :straight nil
+ :config
+ (direnv-mode))
 
 (use-package emms
   :custom
@@ -1421,6 +1446,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (rust-mode-treesitter-derive t))
 (use-package rustic
   :custom
+  (rustic-lsp-client 'eglot)
   (rustic-format-on-save t))
 
 (with-eval-after-load 'treesit
@@ -1446,3 +1472,6 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   :mode "\\.fnl\\'")
 
 (use-package kdl-mode)
+
+(use-package nix-mode
+  :mode "\\.nix\\'")

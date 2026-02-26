@@ -329,6 +329,26 @@ patch:
        (openpgp-fingerprint
         "F0B3 1A69 8006 8FB8 096A  2F12 B245 10C6 108C 8D4A"))))))
 #+end_src
+*** The =base.scm= section about rustconfig
+~hm-services~
+#+begin_src scheme :noweb-ref hm-services
+(simple-service 'cargo-config
+		home-files-service-type
+		`(( ".cargo/config.toml" ,(local-file "plain/cargo.toml"))))
+#+end_src
+crates mirror from [[https://rsproxy.cn/][rsproxy]]
+#+begin_src toml :tangle zfc/home/plain/cargo.toml
+[source.crates-io]
+replace-with = 'rsproxy-sparse'
+[source.rsproxy]
+registry = "https://rsproxy.cn/crates.io-index"
+[source.rsproxy-sparse]
+registry = "sparse+https://rsproxy.cn/index/"
+[registries.rsproxy]
+index = "https://rsproxy.cn/crates.io-index"
+[net]
+git-fetch-with-cli = true
+#+end_src
 * Emacs
 ** The =early-init.el= section
 seems conflict with straight.el
@@ -1298,24 +1318,43 @@ perspective
 
 (use-package tempel-collection)
 #+end_src
-**** Lsp
+****  Lsp
 #+begin_src emacs-lisp :tangle yes
-(use-package lsp-mode
-  :init
-  (setq lsp-keymap-prefix "C-c l") ;; Setting the prefix for lsp-mode commands
-  :hook ((python-ts-mode . lsp-deferred)
-         (typescript-ts-mode . lsp-deferred)
-         (rust-ts-mode . lsp-deferred)
-         (lsp-mode . lsp-enable-which-key-integration))
+(use-package eglot
+  :straight nil              ;; install from ELPA if missing (usually not needed in Emacs ≥29)
+  :defer t                ;; load only when needed
+
+  ;; 1. Automatically start Eglot in these major modes
+  ;;    (add more modes as you use more languages)
+  :hook
+  ((python-ts-mode       . eglot-ensure)   ;; python-ts-mode or python-mode
+   (rustic-mode           . eglot-ensure)
+   (typescript-ts-mode     . eglot-ensure)
+   (js-ts-mode             . eglot-ensure)
+   (c-mode         . eglot-ensure)
+   (bash-ts-mode           . eglot-ensure))
+
+  ;; 2. Good defaults / tweaks
   :custom
-  (lsp-completion-provider :none) ;; Critical: Disables company, lets Corfu handle it
-  :commands lsp-deferred)
+  (eglot-autoshutdown         t)    ;; kill server when last buffer is closed
+  (eglot-send-changes-idle-time 0.5) ;; send changes faster (default is 0.5 anyway)
+  (eglot-ignored-server-capabilities
+   '(:documentHighlightProvider      ;; disable if too slow/noisy
+     :foldingRangeProvider
+     :inlayHintProvider))            ;; many people disable inlay hints or use a dedicated package
 
+  ;; 3. Optional: better event logging (useful when debugging)
+  ;; :custom (eglot-events-buffer-size 2000000)  ;; bigger log buffer
 
-(use-package lsp-ui :commands lsp-ui-mode)
-;; (use-package dap-mode)
-;; (use-package dap-LANGUAGE) to load the dap adapter for your language
-
+  ;; 4. Optional: keyboard shortcuts (pick what you like)
+  :bind
+  (:map eglot-mode-map
+	("C-c l r" . eglot-rename)              ;; refactor rename
+	("C-c l a" . eglot-code-actions)))
+(straight-register-package '(project :type built-in))
+;; (use-package eldoc-box
+;;   :hook
+;;   (eglot-managed-mode . eldoc-box-hover-at-point-mode))
 #+end_src
 **** Treesitter
 #+begin_src emacs-lisp :tangle yes
@@ -1724,6 +1763,18 @@ org-mode
              :host github
              :type git
              :repo "Kodkollektivet/emacs-nm"))
+#+end_src
+**** Direnv
+#+begin_src emacs-lisp
+(use-package direnv
+  :straight nil
+ :config
+ (direnv-mode))
+#+end_src
+~epkgs~
+#+begin_src scheme :noweb-ref epkgs
+"emacs-direnv"
+"direnv"
 #+end_src
 **** EMMS 
 #+begin_src emacs-lisp :tangle yes
@@ -2279,6 +2330,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (rust-mode-treesitter-derive t))
 (use-package rustic
   :custom
+  (rustic-lsp-client 'eglot)
   (rustic-format-on-save t))
 #+end_src
 **** Web +3+?
@@ -2311,5 +2363,8 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 #+begin_src emacs-lisp
 (use-package kdl-mode)
 #+end_src
-
-
+**** Nix
+#+begin_src emacs-lisp
+(use-package nix-mode
+  :mode "\\.nix\\'")
+#+end_src

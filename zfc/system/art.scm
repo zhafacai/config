@@ -107,7 +107,7 @@
 				  (nix-configuration
 				   (extra-config
 				    '("experimental-features = nix-command flakes\n"
-				      "trusted-users = zfc\n"
+				      "trusted-users = zfc root\n"
 				      "substituters = https://mirrors.ustc.edu.cn/nix-channels/store/ https://cache.nixos.org/\n"))))
 			 (service libvirt-service-type
 				  (libvirt-configuration))
