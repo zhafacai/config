@@ -9,6 +9,7 @@
   #:use-module (gnu home services guix)
   #:use-module (gnu home services gnupg)
   #:use-module (gnu home services desktop)
+  #:use-module (gnu home services sound)
   #:use-module (rosenthal services desktop)
   #:use-module (guix gexp)
   #:use-module (guix channels)

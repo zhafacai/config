@@ -450,9 +450,9 @@
 (use-package perspective
   :after consult
   :bind
-  ("C-x C-b" . persp-list-buffers)         ; or use a nicer switcher, see below
+  ("C-x C-b" . persp-list-buffers)
   :custom
-  (persp-mode-prefix-key (kbd "M-P"))  ; pick your own prefix key here
+  (persp-mode-prefix-key (kbd "M-P"))
   :config
   (consult-customize consult-source-buffer :hidden t :default nil)
   (add-to-list 'consult-buffer-sources persp-consult-source)
@@ -831,8 +831,7 @@
   )
 
 (use-package consult-emms
-  :straight (
-             :host github
+  :straight (:host github
 	     :type git
              :repo "Hugo-Heagren/consult-emms")
   :after consult)
@@ -1199,12 +1198,17 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 (use-package mixed-pitch
   :hook
   (org-mode . mixed-pitch-mode))
+
 (use-package org-tree-slide
   :after evil
   :config
   (evil-define-key nil org-tree-slide-mode-map
     (kbd "<leader>j") #'org-tree-slide-move-next-tree
     (kbd "<leader>k") #'org-tree-slide-move-previous-tree))
+
+(use-package valign
+  :hook
+  (org-mode . valign-mode))
 
 (with-eval-after-load 'org
   (add-to-list 'org-modules 'org-habit t)
