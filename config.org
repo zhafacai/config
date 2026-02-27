@@ -211,6 +211,7 @@ This repo consists of guix and emacs configuration.
 			    (bash-profile (list (local-file
 						 "plain/.bash_profile"
 						 "bash_profile")))))
+		  (service home-pipewire-service-type)
                   (service home-gpg-agent-service-type
 			   (home-gpg-agent-configuration
 			    (pinentry-program
@@ -1352,6 +1353,10 @@ perspective
 	("C-c l r" . eglot-rename)              ;; refactor rename
 	("C-c l a" . eglot-code-actions)))
 (straight-register-package '(project :type built-in))
+(use-package consult-eglot
+  :bind
+  (:map eglot-mode-map
+	("C-c l s" . consult-eglot-symbols)))
 ;; (use-package eldoc-box
 ;;   :hook
 ;;   (eglot-managed-mode . eldoc-box-hover-at-point-mode))

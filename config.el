@@ -669,6 +669,10 @@
 	("C-c l r" . eglot-rename)              ;; refactor rename
 	("C-c l a" . eglot-code-actions)))
 (straight-register-package '(project :type built-in))
+(use-package consult-eglot
+  :bind
+  (:map eglot-mode-map
+	("C-c l s" . consult-eglot-symbols)))
 ;; (use-package eldoc-box
 ;;   :hook
 ;;   (eglot-managed-mode . eldoc-box-hover-at-point-mode))

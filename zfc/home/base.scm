@@ -87,6 +87,7 @@
 			    (bash-profile (list (local-file
 						 "plain/.bash_profile"
 						 "bash_profile")))))
+		  (service home-pipewire-service-type)
                   (service home-gpg-agent-service-type
 			   (home-gpg-agent-configuration
 			    (pinentry-program
