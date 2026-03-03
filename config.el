@@ -1,46 +1,8 @@
 (setq package-archives '(("gnu" . "https://mirrors.ustc.edu.cn/elpa/gnu/")
 			 ("melpa" . "https://mirrors.ustc.edu.cn/elpa/melpa/")
 			 ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")))
-
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name
-	"straight/repos/straight.el/bootstrap.el"
-	(or (bound-and-true-p straight-base-dir)
-	    user-emacs-directory)))
-      (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-	(url-retrieve-synchronously
-	 "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-	 'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
-(straight-use-package 'org)
-
-;; Install use-package support
-
-(straight-use-package 'use-package)
-
-(setq straight-use-package-by-default t)
-
-(setq initial-buffer-choice t)
-(setq initial-major-mode 'lisp-interaction-mode)
-(setq initial-scratch-message
-      (format ";; This is `%s'.  Type `%s' to evaluate and print results.\n\n"
-              'lisp-interaction-mode
-              (propertize
-               (substitute-command-keys "\\<lisp-interaction-mode-map>\\[eval-print-last-sexp]")
-               'face 'help-key-binding)))
-
-;; Instruct Emacs to use a posix shell under the hood...
-(setq shell-file-name (executable-find "bash"))
-
-;; But use your normal shell in terminal emulators
-(setq-default vterm-shell (executable-find "fish"))
-(setq-default explicit-shell-file-name (executable-find "fish"))
+(setq use-package-always-ensure t)
+(package-initialize)
 
 (defun fc/org-auto-tangle-config ()
   "Tangle only if the saved file is config.org"
@@ -53,9 +15,16 @@
           (lambda ()
             (add-hook 'after-save-hook #'fc/org-auto-tangle-config nil 'local)))
 
+;; Instruct Emacs to use a posix shell under the hood...
+(setq shell-file-name (executable-find "bash"))
+
+;; But use your normal shell in terminal emulators
+(setq-default vterm-shell (executable-find "fish"))
+(setq-default explicit-shell-file-name (executable-find "fish"))
+
 (recentf-mode)
 (use-package isearch
-  :straight nil
+  :ensure nil
   :custom
   (isearch-lazy-count t))
 
@@ -78,22 +47,22 @@
       fc/leader-key fc/leader-map)))
 
 (defmacro map! (&rest args)
+  "A macro similar to Doom's map! for defining keybindings."
   (let ((leader nil)
-        (state 'normal)
-        (keymap 'global-map)
+        (states '(normal))
+        (keymap nil)
         (prefix "")
         (current-desc nil)
-        (bindings nil)      ; Ensure initialized
-        (desc-forms nil))   ; Ensure initialized
+        (bindings nil)
+        (desc-forms nil))
+
     (while args
       (let ((arg (pop args)))
         (cond
-         ;; Leader flag
          ((eq arg :leader)
           (setq leader t)
           (setq keymap 'fc/leader-map))
 
-         ;; Prefix handling: supports ("b" . "buffer") or "b"
          ((eq arg :prefix)
           (let* ((p (pop args))
                  (p-key (if (consp p) (car p) p))
@@ -101,46 +70,65 @@
             (setq prefix (concat prefix p-key " "))
             (when (and p-desc (featurep 'which-key))
               (push `(which-key-add-key-based-replacements
-                       ,(if leader (concat "SPC " (string-trim prefix)) (string-trim prefix))
+                       ,(if leader
+                            (concat "SPC " (string-trim prefix))
+                          (string-trim prefix))
                        ,p-desc)
                     desc-forms))))
 
-         ;; Evil State
-	 ((memq arg '(:n :i :v :o :m :e))
-	  (setq state
-		(cdr (assoc arg
-			    '((:n . normal)
-			      (:i . insert)
-			      (:v . visual)
-			      (:o . operator)
-			      (:m . motion)
-			      (:e . emacs))))))
+         ((memq arg '(:n :i :v :o :m :e))
+          (let ((new-state
+                 (cdr (assoc arg '((:n . normal)
+                                   (:i . insert)
+                                   (:v . visual)
+                                   (:o . operator)
+                                   (:m . motion)
+                                   (:e . emacs))))))
+            (add-to-list 'states new-state 'append)))
 
-         ;; Target Keymap
          ((eq arg :map)
           (setq keymap (pop args)))
 
-         ;; Description for next key
          ((eq arg :desc)
           (setq current-desc (pop args)))
 
-         ;; The actual Key and Command
          ((stringp arg)
           (let* ((key arg)
                  (def (pop args))
-                 (full-key (concat prefix key)))
-            (if (eq keymap 'fc/leader-map)
-                (push `(define-key fc/leader-map (kbd ,full-key) ,def) bindings)
-              (push `(evil-define-key ',state ,keymap (kbd ,full-key) ,def) bindings))
+                 (full-key (concat prefix key))
+                 (which-key-key
+                  (if leader
+                      (concat "SPC " full-key)
+                    full-key)))
+
+            (cond
+             (leader
+              (push `(define-key fc/leader-map (kbd ,full-key) ,def)
+                    bindings))
+
+             (keymap
+              (push `(after! evil
+                       (evil-define-key ',states
+                         ,keymap
+                         (kbd ,full-key)
+                         ,def))
+                    bindings))
+
+             (t
+              (push `(after! evil
+                       (evil-define-key ',states
+                         'global
+                         (kbd ,full-key)
+                         ,def))
+                    bindings)))
 
             (when (and current-desc (featurep 'which-key))
               (push `(which-key-add-key-based-replacements
-                       ,(if leader (concat "SPC " full-key) full-key)
+                       ,which-key-key
                        ,current-desc)
-                    desc-forms)
-              (setq current-desc nil)))))))
+                    desc-forms))
+            (setq current-desc nil))))))
 
-    ;; Return the progn form
     `(progn
        ,@(nreverse bindings)
        ,@(nreverse desc-forms))))
@@ -175,16 +163,15 @@
   (let ((fs (if (symbolp features)
                 (list features)
               features))
-        ;; 从 body 开始构建
-        (form body))
+        ;; 使用 `,@' 展开 body，避免被包装成 list
+        (form `(progn ,@body)))
 
-    ;; 从列表尾部开始往外包（最内层最后加载）
+    ;; 从列表尾部开始往外包
     (dolist (f (reverse fs))
       (setq form `(with-eval-after-load ',f
-		    ,form)))
+                    ,form)))
 
-    ;; 最外层用 progn 包住（虽然单层时不必要，但保持一致性）
-    `(progn ,form)))
+    form))
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -276,9 +263,6 @@
   (setq modus-themes-mixed-fonts t)
   (setq modus-themes-italic-constructs t))
 
-(use-package hl-todo
-  :hook (prog-mode . hl-todo-mode))
-
 (set-face-attribute 'default nil
                     :family "Iosevka SS02"
                     :height 150)
@@ -294,6 +278,9 @@
 
 (dolist (charset '(kana han cjk-misc symbol bopomofo))
   (set-fontset-font t charset (font-spec :family "LXGW WenKai")))
+
+(use-package hl-todo
+  :hook (prog-mode . hl-todo-mode))
 
 (use-package doom-modeline
   :config
@@ -369,15 +356,15 @@
               '((:eval (or (fc/emms-header-line) ""))
                 (:eval (fc/header-line-render-time))))
 
-(with-eval-after-load 'modus-themes
-  (defun fc/modus-themes-custom-faces ()
-    (modus-themes-with-colors
-      (custom-set-faces
-       `(header-line ((t :background ,bg-main
-                         :foreground ,fg-main
-                         :box nil
-                         :inherit nil))))))
-  (add-hook 'modus-themes-after-load-theme-hook #'fc/modus-themes-custom-faces))
+;; (after! modus-themes
+;;   (defun fc/modus-themes-custom-faces ()
+;;     (modus-themes-with-colors
+;;       (custom-set-faces
+;;        `(header-line ((t :background ,bg-main
+;;                          :foreground ,fg-main
+;;                          :box nil
+;;                          :inherit nil))))))
+;;   (add-hook 'modus-themes-after-load-theme-hook #'fc/modus-themes-custom-faces))
 
 (defun fc/next-wallpaper ()
   "Call next wallpaper using `dms ipc`"
@@ -401,8 +388,7 @@
   :custom
   (which-key-idle-delay 0.5)
   :init
-  (which-key-mode)
-  :straight nil)
+  (which-key-mode))
 
 (use-package lin
   :config
@@ -441,7 +427,7 @@
   (evil-collection-init))
 
 (use-package flash
-  :straight (:type git :host github :repo "Prgebish/flash")
+  :vc (:url "https://github.com/Prgebish/flash")
   :commands (flash-jump flash-jump-continue
 			flash-treesitter)
   :custom
@@ -450,13 +436,13 @@
   (flash-rainbow t)
   :init
   ;; Evil integration (simple setup)
-  (with-eval-after-load 'evil
+  (after! evil
     (require 'flash-evil)
-    (map! :n "s" #'flash-evil-jump
-          :v "s" #'flash-evil-jump)
     (flash-evil-setup t)
-    (setq flash-char-jump-labels t)) 
+    (setq flash-char-jump-labels t))
 
+  (map! :n "s" #'flash-evil-jump
+        :v "s" #'flash-evil-jump)
   :config
   ;; Search integration (labels during C-s, /, ?)
   (require 'flash-isearch)
@@ -469,6 +455,7 @@
   :config
   (evil-embrace-enable-evil-surround-integration))
 (use-package evil-args
+  :after evil
   :config
   (evil-define-key '(operator) evil-inner-text-objects-map "a" 'evil-inner-arg)
   (evil-define-key '(operator) evil-outer-text-objects-map "a" 'evil-outer-arg))
@@ -521,12 +508,11 @@
 (use-package exato)
 
 (use-package evil-quick-diff
-  :straight (:type git :host github :repo "rgrinberg/evil-quick-diff")
+  :vc (:url "https://github.com/rgrinberg/evil-quick-diff")
   :init
   (evil-quick-diff-install))
 
 (use-package evil-goggles
-  :ensure t
   :config
   (evil-goggles-mode)
 
@@ -545,6 +531,7 @@
   (emacs-lisp-mode . lispy-mode))
 
 (use-package lispyville
+  :after evil
   :init
   (setq lispyville-key-theme
         '((operators normal)
@@ -564,6 +551,7 @@
     (kbd "M-s") nil))
 
 (use-package projectile
+  :after evil
   :custom
   (projectile-project-search-path '("~/dev/"))
   :config
@@ -583,7 +571,7 @@
   (persp-mode))
 
 (use-package smartparens
-  :hook (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
+  :hook (prog-mode text-mode markdown-mode)
   :config
   (require 'smartparens-config))
 
@@ -597,7 +585,7 @@
   (dired-mode . diredfl-mode))
 
 (use-package dired
-  :straight nil
+  :ensure nil
   :config
   (setq dired-listing-switches
         "-l --almost-all --human-readable --group-directories-first --no-group")
@@ -683,7 +671,6 @@
 
 ;; A few more useful configurations...
 (use-package emacs
-  :straight nil
   :custom
   ;; TAB cycle if there are only few candidates
   ;; (completion-cycle-threshold 3)
@@ -761,7 +748,7 @@
 (use-package tempel-collection)
 
 (use-package eglot
-  :straight nil              ;; install from ELPA if missing (usually not needed in Emacs ≥29)
+  :ensure nil              ;; install from ELPA if missing (usually not needed in Emacs ≥29)
   :defer t                ;; load only when needed
 
   ;; 1. Automatically start Eglot in these major modes
@@ -791,7 +778,6 @@
   (:map eglot-mode-map
 	("C-c l r" . eglot-rename)              ;; refactor rename
 	("C-c l a" . eglot-code-actions)))
-(straight-register-package '(project :type built-in))
 (use-package consult-eglot
   :bind
   (:map eglot-mode-map
@@ -805,7 +791,7 @@
   (global-flycheck-mode +1))
 
 (use-package treesit
-  :straight nil
+  :ensure nil
   :config
   (setq treesit-language-source-alist
         '((bash "https://github.com/tree-sitter/tree-sitter-bash")))
@@ -821,8 +807,8 @@
   :hook
   (git-commit-mode . evil-insert-state)
   :defer t)
-(with-eval-after-load 'evil
-  (map! :leader "gg" #'magit))
+
+(map! :leader "gg" #'magit)
 
 (use-package diff-hl
   :config
@@ -953,10 +939,8 @@
   )
 
 (use-package consult-emms
-  :straight (:host github
-	     :type git
-             :repo "Hugo-Heagren/consult-emms")
-  :after consult)
+  :after consult
+  :vc (:url "https://github.com/Hugo-Heagren/consult-emms"))
 
 (use-package helpful
   :config
@@ -984,13 +968,13 @@
 
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
-  :straight nil
+  :ensure nil
   :init
   (savehist-mode))
 
 ;; Emacs minibuffer configurations.
 (use-package emacs
-  :straight nil
+  :ensure nil
   :custom
   ;; Enable context menu. `vertico-multiform-mode' adds a menu in the minibuffer
   ;; to switch display modes.
@@ -1091,12 +1075,12 @@
         :n "?" #'casual-dired-tmenu))
 
 (use-package vterm
-  :straight nil)
+  :ensure nil)
 
 (use-package tracking)
 
 (use-package telega
-  :straight nil
+  :ensure nil
   :commands telega
   :config
   (setq telega-use-tracking-for '(or unmuted mention)
@@ -1111,21 +1095,18 @@
   (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
 
 (use-package eat
-  :straight nil)
+  :ensure nil)
 
-(use-package bluetooth)
-(use-package nm
-  :straight (
-             :host github
-             :type git
-             :repo "Kodkollektivet/emacs-nm"))
+;; (use-package bluetooth)
+;; (use-package nm
+;;   :vc (:url "https://github.com/Kodkollektivet/emacs-nm"))
 
 (use-package direnv
-  :straight nil
- :config
- (direnv-mode))
+  :config
+  (direnv-mode))
 
 (use-package emms
+  :after evil
   :custom
   (emms-mode-line-format nil)
   (emms-player-list '(emms-player-mpv))
@@ -1174,7 +1155,7 @@
         :n "q" #'emms-playlist-mode-bury-buffer))
 
 (use-package reader
-  :straight nil
+  :ensure nil
   :hook (reader-mode . (lambda () (hl-line-mode 0))))
 
 (use-package nov
@@ -1208,7 +1189,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
             (lambda () (setq-local devdocs-current-docs '("elisp")))))
 
 (use-package rime
-  :straight nil
+  :ensure nil
   :custom
   (default-input-method "rime")
   :config
@@ -1231,7 +1212,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (require 'dwim-shell-commands))
 
 (use-package guix
-  :straight nil
+  :ensure nil
   :config
   (map! :leader "gi" #'guix))
 
@@ -1258,8 +1239,12 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (setq gptel-default-mode #'org-mode)
   (setq gptel-model 'minimax-m2.5-free))
 
+;; TODO use this in melpa
+;; (use-package acp
+;;   :ensure t
+;;   :vc (:url "https://github.com/xenodium/acp.el"))
+
 (use-package agent-shell
-  :after evil
   :custom
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
@@ -1285,7 +1270,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
       user-mail-address "zhafacai@gmail.com")
 
 (use-package notmuch
-  :straight nil
+  :ensure nil
   :config
   (setq notmuch-identities '("zfc <zhafacai@gmail.com>"))
   (setq notmuch-fcc-dirs
@@ -1320,7 +1305,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   )
 
 (use-package org
-  :straight nil
+  :ensure nil
   :custom
   ;; org-default-notes-file (concat org-directory "notes.org")
   ;; org-clock-in-switch-to-state "DOING"
@@ -1367,28 +1352,28 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   :hook
   (org-mode . valign-mode))
 
-(with-eval-after-load 'org
-  (add-to-list 'org-modules 'org-habit t)
-  (add-to-list 'org-modules 'ol-info t)
-  (setq org-habit-show-habits t
-        org-habit-show-all-today nil))
+;; (after! org
+;;   (add-to-list 'org-modules 'org-habit t)
+;;   (add-to-list 'org-modules 'ol-info t)
+;;   (setq org-habit-show-habits t
+;;         org-habit-show-all-today nil))
 
-(with-eval-after-load 'modus-themes
-  (defun fc/apply-org-habit-faces ()
-    "Apply org-habit faces using Modus/Ef palette."
-    (when custom-enabled-themes
-      (modus-themes-with-colors
-	(custom-set-faces
-         `(org-habit-clear-face
-           ((t (:background ,bg-dim :foreground ,green-warmer))))
-         `(org-habit-ready-face
-           ((t (:background ,bg-active :foreground ,blue))))
-         `(org-habit-alert-face
-           ((t (:background ,bg-yellow-subtle :foreground ,yellow))))
-         `(org-habit-overdue-face
-           ((t (:background ,bg-red-subtle :foreground ,red))))))))
+;; (after! modus-themes
+;;   (defun fc/apply-org-habit-faces ()
+;;     "Apply org-habit faces using Modus/Ef palette."
+;;     (when custom-enabled-themes
+;;       (modus-themes-with-colors
+;; 	(custom-set-faces
+;;          `(org-habit-clear-face
+;;            ((t (:background ,bg-dim :foreground ,green-warmer))))
+;;          `(org-habit-ready-face
+;;            ((t (:background ,bg-active :foreground ,blue))))
+;;          `(org-habit-alert-face
+;;            ((t (:background ,bg-yellow-subtle :foreground ,yellow))))
+;;          `(org-habit-overdue-face
+;;            ((t (:background ,bg-red-subtle :foreground ,red))))))))
 
-  (add-hook 'doom-load-theme-hook #'fc/apply-org-habit-faces))
+;;   (add-hook 'doom-load-theme-hook #'fc/apply-org-habit-faces))
 
 (use-package org-modern
   :custom
@@ -1404,10 +1389,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (org-mode . org-appear-mode))
 
 (use-package org-modern-indent
-  :straight (org-modern-indent
-	     :type git
-	     :host github
-             :repo "jdtsmith/org-modern-indent")
+  :vc (:url "https://github.com/jdtsmith/org-modern-indent")
   :config
   (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
 
@@ -1557,10 +1539,10 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
                                                           'title))))))))
           (t
            (call-interactively 'org-insert-link)))))
+
 (with-eval-after-load 'org
-  (with-eval-after-load 'evil
-    (map! :map org-mode-map
-          :n "C-c C-l" #'fc/org-insert-link-dwim)))
+  (map! :map org-mode-map
+        :n "C-c C-l" #'fc/org-insert-link-dwim))
 
 (use-package uiua-mode
   :mode "\\.ua\\'")
@@ -1620,13 +1602,13 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 
 (with-eval-after-load 'treesit
   (add-to-list 'treesit-language-source-alist 
-               '(css "https://github.com/tree-sitter/tree-sitter-css")))
-(add-to-list 'treesit-language-source-alist 
-             '(json "https://github.com/tree-sitter/tree-sitter-json"))
-(add-to-list 'treesit-language-source-alist 
-             '(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
-(add-to-list 'treesit-language-source-alist 
-             '(javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src"))
+               '(css "https://github.com/tree-sitter/tree-sitter-css"))
+  (add-to-list 'treesit-language-source-alist 
+               '(json "https://github.com/tree-sitter/tree-sitter-json"))
+  (add-to-list 'treesit-language-source-alist 
+               '(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
+  (add-to-list 'treesit-language-source-alist 
+               '(javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")))
 
 (add-to-list 'major-mode-remap-alist
              '(json-mode . json-ts-mode))

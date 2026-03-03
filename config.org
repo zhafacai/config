@@ -352,38 +352,9 @@ index = "https://rsproxy.cn/crates.io-index"
 git-fetch-with-cli = true
 #+end_src
 * Emacs
-** The =early-init.el= section
-seems conflict with straight.el
-#+begin_src emacs-lisp :tangle early-init.el
-(setq package-enable-at-startup nil)
-#+end_src
 ** The =init.el= section
-I have some os to use,maybe drop support for these
 #+begin_src emacs-lisp :tangle init.el
 ;;; -*- lexical-binding: t; -*-
-(defconst fc/is-windows (eq system-type 'windows-nt))
-(defconst fc/is-linux   (eq system-type 'gnu/linux))
-
-;; -----------------------
-;; Linux 发行版判断
-;; -----------------------
-(defun fc/linux-distro ()
-  "Return a symbol identifying the Linux distribution."
-  (when fc/is-linux
-    (cond
-     ;; ArchLinux (检测 arch-release 文件)
-     ((file-exists-p "/etc/arch-release") 'arch)
-     ;; NixOS
-     ((file-exists-p "/etc/nixos") 'nixos)
-     ;; Guix
-     ((file-exists-p "/etc/guix") 'guix)
-     ;; fallback
-     (t 'linux))))
-
-(defconst fc/is-nixos  (eq (fc/linux-distro) 'nixos))
-(defconst fc/is-guix   (eq (fc/linux-distro) 'guix))
-(defconst fc/is-arch   (eq (fc/linux-distro) 'arch))
-
 (setq inhibit-startup-message t
 
       ;; No backup files, please
@@ -407,74 +378,11 @@ setup mirror for elpa
 (setq package-archives '(("gnu" . "https://mirrors.ustc.edu.cn/elpa/gnu/")
 			 ("melpa" . "https://mirrors.ustc.edu.cn/elpa/melpa/")
 			 ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")))
-#+end_src
-**** Straight
-bootstrap
-#+begin_src emacs-lisp :tangle yes
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name
-	"straight/repos/straight.el/bootstrap.el"
-	(or (bound-and-true-p straight-base-dir)
-	    user-emacs-directory)))
-      (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-	(url-retrieve-synchronously
-	 "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-	 'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-#+end_src
-use org from straight
-#+begin_src emacs-lisp :tangle yes
-
-(straight-use-package 'org)
-#+end_src
-windows normal users cannot create symlinks
-#+begin_src emacs-lisp :tangle (if fc/is-windows "config.el" "no")
 (setq use-package-always-ensure t)
+(package-initialize)
 #+end_src
-disable package.el
-#+begin_src emacs-lisp :tangle early-init.el
-(setq package-enable-at-startup nil)
-#+end_src
-
-install use-package support
-#+begin_src emacs-lisp :tangle yes
-;; Install use-package support
-
-(straight-use-package 'use-package)
-#+end_src
-use straight by default
-#+begin_src emacs-lisp :tangle yes
-(setq straight-use-package-by-default t)
-#+end_src
-I do not  want any dashboard/splash screen.
-#+begin_src emacs-lisp :tangle yes
-(setq initial-buffer-choice t)
-(setq initial-major-mode 'lisp-interaction-mode)
-(setq initial-scratch-message
-      (format ";; This is `%s'.  Type `%s' to evaluate and print results.\n\n"
-              'lisp-interaction-mode
-              (propertize
-               (substitute-command-keys "\\<lisp-interaction-mode-map>\\[eval-print-last-sexp]")
-               'face 'help-key-binding)))
-#+end_src
-**** Shell
-$SHELL has to be POSIX one
-#+begin_src emacs-lisp :tangle yes
-;; Instruct Emacs to use a posix shell under the hood...
-(setq shell-file-name (executable-find "bash"))
-
-;; But use your normal shell in terminal emulators
-(setq-default vterm-shell (executable-find "fish"))
-(setq-default explicit-shell-file-name (executable-find "fish"))
-#+end_src
-
 **** Auto tangle
-tangle current file
+tangle config file
 #+begin_src emacs-lisp :tangle yes
 (defun fc/org-auto-tangle-config ()
   "Tangle only if the saved file is config.org"
@@ -487,11 +395,22 @@ tangle current file
           (lambda ()
             (add-hook 'after-save-hook #'fc/org-auto-tangle-config nil 'local)))
 #+end_src
+**** Shell
+$SHELL has to be POSIX one
+#+begin_src emacs-lisp :tangle yes
+;; Instruct Emacs to use a posix shell under the hood...
+(setq shell-file-name (executable-find "bash"))
+
+;; But use your normal shell in terminal emulators
+(setq-default vterm-shell (executable-find "fish"))
+(setq-default explicit-shell-file-name (executable-find "fish"))
+#+end_src
+
 **** Default mode
 #+begin_src emacs-lisp
 (recentf-mode)
 (use-package isearch
-  :straight nil
+  :ensure nil
   :custom
   (isearch-lazy-count t))
 #+end_src
@@ -524,22 +443,22 @@ I do not want custom variables in config file
 **** Macro
 #+begin_src emacs-lisp
 (defmacro map! (&rest args)
+  "A macro similar to Doom's map! for defining keybindings."
   (let ((leader nil)
-        (state 'normal)
-        (keymap 'global-map)
+        (states '(normal))
+        (keymap nil)
         (prefix "")
         (current-desc nil)
-        (bindings nil)      ; Ensure initialized
-        (desc-forms nil))   ; Ensure initialized
+        (bindings nil)
+        (desc-forms nil))
+
     (while args
       (let ((arg (pop args)))
         (cond
-         ;; Leader flag
          ((eq arg :leader)
           (setq leader t)
           (setq keymap 'fc/leader-map))
 
-         ;; Prefix handling: supports ("b" . "buffer") or "b"
          ((eq arg :prefix)
           (let* ((p (pop args))
                  (p-key (if (consp p) (car p) p))
@@ -547,46 +466,65 @@ I do not want custom variables in config file
             (setq prefix (concat prefix p-key " "))
             (when (and p-desc (featurep 'which-key))
               (push `(which-key-add-key-based-replacements
-                       ,(if leader (concat "SPC " (string-trim prefix)) (string-trim prefix))
+                       ,(if leader
+                            (concat "SPC " (string-trim prefix))
+                          (string-trim prefix))
                        ,p-desc)
                     desc-forms))))
 
-         ;; Evil State
-	 ((memq arg '(:n :i :v :o :m :e))
-	  (setq state
-		(cdr (assoc arg
-			    '((:n . normal)
-			      (:i . insert)
-			      (:v . visual)
-			      (:o . operator)
-			      (:m . motion)
-			      (:e . emacs))))))
+         ((memq arg '(:n :i :v :o :m :e))
+          (let ((new-state
+                 (cdr (assoc arg '((:n . normal)
+                                   (:i . insert)
+                                   (:v . visual)
+                                   (:o . operator)
+                                   (:m . motion)
+                                   (:e . emacs))))))
+            (add-to-list 'states new-state 'append)))
 
-         ;; Target Keymap
          ((eq arg :map)
           (setq keymap (pop args)))
 
-         ;; Description for next key
          ((eq arg :desc)
           (setq current-desc (pop args)))
 
-         ;; The actual Key and Command
          ((stringp arg)
           (let* ((key arg)
                  (def (pop args))
-                 (full-key (concat prefix key)))
-            (if (eq keymap 'fc/leader-map)
-                (push `(define-key fc/leader-map (kbd ,full-key) ,def) bindings)
-              (push `(evil-define-key ',state ,keymap (kbd ,full-key) ,def) bindings))
+                 (full-key (concat prefix key))
+                 (which-key-key
+                  (if leader
+                      (concat "SPC " full-key)
+                    full-key)))
+
+            (cond
+             (leader
+              (push `(define-key fc/leader-map (kbd ,full-key) ,def)
+                    bindings))
+
+             (keymap
+              (push `(after! evil
+                       (evil-define-key ',states
+                         ,keymap
+                         (kbd ,full-key)
+                         ,def))
+                    bindings))
+
+             (t
+              (push `(after! evil
+                       (evil-define-key ',states
+                         'global
+                         (kbd ,full-key)
+                         ,def))
+                    bindings)))
 
             (when (and current-desc (featurep 'which-key))
               (push `(which-key-add-key-based-replacements
-                       ,(if leader (concat "SPC " full-key) full-key)
+                       ,which-key-key
                        ,current-desc)
-                    desc-forms)
-              (setq current-desc nil)))))))
+                    desc-forms))
+            (setq current-desc nil))))))
 
-    ;; Return the progn form
     `(progn
        ,@(nreverse bindings)
        ,@(nreverse desc-forms))))
@@ -621,16 +559,15 @@ I do not want custom variables in config file
   (let ((fs (if (symbolp features)
                 (list features)
               features))
-        ;; 从 body 开始构建
-        (form body))
+        ;; 使用 `,@' 展开 body，避免被包装成 list
+        (form `(progn ,@body)))
 
-    ;; 从列表尾部开始往外包（最内层最后加载）
+    ;; 从列表尾部开始往外包
     (dolist (f (reverse fs))
       (setq form `(with-eval-after-load ',f
-		    ,form)))
+                    ,form)))
 
-    ;; 最外层用 progn 包住（虽然单层时不必要，但保持一致性）
-    `(progn ,form)))
+    form))
 
 
 #+end_src
@@ -743,12 +680,6 @@ tranparent background is beautiful... Right?
   (setq modus-themes-italic-constructs t))
 #+end_src
 
-**** Todo
-#+begin_src emacs-lisp :tangle yes
-(use-package hl-todo
-  :hook (prog-mode . hl-todo-mode))
-#+end_src
-
 **** Fonts
 #+begin_src emacs-lisp :tangle yes
 (set-face-attribute 'default nil
@@ -770,6 +701,12 @@ tranparent background is beautiful... Right?
 (dolist (charset '(kana han cjk-misc symbol bopomofo))
   (set-fontset-font t charset (font-spec :family "LXGW WenKai")))
 #+end_src
+**** Todo
+#+begin_src emacs-lisp
+(use-package hl-todo
+  :hook (prog-mode . hl-todo-mode))
+#+end_src
+
 **** Modeline
 #+begin_src emacs-lisp :tangle yes
 (use-package doom-modeline
@@ -794,7 +731,7 @@ tranparent background is beautiful... Right?
 #+end_src
 
 **** Buffet
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package theme-buffet
   :config
   ;; (with-eval-after-load 'evil
@@ -857,15 +794,15 @@ tranparent background is beautiful... Right?
               '((:eval (or (fc/emms-header-line) ""))
                 (:eval (fc/header-line-render-time))))
 
-(with-eval-after-load 'modus-themes
-  (defun fc/modus-themes-custom-faces ()
-    (modus-themes-with-colors
-      (custom-set-faces
-       `(header-line ((t :background ,bg-main
-                         :foreground ,fg-main
-                         :box nil
-                         :inherit nil))))))
-  (add-hook 'modus-themes-after-load-theme-hook #'fc/modus-themes-custom-faces))
+;; (after! modus-themes
+;;   (defun fc/modus-themes-custom-faces ()
+;;     (modus-themes-with-colors
+;;       (custom-set-faces
+;;        `(header-line ((t :background ,bg-main
+;;                          :foreground ,fg-main
+;;                          :box nil
+;;                          :inherit nil))))))
+;;   (add-hook 'modus-themes-after-load-theme-hook #'fc/modus-themes-custom-faces))
 #+end_src
 
 **** Wallpaper
@@ -896,8 +833,7 @@ tranparent background is beautiful... Right?
   :custom
   (which-key-idle-delay 0.5)
   :init
-  (which-key-mode)
-  :straight nil)
+  (which-key-mode))
 #+end_src
 **** Lin
 #+begin_src emacs-lisp
@@ -941,7 +877,7 @@ tranparent background is beautiful... Right?
   (evil-collection-init))
 
 (use-package flash
-  :straight (:type git :host github :repo "Prgebish/flash")
+  :vc (:url "https://github.com/Prgebish/flash")
   :commands (flash-jump flash-jump-continue
 			flash-treesitter)
   :custom
@@ -950,13 +886,13 @@ tranparent background is beautiful... Right?
   (flash-rainbow t)
   :init
   ;; Evil integration (simple setup)
-  (with-eval-after-load 'evil
+  (after! evil
     (require 'flash-evil)
-    (map! :n "s" #'flash-evil-jump
-          :v "s" #'flash-evil-jump)
     (flash-evil-setup t)
-    (setq flash-char-jump-labels t)) 
+    (setq flash-char-jump-labels t))
 
+  (map! :n "s" #'flash-evil-jump
+        :v "s" #'flash-evil-jump)
   :config
   ;; Search integration (labels during C-s, /, ?)
   (require 'flash-isearch)
@@ -972,6 +908,7 @@ tranparent background is beautiful... Right?
   :config
   (evil-embrace-enable-evil-surround-integration))
 (use-package evil-args
+  :after evil
   :config
   (evil-define-key '(operator) evil-inner-text-objects-map "a" 'evil-inner-arg)
   (evil-define-key '(operator) evil-outer-text-objects-map "a" 'evil-outer-arg))
@@ -1047,14 +984,13 @@ exato
 linediff
 #+begin_src emacs-lisp :tangle yes
 (use-package evil-quick-diff
-  :straight (:type git :host github :repo "rgrinberg/evil-quick-diff")
+  :vc (:url "https://github.com/rgrinberg/evil-quick-diff")
   :init
   (evil-quick-diff-install))
 #+end_src
 ***** Goggles
 #+begin_src emacs-lisp
 (use-package evil-goggles
-  :ensure t
   :config
   (evil-goggles-mode)
 
@@ -1077,6 +1013,7 @@ linediff
   (emacs-lisp-mode . lispy-mode))
 
 (use-package lispyville
+  :after evil
   :init
   (setq lispyville-key-theme
         '((operators normal)
@@ -1099,6 +1036,7 @@ linediff
 projectile
 #+begin_src emacs-lisp :tangle yes
 (use-package projectile
+  :after evil
   :custom
   (projectile-project-search-path '("~/dev/"))
   :config
@@ -1122,7 +1060,7 @@ perspective
 **** SmartParens
 #+begin_src emacs-lisp
 (use-package smartparens
-  :hook (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
+  :hook (prog-mode text-mode markdown-mode)
   :config
   (require 'smartparens-config))
 #+end_src
@@ -1138,7 +1076,7 @@ perspective
   (dired-mode . diredfl-mode))
 
 (use-package dired
-  :straight nil
+  :ensure nil
   :config
   (setq dired-listing-switches
         "-l --almost-all --human-readable --group-directories-first --no-group")
@@ -1241,7 +1179,6 @@ perspective
 
 ;; A few more useful configurations...
 (use-package emacs
-  :straight nil
   :custom
   ;; TAB cycle if there are only few candidates
   ;; (completion-cycle-threshold 3)
@@ -1325,7 +1262,7 @@ perspective
 ****  Lsp
 #+begin_src emacs-lisp :tangle yes
 (use-package eglot
-  :straight nil              ;; install from ELPA if missing (usually not needed in Emacs ≥29)
+  :ensure nil              ;; install from ELPA if missing (usually not needed in Emacs ≥29)
   :defer t                ;; load only when needed
 
   ;; 1. Automatically start Eglot in these major modes
@@ -1355,7 +1292,6 @@ perspective
   (:map eglot-mode-map
 	("C-c l r" . eglot-rename)              ;; refactor rename
 	("C-c l a" . eglot-code-actions)))
-(straight-register-package '(project :type built-in))
 (use-package consult-eglot
   :bind
   (:map eglot-mode-map
@@ -1372,7 +1308,7 @@ perspective
 **** Treesitter
 #+begin_src emacs-lisp :tangle yes
 (use-package treesit
-  :straight nil
+  :ensure nil
   :config
   (setq treesit-language-source-alist
         '((bash "https://github.com/tree-sitter/tree-sitter-bash")))
@@ -1391,8 +1327,8 @@ perspective
   :hook
   (git-commit-mode . evil-insert-state)
   :defer t)
-(with-eval-after-load 'evil
-  (map! :leader "gg" #'magit))
+
+(map! :leader "gg" #'magit)
 #+end_src
 diff-hl
 #+begin_src emacs-lisp :tangle yes
@@ -1536,12 +1472,10 @@ diff-hl
 
 #+end_src
 ***** Emms
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package consult-emms
-  :straight (:host github
-	     :type git
-             :repo "Hugo-Heagren/consult-emms")
-  :after consult)
+  :after consult
+  :vc (:url "https://github.com/Hugo-Heagren/consult-emms"))
 #+end_src
 **** Helpful
 #+begin_src emacs-lisp :tangle yes
@@ -1573,13 +1507,13 @@ diff-hl
 
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
-  :straight nil
+  :ensure nil
   :init
   (savehist-mode))
 
 ;; Emacs minibuffer configurations.
 (use-package emacs
-  :straight nil
+  :ensure nil
   :custom
   ;; Enable context menu. `vertico-multiform-mode' adds a menu in the minibuffer
   ;; to switch display modes.
@@ -1718,7 +1652,7 @@ org-mode
 **** Vterm
 #+begin_src emacs-lisp :tangle yes
 (use-package vterm
-  :straight nil)
+  :ensure nil)
 #+end_src
 ~epkgs~
 #+begin_src scheme :noweb-ref epkgs
@@ -1729,7 +1663,7 @@ org-mode
 (use-package tracking)
 
 (use-package telega
-  :straight nil
+  :ensure nil
   :commands telega
   :config
   (setq telega-use-tracking-for '(or unmuted mention)
@@ -1752,7 +1686,7 @@ org-mode
 **** Eat
 #+begin_src emacs-lisp
 (use-package eat
-  :straight nil)
+  :ensure nil)
 #+end_src
 =epkgs=
 #+begin_src scheme :noweb-ref epkgs
@@ -1760,28 +1694,24 @@ org-mode
 #+end_src
 **** Desktop
 #+begin_src emacs-lisp
-(use-package bluetooth)
-(use-package nm
-  :straight (
-             :host github
-             :type git
-             :repo "Kodkollektivet/emacs-nm"))
+;; (use-package bluetooth)
+;; (use-package nm
+;;   :vc (:url "https://github.com/Kodkollektivet/emacs-nm"))
 #+end_src
 **** Direnv
 #+begin_src emacs-lisp
 (use-package direnv
-  :straight nil
- :config
- (direnv-mode))
+  :config
+  (direnv-mode))
 #+end_src
 ~epkgs~
 #+begin_src scheme :noweb-ref epkgs
-"emacs-direnv"
 "direnv"
 #+end_src
 **** EMMS 
 #+begin_src emacs-lisp :tangle yes
 (use-package emms
+  :after evil
   :custom
   (emms-mode-line-format nil)
   (emms-player-list '(emms-player-mpv))
@@ -1834,7 +1764,7 @@ org-mode
 reader
 #+begin_src emacs-lisp
 (use-package reader
-  :straight nil
+  :ensure nil
   :hook (reader-mode . (lambda () (hl-line-mode 0))))
 #+end_src
 nov
@@ -1876,7 +1806,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 **** Rime
 #+begin_src emacs-lisp :tangle yes
 (use-package rime
-  :straight nil
+  :ensure nil
   :custom
   (default-input-method "rime")
   :config
@@ -1907,7 +1837,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 **** Guix
 #+begin_src emacs-lisp
 (use-package guix
-  :straight nil
+  :ensure nil
   :config
   (map! :leader "gi" #'guix))
 #+end_src
@@ -1945,8 +1875,12 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 #+end_src
 ***** Agent-shell
 #+begin_src emacs-lisp
+;; TODO use this in melpa
+;; (use-package acp
+;;   :ensure t
+;;   :vc (:url "https://github.com/xenodium/acp.el"))
+
 (use-package agent-shell
-  :after evil
   :custom
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
@@ -1982,7 +1916,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 ***** NotMuch
 #+begin_src emacs-lisp
 (use-package notmuch
-  :straight nil
+  :ensure nil
   :config
   (setq notmuch-identities '("zfc <zhafacai@gmail.com>"))
   (setq notmuch-fcc-dirs
@@ -2020,7 +1954,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 **** Basic
 #+begin_src emacs-lisp :tangle yes
 (use-package org
-  :straight nil
+  :ensure nil
   :custom
   ;; org-default-notes-file (concat org-directory "notes.org")
   ;; org-clock-in-switch-to-state "DOING"
@@ -2069,28 +2003,28 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 #+end_src
 **** Habit
 #+begin_src emacs-lisp :tangle yes
-(with-eval-after-load 'org
-  (add-to-list 'org-modules 'org-habit t)
-  (add-to-list 'org-modules 'ol-info t)
-  (setq org-habit-show-habits t
-        org-habit-show-all-today nil))
+;; (after! org
+;;   (add-to-list 'org-modules 'org-habit t)
+;;   (add-to-list 'org-modules 'ol-info t)
+;;   (setq org-habit-show-habits t
+;;         org-habit-show-all-today nil))
 
-(with-eval-after-load 'modus-themes
-  (defun fc/apply-org-habit-faces ()
-    "Apply org-habit faces using Modus/Ef palette."
-    (when custom-enabled-themes
-      (modus-themes-with-colors
-	(custom-set-faces
-         `(org-habit-clear-face
-           ((t (:background ,bg-dim :foreground ,green-warmer))))
-         `(org-habit-ready-face
-           ((t (:background ,bg-active :foreground ,blue))))
-         `(org-habit-alert-face
-           ((t (:background ,bg-yellow-subtle :foreground ,yellow))))
-         `(org-habit-overdue-face
-           ((t (:background ,bg-red-subtle :foreground ,red))))))))
+;; (after! modus-themes
+;;   (defun fc/apply-org-habit-faces ()
+;;     "Apply org-habit faces using Modus/Ef palette."
+;;     (when custom-enabled-themes
+;;       (modus-themes-with-colors
+;; 	(custom-set-faces
+;;          `(org-habit-clear-face
+;;            ((t (:background ,bg-dim :foreground ,green-warmer))))
+;;          `(org-habit-ready-face
+;;            ((t (:background ,bg-active :foreground ,blue))))
+;;          `(org-habit-alert-face
+;;            ((t (:background ,bg-yellow-subtle :foreground ,yellow))))
+;;          `(org-habit-overdue-face
+;;            ((t (:background ,bg-red-subtle :foreground ,red))))))))
 
-  (add-hook 'doom-load-theme-hook #'fc/apply-org-habit-faces))
+;;   (add-hook 'doom-load-theme-hook #'fc/apply-org-habit-faces))
 
 #+end_src
 **** Pretty
@@ -2109,40 +2043,37 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (org-mode . org-appear-mode))
 
 (use-package org-modern-indent
-  :straight (org-modern-indent
-	     :type git
-	     :host github
-             :repo "jdtsmith/org-modern-indent")
+  :vc (:url "https://github.com/jdtsmith/org-modern-indent")
   :config
   (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
 #+end_src
 **** Verb
 #+begin_src emacs-lisp :tangle no
-(after! verb
-	(map! :map org-mode-map
-              :localleader
-              :prefix ("v" . "verb")
-              "s" #'verb-send-request-on-point-other-window   ; SPC m v s : Send request, show response in other window & switch
-              "S" #'verb-send-request-on-point-display        ; SPC m v S : Send request, show response in other window (no switch)
-              "f" #'verb-send-request-on-point                ; SPC m v f : Send request, replace in current window
-              "k" #'verb-kill-response-buffer-and-window      ; SPC m v k : Kill response buffer/window (when in response)
-              "K" #'verb-kill-all-response-buffers            ; SPC m v K : Kill all response buffers
-              "r" #'verb-re-send-request                      ; SPC m v r : Re-send the last request (from response buffer)
-              "w" #'verb-send-request-on-point-eww            ; SPC m v w : Re-send as GET using EWW (view in browser)
-              "R" #'verb-show-request                         ; SPC m v R : Show the original request spec (from response)
-              "h" #'verb-toggle-show-headers                  ; SPC m v h : Toggle response headers visibility
-              "v" #'verb-set-var                              ; SPC m v v : Set/re-set a variable (for templating)
-              "e" #'verb-export-request-on-point              ; SPC m v e : Export request (to curl, etc.)
-              )
-	;; Make Verb response body minor mode override Evil globals (essential for q to work)
-	(evil-make-overriding-map verb-response-body-mode-map 'normal)
+(with-eval-after-load 'verb
+  (map! :map org-mode-map
+        :localleader
+        :prefix ("v" . "verb")
+        "s" #'verb-send-request-on-point-other-window   ; SPC m v s : Send request, show response in other window & switch
+        "S" #'verb-send-request-on-point-display        ; SPC m v S : Send request, show response in other window (no switch)
+        "f" #'verb-send-request-on-point                ; SPC m v f : Send request, replace in current window
+        "k" #'verb-kill-response-buffer-and-window      ; SPC m v k : Kill response buffer/window (when in response)
+        "K" #'verb-kill-all-response-buffers            ; SPC m v K : Kill all response buffers
+        "r" #'verb-re-send-request                      ; SPC m v r : Re-send the last request (from response buffer)
+        "w" #'verb-send-request-on-point-eww            ; SPC m v w : Re-send as GET using EWW (view in browser)
+        "R" #'verb-show-request                         ; SPC m v R : Show the original request spec (from response)
+        "h" #'verb-toggle-show-headers                 ; SPC m v h : Toggle response headers visibility
+        "v" #'verb-set-var                              ; SPC m v v : Set/re-set a variable (for templating)
+        "e" #'verb-export-request-on-point              ; SPC m v e : Export request (to curl, etc.)
+        )
+  ;; Make Verb response body minor mode override Evil globals (essential for q to work)
+  (evil-make-overriding-map verb-response-body-mode-map 'normal)
 
-	;; Now bind q directly in normal state
-	(map! :map verb-response-body-mode-map
-              :n "q" #'verb-kill-response-buffer-and-window
-              :n "r" #'verb-re-send-request
-              :n "R" #'verb-show-request
-              :n "s" #'verb-toggle-show-headers))
+  ;; Now bind q directly in normal state
+  (map! :map verb-response-body-mode-map
+        :n "q" #'verb-kill-response-buffer-and-window
+        :n "r" #'verb-re-send-request
+        :n "R" #'verb-show-request
+        :n "s" #'verb-toggle-show-headers))
 #+end_src
 **** Contrib
 #+begin_src emacs-lisp
@@ -2313,10 +2244,10 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
                                                           'title))))))))
           (t
            (call-interactively 'org-insert-link)))))
+
 (with-eval-after-load 'org
-  (with-eval-after-load 'evil
-    (map! :map org-mode-map
-          :n "C-c C-l" #'fc/org-insert-link-dwim)))
+  (map! :map org-mode-map
+        :n "C-c C-l" #'fc/org-insert-link-dwim))
 #+end_src
 *** Lang
 **** Uiua
@@ -2390,13 +2321,13 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 #+begin_src emacs-lisp :tangle yes
 (with-eval-after-load 'treesit
   (add-to-list 'treesit-language-source-alist 
-               '(css "https://github.com/tree-sitter/tree-sitter-css")))
-(add-to-list 'treesit-language-source-alist 
-             '(json "https://github.com/tree-sitter/tree-sitter-json"))
-(add-to-list 'treesit-language-source-alist 
-             '(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
-(add-to-list 'treesit-language-source-alist 
-             '(javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src"))
+               '(css "https://github.com/tree-sitter/tree-sitter-css"))
+  (add-to-list 'treesit-language-source-alist 
+               '(json "https://github.com/tree-sitter/tree-sitter-json"))
+  (add-to-list 'treesit-language-source-alist 
+               '(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
+  (add-to-list 'treesit-language-source-alist 
+               '(javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")))
 
 (add-to-list 'major-mode-remap-alist
              '(json-mode . json-ts-mode))

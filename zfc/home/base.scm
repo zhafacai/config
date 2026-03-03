@@ -33,7 +33,6 @@
 						"emacs-telega"
 						
 						"emacs-eat"
-						"emacs-direnv"
 						"direnv"
 						"emacs-rime"
 						
