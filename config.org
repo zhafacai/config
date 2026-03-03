@@ -490,6 +490,10 @@ tangle current file
 **** Default mode
 #+begin_src emacs-lisp
 (recentf-mode)
+(use-package isearch
+  :straight nil
+  :custom
+  (isearch-lazy-count t))
 #+end_src
 
 **** Custom File
@@ -507,134 +511,128 @@ I do not want custom variables in config file
 
 (defvar fc/localleader-key (kbd ",")
   "my local leader key.")
+
+(defvar fc/leader-map (make-sparse-keymap)
+  "The keymap for <leader> bindings.")
+
+(with-eval-after-load 'evil
+  (dolist (state '(normal visual motion))
+    (evil-define-key* state global-map
+      fc/leader-key fc/leader-map)))
 #+end_src
 
 **** Macro
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (defmacro map! (&rest args)
-  "简易版 map!，支持 :leader 前缀 + 键-函数对，以及直接写键绑定。"
-  (let* ((keys-and-funcs args)
-         ;; 如果第一个是 :leader / :localleader 等前缀标记
-         (prefix (when (keywordp (car keys-and-funcs))
-                   (pop keys-and-funcs)))
-         ;; 剩下的应该是 键 函数 键 函数 ... 的平铺列表
-         bindings)
-
-    ;; 把键值对收集起来
-    (while keys-and-funcs
-      (let ((key (pop keys-and-funcs))
-            (fn  (pop keys-and-funcs)))
-        (unless (and key fn)
-          (error "map! 缺少对应的函数：看到 %S 后面没跟函数" key))
-        (push `(define-key evil-normal-state-map
-			   ,(if (keywordp prefix)
-				(concat (symbol-name prefix) " " key)
-			      key)
-			   ,fn)
-              bindings)))
-
-    ;; 生成最终形式
-    `(progn ,@(nreverse bindings))))
-
-(defmacro map! (&rest args)
-  "简易版 map!，支持 :leader / :localleader 前缀 + 键-函数对。"
-  (let ((prefix nil)                    ; 前缀字符串（例如 "SPC" 或 ","）
-        (keymaps '(evil-normal-state-map)) ; 默认绑定到 normal state
-        bindings)
-
-    ;; 第一步：解析前缀（如果有的话）
-    (when (keywordp (car args))
-      (pcase (pop args)
-        (:leader
-         (setq prefix (bound-and-true-p fc/leader-key)))
-        (:localleader
-         (setq prefix (bound-and-true-p fc/localleader-key)))
-        (:prefix
-         (setq prefix (pop args)))      ; 后面跟一个字符串，比如 "C-c"
-        (_ (error "未知的 map! 前缀关键字：%S" (car args)))))
-
-    ;; 第二步：收集键-函数对
+  (let ((leader nil)
+        (state 'normal)
+        (keymap 'global-map)
+        (prefix "")
+        (current-desc nil)
+        (bindings nil)      ; Ensure initialized
+        (desc-forms nil))   ; Ensure initialized
     (while args
-      (let ((key (pop args))
-            (fn  (pop args)))
-        (unless (and key fn)
-          (error "map! 缺少对应的函数：看到键 %S 后面没有函数" key))
+      (let ((arg (pop args)))
+        (cond
+         ;; Leader flag
+         ((eq arg :leader)
+          (setq leader t)
+          (setq keymap 'fc/leader-map))
 
-        ;; 如果 key 是字符串，就当作键描述符
-        (let ((full-key
-               (if prefix
-                   (concat prefix key)   ; 加前缀
-                 key)))                      ; 没有前缀就直接用
+         ;; Prefix handling: supports ("b" . "buffer") or "b"
+         ((eq arg :prefix)
+          (let* ((p (pop args))
+                 (p-key (if (consp p) (car p) p))
+                 (p-desc (if (consp p) (cdr p) nil)))
+            (setq prefix (concat prefix p-key " "))
+            (when (and p-desc (featurep 'which-key))
+              (push `(which-key-add-key-based-replacements
+                       ,(if leader (concat "SPC " (string-trim prefix)) (string-trim prefix))
+                       ,p-desc)
+                    desc-forms))))
 
-          (push `(define-key ,(car keymaps)  ; 目前只支持一个 map，可扩展
-			     ,(if (stringp full-key)
-				  `(kbd ,full-key)     ; 字符串 → kbd
-				full-key)              ; 已经是 (kbd ...) 形式
-			     ,fn)
-                bindings))))
+         ;; Evil State
+	 ((memq arg '(:n :i :v :o :m :e))
+	  (setq state
+		(cdr (assoc arg
+			    '((:n . normal)
+			      (:i . insert)
+			      (:v . visual)
+			      (:o . operator)
+			      (:m . motion)
+			      (:e . emacs))))))
 
-    ;; 生成最终形式
-    `(progn ,@(nreverse bindings))))
-;; (defmacro map! (&rest args)		
-;;   "简易但更灵活的 map!，模仿 Doom 的风格，支持 :leader/:localleader/:prefix 等"
-;;   (let* ((state-maps '((:n evil-normal-state-map)
-;;                        (:v evil-visual-state-map)
-;;                        (:o evil-operator-state-map)
-;;                        (:m evil-motion-state-map)
-;;                        (:i evil-insert-state-map)
-;;                        (:e evil-emacs-state-map)
-;;                        ;; 可继续加 :nv :nov 等组合
-;;                        ))
-;;          (default-map 'evil-normal-state-map)   ; 默认用 normal state
-;;          current-map default-map
-;;          current-prefix ""
-;;          bindings)
+         ;; Target Keymap
+         ((eq arg :map)
+          (setq keymap (pop args)))
 
-;;     (while args
-;;       (pcase (pop args)
-;;         ;; 前缀相关
-;;         ((or `:leader `:localleader)
-;;          (setq current-prefix
-;;                (if (eq (car args) `:leader)
-;;                    fc/leader-key
-;;                  fc/localleader-key))
-;;          (pop args))   ; 消耗掉 :leader 后面的值（如果有的话，通常不写）
+         ;; Description for next key
+         ((eq arg :desc)
+          (setq current-desc (pop args)))
 
-;;         (`:prefix
-;;          (setq current-prefix (pop args)))
+         ;; The actual Key and Command
+         ((stringp arg)
+          (let* ((key arg)
+                 (def (pop args))
+                 (full-key (concat prefix key)))
+            (if (eq keymap 'fc/leader-map)
+                (push `(define-key fc/leader-map (kbd ,full-key) ,def) bindings)
+              (push `(evil-define-key ',state ,keymap (kbd ,full-key) ,def) bindings))
 
-;;         ;; 切换 keymap
-;;         (`:map
-;;          (setq current-map (pop args)))
+            (when (and current-desc (featurep 'which-key))
+              (push `(which-key-add-key-based-replacements
+                       ,(if leader (concat "SPC " full-key) full-key)
+                       ,current-desc)
+                    desc-forms)
+              (setq current-desc nil)))))))
 
-;;         ;; 状态过滤（简易实现，只支持单个状态）
-;;         ((or `:n `:v `:o `:m `:i `:e `:nv)
-;;          (setq current-map
-;;                (cdr (assq (intern (substring (symbol-name (car (last args))) 1))
-;;                           state-maps)))
-;;          (pop args))   ; 消耗掉 :n 之类
+    ;; Return the progn form
+    `(progn
+       ,@(nreverse bindings)
+       ,@(nreverse desc-forms))))
 
-;;         ;; 忽略一些常见的 Doom 关键词（不实现）
-;;         ((or `:desc `:which-key `:after)
-;;          (pop args))   ; 直接跳过值
+(defmacro after! (features &rest body)
+  "在指定的 feature(s) 加载完成后执行 body。
+第一个参数 features 支持：
+  - 单个 symbol，例如：evil
+  - 多个 feature 的列表，例如：(org evil magit)
 
-;;         ;; 键 + 定义
-;;         (key
-;;          (let ((def (pop args)))
-;;            (unless def
-;;              (error "map! 缺少定义：%S 后面没内容" key))
-;;            (push `(define-key ,current-map
-;;                     ,(if (stringp key)
-;;                          (kbd (concat current-prefix " " key))
-;;                        (if (keywordp current-prefix)
-;;                            (kbd (concat (symbol-name current-prefix) " " (symbol-name key)))
-;;                          key))
-;;                     ,def)
-;;                  bindings)))))
+如果是列表，会自动展开成嵌套的 with-eval-after-load 结构。
+加载顺序：列表从左到右（最外层先加载）。
 
-;;     `(progn ,@(nreverse bindings))))
-;; ;; 快速测试展开
-;; (macroexpand '(map! :leader "a" 'aa "b" 'bb))
+示例：
+(after! evil
+  (evil-define-key 'normal global-map (kbd \"C-c t\") #'treemacs))
+
+(after! (org evil)
+  (map! :map org-mode-map
+        :n \"<tab>\" #'org-cycle))
+
+(after! (magit forge)
+  (setq forge-topic-list-limit '(50 . 100)))
+"
+  (declare (indent 1) (debug t))
+
+  ;; 输入检查
+  (unless (or (symbolp features) (consp features))
+    (error "after! 的第一个参数必须是 symbol 或 list"))
+
+  ;; 统一转成列表
+  (let ((fs (if (symbolp features)
+                (list features)
+              features))
+        ;; 从 body 开始构建
+        (form body))
+
+    ;; 从列表尾部开始往外包（最内层最后加载）
+    (dolist (f (reverse fs))
+      (setq form `(with-eval-after-load ',f
+		    ,form)))
+
+    ;; 最外层用 progn 包住（虽然单层时不必要，但保持一致性）
+    `(progn ,form)))
+
+
 #+end_src
 
 *** UI
@@ -655,12 +653,7 @@ always help me please :)
 #+end_src
 **** Alpha Backgroud
 tranparent background is beautiful... Right?
-#+begin_src emacs-lisp :tangle yes
-(with-eval-after-load 'evil
-
-  (evil-define-key nil 'global
-    (kbd "<leader>ta") #'fc/toggle-alpha-background))
-
+#+begin_src emacs-lisp
 (defun fc/toggle-alpha-background ()
   "toggle tranparency of background"
   (interactive)
@@ -670,6 +663,8 @@ tranparent background is beautiful... Right?
                              90
                            100))))
 (add-to-list 'default-frame-alist '(alpha-background . 90))
+
+(map! :leader "ta" #'fc/toggle-alpha-background)
 #+end_src
 **** Page break lines
 #+begin_src emacs-lisp
@@ -802,9 +797,10 @@ tranparent background is beautiful... Right?
 #+begin_src emacs-lisp :tangle yes
 (use-package theme-buffet
   :config
-  (with-eval-after-load 'evil
-    (evil-define-key 'nil 'global
-      (kbd "<leader>tt") #'theme-buffet-a-la-carte))
+  ;; (with-eval-after-load 'evil
+  ;;   (evil-define-key 'nil 'global
+  ;;     (kbd "<leader>tt") #'theme-buffet-a-la-carte))
+  (map! :leader "tt" #'theme-buffet-a-la-carte)
   (setq theme-buffet-menu 'end-user)
 
   (setq theme-buffet-end-user
@@ -878,8 +874,10 @@ tranparent background is beautiful... Right?
   "Call next wallpaper using `dms ipc`"
   (interactive)
   (shell-command "noctalia-shell ipc call wallpaper random"))
-(with-eval-after-load 'evil
-  (evil-define-key nil 'global (kbd "<leader>>") #'fc/next-wallpaper))
+;; (with-eval-after-load 'evil
+;;   (evil-define-key nil 'global (kbd "<leader>>") #'fc/next-wallpaper))
+
+(map! :leader ">>" #'fc/next-wallpaper)
 #+end_src
 **** Nyan
 #+begin_src emacs-lisp :tangle yes
@@ -1065,6 +1063,10 @@ linediff
   ;; some red color (as defined by the color theme)
   ;; other faces such as `diff-added` will be used for other actions
   (evil-goggles-use-diff-faces))
+#+end_src
+**** Wgrep
+#+begin_src emacs-lisp
+(use-package wgrep)
 #+end_src
 **** Lispy
 #+begin_src emacs-lisp
@@ -1472,7 +1474,7 @@ diff-hl
          ("M-s l" . consult-line)
          ("M-s L" . consult-line-multi)
          ("M-s m" . consult-man)
-         ("M-s o" . consult-outline)
+         ("M-s s" . consult-outline)
          ("M-s b" . fc/consult-books)
          ("M-s k" . consult-keep-lines)
          ("M-s u" . consult-focus-lines)
@@ -1925,8 +1927,30 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 
 #+end_src
 **** AI
+***** Gptel
 #+begin_src emacs-lisp
 (use-package gptel)
+#+end_src
+***** Agent-shell
+#+begin_src emacs-lisp
+(use-package agent-shell
+  :after evil
+  :custom
+  ;; BUG https://github.com/niri-wm/niri/issues/2664
+  (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
+  :config
+  ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
+  (evil-define-key 'insert agent-shell-mode-map (kbd "RET") #'newline)
+  (evil-define-key 'normal agent-shell-mode-map (kbd "RET") #'comint-send-input)
+
+  (evil-define-key 'normal agent-shell-mode-map (kbd "TAB") nil)
+  (evil-define-key 'insert agent-shell-mode-map (kbd "TAB") nil)
+  
+  ;; Configure *agent-shell-diff* buffers to start in Emacs state
+  (add-hook 'diff-mode-hook
+	    (lambda ()
+	      (when (string-match-p "\\*agent-shell-diff\\*" (buffer-name))
+		(evil-emacs-state)))))
 #+end_src
 **** Email
 #+begin_src emacs-lisp

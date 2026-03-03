@@ -54,6 +54,10 @@
             (add-hook 'after-save-hook #'fc/org-auto-tangle-config nil 'local)))
 
 (recentf-mode)
+(use-package isearch
+  :straight nil
+  :custom
+  (isearch-lazy-count t))
 
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file)
@@ -65,16 +69,128 @@
 (defvar fc/localleader-key (kbd ",")
   "my local leader key.")
 
+(defvar fc/leader-map (make-sparse-keymap)
+  "The keymap for <leader> bindings.")
+
+(with-eval-after-load 'evil
+  (dolist (state '(normal visual motion))
+    (evil-define-key* state global-map
+      fc/leader-key fc/leader-map)))
+
+(defmacro map! (&rest args)
+  (let ((leader nil)
+        (state 'normal)
+        (keymap 'global-map)
+        (prefix "")
+        (current-desc nil)
+        (bindings nil)      ; Ensure initialized
+        (desc-forms nil))   ; Ensure initialized
+    (while args
+      (let ((arg (pop args)))
+        (cond
+         ;; Leader flag
+         ((eq arg :leader)
+          (setq leader t)
+          (setq keymap 'fc/leader-map))
+
+         ;; Prefix handling: supports ("b" . "buffer") or "b"
+         ((eq arg :prefix)
+          (let* ((p (pop args))
+                 (p-key (if (consp p) (car p) p))
+                 (p-desc (if (consp p) (cdr p) nil)))
+            (setq prefix (concat prefix p-key " "))
+            (when (and p-desc (featurep 'which-key))
+              (push `(which-key-add-key-based-replacements
+                       ,(if leader (concat "SPC " (string-trim prefix)) (string-trim prefix))
+                       ,p-desc)
+                    desc-forms))))
+
+         ;; Evil State
+	 ((memq arg '(:n :i :v :o :m :e))
+	  (setq state
+		(cdr (assoc arg
+			    '((:n . normal)
+			      (:i . insert)
+			      (:v . visual)
+			      (:o . operator)
+			      (:m . motion)
+			      (:e . emacs))))))
+
+         ;; Target Keymap
+         ((eq arg :map)
+          (setq keymap (pop args)))
+
+         ;; Description for next key
+         ((eq arg :desc)
+          (setq current-desc (pop args)))
+
+         ;; The actual Key and Command
+         ((stringp arg)
+          (let* ((key arg)
+                 (def (pop args))
+                 (full-key (concat prefix key)))
+            (if (eq keymap 'fc/leader-map)
+                (push `(define-key fc/leader-map (kbd ,full-key) ,def) bindings)
+              (push `(evil-define-key ',state ,keymap (kbd ,full-key) ,def) bindings))
+
+            (when (and current-desc (featurep 'which-key))
+              (push `(which-key-add-key-based-replacements
+                       ,(if leader (concat "SPC " full-key) full-key)
+                       ,current-desc)
+                    desc-forms)
+              (setq current-desc nil)))))))
+
+    ;; Return the progn form
+    `(progn
+       ,@(nreverse bindings)
+       ,@(nreverse desc-forms))))
+
+(defmacro after! (features &rest body)
+  "在指定的 feature(s) 加载完成后执行 body。
+第一个参数 features 支持：
+  - 单个 symbol，例如：evil
+  - 多个 feature 的列表，例如：(org evil magit)
+
+如果是列表，会自动展开成嵌套的 with-eval-after-load 结构。
+加载顺序：列表从左到右（最外层先加载）。
+
+示例：
+(after! evil
+  (evil-define-key 'normal global-map (kbd \"C-c t\") #'treemacs))
+
+(after! (org evil)
+  (map! :map org-mode-map
+        :n \"<tab>\" #'org-cycle))
+
+(after! (magit forge)
+  (setq forge-topic-list-limit '(50 . 100)))
+"
+  (declare (indent 1) (debug t))
+
+  ;; 输入检查
+  (unless (or (symbolp features) (consp features))
+    (error "after! 的第一个参数必须是 symbol 或 list"))
+
+  ;; 统一转成列表
+  (let ((fs (if (symbolp features)
+                (list features)
+              features))
+        ;; 从 body 开始构建
+        (form body))
+
+    ;; 从列表尾部开始往外包（最内层最后加载）
+    (dolist (f (reverse fs))
+      (setq form `(with-eval-after-load ',f
+		    ,form)))
+
+    ;; 最外层用 progn 包住（虽然单层时不必要，但保持一致性）
+    `(progn ,form)))
+
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 
 (setq help-at-pt-display-when-idle t)
-
-(with-eval-after-load 'evil
-
-  (evil-define-key nil 'global
-    (kbd "<leader>ta") #'fc/toggle-alpha-background))
 
 (defun fc/toggle-alpha-background ()
   "toggle tranparency of background"
@@ -85,6 +201,8 @@
                              90
                            100))))
 (add-to-list 'default-frame-alist '(alpha-background . 90))
+
+(map! :leader "ta" #'fc/toggle-alpha-background)
 
 (use-package page-break-lines)
 
@@ -197,9 +315,10 @@
 
 (use-package theme-buffet
   :config
-  (with-eval-after-load 'evil
-    (evil-define-key 'nil 'global
-      (kbd "<leader>tt") #'theme-buffet-a-la-carte))
+  ;; (with-eval-after-load 'evil
+  ;;   (evil-define-key 'nil 'global
+  ;;     (kbd "<leader>tt") #'theme-buffet-a-la-carte))
+  (map! :leader "tt" #'theme-buffet-a-la-carte)
   (setq theme-buffet-menu 'end-user)
 
   (setq theme-buffet-end-user
@@ -264,8 +383,10 @@
   "Call next wallpaper using `dms ipc`"
   (interactive)
   (shell-command "noctalia-shell ipc call wallpaper random"))
-(with-eval-after-load 'evil
-  (evil-define-key nil 'global (kbd "<leader>>") #'fc/next-wallpaper))
+;; (with-eval-after-load 'evil
+;;   (evil-define-key nil 'global (kbd "<leader>>") #'fc/next-wallpaper))
+
+(map! :leader ">>" #'fc/next-wallpaper)
 
 (use-package nyan-mode
   :after doom-modeline
@@ -414,6 +535,8 @@
   ;; some red color (as defined by the color theme)
   ;; other faces such as `diff-added` will be used for other actions
   (evil-goggles-use-diff-faces))
+
+(use-package wgrep)
 
 (use-package lispy
   :hook
@@ -769,7 +892,7 @@
          ("M-s l" . consult-line)
          ("M-s L" . consult-line-multi)
          ("M-s m" . consult-man)
-         ("M-s o" . consult-outline)
+         ("M-s s" . consult-outline)
          ("M-s b" . fc/consult-books)
          ("M-s k" . consult-keep-lines)
          ("M-s u" . consult-focus-lines)
@@ -1122,6 +1245,25 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
     (kbd "<leader>gi") #'guix))
 
 (use-package gptel)
+
+(use-package agent-shell
+  :after evil
+  :custom
+  ;; BUG https://github.com/niri-wm/niri/issues/2664
+  (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
+  :config
+  ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
+  (evil-define-key 'insert agent-shell-mode-map (kbd "RET") #'newline)
+  (evil-define-key 'normal agent-shell-mode-map (kbd "RET") #'comint-send-input)
+
+  (evil-define-key 'normal agent-shell-mode-map (kbd "TAB") nil)
+  (evil-define-key 'insert agent-shell-mode-map (kbd "TAB") nil)
+  
+  ;; Configure *agent-shell-diff* buffers to start in Emacs state
+  (add-hook 'diff-mode-hook
+	    (lambda ()
+	      (when (string-match-p "\\*agent-shell-diff\\*" (buffer-name))
+		(evil-emacs-state)))))
 
 (setq auth-sources '("~/.authinfo.gpg")
       user-full-name "zhafacai"
