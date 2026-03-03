@@ -427,7 +427,7 @@
   :config
   (evil-set-leader '(normal visual) fc/leader-key)
   (evil-set-leader 'normal fc/localleader-key t)
-  (evil-define-key 'normal 'global (kbd "C-e") #'evil-end-of-line)
+  (map! :n "C-e" #'evil-end-of-line)
   (evil-mode 1))
 
 (use-package avy)
@@ -452,8 +452,8 @@
   ;; Evil integration (simple setup)
   (with-eval-after-load 'evil
     (require 'flash-evil)
-    (evil-global-set-key 'normal (kbd "s") #'flash-evil-jump)
-    (evil-global-set-key 'visual (kbd "s") #'flash-evil-jump)
+    (map! :n "s" #'flash-evil-jump
+          :v "s" #'flash-evil-jump)
     (flash-evil-setup t)
     (setq flash-char-jump-labels t)) 
 
@@ -822,8 +822,7 @@
   (git-commit-mode . evil-insert-state)
   :defer t)
 (with-eval-after-load 'evil
-  (evil-define-key nil 'global
-    (kbd "<leader>gg") #'magit))
+  (map! :leader "gg" #'magit))
 
 (use-package diff-hl
   :config
@@ -837,12 +836,12 @@
 
 (use-package browse-at-remote
   :config
-  (evil-define-key 'normal 'global (kbd "<leader>gb") #'browse-at-remote))
+  (map! :leader "gb" #'browse-at-remote))
 
 (use-package git-timemachine
   :after transient
   :config
-  (evil-define-key 'normal 'global (kbd "<leader>gt") #'git-timemachine))
+  (map! :leader "gt" #'git-timemachine))
 
 (use-package git-modes)
 
@@ -961,19 +960,13 @@
 
 (use-package helpful
   :config
-  (global-set-key (kbd "C-h f") #'helpful-callable)
-  ;; Lookup the current symbol at point. C-c C-d is a common keybinding
-  ;; for this in lisp modes.
-  (global-set-key (kbd "C-c C-d") #'helpful-at-point)
-
-  ;; Look up *F*unctions (excludes macros).
-  ;;
-  ;; By default, C-h F is bound to `Info-goto-emacs-command-node'. Helpful
-  ;; already links to the manual, if a function is referenced there.
-  (global-set-key (kbd "C-h F") #'helpful-function)
-  (global-set-key (kbd "C-h v") #'helpful-variable)
-  (global-set-key (kbd "C-h k") #'helpful-key)
-  (global-set-key (kbd "C-h x") #'helpful-command))
+  (map! :map global-map
+        "C-h f" #'helpful-callable
+        "C-c C-d" #'helpful-at-point
+        "C-h F" #'helpful-function
+        "C-h v" #'helpful-variable
+        "C-h k" #'helpful-key
+        "C-h x" #'helpful-command))
 (use-package elisp-demos
   :after helpful
   :config
@@ -1082,10 +1075,7 @@
 (use-package gt
   :commands (gt-translate)
   :init
-  ;; (map! :leader
-  ;;       :desc "Translate" "l" #'gt-translate)
-  (evil-global-set-key 'normal (kbd "<leader>l") #'gt-translate)
-  (evil-global-set-key 'visual (kbd "<leader>l") #'gt-translate)
+  (map! :leader "l" #'gt-translate)
   :config
   (setq gt-langs '(en zh))
   (setq gt-default-translator
@@ -1095,8 +1085,10 @@
 
 (use-package casual
   :config
-  (evil-define-key 'normal Info-mode-map (kbd "?") 'casual-info-tmenu)
-  (evil-define-key 'normal dired-mode-map (kbd "?") 'casual-dired-tmenu))
+  (map! :map Info-mode-map
+	:n "?" #'casual-info-tmenu)
+  (map! :map dired-mode-map
+        :n "?" #'casual-dired-tmenu))
 
 (use-package vterm
   :straight nil)
@@ -1178,8 +1170,8 @@
 
   (setq emms-volume-change-function 'emms-volume-pulse-change)
 
-  (evil-define-key 'normal emms-playlist-mode-map
-    (kbd "q") #'emms-playlist-mode-bury-buffer))
+  (map! :map emms-playlist-mode-map
+        :n "q" #'emms-playlist-mode-bury-buffer))
 
 (use-package reader
   :straight nil
@@ -1241,8 +1233,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 (use-package guix
   :straight nil
   :config
-  (evil-define-key nil 'global
-    (kbd "<leader>gi") #'guix))
+  (map! :leader "gi" #'guix))
 
 (use-package gptel
   :config
@@ -1275,12 +1266,14 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (agent-shell-opencode-default-model-id "opencode/minimax-m2.5-free")
   :config
   ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
-  (evil-define-key 'insert agent-shell-mode-map (kbd "RET") #'newline)
-  (evil-define-key 'normal agent-shell-mode-map (kbd "RET") #'comint-send-input)
+  (map! :map agent-shell-mode-map
+        :i "RET" #'newline
+        :n "RET" #'comint-send-input)
 
-  (evil-define-key 'normal agent-shell-mode-map (kbd "TAB") nil)
-  (evil-define-key 'insert agent-shell-mode-map (kbd "TAB") nil)
-  
+  (map! :map agent-shell-mode-map
+        :n "TAB" nil
+        :i "TAB" nil)
+ 
   ;; Configure *agent-shell-diff* buffers to start in Emacs state
   (add-hook 'diff-mode-hook
 	    (lambda ()
@@ -1366,9 +1359,9 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 (use-package org-tree-slide
   :after evil
   :config
-  (evil-define-key nil org-tree-slide-mode-map
-    (kbd "<leader>j") #'org-tree-slide-move-next-tree
-    (kbd "<leader>k") #'org-tree-slide-move-previous-tree))
+  (map! :map org-tree-slide-mode-map
+      :n "<leader>j" #'org-tree-slide-move-next-tree
+      :n "<leader>k" #'org-tree-slide-move-previous-tree))
 
 (use-package valign
   :hook
@@ -1566,8 +1559,8 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
            (call-interactively 'org-insert-link)))))
 (with-eval-after-load 'org
   (with-eval-after-load 'evil
-    (evil-define-key nil org-mode-map
-      (kbd "C-c C-l") 'fc/org-insert-link-dwim)))
+    (map! :map org-mode-map
+          :n "C-c C-l" #'fc/org-insert-link-dwim)))
 
 (use-package uiua-mode
   :mode "\\.ua\\'")
