@@ -328,7 +328,7 @@
 
 (defun fc/emms-header-line ()
   "Show current track in header-line: metadata or filename-sans-ext + time."
-  (when (and emms-player-playing-p
+  (when (and (and (boundp 'emms-player-playing-p) emms-player-playing-p)
              (emms-playlist-current-selected-track))
     (let* ((track (emms-playlist-current-selected-track))
            (raw-desc (emms-track-description track))
@@ -1114,6 +1114,7 @@
 
 (use-package emms
   :after evil
+  :commands emms
   :custom
   (emms-mode-line-format nil)
   (emms-player-list '(emms-player-mpv))
@@ -1246,6 +1247,11 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (setq gptel-default-mode #'org-mode)
   (setq gptel-model 'minimax-m2.5-free))
 
+(map! :i :map global-map
+      :prefix ("C-c a" . "AI")
+      "p" #'gptel
+      "m" #'gptel-menu)
+
 ;; TODO use this in melpa
 ;; (use-package acp
 ;;   :ensure t
@@ -1271,6 +1277,9 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 	    (lambda ()
 	      (when (string-match-p "\\*agent-shell-diff\\*" (buffer-name))
 		(evil-emacs-state)))))
+
+(map! :i :map global-map
+      "C-c a s" #'agent-shell)
 
 (setq auth-sources '("~/.authinfo.gpg")
       user-full-name "zhafacai"
