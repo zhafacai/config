@@ -302,9 +302,6 @@
 
 (use-package theme-buffet
   :config
-  ;; (with-eval-after-load 'evil
-  ;;   (evil-define-key 'nil 'global
-  ;;     (kbd "<leader>tt") #'theme-buffet-a-la-carte))
   (map! :leader "tt" #'theme-buffet-a-la-carte)
   (setq theme-buffet-menu 'end-user)
 
@@ -370,8 +367,6 @@
   "Call next wallpaper using `dms ipc`"
   (interactive)
   (shell-command "noctalia-shell ipc call wallpaper random"))
-;; (with-eval-after-load 'evil
-;;   (evil-define-key nil 'global (kbd "<leader>>") #'fc/next-wallpaper))
 
 (map! :leader ">>" #'fc/next-wallpaper)
 
@@ -551,12 +546,15 @@
     (kbd "M-s") nil))
 
 (use-package projectile
-  :after evil
   :custom
   (projectile-project-search-path '("~/dev/"))
   :config
-  (evil-define-key 'normal projectile-mode-map (kbd "<leader>p") 'projectile-command-map)
   (projectile-mode +1))
+
+(map! :map projectile-mode-map
+      :leader
+      :desc "projectile"
+      "p" #'projectile-command-map)
 
 (use-package perspective
   :after consult
@@ -960,7 +958,7 @@
 
 (use-package helpful
   :config
-  (map! :map global-map
+  (map! :i :map global-map
         "C-h f" #'helpful-callable
         "C-c C-d" #'helpful-at-point
         "C-h F" #'helpful-function
@@ -1052,22 +1050,15 @@
   ;; (add-hook 'context-menu-functions #'embark-context-menu 100)
 
   :config
-
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none)))))
-
-;; (use-package embark
-;;   :after vertico
-;;   :config
-;;   (evil-define-key nil vertico-map
-;;     "<backtab>" #'embark-act
-;;     "C-c C-e" #'embark-export
-;;     "C-c C-o" #'embark-collect
-;;     "C-c C-l" #'embark-live))
-
+(map! :map vertico-map
+      "C-c C-e" #'embark-export
+      "C-c C-o" #'embark-collect
+      "C-c C-l" #'embark-live)
 (use-package embark-consult
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
@@ -1156,14 +1147,14 @@
       map)
     "Keymap for continuous volume adjustment in EMMS")
 
-  (evil-define-key nil 'global
-    (kbd "C-c m SPC") #'emms-pause
-    (kbd "C-c m p") #'emms-previous
-    (kbd "C-c m n") #'emms-next
-    (kbd "C-c m s") #'emms-stop
-    (kbd "C-c m m") #'emms
-    (kbd "C-c m =") #'emms-volume-raise
-    (kbd "C-c m -") #'emms-volume-lower)
+  (map! :i :map global-map
+        "C-c m SPC" #'emms-pause
+        "C-c m p" #'emms-previous
+        "C-c m n" #'emms-next
+        "C-c m s" #'emms-stop
+        "C-c m m" #'emms
+        "C-c m =" #'emms-volume-raise
+        "C-c m -" #'emms-volume-lower)
 
   (setq emms-volume-change-function 'emms-volume-pulse-change)
 
