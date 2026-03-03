@@ -810,10 +810,26 @@
 
 (map! :leader "gg" #'magit)
 
+(defun fc/diff-hl-modus-colors (&optional _)
+  "Apply Modus palette colors to diff-hl faces."
+  (modus-themes-with-colors
+    (custom-set-faces
+     ;; Added lines: uses the theme's standard green
+     `(diff-hl-insert ((t (:background ,green-warmer :foreground ,green-warmer))))
+     ;; Changed lines: uses the theme's standard blue/cyan
+     `(diff-hl-change ((t (:background ,cyan :foreground ,cyan))))
+     ;; Deleted lines: uses the theme's standard red
+     `(diff-hl-delete ((t (:background ,red :foreground ,red)))))))
+
+(add-hook 'enable-theme-functions #'fc/diff-hl-modus-colors)
+
+(fc/diff-hl-modus-colors)
+
 (use-package diff-hl
+  :init
+  (global-diff-hl-mode)
   :config
-  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
-  (global-diff-hl-mode))
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
 (use-package forge
   :after magit
