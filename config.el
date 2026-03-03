@@ -1244,13 +1244,35 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (evil-define-key nil 'global
     (kbd "<leader>gi") #'guix))
 
-(use-package gptel)
+(use-package gptel
+  :config
+  (setq gptel-backend
+        (gptel-make-openai "opencode"
+          :host "opencode.ai"
+          :endpoint "/zen/v1/chat/completions"            
+          :stream t                                      
+          ;; :key #'gptel-api-key-from-auth-source         
+          :models '((minimax-m2.5-free
+                     :description "minimax"
+                     :capabilities (tool-use json)
+                     :context-window 200
+                     :input-cost 0.0
+                     :output-cost 0.0)
+		    (big-pickle
+                     :description "Big Pickle model"
+                     :capabilities (tool-use json)
+                     :context-window 200
+                     :input-cost 0.0
+                     :output-cost 0.0))))
+  (setq gptel-default-mode #'org-mode)
+  (setq gptel-model 'minimax-m2.5-free))
 
 (use-package agent-shell
   :after evil
   :custom
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
+  (agent-shell-opencode-default-model-id "opencode/minimax-m2.5-free")
   :config
   ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
   (evil-define-key 'insert agent-shell-mode-map (kbd "RET") #'newline)
