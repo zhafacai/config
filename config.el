@@ -28,6 +28,10 @@
   :custom
   (isearch-lazy-count t))
 
+(use-package gcmh
+  :config
+  (gcmh-mode 1))
+
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file)
   (load custom-file 'noerror 'nomessage))

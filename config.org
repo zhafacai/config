@@ -417,6 +417,11 @@ $SHELL has to be POSIX one
   :ensure nil
   :custom
   (isearch-lazy-count t))
+
+(use-package gcmh
+  :config
+  (gcmh-mode 1))
+
 #+end_src
 
 **** Custom File
