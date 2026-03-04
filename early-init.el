@@ -1,1 +1,1 @@
-(setq gc-cons-threshold 100000000)
+(setq gc-cons-threshold most-positive-fixnum)

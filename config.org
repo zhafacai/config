@@ -354,7 +354,7 @@ git-fetch-with-cli = true
 * Emacs
 ** The =early-init.el= section
 #+begin_src emacs-lisp :tangle early-init.el
-(setq gc-cons-threshold 100000000)
+(setq gc-cons-threshold most-positive-fixnum)
 #+end_src
 ** The =init.el= section
 #+begin_src emacs-lisp :tangle init.el
