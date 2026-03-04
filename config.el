@@ -642,7 +642,8 @@
 
 (use-package corfu
   ;; Optional customizations
-  ;; :custom
+  :custom
+  (corfu-popupinfo-delay '(0.5 . 0.1))
   ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
   ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
   ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
@@ -664,8 +665,7 @@
 
   ;; Enable optional extension modes:
   ;; (corfu-history-mode)
-  ;; (corfu-popupinfo-mode)
-  )
+  (corfu-popupinfo-mode))
 
 ;; A few more useful configurations...
 (use-package emacs
@@ -710,40 +710,11 @@
   ;; ...
   )
 
-(use-package tempel
-  :bind (("M-+" . tempel-complete) ;; Alternative tempel-expand
-         ("M-*" . tempel-insert))
+(use-package yasnippet
+  :config
+  (yas-global-mode 1))
 
-  :init
-
-  ;; Setup completion at point
-  (defun tempel-setup-capf ()
-    ;; Add the Tempel Capf to `completion-at-point-functions'.  `tempel-expand'
-    ;; only triggers on exact matches. We add `tempel-expand' *before* the main
-    ;; programming mode Capf, such that it will be tried first.
-    (setq-local completion-at-point-functions
-                (cons #'tempel-expand completion-at-point-functions))
-
-    ;; Alternatively use `tempel-complete' if you want to see all matches.  Use
-    ;; a trigger prefix character in order to prevent Tempel from triggering
-    ;; unexpectly.
-    ;; (setq-local corfu-auto-trigger "/"
-    ;;             completion-at-point-functions
-    ;;             (cons (cape-capf-trigger #'tempel-complete ?/)
-    ;;                   completion-at-point-functions))
-    )
-
-  (add-hook 'conf-mode-hook 'tempel-setup-capf)
-  (add-hook 'prog-mode-hook 'tempel-setup-capf)
-  (add-hook 'text-mode-hook 'tempel-setup-capf)
-
-  ;; Optionally make the Tempel templates available to Abbrev,
-  ;; either locally or globally. `expand-abbrev' is bound to C-x '.
-  ;; (add-hook 'prog-mode-hook #'tempel-abbrev-mode)
-  ;; (global-tempel-abbrev-mode)
-  )
-
-(use-package tempel-collection)
+(use-package yasnippet-snippets)
 
 (use-package eglot
   :ensure nil              ;; install from ELPA if missing (usually not needed in Emacs ≥29)
@@ -755,7 +726,9 @@
   ((python-ts-mode       . eglot-ensure)   ;; python-ts-mode or python-mode
    (rustic-mode           . eglot-ensure)
    (typescript-ts-mode     . eglot-ensure)
+   (tsx-ts-mode     . eglot-ensure)
    (js-ts-mode             . eglot-ensure)
+   (astro-ts-mode             . eglot-ensure)
    (c-mode         . eglot-ensure)
    (bash-ts-mode           . eglot-ensure))
 
@@ -771,11 +744,30 @@
   ;; 3. Optional: better event logging (useful when debugging)
   ;; :custom (eglot-events-buffer-size 2000000)  ;; bigger log buffer
 
-  ;; 4. Optional: keyboard shortcuts (pick what you like)
+  :config
+  (add-to-list 'eglot-server-programs
+               '(astro-ts-mode . ("astro-ls" "--stdio"
+                                  :initializationOptions
+                                  (:typescript (:tsdk "./node_modules/typescript/lib")))))
+
+  (add-to-list 'eglot-server-programs
+               '((python-mode python-ts-mode) . ("ty" "server")))
+
+  (add-to-list 'eglot-server-programs
+               '(((typescript-ts-mode :language-id "typescript")
+                  (tsx-ts-mode :language-id "typescriptreact")
+                  (typescript-mode :language-id "typescript")
+                  (js-mode :language-id "javascript")
+                  (js-ts-mode :language-id "javascript"))
+                 . ("vtsls" "--stdio")))
+
+
+  
   :bind
   (:map eglot-mode-map
 	("C-c l r" . eglot-rename)              ;; refactor rename
 	("C-c l a" . eglot-code-actions)))
+
 (use-package consult-eglot
   :bind
   (:map eglot-mode-map
@@ -1624,8 +1616,11 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (add-to-list 'treesit-language-source-alist 
                '(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
   (add-to-list 'treesit-language-source-alist 
+               '(tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
+  (add-to-list 'treesit-language-source-alist 
                '(javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")))
 
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 (add-to-list 'major-mode-remap-alist
              '(json-mode . json-ts-mode))
 (add-to-list 'major-mode-remap-alist
@@ -1642,3 +1637,9 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 
 (use-package nix-mode
   :mode "\\.nix\\'")
+
+(after! treesit
+  (add-to-list 'treesit-language-source-alist 
+               '(astro "https://github.com/virchau13/tree-sitter-astro")))
+(use-package astro-ts-mode
+  :mode "\\.astro\\'")
