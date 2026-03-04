@@ -246,7 +246,9 @@
   ;; Finally, load your theme of choice (or a random one with
   ;; `modus-themes-load-random', `modus-themes-load-random-dark',
   ;; `modus-themes-load-random-light').
-  (modus-themes-load-theme 'modus-operandi-tinted))
+  ;; (modus-themes-load-theme 'modus-operandi-tinted)
+  )
+
 (use-package ef-themes
   :init
   ;; This makes the Modus commands listed below consider only the Ef
@@ -332,6 +334,7 @@
            doom-gruvbox doom-henna doom-nord doom-snazzy)))
 
   (theme-buffet-timer-mins 45))
+(theme-buffet-a-la-carte)
 
 (use-package doom-themes
   :custom
@@ -941,7 +944,7 @@
          ("M-g i" . consult-imenu)
          ("M-g I" . consult-imenu-multi)
          ;; M-s bindings in `search-map'
-         ("M-s d" . consult-find)                  ;; Alternative: consult-fd
+         ("M-s d" . consult-fd)                  ;; Alternative: consult-fd
          ("M-s c" . consult-locate)
          ("M-s g" . consult-grep)
          ("M-s G" . consult-git-grep)
@@ -1009,6 +1012,9 @@
   ;; You may want to use `embark-prefix-help-command' or which-key instead.
   ;; (keymap-set consult-narrow-map (concat consult-narrow-key " ?") #'consult-narrow-help)
   )
+(map! :leader
+      "f" #'consult-ripgrep
+      "SPC" #'consult-fd)
 
 (use-package consult-emms
   :after consult
