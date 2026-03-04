@@ -306,11 +306,40 @@
   (setq theme-buffet-menu 'end-user)
 
   (setq theme-buffet-end-user
-        '( :night     (modus-vivendi ef-dark ef-winter ef-autumn ef-night ef-duo-dark ef-symbiosis)
-           :morning   (modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light)
-           :afternoon (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
-           :evening   (modus-vivendi-tinted ef-rosa ef-elea-dark ef-maris-dark ef-melissa-dark ef-trio-dark ef-dream)))
+        '(
+          ;; NIGHT: High contrast, deep darks, vibrant accents
+          :night
+          (modus-vivendi ef-dark ef-winter ef-autumn ef-night ef-duo-dark ef-symbiosis
+           doom-one doom-vibrant doom-dracula doom-palenight doom-tokyo-night)
+
+          ;; MORNING: Crisp, cold lights, high legibility
+          :morning
+          (modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light
+           doom-one-light doom-acario-light doom-opera-light doom-tomorrow-day)
+
+          ;; AFTERNOON: Warm lights, tinted backgrounds, soft contrast
+          :afternoon
+          (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie
+           doom-solarized-light doom-gruvbox-light doom-flatwhite doom-homage-white)
+
+          ;; EVENING: Warm darks, lower contrast, cozy/earthy tones
+          :evening
+          (modus-vivendi-tinted ef-rosa ef-elea-dark ef-maris-dark ef-melissa-dark ef-trio-dark ef-dream
+           doom-gruvbox doom-henna doom-nord doom-snazzy)))
+
   (theme-buffet-timer-mins 45))
+
+(use-package doom-themes
+  :custom
+  ;; Global settings (defaults)
+  (doom-themes-enable-bold t)   ; if nil, bold is universally disabled
+  (doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  :config
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+ (doom-themes-org-config))
 
 (use-package rainbow-delimiters
   :config
@@ -710,75 +739,105 @@
   ;; ...
   )
 
+(use-package tempel
+  :bind (("M-+" . tempel-complete) ;; Alternative tempel-expand
+         ("M-*" . tempel-insert))
+
+  :init
+
+  ;; Setup completion at point
+  (defun tempel-setup-capf ()
+    ;; Add the Tempel Capf to `completion-at-point-functions'.  `tempel-expand'
+    ;; only triggers on exact matches. We add `tempel-expand' *before* the main
+    ;; programming mode Capf, such that it will be tried first.
+    (setq-local completion-at-point-functions
+                (cons #'tempel-expand completion-at-point-functions))
+
+    ;; Alternatively use `tempel-complete' if you want to see all matches.  Use
+    ;; a trigger prefix character in order to prevent Tempel from triggering
+    ;; unexpectly.
+    ;; (setq-local corfu-auto-trigger "/"
+    ;;             completion-at-point-functions
+    ;;             (cons (cape-capf-trigger #'tempel-complete ?/)
+    ;;                   completion-at-point-functions))
+    )
+
+  (add-hook 'conf-mode-hook 'tempel-setup-capf)
+  (add-hook 'prog-mode-hook 'tempel-setup-capf)
+  (add-hook 'text-mode-hook 'tempel-setup-capf)
+
+  ;; Optionally make the Tempel templates available to Abbrev,
+  ;; either locally or globally. `expand-abbrev' is bound to C-x '.
+  ;; (add-hook 'prog-mode-hook #'tempel-abbrev-mode)
+  ;; (global-tempel-abbrev-mode)
+  )
+
+(use-package tempel-collection)
+
 (use-package yasnippet
   :config
   (yas-global-mode 1))
 
 (use-package yasnippet-snippets)
 
-(use-package eglot
-  :ensure nil              ;; install from ELPA if missing (usually not needed in Emacs ≥29)
-  :defer t                ;; load only when needed
-
-  ;; 1. Automatically start Eglot in these major modes
-  ;;    (add more modes as you use more languages)
-  :hook
-  ((python-ts-mode       . eglot-ensure)   ;; python-ts-mode or python-mode
-   (rustic-mode           . eglot-ensure)
-   (typescript-ts-mode     . eglot-ensure)
-   (tsx-ts-mode     . eglot-ensure)
-   (js-ts-mode             . eglot-ensure)
-   (astro-ts-mode             . eglot-ensure)
-   (c-mode         . eglot-ensure)
-   (bash-ts-mode           . eglot-ensure))
-
-  ;; 2. Good defaults / tweaks
-  :custom
-  (eglot-autoshutdown         t)    ;; kill server when last buffer is closed
-  (eglot-send-changes-idle-time 0.5) ;; send changes faster (default is 0.5 anyway)
-  (eglot-ignored-server-capabilities
-   '(:documentHighlightProvider      ;; disable if too slow/noisy
-     :foldingRangeProvider
-     :inlayHintProvider))            ;; many people disable inlay hints or use a dedicated package
-
-  ;; 3. Optional: better event logging (useful when debugging)
-  ;; :custom (eglot-events-buffer-size 2000000)  ;; bigger log buffer
-
-  :config
-  (add-to-list 'eglot-server-programs
-               '(astro-ts-mode . ("astro-ls" "--stdio"
-                                  :initializationOptions
-                                  (:typescript (:tsdk "./node_modules/typescript/lib")))))
-
-  (add-to-list 'eglot-server-programs
-               '((python-mode python-ts-mode) . ("ty" "server")))
-
-  (add-to-list 'eglot-server-programs
-               '(((typescript-ts-mode :language-id "typescript")
-                  (tsx-ts-mode :language-id "typescriptreact")
-                  (typescript-mode :language-id "typescript")
-                  (js-mode :language-id "javascript")
-                  (js-ts-mode :language-id "javascript"))
-                 . ("vtsls" "--stdio")))
-
-
-  
-  :bind
-  (:map eglot-mode-map
-	("C-c l r" . eglot-rename)              ;; refactor rename
-	("C-c l a" . eglot-code-actions)))
-
-(use-package consult-eglot
-  :bind
-  (:map eglot-mode-map
-	("C-c l s" . consult-eglot-symbols)))
-;; (use-package eldoc-box
-;;   :hook
-;;   (eglot-managed-mode . eldoc-box-hover-at-point-mode))
-
 (use-package flycheck
   :init
   (global-flycheck-mode +1))
+
+(use-package lsp-mode
+  :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-c l")
+  :config
+  (setq lsp-disabled-clients '(pyright basedpyright)) ; Disable defaults if they conflict
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection '("ty" "server"))
+                    :major-modes '(python-mode python-ts-mode)
+                    :server-id 'ty))
+
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection '("vtsls" "--stdio"))
+                    :major-modes '(typescript-mode typescript-ts-mode tsx-ts-mode js-mode js-ts-mode)
+                    :priority 1
+                    :server-id 'vtsls
+                    :language-id (lambda (buffer)
+                                   (pcase (buffer-local-value 'major-mode buffer)
+                                     ('tsx-ts-mode "typescriptreact")
+                                     ((or 'typescript-mode 'typescript-ts-mode) "typescript")
+                                     ((or 'js-mode 'js-ts-mode) "javascript")
+                                     (_ "typescript")))))
+
+
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         (python-ts-mode . lsp-deferred)
+         (rustic-mode           . lsp-deferred)
+         (typescript-ts-mode     . lsp-deferred)
+         (tsx-ts-mode     . lsp-deferred)
+         (js-ts-mode             . lsp-deferred)
+         (astro-ts-mode             . lsp-deferred)
+         (c-mode         . lsp-deferred)
+         ;; if you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands (lsp lsp-deferred))
+
+
+(use-package lsp-ui :commands lsp-ui-mode)
+
+(map! :map lsp-mode-map
+      :n "K"   #'lsp-describe-thing-at-point   ; Hover doc
+      :n "gd"  #'lsp-find-definition           ; Go to definition
+      :n "gD"  #'lsp-find-declaration          ; Go to declaration
+      :n "gI"  #'lsp-find-implementation       ; Go to implementation
+      :n "gy"  #'lsp-find-type-definition      ; Go to type definition
+
+      ;; "gr" prefix group (Neovim style)
+      :n "grn" #'lsp-rename                    ; Rename symbol
+      :n "gra" #'lsp-execute-code-action       ; Code actions
+      :n "grr" #'lsp-find-references           ; Find references
+      
+      ;; Optional: Diagnostics navigation (often [d and ]d in Neovim)
+      :n "[d"  #'lsp-treemacs-errors-list      ; or lsp-ui-flycheck-list
+      )
 
 (use-package treesit
   :ensure nil
@@ -800,20 +859,23 @@
 
 (map! :leader "gg" #'magit)
 
-(defun fc/diff-hl-modus-colors (&optional _)
-  "Apply Modus palette colors to diff-hl faces."
-  (modus-themes-with-colors
+(defun fc/diff-hl-update-colors (&rest _)
+  "Dynamically apply the current theme's standard diff colors to diff-hl faces.
+   Sets both background and foreground to create a solid fringe block."
+  (let ((added   (face-attribute 'diff-added :foreground nil 'default))
+        (changed (face-attribute 'diff-changed :foreground nil 'default))
+        (removed (face-attribute 'diff-removed :foreground nil 'default)))
     (custom-set-faces
-     ;; Added lines: uses the theme's standard green
-     `(diff-hl-insert ((t (:background ,green-warmer :foreground ,green-warmer))))
-     ;; Changed lines: uses the theme's standard blue/cyan
-     `(diff-hl-change ((t (:background ,cyan :foreground ,cyan))))
-     ;; Deleted lines: uses the theme's standard red
-     `(diff-hl-delete ((t (:background ,red :foreground ,red)))))))
+     ;; Added lines: Inherit current theme's 'Added' color
+     `(diff-hl-insert ((t (:inherit diff-added :background ,added :foreground ,added))))
+     ;; Changed lines: Inherit current theme's 'Changed' color
+     `(diff-hl-change ((t (:inherit diff-changed :background ,changed :foreground ,changed))))
+     ;; Deleted lines: Inherit current theme's 'Removed' color
+     `(diff-hl-delete ((t (:inherit diff-removed :background ,removed :foreground ,removed)))))))
 
-(add-hook 'enable-theme-functions #'fc/diff-hl-modus-colors)
+(add-hook 'enable-theme-functions #'fc/diff-hl-update-colors)
 
-(fc/diff-hl-modus-colors)
+(fc/diff-hl-update-colors)
 
 (use-package diff-hl
   :init
@@ -1605,7 +1667,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (rust-mode-treesitter-derive t))
 (use-package rustic
   :custom
-  (rustic-lsp-client 'eglot)
+  ;; (rustic-lsp-client 'eglot)
   (rustic-format-on-save t))
 
 (with-eval-after-load 'treesit
