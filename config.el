@@ -541,6 +541,7 @@
 (use-package evil-quick-diff
   :vc (:url "https://github.com/rgrinberg/evil-quick-diff")
   :init
+  ;; (setq evil-quick-diff-key (kbd "zx"))
   (evil-quick-diff-install))
 
 (use-package evil-goggles
@@ -829,6 +830,7 @@
 
 
 (use-package lsp-ui :commands lsp-ui-mode)
+(use-package consult-lsp)
 
 (map! :map lsp-mode-map
       :n "K"   #'lsp-describe-thing-at-point   ; Hover doc
@@ -836,6 +838,7 @@
       :n "gD"  #'lsp-find-declaration          ; Go to declaration
       :n "gI"  #'lsp-find-implementation       ; Go to implementation
       :n "gy"  #'lsp-find-type-definition      ; Go to type definition
+      :n "gO"  #'consult-lsp-file-symbols      ; Go to file symbols
 
       ;; "gr" prefix group (Neovim style)
       :n "grn" #'lsp-rename                    ; Rename symbol
@@ -1287,6 +1290,20 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   :ensure nil
   :config
   (map! :leader "gi" #'guix))
+
+;; (use-package eee
+;;   :vc (:url "https://github.com/eval-exec/eee.el")
+;;   :config
+;;   ;; Issues and pull requests are welcome
+;;   (setq ee-terminal-command "alacritty")
+
+;;   ;; (global-definer "f" 'ee-find)
+;;   ;; (global-definer "g" 'ee-lazygit)
+;;   ;; (global-definer "y" 'ee-yazi-project)
+;;   ;; (general-def "C-x C-f" 'ee-yazi)
+;;   ;; (general-def "C-S-f" 'ee-rg)
+;;   ;; (general-evil-define-key 'normal 'global "M-f" 'ee-line)
+;;   )
 
 (use-package gptel
   :config
