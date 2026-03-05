@@ -803,6 +803,7 @@
                     :major-modes '(python-mode python-ts-mode)
                     :server-id 'ty))
 
+
   (lsp-register-client
    (make-lsp-client :new-connection (lsp-stdio-connection "nixd")
                     :major-modes '(nix-mode)
@@ -1725,6 +1726,11 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
              '(typescript-mode . typescript-ts-mode))
 (add-to-list 'major-mode-remap-alist
              '(js-mode . js-ts-mode))
+
+(use-package lsp-tailwindcss
+  :init
+  (setq lsp-tailwindcss-add-on-mode t)
+  :after lsp-mode)
 
 (use-package fennel-mode
   :mode "\\.fnl\\'")
