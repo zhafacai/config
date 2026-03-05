@@ -804,6 +804,12 @@
                     :server-id 'ty))
 
   (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection "nixd")
+                    :major-modes '(nix-mode)
+                    :priority 0
+                    :server-id 'nixd))
+
+  (lsp-register-client
    (make-lsp-client :new-connection (lsp-stdio-connection '("vtsls" "--stdio"))
                     :major-modes '(typescript-mode typescript-ts-mode tsx-ts-mode js-mode js-ts-mode)
                     :priority 1
@@ -818,6 +824,7 @@
 
   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
          (python-ts-mode . lsp-deferred)
+         (nix-ts-mode . lsp-deferred)
          (rustic-mode           . lsp-deferred)
          (typescript-ts-mode     . lsp-deferred)
          (tsx-ts-mode     . lsp-deferred)
@@ -1724,8 +1731,12 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 
 (use-package kdl-mode)
 
-(use-package nix-mode
-  :mode "\\.nix\\'")
+(use-package nix-ts-mode
+ :mode "\\.nix\\'")
+
+(after! treesit
+  (add-to-list 'treesit-language-source-alist 
+               '(nix "https://github.com/nix-community/tree-sitter-nix")))
 
 (after! treesit
   (add-to-list 'treesit-language-source-alist 
