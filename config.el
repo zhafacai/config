@@ -321,7 +321,7 @@
           ;; MORNING: Crisp, cold lights, high legibility
           :morning
           (modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light
-           doom-one-light doom-acario-light doom-opera-light doom-tomorrow-day)
+           doom-one-light doom-opera-light doom-tomorrow-day doom-feather-light)
 
           ;; AFTERNOON: Warm lights, tinted backgrounds, soft contrast
           :afternoon

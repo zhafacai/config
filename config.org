@@ -387,7 +387,7 @@ setup mirror for elpa
 #+end_src
 **** Auto tangle
 tangle config file
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (defun fc/org-auto-tangle-config ()
   "Tangle only if the saved file is config.org"
   (when  (string-equal (buffer-file-name)
@@ -401,7 +401,7 @@ tangle config file
 #+end_src
 **** Shell
 $SHELL has to be POSIX one
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 ;; Instruct Emacs to use a posix shell under the hood...
 (setq shell-file-name (executable-find "bash"))
 
@@ -426,14 +426,14 @@ $SHELL has to be POSIX one
 
 **** Custom File
 I do not want custom variables in config file
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file)
   (load custom-file 'noerror 'nomessage))
 #+end_src
 
 **** Leader key
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (defvar fc/leader-key (kbd "SPC")
   "my leader key.")
 
@@ -584,7 +584,7 @@ I do not want custom variables in config file
 *** UI
 **** Basic
 the mode that I do not use
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
@@ -594,7 +594,7 @@ make default frame maximized by default
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 #+end_src
 always help me please :)
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (setq help-at-pt-display-when-idle t) 
 #+end_src
 **** Alpha Backgroud
@@ -617,7 +617,7 @@ tranparent background is beautiful... Right?
 (use-package page-break-lines)
 #+end_src
 **** Themes
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package modus-themes
   :demand t
   :init
@@ -692,7 +692,7 @@ tranparent background is beautiful... Right?
 #+end_src
 
 **** Fonts
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (set-face-attribute 'default nil
                     :family "Iosevka SS02"
                     :height 150)
@@ -708,7 +708,7 @@ tranparent background is beautiful... Right?
 #+end_src
 
 中文字体
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (dolist (charset '(kana han cjk-misc symbol bopomofo))
   (set-fontset-font t charset (font-spec :family "LXGW WenKai")))
 #+end_src
@@ -719,7 +719,7 @@ tranparent background is beautiful... Right?
 #+end_src
 
 **** Modeline
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package doom-modeline
   :config
   (setq doom-modeline-buffer-encoding nil)
@@ -728,7 +728,7 @@ tranparent background is beautiful... Right?
   :init (doom-modeline-mode 1))
 #+end_src
 **** Pulsar
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package pulsar
   :config
   (dolist (fn '(pulsar-pulse-line-red pulsar-recenter-top pulsar-reveal-entry))
@@ -758,7 +758,7 @@ tranparent background is beautiful... Right?
           ;; MORNING: Crisp, cold lights, high legibility
           :morning
           (modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light
-           doom-one-light doom-acario-light doom-opera-light doom-tomorrow-day)
+           doom-one-light doom-opera-light doom-tomorrow-day doom-feather-light)
 
           ;; AFTERNOON: Warm lights, tinted backgrounds, soft contrast
           :afternoon
@@ -787,14 +787,14 @@ tranparent background is beautiful... Right?
  (doom-themes-org-config))
 #+end_src
 **** Rainbow-delimiters
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package rainbow-delimiters
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 #+end_src
 
 **** Header line
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (defun fc/header-line-render-time ()
   (let* ((time-str (format-time-string "%a %d %H:%M"))
          (align-to (propertize " " 'display `(space :align-to (- right ,(+ (length time-str) 2))))))
@@ -844,7 +844,7 @@ tranparent background is beautiful... Right?
 #+end_src
 
 **** Wallpaper
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (defun fc/next-wallpaper ()
   "Call next wallpaper using `dms ipc`"
   (interactive)
@@ -853,7 +853,7 @@ tranparent background is beautiful... Right?
 (map! :leader ">>" #'fc/next-wallpaper)
 #+end_src
 **** Nyan
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package nyan-mode
   :after doom-modeline
   :custom
@@ -864,7 +864,7 @@ tranparent background is beautiful... Right?
   (nyan-mode))
 #+end_src
 **** Which-key
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package which-key
   :custom
   (which-key-idle-delay 0.5)
@@ -886,7 +886,7 @@ tranparent background is beautiful... Right?
 #+end_src
 *** Edit
 **** Evil
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package evil
   :custom
   (evil-want-keybinding nil)
@@ -936,7 +936,7 @@ tranparent background is beautiful... Right?
 
 #+end_src
 ***** Surround
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package evil-surround
   :config
   (global-evil-surround-mode 1))
@@ -950,7 +950,7 @@ tranparent background is beautiful... Right?
   (evil-define-key '(operator) evil-outer-text-objects-map "a" 'evil-outer-arg))
 #+end_src
 ***** Org
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package evil-org
   :after org
   :hook (org-mode . (lambda () evil-org-mode))
@@ -960,7 +960,7 @@ tranparent background is beautiful... Right?
 #+end_src
 ***** Extra
 escape
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package evil-escape
   :custom
   (evil-escape-key-sequence "jk")
@@ -968,23 +968,23 @@ escape
   (evil-escape-mode))
 #+end_src
 undo
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package undo-fu)
 #+end_src
 exchange
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package evil-exchange
   :config
   (evil-exchange-install))
 #+end_src
 multicursors
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package evil-multiedit
   :config
   (evil-multiedit-default-keybinds))
 #+end_src
 indent
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package evil-indent-plus
   :config
   (define-key evil-inner-text-objects-map "i" 'evil-indent-plus-i-indent)
@@ -995,30 +995,30 @@ indent
   (define-key evil-outer-text-objects-map "j" 'evil-indent-plus-a-indent-up-down))
 #+end_src
 align
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package evil-lion
   :config
   (evil-lion-mode))
 #+end_src
 comment
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package evil-commentary
   :config
   (evil-commentary-mode))
 #+end_src
 numbers
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package evil-numbers
   :config
   (define-key evil-normal-state-map (kbd "C-c =") 'evil-numbers/inc-at-pt)
   (define-key evil-normal-state-map (kbd "C-c -") 'evil-numbers/dec-at-pt))
 #+end_src
 exato
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package exato)
 #+end_src
 linediff
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package evil-quick-diff
   :vc (:url "https://github.com/rgrinberg/evil-quick-diff")
   :init
@@ -1070,7 +1070,7 @@ linediff
 #+end_src
 **** Project
 projectile
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package projectile
   :custom
   (projectile-project-search-path '("~/dev/"))
@@ -1083,7 +1083,7 @@ projectile
       "p" #'projectile-command-map)
 #+end_src
 perspective
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package perspective
   :after consult
   :bind
@@ -1104,7 +1104,7 @@ perspective
   (require 'smartparens-config))
 #+end_src
 **** Dired
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package nerd-icons-dired
   :hook
   (dired-mode . nerd-icons-dired-mode))
@@ -1181,14 +1181,14 @@ perspective
   (ready-player-mode 1))
 #+end_src
 **** Format
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package apheleia
   :config
   (apheleia-global-mode +1))
 #+end_src
 **** Completion
 ***** Corfu
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package corfu
   ;; Optional customizations
   :custom
@@ -1239,7 +1239,7 @@ perspective
   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 #+end_src
 ****** Cape
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package cape
   ;; Bind prefix keymap providing all Cape commands under a mnemonic key.
   ;; Press C-c p ? to for help.
@@ -1262,7 +1262,7 @@ perspective
   )
 #+end_src
 ***** Tempel
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package tempel
   :bind (("M-+" . tempel-complete) ;; Alternative tempel-expand
          ("M-*" . tempel-insert))
@@ -1434,7 +1434,7 @@ perspective
 
 #+end_src
 **** Treesitter
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package treesit
   :ensure nil
   :config
@@ -1445,7 +1445,7 @@ perspective
 
 #+end_src
 **** Magit
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package transient)
 (use-package magit
   :config
@@ -1459,7 +1459,7 @@ perspective
 (map! :leader "gg" #'magit)
 #+end_src
 diff-hl
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (defun fc/diff-hl-update-colors (&rest _)
   "Dynamically apply the current theme's standard diff colors to diff-hl faces.
    Sets both background and foreground to create a solid fringe block."
@@ -1485,31 +1485,31 @@ diff-hl
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 #+end_src
 ***** Forge
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package forge
   :after magit
   :custom
   (forge-add-default-bindings nil))
 #+end_src
 ***** Browse
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package browse-at-remote
   :config
   (map! :leader "gb" #'browse-at-remote))
 #+end_src
 ***** Timemachine
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package git-timemachine
   :after transient
   :config
   (map! :leader "gt" #'git-timemachine))
 #+end_src
 ***** Git-modes
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package git-modes)
 #+end_src
 **** Consult
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (defun fc/consult-books ()
   "Consult books in the ~/Documents/books/ folder."
   (interactive)
@@ -1627,7 +1627,7 @@ diff-hl
   :vc (:url "https://github.com/Hugo-Heagren/consult-emms"))
 #+end_src
 **** Helpful
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package helpful
   :config
   (map! :i :map global-map
@@ -1643,7 +1643,7 @@ diff-hl
   (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
 #+end_src
 **** Vertico
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 ;; Enable Vertico.
 (use-package vertico
   :custom
@@ -1700,7 +1700,7 @@ diff-hl
   (marginalia-mode))
 #+end_src
 **** Embark
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package embark
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
@@ -1766,7 +1766,7 @@ org-mode
 #+end_src
 *** Tools
 **** Google Translate 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package gt
   :commands (gt-translate)
   :init
@@ -1792,7 +1792,7 @@ org-mode
         :n "?" #'casual-dired-tmenu))
 #+end_src
 **** Vterm
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package vterm
   :ensure nil)
 #+end_src
@@ -1851,7 +1851,7 @@ org-mode
 "direnv"
 #+end_src
 **** EMMS 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package emms
   :after evil
   :commands emms
@@ -1934,7 +1934,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 #+end_src
 
 **** Devdocs
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package devdocs
   :config
   (add-hook 'rust-mode-hook
@@ -1947,7 +1947,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
             (lambda () (setq-local devdocs-current-docs '("elisp")))))
 #+end_src
 **** Rime
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package rime
   :ensure nil
   :custom
@@ -1965,7 +1965,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 "emacs-rime"
 #+end_src
 **** Dwim-shell-command
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package dwim-shell-command
   :custom
   (dwim-shell-commands-git-clone-dirs '("~/dev" "~/Downloads"))
@@ -2103,7 +2103,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 #+end_src
 *** Org
 **** Basic
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package org
   :ensure nil
   :custom
@@ -2153,7 +2153,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (org-mode . valign-mode))
 #+end_src
 **** Habit
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 ;; (after! org
 ;;   (add-to-list 'org-modules 'org-habit t)
 ;;   (add-to-list 'org-modules 'ol-info t)
@@ -2179,7 +2179,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 
 #+end_src
 **** Pretty
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package org-modern
   :custom
   (org-modern-hide-stars nil)
@@ -2236,7 +2236,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 #+end_src
 **** Denote
 ***** Basic
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package denote
   :hook
   ((text-mode . denote-fontify-links-mode-maybe)
@@ -2271,7 +2271,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 #+end_src
 
 ***** Denote Org
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package denote-org
   :after denote
   :bind (:map org-mode-map
@@ -2288,7 +2288,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 #+end_src
 
 ***** Denote Journal
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package denote-journal
   :bind
   ("C-c n j" . denote-journal-new-or-existing-entry)
@@ -2306,7 +2306,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 #+end_src
 
 ***** Denote Sequence
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package denote-sequence
   :after denote
   :bind (("C-c n s s" . denote-sequence)
@@ -2318,7 +2318,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 #+end_src
 
 ***** Consult Denote
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package consult-denote
   :bind (("C-c n f" . consult-denote-find)
          ("C-c n g" . consult-denote-grep))
@@ -2327,7 +2327,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 #+end_src
 
 **** GTD
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package org-gtd
   :after (org transient)
   :demand t
@@ -2370,7 +2370,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 #+end_src
 
 **** Dwim
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (defun fc/org-insert-link-dwim ()
   "Like `org-insert-link' but with personal dwim preferences."
   (interactive)
@@ -2402,12 +2402,12 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 #+end_src
 *** Lang
 **** Uiua
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package uiua-mode
   :mode "\\.ua\\'")
 #+end_src
 **** Solidity
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package sol-mode
   :mode "\\.sol\\'")
 
@@ -2417,7 +2417,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 
 #+end_src
 **** Cxx
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (with-eval-after-load 'treesit
   (add-to-list 'treesit-language-source-alist 
                '(cpp "https://github.com/tree-sitter/tree-sitter-cpp"))
@@ -2442,7 +2442,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 (use-package cmake-mode)
 #+end_src
 **** Python
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (with-eval-after-load 'treesit
   (add-to-list 'treesit-language-source-alist 
                '(python "https://github.com/tree-sitter/tree-sitter-python")))
@@ -2453,7 +2453,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   :hook (python-ts-mode . uv-mode-auto-activate-hook))
 #+end_src
 **** Rust
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (with-eval-after-load 'treesit
   (add-to-list 'treesit-language-source-alist 
                '(rust "https://github.com/tree-sitter/tree-sitter-rust")))
@@ -2469,7 +2469,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (rustic-format-on-save t))
 #+end_src
 **** Web +3+?
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (with-eval-after-load 'treesit
   (add-to-list 'treesit-language-source-alist 
                '(css "https://github.com/tree-sitter/tree-sitter-css"))
@@ -2493,7 +2493,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
              '(js-mode . js-ts-mode))
 #+end_src
 **** Fennel
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package fennel-mode
   :mode "\\.fnl\\'")
 #+end_src
