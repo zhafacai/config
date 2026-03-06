@@ -422,6 +422,9 @@ $SHELL has to be POSIX one
   :config
   (gcmh-mode 1))
 
+(setq-default indent-tabs-mode nil
+              tab-width 4)
+
 #+end_src
 
 **** Custom File
