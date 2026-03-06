@@ -32,110 +32,23 @@
   :config
   (gcmh-mode 1))
 
+(setq-default indent-tabs-mode nil
+              tab-width 4)
+
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file)
   (load custom-file 'noerror 'nomessage))
 
-(defvar fc/leader-key (kbd "SPC")
+(defvar fc/leader-key "SPC"
   "my leader key.")
 
-(defvar fc/localleader-key (kbd ",")
+(defvar fc/localleader-key ","
   "my local leader key.")
 
-(defvar fc/leader-map (make-sparse-keymap)
-  "The keymap for <leader> bindings.")
+(use-package general)
 
-(with-eval-after-load 'evil
-  (dolist (state '(normal visual motion))
-    (evil-define-key* state global-map
-      fc/leader-key fc/leader-map)))
-
-(defmacro map! (&rest args)
-  "A macro similar to Doom's map! for defining keybindings."
-  (let ((leader nil)
-        (states '(normal))
-        (keymap nil)
-        (prefix "")
-        (current-desc nil)
-        (bindings nil)
-        (desc-forms nil))
-
-    (while args
-      (let ((arg (pop args)))
-        (cond
-         ((eq arg :leader)
-          (setq leader t)
-          (setq keymap 'fc/leader-map))
-
-         ((eq arg :prefix)
-          (let* ((p (pop args))
-                 (p-key (if (consp p) (car p) p))
-                 (p-desc (if (consp p) (cdr p) nil)))
-            (setq prefix (concat prefix p-key " "))
-            (when (and p-desc (featurep 'which-key))
-              (push `(which-key-add-key-based-replacements
-                       ,(if leader
-                            (concat "SPC " (string-trim prefix))
-                          (string-trim prefix))
-                       ,p-desc)
-                    desc-forms))))
-
-         ((memq arg '(:n :i :v :o :m :e))
-          (let ((new-state
-                 (cdr (assoc arg '((:n . normal)
-                                   (:i . insert)
-                                   (:v . visual)
-                                   (:o . operator)
-                                   (:m . motion)
-                                   (:e . emacs))))))
-            (add-to-list 'states new-state 'append)))
-
-         ((eq arg :map)
-          (setq keymap (pop args)))
-
-         ((eq arg :desc)
-          (setq current-desc (pop args)))
-
-         ((stringp arg)
-          (let* ((key arg)
-                 (def (pop args))
-                 (full-key (concat prefix key))
-                 (which-key-key
-                  (if leader
-                      (concat "SPC " full-key)
-                    full-key)))
-
-            (cond
-             (leader
-              (push `(define-key fc/leader-map (kbd ,full-key) ,def)
-                    bindings))
-
-             (keymap
-              (push `(after! evil
-                       (evil-define-key ',states
-                         ,keymap
-                         (kbd ,full-key)
-                         ,def))
-                    bindings))
-
-             (t
-              (push `(after! evil
-                       (evil-define-key ',states
-                         'global
-                         (kbd ,full-key)
-                         ,def))
-                    bindings)))
-
-            (when (and current-desc (featurep 'which-key))
-              (push `(which-key-add-key-based-replacements
-                       ,which-key-key
-                       ,current-desc)
-                    desc-forms))
-            (setq current-desc nil))))))
-
-    `(progn
-       ,@(nreverse bindings)
-       ,@(nreverse desc-forms))))
+(general-create-definer fc/map
+    :prefix fc/leader-key)
 
 (defmacro after! (features &rest body)
   "在指定的 feature(s) 加载完成后执行 body。
@@ -193,7 +106,7 @@
                            100))))
 (add-to-list 'default-frame-alist '(alpha-background . 90))
 
-(map! :leader "ta" #'fc/toggle-alpha-background)
+(fc/map 'normal "ta" #'fc/toggle-alpha-background)
 
 (use-package page-break-lines)
 
@@ -267,7 +180,7 @@
 
 (use-package theme-buffet
   :config
-  (map! :leader "tt" #'theme-buffet-a-la-carte)
+  (fc/map 'normal "tt" #'theme-buffet-a-la-carte)
   (setq theme-buffet-menu 'end-user)
 
   (setq theme-buffet-end-user
@@ -363,7 +276,7 @@
   (interactive)
   (shell-command "noctalia-shell ipc call wallpaper random"))
 
-(map! :leader ">>" #'fc/next-wallpaper)
+(fc/map 'normal ">>" #'fc/next-wallpaper)
 
 (use-package nyan-mode
   :after doom-modeline
@@ -401,17 +314,16 @@
   (setq evil-undo-system 'undo-fu)
   (global-visual-line-mode 1)
   :config
-  (evil-set-leader '(normal visual) fc/leader-key)
-  (evil-set-leader 'normal fc/localleader-key t)
-  (map! :n "C-e" #'evil-end-of-line)
+  (evil-set-leader '(normal visual) (kbd fc/leader-key))
+  (evil-set-leader 'normal (kbd fc/localleader-key) t)
   (evil-mode 1))
 
-(use-package avy)
+(general-define-key :keymaps 'normal "C-e" #'end-of-line)
 
 (use-package evil-collection
-  :after (evil avy)
-  :custom
-  (evil-collection-key-blacklist '("SPC"))
+  :after evil
+  ;; :custom
+  ;; (evil-collection-key-blacklist '("SPC"))
   :config
   (delq 'lispy evil-collection-mode-list)
   (evil-collection-init))
@@ -419,7 +331,7 @@
 (use-package flash
   :vc (:url "https://github.com/Prgebish/flash")
   :commands (flash-jump flash-jump-continue
-			flash-treesitter)
+			            flash-treesitter)
   :custom
   (flash-multi-window t)
   ;; (flash-autojump t)
@@ -431,8 +343,7 @@
     (flash-evil-setup t)
     (setq flash-char-jump-labels t))
 
-  (map! :n "s" #'flash-evil-jump
-        :v "s" #'flash-evil-jump)
+  (fc/map 'normal "s" #'flash-evil-jump)
   :config
   ;; Search integration (labels during C-s, /, ?)
   (require 'flash-isearch)
@@ -547,10 +458,8 @@
   :config
   (projectile-mode +1))
 
-(map! :map projectile-mode-map
-      :leader
-      :desc "projectile"
-      "p" #'projectile-command-map)
+;; (fc/map 'normal projectile-mode-map
+;;   "p" #'projectile-command-map)
 
 (use-package perspective
   :after consult
@@ -799,21 +708,19 @@
 (use-package lsp-ui :commands lsp-ui-mode)
 (use-package consult-lsp)
 
-(map! :map lsp-mode-map
-      :n "K"   #'lsp-describe-thing-at-point   ; Hover doc
-      :n "gd"  #'lsp-find-definition           ; Go to definition
-      :n "gD"  #'lsp-find-declaration          ; Go to declaration
-      :n "gI"  #'lsp-find-implementation       ; Go to implementation
-      :n "gy"  #'lsp-find-type-definition      ; Go to type definition
-      :n "gO"  #'consult-lsp-file-symbols      ; Go to file symbols
+(fc/map 'normal lsp-mode-map
+       "K"   #'lsp-describe-thing-at-point   ; Hover doc
+       "gd"  #'lsp-find-definition           ; Go to definition
+       "gD"  #'lsp-find-declaration          ; Go to declaration
+       "gI"  #'lsp-find-implementation       ; Go to implementation
+       "gy"  #'lsp-find-type-definition      ; Go to type definition
+       "gO"  #'consult-lsp-file-symbols      ; Go to file symbols
 
-      ;; "gr" prefix group (Neovim style)
-      :n "grn" #'lsp-rename                    ; Rename symbol
-      :n "gra" #'lsp-execute-code-action       ; Code actions
-      :n "grr" #'lsp-find-references           ; Find references
+       "grn" #'lsp-rename                    ; Rename symbol
+       "gra" #'lsp-execute-code-action       ; Code actions
+       "grr" #'lsp-find-references           ; Find references
       
-      ;; Optional: Diagnostics navigation (often [d and ]d in Neovim)
-      :n "[d"  #'lsp-treemacs-errors-list      ; or lsp-ui-flycheck-list
+       "[d"  #'lsp-treemacs-errors-list      ; or lsp-ui-flycheck-list
       )
 
 (use-package treesit
@@ -834,7 +741,7 @@
   (git-commit-mode . evil-insert-state)
   :defer t)
 
-(map! :leader "gg" #'magit)
+(fc/map 'normal "gg" #'magit)
 
 (defun fc/diff-hl-update-colors (&rest _)
   "Dynamically apply the current theme's standard diff colors to diff-hl faces.
@@ -867,12 +774,12 @@
 
 (use-package browse-at-remote
   :config
-  (map! :leader "gb" #'browse-at-remote))
+  (fc/map 'normal "gb" #'browse-at-remote))
 
 (use-package git-timemachine
   :after transient
   :config
-  (map! :leader "gt" #'git-timemachine))
+  (fc/map 'normal "gt" #'git-timemachine))
 
 (use-package git-modes)
 
@@ -982,9 +889,9 @@
   ;; You may want to use `embark-prefix-help-command' or which-key instead.
   ;; (keymap-set consult-narrow-map (concat consult-narrow-key " ?") #'consult-narrow-help)
   )
-(map! :leader
-      "f" #'consult-ripgrep
-      "SPC" #'consult-fd)
+(fc/map 'normal
+  "f" #'consult-ripgrep
+  "SPC" #'consult-fd)
 
 (use-package consult-emms
   :after consult
@@ -992,13 +899,13 @@
 
 (use-package helpful
   :config
-  (map! :i :map global-map
-        "C-h f" #'helpful-callable
-        "C-c C-d" #'helpful-at-point
-        "C-h F" #'helpful-function
-        "C-h v" #'helpful-variable
-        "C-h k" #'helpful-key
-        "C-h x" #'helpful-command))
+  (fc/map 'normal 
+    "C-h f" #'helpful-callable
+    "C-c C-d" #'helpful-at-point
+    "C-h F" #'helpful-function
+    "C-h v" #'helpful-variable
+    "C-h k" #'helpful-key
+    "C-h x" #'helpful-command))
 (use-package elisp-demos
   :after helpful
   :config
@@ -1089,7 +996,7 @@
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none)))))
-(map! :map vertico-map
+(fc/map 'normal vertico-map
       "C-c C-e" #'embark-export
       "C-c C-o" #'embark-collect
       "C-c C-l" #'embark-live)
@@ -1100,7 +1007,7 @@
 (use-package gt
   :commands (gt-translate)
   :init
-  (map! :leader "l" #'gt-translate)
+  (fc/map 'normal "l" #'gt-translate)
   :config
   (setq gt-langs '(en zh))
   (setq gt-default-translator
@@ -1109,11 +1016,12 @@
                                  :exact nil))))
 
 (use-package casual
-  :config
-  (map! :map Info-mode-map
-	:n "?" #'casual-info-tmenu)
-  (map! :map dired-mode-map
-        :n "?" #'casual-dired-tmenu))
+  ;; :config
+  ;; (fc/map 'normal Info-mode-map
+  ;;   "?" #'casual-info-tmenu)
+  ;; (fc/map 'normal dired-mode-map
+  ;;   "?" #'casual-dired-tmenu)
+  )
 
 (use-package vterm
   :ensure nil)
@@ -1167,7 +1075,7 @@
   ;; Volume commands in repeat mode
   (dolist (elm '(emms-volume-raise
                  emms-volume-lower
-		 emms-pause
+		         emms-pause
                  emms-next
                  emms-previous))
     (put elm 'repeat-map 'emms-volume-repeat-map))
@@ -1182,19 +1090,19 @@
       map)
     "Keymap for continuous volume adjustment in EMMS")
 
-  (map! :i :map global-map
-        "C-c m SPC" #'emms-pause
-        "C-c m p" #'emms-previous
-        "C-c m n" #'emms-next
-        "C-c m s" #'emms-stop
-        "C-c m m" #'emms
-        "C-c m =" #'emms-volume-raise
-        "C-c m -" #'emms-volume-lower)
+  (general-define-key
+    "C-c m SPC" #'emms-pause
+    "C-c m p" #'emms-previous
+    "C-c m n" #'emms-next
+    "C-c m s" #'emms-stop
+    "C-c m m" #'emms
+    "C-c m =" #'emms-volume-raise
+    "C-c m -" #'emms-volume-lower)
 
   (setq emms-volume-change-function 'emms-volume-pulse-change)
 
-  (map! :map emms-playlist-mode-map
-        :n "q" #'emms-playlist-mode-bury-buffer))
+  (fc/map 'normal emms-playlist-mode-map
+    "q" #'emms-playlist-mode-bury-buffer))
 
 (use-package reader
   :ensure nil
@@ -1256,7 +1164,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 (use-package guix
   :ensure nil
   :config
-  (map! :leader "gi" #'guix))
+  (fc/map 'normal "gi" #'guix))
 
 ;; (use-package eee
 ;;   :vc (:url "https://github.com/eval-exec/eee.el")
@@ -1286,7 +1194,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
                      :context-window 200
                      :input-cost 0.0
                      :output-cost 0.0)
-		    (big-pickle
+		            (big-pickle
                      :description "Big Pickle model"
                      :capabilities (tool-use json)
                      :context-window 200
@@ -1295,10 +1203,9 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (setq gptel-default-mode #'org-mode)
   (setq gptel-model 'minimax-m2.5-free))
 
-(map! :i :map global-map
-      :prefix ("C-c a" . "AI")
-      "p" #'gptel
-      "m" #'gptel-menu)
+(fc/map 'normal
+  "p" #'gptel
+  "m" #'gptel-menu)
 
 ;; TODO use this in melpa
 ;; (use-package acp
@@ -1312,22 +1219,23 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (agent-shell-opencode-default-model-id "opencode/minimax-m2.5-free")
   :config
   ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
-  (map! :map agent-shell-mode-map
-        :i "RET" #'newline
-        :n "RET" #'comint-send-input)
+  (general-define-key
+   :keymaps 'agent-shell-mode-map
+   :states 'insert
+   "RET" #'newline
+   "TAB" nil
+   :states 'normal
+   "RET" #'comint-send-input
+   "TAB" nil)
 
-  (map! :map agent-shell-mode-map
-        :n "TAB" nil
-        :i "TAB" nil)
- 
+  
   ;; Configure *agent-shell-diff* buffers to start in Emacs state
   (add-hook 'diff-mode-hook
-	    (lambda ()
-	      (when (string-match-p "\\*agent-shell-diff\\*" (buffer-name))
-		(evil-emacs-state)))))
+	        (lambda ()
+	          (when (string-match-p "\\*agent-shell-diff\\*" (buffer-name))
+		        (evil-emacs-state)))))
 
-(map! :i :map global-map
-      "C-c a s" #'agent-shell)
+(fc/map 'normal "C-c a s" #'agent-shell)
 
 (setq auth-sources '("~/.authinfo.gpg")
       user-full-name "zhafacai"
@@ -1408,9 +1316,9 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 (use-package org-tree-slide
   :after evil
   :config
-  (map! :map org-tree-slide-mode-map
-      :n "<leader>j" #'org-tree-slide-move-next-tree
-      :n "<leader>k" #'org-tree-slide-move-previous-tree))
+  (fc/map :keymaps 'org-tree-slide-mode-map
+    "j" #'org-tree-slide-move-next-tree
+    "k" #'org-tree-slide-move-previous-tree))
 
 (use-package valign
   :hook
@@ -1605,8 +1513,8 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
            (call-interactively 'org-insert-link)))))
 
 (with-eval-after-load 'org
-  (map! :map org-mode-map
-        :n "C-c C-l" #'fc/org-insert-link-dwim))
+  (fc/map 'normal org-mode-map
+    "C-c C-l" #'fc/org-insert-link-dwim))
 
 (use-package uiua-mode
   :mode "\\.ua\\'")

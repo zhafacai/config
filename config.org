@@ -437,110 +437,21 @@ I do not want custom variables in config file
 
 **** Leader key
 #+begin_src emacs-lisp
-(defvar fc/leader-key (kbd "SPC")
+(defvar fc/leader-key "SPC"
   "my leader key.")
 
-(defvar fc/localleader-key (kbd ",")
+(defvar fc/localleader-key ","
   "my local leader key.")
 
-(defvar fc/leader-map (make-sparse-keymap)
-  "The keymap for <leader> bindings.")
+(use-package general)
 
-(with-eval-after-load 'evil
-  (dolist (state '(normal visual motion))
-    (evil-define-key* state global-map
-      fc/leader-key fc/leader-map)))
+(general-create-definer fc/map
+    :prefix fc/leader-key)
+
 #+end_src
 
 **** Macro
 #+begin_src emacs-lisp
-(defmacro map! (&rest args)
-  "A macro similar to Doom's map! for defining keybindings."
-  (let ((leader nil)
-        (states '(normal))
-        (keymap nil)
-        (prefix "")
-        (current-desc nil)
-        (bindings nil)
-        (desc-forms nil))
-
-    (while args
-      (let ((arg (pop args)))
-        (cond
-         ((eq arg :leader)
-          (setq leader t)
-          (setq keymap 'fc/leader-map))
-
-         ((eq arg :prefix)
-          (let* ((p (pop args))
-                 (p-key (if (consp p) (car p) p))
-                 (p-desc (if (consp p) (cdr p) nil)))
-            (setq prefix (concat prefix p-key " "))
-            (when (and p-desc (featurep 'which-key))
-              (push `(which-key-add-key-based-replacements
-                       ,(if leader
-                            (concat "SPC " (string-trim prefix))
-                          (string-trim prefix))
-                       ,p-desc)
-                    desc-forms))))
-
-         ((memq arg '(:n :i :v :o :m :e))
-          (let ((new-state
-                 (cdr (assoc arg '((:n . normal)
-                                   (:i . insert)
-                                   (:v . visual)
-                                   (:o . operator)
-                                   (:m . motion)
-                                   (:e . emacs))))))
-            (add-to-list 'states new-state 'append)))
-
-         ((eq arg :map)
-          (setq keymap (pop args)))
-
-         ((eq arg :desc)
-          (setq current-desc (pop args)))
-
-         ((stringp arg)
-          (let* ((key arg)
-                 (def (pop args))
-                 (full-key (concat prefix key))
-                 (which-key-key
-                  (if leader
-                      (concat "SPC " full-key)
-                    full-key)))
-
-            (cond
-             (leader
-              (push `(define-key fc/leader-map (kbd ,full-key) ,def)
-                    bindings))
-
-             (keymap
-              (push `(after! evil
-                       (evil-define-key ',states
-                         ,keymap
-                         (kbd ,full-key)
-                         ,def))
-                    bindings))
-
-             (t
-              (push `(after! evil
-                       (evil-define-key ',states
-                         'global
-                         (kbd ,full-key)
-                         ,def))
-                    bindings)))
-
-            (when (and current-desc (featurep 'which-key))
-              (push `(which-key-add-key-based-replacements
-                       ,which-key-key
-                       ,current-desc)
-                    desc-forms))
-            (setq current-desc nil))))))
-
-    `(progn
-       ,@(nreverse bindings)
-       ,@(nreverse desc-forms))))
-
 (defmacro after! (features &rest body)
   "在指定的 feature(s) 加载完成后执行 body。
 第一个参数 features 支持：
@@ -613,7 +524,7 @@ tranparent background is beautiful... Right?
                            100))))
 (add-to-list 'default-frame-alist '(alpha-background . 90))
 
-(map! :leader "ta" #'fc/toggle-alpha-background)
+(fc/map 'normal "ta" #'fc/toggle-alpha-background)
 #+end_src
 **** Page break lines
 #+begin_src emacs-lisp
@@ -707,7 +618,7 @@ tranparent background is beautiful... Right?
 #+begin_src emacs-lisp
 (use-package theme-buffet
   :config
-  (map! :leader "tt" #'theme-buffet-a-la-carte)
+  (fc/map 'normal "tt" #'theme-buffet-a-la-carte)
   (setq theme-buffet-menu 'end-user)
 
   (setq theme-buffet-end-user
@@ -812,7 +723,7 @@ tranparent background is beautiful... Right?
   (interactive)
   (shell-command "noctalia-shell ipc call wallpaper random"))
 
-(map! :leader ">>" #'fc/next-wallpaper)
+(fc/map 'normal ">>" #'fc/next-wallpaper)
 #+end_src
 **** Nyan
 #+begin_src emacs-lisp
@@ -859,17 +770,16 @@ tranparent background is beautiful... Right?
   (setq evil-undo-system 'undo-fu)
   (global-visual-line-mode 1)
   :config
-  (evil-set-leader '(normal visual) fc/leader-key)
-  (evil-set-leader 'normal fc/localleader-key t)
-  (map! :n "C-e" #'evil-end-of-line)
+  (evil-set-leader '(normal visual) (kbd fc/leader-key))
+  (evil-set-leader 'normal (kbd fc/localleader-key) t)
   (evil-mode 1))
 
-(use-package avy)
+(general-define-key :keymaps 'normal "C-e" #'end-of-line)
 
 (use-package evil-collection
-  :after (evil avy)
-  :custom
-  (evil-collection-key-blacklist '("SPC"))
+  :after evil
+  ;; :custom
+  ;; (evil-collection-key-blacklist '("SPC"))
   :config
   (delq 'lispy evil-collection-mode-list)
   (evil-collection-init))
@@ -877,7 +787,7 @@ tranparent background is beautiful... Right?
 (use-package flash
   :vc (:url "https://github.com/Prgebish/flash")
   :commands (flash-jump flash-jump-continue
-			flash-treesitter)
+			            flash-treesitter)
   :custom
   (flash-multi-window t)
   ;; (flash-autojump t)
@@ -889,8 +799,7 @@ tranparent background is beautiful... Right?
     (flash-evil-setup t)
     (setq flash-char-jump-labels t))
 
-  (map! :n "s" #'flash-evil-jump
-        :v "s" #'flash-evil-jump)
+  (fc/map 'normal "s" #'flash-evil-jump)
   :config
   ;; Search integration (labels during C-s, /, ?)
   (require 'flash-isearch)
@@ -1040,10 +949,8 @@ projectile
   :config
   (projectile-mode +1))
 
-(map! :map projectile-mode-map
-      :leader
-      :desc "projectile"
-      "p" #'projectile-command-map)
+;; (fc/map 'normal projectile-mode-map
+;;   "p" #'projectile-command-map)
 #+end_src
 perspective
 #+begin_src emacs-lisp
@@ -1388,21 +1295,19 @@ perspective
 (use-package lsp-ui :commands lsp-ui-mode)
 (use-package consult-lsp)
 
-(map! :map lsp-mode-map
-      :n "K"   #'lsp-describe-thing-at-point   ; Hover doc
-      :n "gd"  #'lsp-find-definition           ; Go to definition
-      :n "gD"  #'lsp-find-declaration          ; Go to declaration
-      :n "gI"  #'lsp-find-implementation       ; Go to implementation
-      :n "gy"  #'lsp-find-type-definition      ; Go to type definition
-      :n "gO"  #'consult-lsp-file-symbols      ; Go to file symbols
+(fc/map 'normal lsp-mode-map
+       "K"   #'lsp-describe-thing-at-point   ; Hover doc
+       "gd"  #'lsp-find-definition           ; Go to definition
+       "gD"  #'lsp-find-declaration          ; Go to declaration
+       "gI"  #'lsp-find-implementation       ; Go to implementation
+       "gy"  #'lsp-find-type-definition      ; Go to type definition
+       "gO"  #'consult-lsp-file-symbols      ; Go to file symbols
 
-      ;; "gr" prefix group (Neovim style)
-      :n "grn" #'lsp-rename                    ; Rename symbol
-      :n "gra" #'lsp-execute-code-action       ; Code actions
-      :n "grr" #'lsp-find-references           ; Find references
+       "grn" #'lsp-rename                    ; Rename symbol
+       "gra" #'lsp-execute-code-action       ; Code actions
+       "grr" #'lsp-find-references           ; Find references
       
-      ;; Optional: Diagnostics navigation (often [d and ]d in Neovim)
-      :n "[d"  #'lsp-treemacs-errors-list      ; or lsp-ui-flycheck-list
+       "[d"  #'lsp-treemacs-errors-list      ; or lsp-ui-flycheck-list
       )
 
 #+end_src
@@ -1429,7 +1334,7 @@ perspective
   (git-commit-mode . evil-insert-state)
   :defer t)
 
-(map! :leader "gg" #'magit)
+(fc/map 'normal "gg" #'magit)
 #+end_src
 diff-hl
 #+begin_src emacs-lisp
@@ -1468,14 +1373,14 @@ diff-hl
 #+begin_src emacs-lisp
 (use-package browse-at-remote
   :config
-  (map! :leader "gb" #'browse-at-remote))
+  (fc/map 'normal "gb" #'browse-at-remote))
 #+end_src
 ***** Timemachine
 #+begin_src emacs-lisp
 (use-package git-timemachine
   :after transient
   :config
-  (map! :leader "gt" #'git-timemachine))
+  (fc/map 'normal "gt" #'git-timemachine))
 #+end_src
 ***** Git-modes
 #+begin_src emacs-lisp
@@ -1589,9 +1494,9 @@ diff-hl
   ;; You may want to use `embark-prefix-help-command' or which-key instead.
   ;; (keymap-set consult-narrow-map (concat consult-narrow-key " ?") #'consult-narrow-help)
   )
-(map! :leader
-      "f" #'consult-ripgrep
-      "SPC" #'consult-fd)
+(fc/map 'normal
+  "f" #'consult-ripgrep
+  "SPC" #'consult-fd)
 #+end_src
 ***** Emms
 #+begin_src emacs-lisp
@@ -1603,13 +1508,13 @@ diff-hl
 #+begin_src emacs-lisp
 (use-package helpful
   :config
-  (map! :i :map global-map
-        "C-h f" #'helpful-callable
-        "C-c C-d" #'helpful-at-point
-        "C-h F" #'helpful-function
-        "C-h v" #'helpful-variable
-        "C-h k" #'helpful-key
-        "C-h x" #'helpful-command))
+  (fc/map 'normal 
+    "C-h f" #'helpful-callable
+    "C-c C-d" #'helpful-at-point
+    "C-h F" #'helpful-function
+    "C-h v" #'helpful-variable
+    "C-h k" #'helpful-key
+    "C-h x" #'helpful-command))
 (use-package elisp-demos
   :after helpful
   :config
@@ -1704,7 +1609,7 @@ diff-hl
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none)))))
-(map! :map vertico-map
+(fc/map 'normal vertico-map
       "C-c C-e" #'embark-export
       "C-c C-o" #'embark-collect
       "C-c C-l" #'embark-live)
@@ -1743,7 +1648,7 @@ org-mode
 (use-package gt
   :commands (gt-translate)
   :init
-  (map! :leader "l" #'gt-translate)
+  (fc/map 'normal "l" #'gt-translate)
   :config
   (setq gt-langs '(en zh))
   (setq gt-default-translator
@@ -1758,11 +1663,12 @@ org-mode
 **** Casual
 #+begin_src emacs-lisp
 (use-package casual
-  :config
-  (map! :map Info-mode-map
-	:n "?" #'casual-info-tmenu)
-  (map! :map dired-mode-map
-        :n "?" #'casual-dired-tmenu))
+  ;; :config
+  ;; (fc/map 'normal Info-mode-map
+  ;;   "?" #'casual-info-tmenu)
+  ;; (fc/map 'normal dired-mode-map
+  ;;   "?" #'casual-dired-tmenu)
+  )
 #+end_src
 **** Vterm
 #+begin_src emacs-lisp
@@ -1846,7 +1752,7 @@ org-mode
   ;; Volume commands in repeat mode
   (dolist (elm '(emms-volume-raise
                  emms-volume-lower
-		 emms-pause
+		         emms-pause
                  emms-next
                  emms-previous))
     (put elm 'repeat-map 'emms-volume-repeat-map))
@@ -1861,19 +1767,19 @@ org-mode
       map)
     "Keymap for continuous volume adjustment in EMMS")
 
-  (map! :i :map global-map
-        "C-c m SPC" #'emms-pause
-        "C-c m p" #'emms-previous
-        "C-c m n" #'emms-next
-        "C-c m s" #'emms-stop
-        "C-c m m" #'emms
-        "C-c m =" #'emms-volume-raise
-        "C-c m -" #'emms-volume-lower)
+  (general-define-key
+    "C-c m SPC" #'emms-pause
+    "C-c m p" #'emms-previous
+    "C-c m n" #'emms-next
+    "C-c m s" #'emms-stop
+    "C-c m m" #'emms
+    "C-c m =" #'emms-volume-raise
+    "C-c m -" #'emms-volume-lower)
 
   (setq emms-volume-change-function 'emms-volume-pulse-change)
 
-  (map! :map emms-playlist-mode-map
-        :n "q" #'emms-playlist-mode-bury-buffer))
+  (fc/map 'normal emms-playlist-mode-map
+    "q" #'emms-playlist-mode-bury-buffer))
 #+end_src
 
 **** PDF
@@ -1955,7 +1861,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 (use-package guix
   :ensure nil
   :config
-  (map! :leader "gi" #'guix))
+  (fc/map 'normal "gi" #'guix))
 #+end_src
 ~epkgs~
 #+begin_src scheme :noweb-ref epkgs
@@ -1997,7 +1903,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
                      :context-window 200
                      :input-cost 0.0
                      :output-cost 0.0)
-		    (big-pickle
+		            (big-pickle
                      :description "Big Pickle model"
                      :capabilities (tool-use json)
                      :context-window 200
@@ -2006,10 +1912,9 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (setq gptel-default-mode #'org-mode)
   (setq gptel-model 'minimax-m2.5-free))
 
-(map! :i :map global-map
-      :prefix ("C-c a" . "AI")
-      "p" #'gptel
-      "m" #'gptel-menu)
+(fc/map 'normal
+  "p" #'gptel
+  "m" #'gptel-menu)
 #+end_src
 ***** Agent-shell
 #+begin_src emacs-lisp
@@ -2025,22 +1930,23 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (agent-shell-opencode-default-model-id "opencode/minimax-m2.5-free")
   :config
   ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
-  (map! :map agent-shell-mode-map
-        :i "RET" #'newline
-        :n "RET" #'comint-send-input)
+  (general-define-key
+   :keymaps 'agent-shell-mode-map
+   :states 'insert
+   "RET" #'newline
+   "TAB" nil
+   :states 'normal
+   "RET" #'comint-send-input
+   "TAB" nil)
 
-  (map! :map agent-shell-mode-map
-        :n "TAB" nil
-        :i "TAB" nil)
- 
+  
   ;; Configure *agent-shell-diff* buffers to start in Emacs state
   (add-hook 'diff-mode-hook
-	    (lambda ()
-	      (when (string-match-p "\\*agent-shell-diff\\*" (buffer-name))
-		(evil-emacs-state)))))
+	        (lambda ()
+	          (when (string-match-p "\\*agent-shell-diff\\*" (buffer-name))
+		        (evil-emacs-state)))))
 
-(map! :i :map global-map
-      "C-c a s" #'agent-shell)
+(fc/map 'normal "C-c a s" #'agent-shell)
 #+end_src
 **** Email
 #+begin_src emacs-lisp
@@ -2134,9 +2040,9 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 (use-package org-tree-slide
   :after evil
   :config
-  (map! :map org-tree-slide-mode-map
-      :n "<leader>j" #'org-tree-slide-move-next-tree
-      :n "<leader>k" #'org-tree-slide-move-previous-tree))
+  (fc/map :keymaps 'org-tree-slide-mode-map
+    "j" #'org-tree-slide-move-next-tree
+    "k" #'org-tree-slide-move-previous-tree))
 
 (use-package valign
   :hook
@@ -2191,30 +2097,28 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 **** Verb
 #+begin_src emacs-lisp :tangle no
 (with-eval-after-load 'verb
-  (map! :map org-mode-map
-        :localleader
-        :prefix ("v" . "verb")
-        "s" #'verb-send-request-on-point-other-window   ; SPC m v s : Send request, show response in other window & switch
-        "S" #'verb-send-request-on-point-display        ; SPC m v S : Send request, show response in other window (no switch)
-        "f" #'verb-send-request-on-point                ; SPC m v f : Send request, replace in current window
-        "k" #'verb-kill-response-buffer-and-window      ; SPC m v k : Kill response buffer/window (when in response)
-        "K" #'verb-kill-all-response-buffers            ; SPC m v K : Kill all response buffers
-        "r" #'verb-re-send-request                      ; SPC m v r : Re-send the last request (from response buffer)
-        "w" #'verb-send-request-on-point-eww            ; SPC m v w : Re-send as GET using EWW (view in browser)
-        "R" #'verb-show-request                         ; SPC m v R : Show the original request spec (from response)
-        "h" #'verb-toggle-show-headers                 ; SPC m v h : Toggle response headers visibility
-        "v" #'verb-set-var                              ; SPC m v v : Set/re-set a variable (for templating)
-        "e" #'verb-export-request-on-point              ; SPC m v e : Export request (to curl, etc.)
-        )
+  (fc/map :keymaps org-mode-map
+    "s" #'verb-send-request-on-point-other-window   ; SPC m v s : Send request, show response in other window & switch
+    "S" #'verb-send-request-on-point-display        ; SPC m v S : Send request, show response in other window (no switch)
+    "f" #'verb-send-request-on-point                ; SPC m v f : Send request, replace in current window
+    "k" #'verb-kill-response-buffer-and-window      ; SPC m v k : Kill response buffer/window (when in response)
+    "K" #'verb-kill-all-response-buffers            ; SPC m v K : Kill all response buffers
+    "r" #'verb-re-send-request                      ; SPC m v r : Re-send the last request (from response buffer)
+    "w" #'verb-send-request-on-point-eww            ; SPC m v w : Re-send as GET using EWW (view in browser)
+    "R" #'verb-show-request                         ; SPC m v R : Show the original request spec (from response)
+    "h" #'verb-toggle-show-headers                 ; SPC m v h : Toggle response headers visibility
+    "v" #'verb-set-var                              ; SPC m v v : Set/re-set a variable (for templating)
+    "e" #'verb-export-request-on-point              ; SPC m v e : Export request (to curl, etc.)
+    )
   ;; Make Verb response body minor mode override Evil globals (essential for q to work)
   (evil-make-overriding-map verb-response-body-mode-map 'normal)
 
   ;; Now bind q directly in normal state
-  (map! :map verb-response-body-mode-map
-        :n "q" #'verb-kill-response-buffer-and-window
-        :n "r" #'verb-re-send-request
-        :n "R" #'verb-show-request
-        :n "s" #'verb-toggle-show-headers))
+  (fc/map :keymaps 'verb-response-body-mode-map
+    "q" #'verb-kill-response-buffer-and-window
+    "r" #'verb-re-send-request
+    "R" #'verb-show-request
+    "s" #'verb-toggle-show-headers))
 #+end_src
 **** Contrib
 #+begin_src emacs-lisp
@@ -2387,8 +2291,8 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
            (call-interactively 'org-insert-link)))))
 
 (with-eval-after-load 'org
-  (map! :map org-mode-map
-        :n "C-c C-l" #'fc/org-insert-link-dwim))
+  (fc/map 'normal org-mode-map
+    "C-c C-l" #'fc/org-insert-link-dwim))
 #+end_src
 *** Lang
 **** Uiua
