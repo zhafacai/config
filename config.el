@@ -322,8 +322,8 @@
 
 (use-package evil-collection
   :after evil
-  ;; :custom
-  ;; (evil-collection-key-blacklist '("SPC"))
+  :custom
+  (evil-collection-key-blacklist '("SPC"))
   :config
   (delq 'lispy evil-collection-mode-list)
   (evil-collection-init))
@@ -343,7 +343,7 @@
     (flash-evil-setup t)
     (setq flash-char-jump-labels t))
 
-  (fc/map 'normal "s" #'flash-evil-jump)
+  (evil-define-key 'normal 'global "s" #'flash-evil-jump)
   :config
   ;; Search integration (labels during C-s, /, ?)
   (require 'flash-isearch)
@@ -895,15 +895,14 @@
   :after consult
   :vc (:url "https://github.com/Hugo-Heagren/consult-emms"))
 
-(use-package helpful
-  :config
-  (fc/map 'normal 
-    "C-h f" #'helpful-callable
-    "C-c C-d" #'helpful-at-point
-    "C-h F" #'helpful-function
-    "C-h v" #'helpful-variable
-    "C-h k" #'helpful-key
-    "C-h x" #'helpful-command))
+(use-package helpful)
+(evil-define-key '(insert normal) 'global
+    (kbd "C-h f") #'helpful-callable
+    (kbd "C-c C-d") #'helpful-at-point
+    (kbd "C-h F") #'helpful-function
+    (kbd "C-h v") #'helpful-variable
+    (kbd "C-h k") #'helpful-key
+    (kbd "C-h x") #'helpful-command)
 (use-package elisp-demos
   :after helpful
   :config
@@ -1004,14 +1003,14 @@
 
 (use-package gt
   :commands (gt-translate)
-  :init
-  (fc/map 'normal "l" #'gt-translate)
   :config
   (setq gt-langs '(en zh))
   (setq gt-default-translator
         (gt-translator :engines (gt-stardict-engine
                                  :dir "~/.stardict/dic"
                                  :exact nil))))
+
+(fc/map 'normal "l" 'gt-translate)
 
 (use-package casual
   ;; :config
@@ -1511,7 +1510,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
            (call-interactively 'org-insert-link)))))
 
 (with-eval-after-load 'org
-  (fc/map 'normal org-mode-map
+  (evil-define-key 'normal org-mode-map
     "C-c C-l" #'fc/org-insert-link-dwim))
 
 (use-package uiua-mode
