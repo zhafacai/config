@@ -446,7 +446,7 @@ I do not want custom variables in config file
 (use-package general)
 
 (general-create-definer fc/map
-    :prefix fc/leader-key)
+  :prefix fc/leader-key)
 
 #+end_src
 
@@ -949,8 +949,8 @@ projectile
   :config
   (projectile-mode +1))
 
-;; (fc/map 'normal projectile-mode-map
-;;   "p" #'projectile-command-map)
+(fc/map 'normal
+  "p" #'projectile-command-map)
 #+end_src
 perspective
 #+begin_src emacs-lisp
@@ -1295,20 +1295,18 @@ perspective
 (use-package lsp-ui :commands lsp-ui-mode)
 (use-package consult-lsp)
 
-(fc/map 'normal lsp-mode-map
-       "K"   #'lsp-describe-thing-at-point   ; Hover doc
-       "gd"  #'lsp-find-definition           ; Go to definition
-       "gD"  #'lsp-find-declaration          ; Go to declaration
-       "gI"  #'lsp-find-implementation       ; Go to implementation
-       "gy"  #'lsp-find-type-definition      ; Go to type definition
-       "gO"  #'consult-lsp-file-symbols      ; Go to file symbols
 
-       "grn" #'lsp-rename                    ; Rename symbol
-       "gra" #'lsp-execute-code-action       ; Code actions
-       "grr" #'lsp-find-references           ; Find references
-      
-       "[d"  #'lsp-treemacs-errors-list      ; or lsp-ui-flycheck-list
-      )
+(evil-define-key 'motion 'global
+  "K"   #'lsp-describe-thing-at-point   ; Hover doc
+  "gd"  #'lsp-find-definition           ; Go to definition
+  "gD"  #'lsp-find-declaration          ; Go to declaration
+  "gI"  #'lsp-find-implementation       ; Go to implementation
+  "gy"  #'lsp-find-type-definition      ; Go to type definition
+  "gO"  #'consult-lsp-file-symbols      ; Go to file symbols
+  "grn" #'lsp-rename                    ; Rename symbol
+  "gra" #'lsp-execute-code-action       ; Code actions
+  "grr" #'lsp-find-references           ; Find references
+  )
 
 #+end_src
 **** Treesitter
@@ -1912,9 +1910,9 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (setq gptel-default-mode #'org-mode)
   (setq gptel-model 'minimax-m2.5-free))
 
-(fc/map 'normal
-  "p" #'gptel
-  "m" #'gptel-menu)
+(general-define-key
+                    "C-c a p" #'gptel
+                    "C-c a m" #'gptel-menu)
 #+end_src
 ***** Agent-shell
 #+begin_src emacs-lisp
@@ -1946,7 +1944,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 	          (when (string-match-p "\\*agent-shell-diff\\*" (buffer-name))
 		        (evil-emacs-state)))))
 
-(fc/map 'normal "C-c a s" #'agent-shell)
+(general-define-key "C-c a s" #'agent-shell)
 #+end_src
 **** Email
 #+begin_src emacs-lisp

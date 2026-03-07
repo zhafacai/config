@@ -48,7 +48,7 @@
 (use-package general)
 
 (general-create-definer fc/map
-    :prefix fc/leader-key)
+  :prefix fc/leader-key)
 
 (defmacro after! (features &rest body)
   "在指定的 feature(s) 加载完成后执行 body。
@@ -458,8 +458,8 @@
   :config
   (projectile-mode +1))
 
-;; (fc/map 'normal projectile-mode-map
-;;   "p" #'projectile-command-map)
+(fc/map 'normal
+  "p" #'projectile-command-map)
 
 (use-package perspective
   :after consult
@@ -708,20 +708,18 @@
 (use-package lsp-ui :commands lsp-ui-mode)
 (use-package consult-lsp)
 
-(fc/map 'normal lsp-mode-map
-       "K"   #'lsp-describe-thing-at-point   ; Hover doc
-       "gd"  #'lsp-find-definition           ; Go to definition
-       "gD"  #'lsp-find-declaration          ; Go to declaration
-       "gI"  #'lsp-find-implementation       ; Go to implementation
-       "gy"  #'lsp-find-type-definition      ; Go to type definition
-       "gO"  #'consult-lsp-file-symbols      ; Go to file symbols
 
-       "grn" #'lsp-rename                    ; Rename symbol
-       "gra" #'lsp-execute-code-action       ; Code actions
-       "grr" #'lsp-find-references           ; Find references
-      
-       "[d"  #'lsp-treemacs-errors-list      ; or lsp-ui-flycheck-list
-      )
+(evil-define-key 'motion 'global
+  "K"   #'lsp-describe-thing-at-point   ; Hover doc
+  "gd"  #'lsp-find-definition           ; Go to definition
+  "gD"  #'lsp-find-declaration          ; Go to declaration
+  "gI"  #'lsp-find-implementation       ; Go to implementation
+  "gy"  #'lsp-find-type-definition      ; Go to type definition
+  "gO"  #'consult-lsp-file-symbols      ; Go to file symbols
+  "grn" #'lsp-rename                    ; Rename symbol
+  "gra" #'lsp-execute-code-action       ; Code actions
+  "grr" #'lsp-find-references           ; Find references
+  )
 
 (use-package treesit
   :ensure nil
@@ -1203,9 +1201,9 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (setq gptel-default-mode #'org-mode)
   (setq gptel-model 'minimax-m2.5-free))
 
-(fc/map 'normal
-  "p" #'gptel
-  "m" #'gptel-menu)
+(general-define-key
+                    "C-c a p" #'gptel
+                    "C-c a m" #'gptel-menu)
 
 ;; TODO use this in melpa
 ;; (use-package acp
@@ -1235,7 +1233,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 	          (when (string-match-p "\\*agent-shell-diff\\*" (buffer-name))
 		        (evil-emacs-state)))))
 
-(fc/map 'normal "C-c a s" #'agent-shell)
+(general-define-key "C-c a s" #'agent-shell)
 
 (setq auth-sources '("~/.authinfo.gpg")
       user-full-name "zhafacai"
