@@ -225,6 +225,7 @@
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
+;; TODO deprecate headerline module
 (defun fc/header-line-render-time ()
   (let* ((time-str (format-time-string "%a %d %H:%M"))
          (align-to (propertize " " 'display `(space :align-to (- right ,(+ (length time-str) 2))))))
@@ -1099,7 +1100,7 @@
 
   (setq emms-volume-change-function 'emms-volume-pulse-change)
 
-  (fc/map 'normal emms-playlist-mode-map
+  (evil-define-key 'normal emms-playlist-mode-map
     "q" #'emms-playlist-mode-bury-buffer))
 
 (use-package reader
@@ -1180,30 +1181,53 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 
 (use-package gptel
   :config
+  (gptel-make-openai "opencode"
+    :host "opencode.ai"
+    :endpoint "/zen/v1/chat/completions"            
+    :stream t                                      
+    ;; :key #'gptel-api-key-from-auth-source         
+    :models '((minimax-m2.5-free
+               :description "minimax"
+               :capabilities (tool-use json)
+               :context-window 200
+               :input-cost 0.0
+               :output-cost 0.0)
+		      (big-pickle
+               :description "Big Pickle model"
+               :capabilities (tool-use json)
+               :context-window 200
+               :input-cost 0.0
+               :output-cost 0.0)))
   (setq gptel-backend
-        (gptel-make-openai "opencode"
-          :host "opencode.ai"
-          :endpoint "/zen/v1/chat/completions"            
+        (gptel-make-openai "bl"
+          :host "dashscope.aliyuncs.com"
+          :endpoint "/compatible-mode/v1/chat/completions"            
           :stream t                                      
-          ;; :key #'gptel-api-key-from-auth-source         
-          :models '((minimax-m2.5-free
-                     :description "minimax"
+          :key (auth-source-pick-first-password :host "api.aliyuncs.com")
+          :models '((qwen3.5-flash
+                     :description "qwen3.5-flash"
                      :capabilities (tool-use json)
                      :context-window 200
                      :input-cost 0.0
                      :output-cost 0.0)
-		            (big-pickle
-                     :description "Big Pickle model"
+                    (qwen3.5-plus
+                     :description "qwen3.5-plus"
+                     :capabilities (tool-use json)
+                     :context-window 200
+                     :input-cost 0.0
+                     :output-cost 0.0)
+                    (MiniMax-M25
+                     :description "MiniMax-M2.5"
                      :capabilities (tool-use json)
                      :context-window 200
                      :input-cost 0.0
                      :output-cost 0.0))))
   (setq gptel-default-mode #'org-mode)
-  (setq gptel-model 'minimax-m2.5-free))
+  (setq gptel-model 'qwen3-flash))
 
 (general-define-key
-                    "C-c a p" #'gptel
-                    "C-c a m" #'gptel-menu)
+ "C-c a p" #'gptel
+ "C-c a m" #'gptel-menu)
 
 ;; TODO use this in melpa
 ;; (use-package acp
@@ -1214,7 +1238,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   :custom
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
-  (agent-shell-opencode-default-model-id "opencode/minimax-m2.5-free")
+  (agent-shell-opencode-default-model-id "alibaba-cn/qwen3.5-plus")
   :config
   ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
   (general-define-key
@@ -1512,7 +1536,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 
 (with-eval-after-load 'org
   (evil-define-key 'normal org-mode-map
-    "C-c C-l" #'fc/org-insert-link-dwim))
+    (kbd "C-c C-l") #'fc/org-insert-link-dwim))
 
 (use-package uiua-mode
   :mode "\\.ua\\'")
