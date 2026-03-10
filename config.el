@@ -180,7 +180,6 @@
 
 (use-package theme-buffet
   :config
-  (fc/map 'normal "tt" #'theme-buffet-a-la-carte)
   (setq theme-buffet-menu 'end-user)
 
   (setq theme-buffet-end-user
@@ -188,25 +187,27 @@
           ;; NIGHT: High contrast, deep darks, vibrant accents
           :night
           (modus-vivendi ef-dark ef-winter ef-autumn ef-night ef-duo-dark ef-symbiosis
-           doom-one doom-vibrant doom-dracula doom-palenight doom-tokyo-night)
+                         doom-one doom-vibrant doom-dracula doom-palenight doom-tokyo-night)
 
           ;; MORNING: Crisp, cold lights, high legibility
           :morning
           (modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light
-           doom-one-light doom-opera-light doom-tomorrow-day doom-feather-light)
+                          doom-one-light doom-opera-light doom-tomorrow-day doom-acario-light)
 
           ;; AFTERNOON: Warm lights, tinted backgrounds, soft contrast
           :afternoon
           (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie
-           doom-solarized-light doom-gruvbox-light doom-flatwhite doom-homage-white)
+                                 doom-solarized-light doom-gruvbox-light doom-flatwhite doom-earl-grey)
 
           ;; EVENING: Warm darks, lower contrast, cozy/earthy tones
           :evening
           (modus-vivendi-tinted ef-rosa ef-elea-dark ef-maris-dark ef-melissa-dark ef-trio-dark ef-dream
-           doom-gruvbox doom-henna doom-nord doom-snazzy)))
+                                doom-gruvbox doom-henna doom-nord doom-snazzy doom-oceanic-next)))
 
   (theme-buffet-timer-mins 45))
+
 (theme-buffet-a-la-carte)
+(fc/map 'normal "tt" #'theme-buffet-a-la-carte)
 
 (use-package doom-themes
   :custom
