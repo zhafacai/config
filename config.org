@@ -801,6 +801,10 @@ tranparent background is beautiful... Right?
     (setq flash-char-jump-labels t))
 
   (evil-define-key 'normal 'global "s" #'flash-evil-jump)
+  (after! evil
+    (evil-define-key 'normal 'global [down-mouse-3] 'gt-translate)
+    (evil-global-set-key 'normal (kbd "g s") #'avy-goto-line))
+
   :config
   ;; Search integration (labels during C-s, /, ?)
   (require 'flash-isearch)
@@ -1889,6 +1893,9 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 ***** Gptel
 #+begin_src emacs-lisp
 (use-package gptel
+  :bind
+  (("C-c a p" . gptel)
+   ("C-c a m" . gptel-menu))
   :config
   (gptel-make-openai "opencode"
     :host "opencode.ai"
@@ -1919,6 +1926,12 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
                      :context-window 200
                      :input-cost 0.0
                      :output-cost 0.0)
+                    (kimi-k2.5
+                     :description "kimi-k2.5"
+                     :capabilities (tool-use json)
+                     :context-window 200
+                     :input-cost 0.0
+                     :output-cost 0.0)
                     (qwen3.5-plus
                      :description "qwen3.5-plus"
                      :capabilities (tool-use json)
@@ -1934,9 +1947,6 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   (setq gptel-default-mode #'org-mode)
   (setq gptel-model 'qwen3-flash))
 
-(general-define-key
- "C-c a p" #'gptel
- "C-c a m" #'gptel-menu)
 #+end_src
 ***** Agent-shell
 #+begin_src emacs-lisp
@@ -2439,4 +2449,24 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
                '(astro "https://github.com/virchau13/tree-sitter-astro")))
 (use-package astro-ts-mode
   :mode "\\.astro\\'")
+#+end_src
+* Nix
+** Profiles
+I would like to install all newly packages from nix.
+#+begin_src nix :tangle profiles.nix
+with import <nixpkgs> {}; [
+  # web
+  nodejs
+  pnpm
+  bun
+  tailwindcss-language-server
+  vtsls
+
+  # nix
+  nixd
+
+  # cli
+  opencode
+  yazi
+]
 #+end_src

@@ -346,6 +346,10 @@
     (setq flash-char-jump-labels t))
 
   (evil-define-key 'normal 'global "s" #'flash-evil-jump)
+  (after! evil
+    (evil-define-key 'normal 'global [down-mouse-3] 'gt-translate)
+    (evil-global-set-key 'normal (kbd "g s") #'avy-goto-line))
+
   :config
   ;; Search integration (labels during C-s, /, ?)
   (require 'flash-isearch)
@@ -1180,6 +1184,9 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 ;;   )
 
 (use-package gptel
+  :bind
+  (("C-c a p" . gptel)
+   ("C-c a m" . gptel-menu))
   :config
   (gptel-make-openai "opencode"
     :host "opencode.ai"
@@ -1210,6 +1217,12 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
                      :context-window 200
                      :input-cost 0.0
                      :output-cost 0.0)
+                    (kimi-k2.5
+                     :description "kimi-k2.5"
+                     :capabilities (tool-use json)
+                     :context-window 200
+                     :input-cost 0.0
+                     :output-cost 0.0)
                     (qwen3.5-plus
                      :description "qwen3.5-plus"
                      :capabilities (tool-use json)
@@ -1224,10 +1237,6 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
                      :output-cost 0.0))))
   (setq gptel-default-mode #'org-mode)
   (setq gptel-model 'qwen3-flash))
-
-(general-define-key
- "C-c a p" #'gptel
- "C-c a m" #'gptel-menu)
 
 ;; TODO use this in melpa
 ;; (use-package acp
