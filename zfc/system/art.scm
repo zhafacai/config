@@ -95,7 +95,7 @@
 
  ;; This is where we specify system-wide packages.
  (packages (append (list
-		    neovim
+		    vim
 		    niri
 		    xdg-desktop-portal-gnome
                     gvfs)

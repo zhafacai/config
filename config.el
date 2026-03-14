@@ -1647,3 +1647,5 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
                '(astro "https://github.com/virchau13/tree-sitter-astro")))
 (use-package astro-ts-mode
   :mode "\\.astro\\'")
+
+(use-package json-mode)
