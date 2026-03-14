@@ -2463,9 +2463,13 @@ I would like to install all newly packages from nix.
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixgl.url = "github:nix-community/nixGL";
     nixgl.inputs.nixpkgs.follows = "nixpkgs";
+    nvim-nightly.url = "github:nix-community/neovim-nightly-overlay";
   };
-
-  outputs={ nixpkgs, nixgl, ...}:
+  nixConfig = {
+    # extra-substituters = [ "https://app.cachix.org/cache/nix-community" ];
+    extra-trusted-public-keys = [ "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=" ];
+  };
+  outputs={ nixpkgs, nixgl, nvim-nightly, ...}:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
@@ -2484,15 +2488,21 @@ I would like to install all newly packages from nix.
             tailwindcss-language-server
             vtsls
 
+            # lua
+            stylua
+            lua-language-server
+            luajit
+            
+
             # nix
             nixd
 
             # cli
             opencode
             yazi
-            neovim
             ghostty
             jq
+            nvim-nightly.packages.${system}.default
 
             #flake
             pkgs.nixgl.nixGLIntel
