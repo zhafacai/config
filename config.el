@@ -1,6 +1,6 @@
 (setq package-archives '(("gnu" . "https://mirrors.ustc.edu.cn/elpa/gnu/")
-			 ("melpa" . "https://mirrors.ustc.edu.cn/elpa/melpa/")
-			 ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")))
+                         ("melpa" . "https://mirrors.ustc.edu.cn/elpa/melpa/")
+                         ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")))
 (setq use-package-always-ensure t)
 (package-initialize)
 
@@ -566,7 +566,11 @@
   ;; :hook ((prog-mode . corfu-mode)
   ;;        (shell-mode . corfu-mode)
   ;;        (eshell-mode . corfu-mode))
-
+  :bind
+  (:map corfu-map
+        ("TAB" . corfu-insert)
+        ([remap indent-for-tab-command] . corfu-insert)
+        ([tab] . corfu-insert))
   :init
 
   ;; Recommended: Enable Corfu globally.  Recommended since many modes provide
@@ -577,6 +581,11 @@
   ;; Enable optional extension modes:
   ;; (corfu-history-mode)
   (corfu-popupinfo-mode))
+;; TODO remove this after testing
+(global-set-key (kbd "<f9>") #'describe-key-briefly)
+(with-eval-after-load 'yasnippet
+  (keymap-unset yas-minor-mode-map "TAB")
+  (keymap-unset yas-minor-mode-map "<tab>"))
 
 ;; A few more useful configurations...
 (use-package emacs
