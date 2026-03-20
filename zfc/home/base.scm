@@ -72,6 +72,7 @@
 						"alacritty"
 						"fish"
 						"gcc-toolchain@14"
+						"xwayland-satellite"
 						"gnome-tweaks"
 						"git"
 						"mihomo"

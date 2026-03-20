@@ -227,11 +227,11 @@
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
 (defun fc/next-wallpaper ()
-  "Call next wallpaper using `dms ipc`"
+  "Call next wallpaper."
   (interactive)
-  (shell-command "noctalia-shell ipc call wallpaper random"))
+  (shell-command "noctalia-shell ipc call wallpaper random eDP-1"))
 
-(fc/map 'normal ">>" #'fc/next-wallpaper)
+(evil-global-set-key 'normal (kbd "<leader>tn") #'fc/next-wallpaper)
 
 (use-package nyan-mode
   :after doom-modeline
