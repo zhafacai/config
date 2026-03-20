@@ -207,7 +207,8 @@
   (theme-buffet-timer-mins 45))
 
 (theme-buffet-a-la-carte)
-(fc/map 'normal "tt" #'theme-buffet-a-la-carte)
+(after! evil
+  (evil-define-key 'normal 'global (kbd "<leader>tt") #'theme-buffet-a-la-carte))
 
 (use-package doom-themes
   :custom
@@ -224,54 +225,6 @@
 (use-package rainbow-delimiters
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-
-;; TODO deprecate headerline module
-(defun fc/header-line-render-time ()
-  (let* ((time-str (format-time-string "%a %d %H:%M"))
-         (align-to (propertize " " 'display `(space :align-to (- right ,(+ (length time-str) 2))))))
-    (concat align-to time-str)))
-
-(defun fc/emms-format-time (time)
-  (when time
-    (format "%02d:%02d" (/ time 60) (% time 60))))
-
-
-(defun fc/emms-header-line ()
-  "Show current track in header-line: metadata or filename-sans-ext + time."
-  (when (and (and (boundp 'emms-player-playing-p) emms-player-playing-p)
-             (emms-playlist-current-selected-track))
-    (let* ((track (emms-playlist-current-selected-track))
-           (raw-desc (emms-track-description track))
-           (display-desc
-            (if (string-prefix-p "/" raw-desc)
-                (file-name-base (emms-track-get track 'name))
-              raw-desc))
-           (elapsed emms-playing-time)
-           (total (emms-track-get track 'info-playing-time)))
-      (concat
-       " 🎹 "
-       display-desc
-       (when (or elapsed total)
-         (concat " ["
-                 (if elapsed (fc/emms-format-time elapsed) "?")
-                 (when total
-                   (concat "/" (fc/emms-format-time total)))
-                 "]"))))))
-
-
-(setq-default header-line-format
-              '((:eval (or (fc/emms-header-line) ""))
-                (:eval (fc/header-line-render-time))))
-
-;; (after! modus-themes
-;;   (defun fc/modus-themes-custom-faces ()
-;;     (modus-themes-with-colors
-;;       (custom-set-faces
-;;        `(header-line ((t :background ,bg-main
-;;                          :foreground ,fg-main
-;;                          :box nil
-;;                          :inherit nil))))))
-;;   (add-hook 'modus-themes-after-load-theme-hook #'fc/modus-themes-custom-faces))
 
 (defun fc/next-wallpaper ()
   "Call next wallpaper using `dms ipc`"
@@ -571,6 +524,7 @@
         ("TAB" . corfu-insert)
         ([remap indent-for-tab-command] . corfu-insert)
         ([tab] . corfu-insert))
+
   :init
 
   ;; Recommended: Enable Corfu globally.  Recommended since many modes provide
@@ -586,7 +540,23 @@
 (with-eval-after-load 'yasnippet
   (keymap-unset yas-minor-mode-map "TAB")
   (keymap-unset yas-minor-mode-map "<tab>"))
+(defun my/tab ()
+  (interactive)
+  (cond
+   ;; corfu popup
+   ((and (bound-and-true-p corfu-mode)
+         (boundp 'corfu--candidates)
+         corfu--candidates)
+    (corfu-insert))
 
+   ;; snippet
+   ((and (bound-and-true-p yas-minor-mode)
+         (yas-expand)))
+
+   ;; default
+   (t
+    (indent-for-tab-command))))
+(global-set-key (kbd "TAB") #'my/tab)
 ;; A few more useful configurations...
 (use-package emacs
   :custom
@@ -1079,11 +1049,6 @@
   (emms-add-directory-tree "~/Music/")
   (emms-shuffle)
   (emms-mode-line-mode -1)
-  (with-eval-after-load 'emms-playing-time
-    (setq global-mode-string
-          (delq 'emms-playing-time-string global-mode-string)))
-
-
   ;; Volume commands in repeat mode
   (dolist (elm '(emms-volume-raise
                  emms-volume-lower
@@ -1123,21 +1088,6 @@
 (use-package nov
   :config
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
-
-(defun fc/nov-reader-title (orig-fun dom)
-  "Advice for `nov-render-title' to set a custom header line.
-ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
-  (let* ((title (cdr (assq 'title nov-metadata)))
-         (chapter-title (car (dom-children dom))))
-    
-    (setq-local header-line-format
-                (list
-                 (concat "📖 " title ":" chapter-title)
-                 '(:eval (when-let ((emms-header (fc/emms-header-line)))
-                           (concat "  •  " emms-header)))
-                 '(:eval (fc/header-line-render-time))))))
-
-(advice-add 'nov-render-title :around #'fc/nov-reader-title)
 
 (use-package devdocs
   :config
@@ -1658,3 +1608,39 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
   :mode "\\.astro\\'")
 
 (use-package json-mode)
+
+(setq ewm-input-config
+      '((touchpad :natural-scroll t :tap t :dwt t)
+        (mouse :accel-profile "flat")
+        (trackpoint :accel-speed 0.5)
+        (keyboard :repeat-delay 200 :repeat-rate 25
+                  :xkb-layouts "us"
+                  :xkb-options "ctrl:nocaps,grp:alt_shift_toggle")))
+(setq ewm-output-config
+      '(("eDP-1" :width 2560 :height 1440 :scale 1.8)))
+
+(defvar consult-source-xdg-apps
+  `(:name "Apps"
+          :narrow ?a
+          :category app
+          :items ,(lambda ()
+                    (mapcar #'car (ewm-list-xdg-apps)))
+          :action ,#'ewm-launch-xdg-command))
+
+
+(add-to-list 'consult-buffer-sources consult-source-xdg-apps t)
+
+(use-package ewm
+  :ensure nil
+  :bind (:map ewm-mode-map
+              ("s-q" . tab-close)
+              ("s-0" . ewm-launch-app)
+              ("s-n" . tab-next)
+              ("s-p" . tab-previous)
+              ("s-w" . (lambda () (interactive)
+                         (start-process "ghostty" nil "nixGLIntel" "ghostty")))))
+
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (start-process "noctalia" nil "noctalia-shell")))

@@ -1,4 +1,10 @@
 ;;; -*- lexical-binding: t; -*-
+
+;; Single VC backend inscreases booting speed
+(setq vc-handled-backends '(Git))
+
+(setq warning-minimum-level :error)
+
 (setq inhibit-startup-message t
 
       ;; No backup files, please

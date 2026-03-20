@@ -51,6 +51,8 @@
 						"font-lxgw-wenkai"
 
 						"librewolf"
+                        "qutebrowser"
+                        "qtwayland"
 						"google-chrome-stable"
 						"noctalia-shell"
 						"virt-manager"
@@ -62,6 +64,7 @@
 						"zoxide"
 						"btop"
 						"yt-dlp"
+                        "krdc"
 						"ripgrep"
 						"fd"
 						"openssh"

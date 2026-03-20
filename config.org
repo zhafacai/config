@@ -13,6 +13,12 @@ This repo consists of guix and emacs configuration.
 ** The =init.el= section
 #+begin_src emacs-lisp :tangle init.el
 ;;; -*- lexical-binding: t; -*-
+
+;; Single VC backend inscreases booting speed
+(setq vc-handled-backends '(Git))
+
+(setq warning-minimum-level :error)
+
 (setq inhibit-startup-message t
 
       ;; No backup files, please
@@ -298,7 +304,8 @@ tranparent background is beautiful... Right?
   (theme-buffet-timer-mins 45))
 
 (theme-buffet-a-la-carte)
-(fc/map 'normal "tt" #'theme-buffet-a-la-carte)
+(after! evil
+  (evil-define-key 'normal 'global (kbd "<leader>tt") #'theme-buffet-a-la-carte))
 #+end_src
 #+begin_src emacs-lisp
 (use-package doom-themes
@@ -318,57 +325,6 @@ tranparent background is beautiful... Right?
 (use-package rainbow-delimiters
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-#+end_src
-
-**** Header line
-#+begin_src emacs-lisp
-;; TODO deprecate headerline module
-(defun fc/header-line-render-time ()
-  (let* ((time-str (format-time-string "%a %d %H:%M"))
-         (align-to (propertize " " 'display `(space :align-to (- right ,(+ (length time-str) 2))))))
-    (concat align-to time-str)))
-
-(defun fc/emms-format-time (time)
-  (when time
-    (format "%02d:%02d" (/ time 60) (% time 60))))
-
-
-(defun fc/emms-header-line ()
-  "Show current track in header-line: metadata or filename-sans-ext + time."
-  (when (and (and (boundp 'emms-player-playing-p) emms-player-playing-p)
-             (emms-playlist-current-selected-track))
-    (let* ((track (emms-playlist-current-selected-track))
-           (raw-desc (emms-track-description track))
-           (display-desc
-            (if (string-prefix-p "/" raw-desc)
-                (file-name-base (emms-track-get track 'name))
-              raw-desc))
-           (elapsed emms-playing-time)
-           (total (emms-track-get track 'info-playing-time)))
-      (concat
-       " 🎹 "
-       display-desc
-       (when (or elapsed total)
-         (concat " ["
-                 (if elapsed (fc/emms-format-time elapsed) "?")
-                 (when total
-                   (concat "/" (fc/emms-format-time total)))
-                 "]"))))))
-
-
-(setq-default header-line-format
-              '((:eval (or (fc/emms-header-line) ""))
-                (:eval (fc/header-line-render-time))))
-
-;; (after! modus-themes
-;;   (defun fc/modus-themes-custom-faces ()
-;;     (modus-themes-with-colors
-;;       (custom-set-faces
-;;        `(header-line ((t :background ,bg-main
-;;                          :foreground ,fg-main
-;;                          :box nil
-;;                          :inherit nil))))))
-;;   (add-hook 'modus-themes-after-load-theme-hook #'fc/modus-themes-custom-faces))
 #+end_src
 
 **** Wallpaper
@@ -738,6 +694,7 @@ perspective
         ("TAB" . corfu-insert)
         ([remap indent-for-tab-command] . corfu-insert)
         ([tab] . corfu-insert))
+
   :init
 
   ;; Recommended: Enable Corfu globally.  Recommended since many modes provide
@@ -753,7 +710,23 @@ perspective
 (with-eval-after-load 'yasnippet
   (keymap-unset yas-minor-mode-map "TAB")
   (keymap-unset yas-minor-mode-map "<tab>"))
+(defun my/tab ()
+  (interactive)
+  (cond
+   ;; corfu popup
+   ((and (bound-and-true-p corfu-mode)
+         (boundp 'corfu--candidates)
+         corfu--candidates)
+    (corfu-insert))
 
+   ;; snippet
+   ((and (bound-and-true-p yas-minor-mode)
+         (yas-expand)))
+
+   ;; default
+   (t
+    (indent-for-tab-command))))
+(global-set-key (kbd "TAB") #'my/tab)
 ;; A few more useful configurations...
 (use-package emacs
   :custom
@@ -1410,11 +1383,6 @@ org-mode
   (emms-add-directory-tree "~/Music/")
   (emms-shuffle)
   (emms-mode-line-mode -1)
-  (with-eval-after-load 'emms-playing-time
-    (setq global-mode-string
-          (delq 'emms-playing-time-string global-mode-string)))
-
-
   ;; Volume commands in repeat mode
   (dolist (elm '(emms-volume-raise
                  emms-volume-lower
@@ -1460,22 +1428,6 @@ nov
 (use-package nov
   :config
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
-
-(defun fc/nov-reader-title (orig-fun dom)
-  "Advice for `nov-render-title' to set a custom header line.
-ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
-  (let* ((title (cdr (assq 'title nov-metadata)))
-         (chapter-title (car (dom-children dom))))
-    
-    (setq-local header-line-format
-                (list
-                 (concat "📖 " title ":" chapter-title)
-                 '(:eval (when-let ((emms-header (fc/emms-header-line)))
-                           (concat "  •  " emms-header)))
-                 '(:eval (fc/header-line-render-time))))))
-
-(advice-add 'nov-render-title :around #'fc/nov-reader-title)
-
 #+end_src
 
 **** Devdocs
@@ -2117,6 +2069,44 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 #+begin_src emacs-lisp
 (use-package json-mode)
 #+end_src
+*** EWM
+#+begin_src emacs-lisp
+(setq ewm-input-config
+      '((touchpad :natural-scroll t :tap t :dwt t)
+        (mouse :accel-profile "flat")
+        (trackpoint :accel-speed 0.5)
+        (keyboard :repeat-delay 200 :repeat-rate 25
+                  :xkb-layouts "us"
+                  :xkb-options "ctrl:nocaps,grp:alt_shift_toggle")))
+(setq ewm-output-config
+      '(("eDP-1" :width 2560 :height 1440 :scale 1.8)))
+
+(defvar consult-source-xdg-apps
+  `(:name "Apps"
+          :narrow ?a
+          :category app
+          :items ,(lambda ()
+                    (mapcar #'car (ewm-list-xdg-apps)))
+          :action ,#'ewm-launch-xdg-command))
+
+
+(add-to-list 'consult-buffer-sources consult-source-xdg-apps t)
+
+(use-package ewm
+  :ensure nil
+  :bind (:map ewm-mode-map
+              ("s-q" . tab-close)
+              ("s-0" . ewm-launch-app)
+              ("s-n" . tab-next)
+              ("s-p" . tab-previous)
+              ("s-w" . (lambda () (interactive)
+                         (start-process "ghostty" nil "nixGLIntel" "ghostty")))))
+
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (start-process "noctalia" nil "noctalia-shell")))
+#+end_src
 * Guix
 ** The =art.scm= section for Lenovo AHP9 system
 #+begin_src scheme :tangle zfc/system/art.scm
@@ -2246,6 +2236,112 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
  ;; Allow resolution of '.local' host names with mDNS.
  (name-service-switch %mdns-host-lookup-nss))
 #+end_src
+** The =package.scm= section for system packages.
+#+begin_src scheme :tangle zfc/system/package.scm
+(define-module (zfc system package)
+  #:use-module (guix build-system cargo)
+  #:use-module (guix download)
+  #:use-module (guix gexp)
+  #:use-module (guix git-download)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
+  #:use-module (guix utils)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages emacs)
+  #:use-module (gnu packages package-management)
+  #:use-module (gnu packages build-tools)
+
+  #:use-module (gnu packages wm)
+  #:use-module (gnu packages admin)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages llvm)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages pkg-config))
+
+(define-syntax-rule (my-cargo-inputs name)
+  (cargo-inputs name #:module '(zfc system rust-crates)))
+
+(define-public emacs-ewm
+  (package
+    (name "emacs-ewm")
+    (properties '((commit . "ce39d62123d062394682bb8fe3ae3682c9798f82")))
+    (version (git-version "0.1.0" "4" (assoc-ref properties 'commit)))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://codeberg.org/ezemtsov/ewm")
+              (commit (assoc-ref properties 'commit))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02ssfpbm6lvmjw2d64ljhl9wxjdjl8yvgadf9g83l01lcckcw3qh"))))
+    (build-system cargo-build-system)
+    (arguments
+     (list #:install-source? #f
+           #:modules '((guix build cargo-build-system)
+                       ((guix build emacs-build-system) #:prefix emacs:)
+                       (guix build emacs-utils)
+                       (guix build utils))
+           #:imported-modules `(,@%cargo-build-system-modules
+                                (guix build emacs-utils)
+                                (guix build emacs-build-system))
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'build-lisp
+                 (lambda args
+                   (chdir "lisp")
+
+                   (substitute* "ewm.el"
+                     (("\\(getenv \"EWM_MODULE_PATH\"\\)")
+                      (string-append "\"" #$output "/lib/libewm_core.so\"")))
+
+                   (for-each
+                    (lambda (phase)
+                      (apply (cdr phase) args))
+                    (modify-phases emacs:%standard-phases
+                      (delete 'unpack)))
+                   
+                   (chdir "..")))
+
+               (add-after 'build-lisp 'fix-deps
+                 (lambda _
+                   (chdir "compositor")
+                   (delete-file "Cargo.lock")
+                   (substitute* "Cargo.toml"
+                     (("^rev =.*") "version = \"*\"\n")
+                     (("^git = .*") ""))))
+
+               (replace 'install
+                 (lambda _
+                   (install-file "target/release/libewm_core.so"
+                                 (string-append #$output "/lib")))))))
+    (native-inputs (list emacs-minimal pkg-config))
+    (inputs (cons*
+             dbus
+             libdisplay-info
+             libinput-minimal
+             libseat
+             libxkbcommon
+             mesa
+             pipewire
+             wayland
+             glib
+             libx11
+             libxcursor
+             libxrandr
+             libxi
+             libdrm
+             (my-cargo-inputs 'emacs-ewm)))
+    (home-page "https://codeberg.org/ezemtsov/ewm")
+    (synopsis "Emacs Wayland Manager")
+    (description "Emacs Wayland Manager - Wayland compositor")
+    (license license:gpl3+)))
+
+#+end_src
 ** The =base.scm= section for =guix home=
 #+begin_src scheme :tangle zfc/home/base.scm :noweb yes
 (define-module (zfc home base)
@@ -2288,6 +2384,8 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 						"font-lxgw-wenkai"
 
 						"librewolf"
+                        "qutebrowser"
+                        "qtwayland"
 						"google-chrome-stable"
 						"noctalia-shell"
 						"virt-manager"
@@ -2299,6 +2397,7 @@ ORIG-FUN is the original renderer, DOM is the parsed HTML tree."
 						"zoxide"
 						"btop"
 						"yt-dlp"
+                        "krdc"
 						"ripgrep"
 						"fd"
 						"openssh"
@@ -2475,7 +2574,7 @@ I would like to install all newly packages from nix.
     nvim-nightly.url = "github:nix-community/neovim-nightly-overlay";
   };
   nixConfig = {
-    # extra-substituters = [ "https://app.cachix.org/cache/nix-community" ];
+    extra-substituters = [ "https://app.cachix.org/cache/nix-community" ];
     extra-trusted-public-keys = [ "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=" ];
   };
   outputs={ nixpkgs, nixgl, nvim-nightly, ...}:
