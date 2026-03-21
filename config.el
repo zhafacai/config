@@ -162,6 +162,7 @@
 
 (use-package doom-modeline
   :config
+  (setq doom-modeline-check nil)
   (setq doom-modeline-buffer-encoding nil)
   (setq doom-modeline-always-show-macro-register t)
   (setq doom-modeline-position-column-line-format '(""))
@@ -231,7 +232,8 @@
   (interactive)
   (shell-command "noctalia-shell ipc call wallpaper random eDP-1"))
 
-(evil-global-set-key 'normal (kbd "<leader>tn") #'fc/next-wallpaper)
+(after! evil
+  (evil-global-set-key 'normal (kbd "<leader>tn") #'fc/next-wallpaper))
 
 (use-package nyan-mode
   :after doom-modeline
@@ -1265,6 +1267,11 @@
             :sort-order newest-first
             :key ,(kbd "c"))))
   )
+
+(use-package pinentry
+  :demand t
+  :config
+  (pinentry-start))
 
 (use-package org
   :ensure nil

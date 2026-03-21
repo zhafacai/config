@@ -151,8 +151,6 @@ I do not want custom variables in config file
                     ,form)))
 
     form))
-
-
 #+end_src
 
 *** UI
@@ -255,6 +253,7 @@ tranparent background is beautiful... Right?
 #+begin_src emacs-lisp
 (use-package doom-modeline
   :config
+  (setq doom-modeline-check nil)
   (setq doom-modeline-buffer-encoding nil)
   (setq doom-modeline-always-show-macro-register t)
   (setq doom-modeline-position-column-line-format '(""))
@@ -334,7 +333,8 @@ tranparent background is beautiful... Right?
   (interactive)
   (shell-command "noctalia-shell ipc call wallpaper random eDP-1"))
 
-(evil-global-set-key 'normal (kbd "<leader>tn") #'fc/next-wallpaper)
+(after! evil
+  (evil-global-set-key 'normal (kbd "<leader>tn") #'fc/next-wallpaper))
 #+end_src
 **** Nyan
 #+begin_src emacs-lisp
@@ -1644,6 +1644,13 @@ nov
             :key ,(kbd "c"))))
   )
 #+end_src
+**** Pinentry
+#+begin_src emacs-lisp
+(use-package pinentry
+  :demand t
+  :config
+  (pinentry-start))
+#+end_src
 *** Org
 **** Basic
 #+begin_src emacs-lisp
@@ -2427,8 +2434,12 @@ nov
 		  (service home-pipewire-service-type)
                   (service home-gpg-agent-service-type
 			   (home-gpg-agent-configuration
+			    ;; (pinentry-program
+                ;;              (file-append pinentry-gnome3 "/bin/pinentry-gnome3"))
+                ;; TODO should use loopback
 			    (pinentry-program
                              (file-append pinentry-emacs "/bin/pinentry-emacs"))
+                (extra-content "allow-loopback-pinentry")
 			    (ssh-support? #t)))
 
 		  <<hm-services>>

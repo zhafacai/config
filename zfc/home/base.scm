@@ -94,8 +94,12 @@
 		  (service home-pipewire-service-type)
                   (service home-gpg-agent-service-type
 			   (home-gpg-agent-configuration
+			    ;; (pinentry-program
+                ;;              (file-append pinentry-gnome3 "/bin/pinentry-gnome3"))
+                ;; TODO should use loopback
 			    (pinentry-program
                              (file-append pinentry-emacs "/bin/pinentry-emacs"))
+                (extra-content "allow-loopback-pinentry")
 			    (ssh-support? #t)))
 
 		  (service home-files-service-type
