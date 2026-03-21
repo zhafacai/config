@@ -169,6 +169,10 @@
 		  (simple-service 'cargo-config
 		  		home-files-service-type
 		  		`(( ".cargo/config.toml" ,(local-file "plain/cargo.toml"))))
+		  (simple-service 'git-gpg-config
+		                  home-files-service-type
+		                  (list `(".gitconfig"
+		                          ,(local-file "plain/gitconfig"))))
 
 		  )
             %base-home-services))))

@@ -1,0 +1,6 @@
+[user]
+        name = zhafacai
+        email = zhafacai@gmail.com
+        signingkey = 5ABCBDEC900FD06A!
+[commit]
+        gpgsign = true

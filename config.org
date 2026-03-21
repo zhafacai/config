@@ -2574,6 +2574,23 @@ index = "https://rsproxy.cn/crates.io-index"
 [net]
 git-fetch-with-cli = true
 #+end_src
+*** The =base.scm= section about gitconfig
+~hm-services~
+#+begin_src scheme :noweb-ref hm-services
+(simple-service 'git-gpg-config
+                home-files-service-type
+                (list `(".gitconfig"
+                        ,(local-file "plain/gitconfig"))))
+#+end_src
+git config
+#+begin_src gitconfig :tangle zfc/home/plain/gitconfig
+[user]
+        name = zhafacai
+        email = zhafacai@gmail.com
+        signingkey = 5ABCBDEC900FD06A!
+[commit]
+        gpgsign = true
+#+end_src
 * Nix
 ** Profiles
 I would like to install all newly packages from nix.
