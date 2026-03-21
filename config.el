@@ -716,6 +716,58 @@
   (setq major-mode-remap-alist
         '((bash-mode . bash-ts-mode))))
 
+
+(use-package evil-textobj-tree-sitter
+  :config
+  (evil-define-motion evil-motion-to-next-closing-quote (count)
+    "Move to the next closing quote ', \", or `."
+    :type exclusive
+    (let ((found (save-excursion (search-forward-regexp "['\"`]" nil t))))
+      (if found
+          (goto-char (1- found))
+        (error "No closing quote found"))))
+
+  (define-key evil-operator-state-map "Q" 'evil-motion-to-next-closing-quote)
+  (define-key evil-visual-state-map "Q" 'evil-motion-to-next-closing-quote)
+  (evil-define-motion evil-motion-to-next-closing-bracket (count)
+    "Move to the next closing bracket ), ], or }."
+    :type exclusive
+    (let ((found (save-excursion (search-forward-regexp "[]})]" nil t))))
+      (if found
+          (goto-char (1- found))
+        (error "No closing bracket found"))))
+
+  (define-key evil-operator-state-map "C" 'evil-motion-to-next-closing-bracket)
+  (define-key evil-visual-state-map "C" 'evil-motion-to-next-closing-bracket)
+
+  (evil-define-text-object evil-any-quote-inner (count &optional beg end type)
+    (let ((range (evil-select-quote ?\" beg end type count nil)))
+      (dolist (char '(?\' ?\`))
+        (let ((new (evil-select-quote char beg end type count nil)))
+          (when (and new (> (car new) (car (or range '(0)))) )
+            (setq range new))))
+      range))
+
+  (evil-define-text-object evil-any-quote-outer (count &optional beg end type)
+    (let ((range (evil-select-quote ?\" beg end type count t)))
+      (dolist (char '(?\' ?\`))
+        (let ((new (evil-select-quote char beg end type count t)))
+          (when (and new (> (car new) (car (or range '(0)))) )
+            (setq range new))))
+      range))
+
+  (define-key evil-inner-text-objects-map "q" 'evil-any-quote-inner)
+  (define-key evil-outer-text-objects-map "q" 'evil-any-quote-outer)
+
+  (evil-define-text-object evil-textobj-url (count &optional beg end type)
+    "Select inner URL using standard Emacs 'thing-at-point'."
+    (cl-destructuring-bind (start . end)
+        (bounds-of-thing-at-point 'url)
+      (evil-range start end)))
+
+  (define-key evil-operator-state-map "L" 'evil-textobj-url)
+  (define-key evil-visual-state-map "L" 'evil-textobj-url))
+
 (use-package transient)
 (use-package magit
   :config
@@ -1663,6 +1715,11 @@
                               :as #'buffer-name)))
   "Local Bufferlo buffer candidate source for `consult-buffer'.")
 
+(use-package bufferlo
+  :ensure t
+  :init
+  (bufferlo-mode))
+
 (setq tab-bar-new-tab-choice "*scratch*")
 
 (add-to-list 'consult-buffer-sources #'my:bufferlo-consult--source-all-buffers)
@@ -1684,3 +1741,9 @@
 
 (tab-bar-mode -1)
 (setq tab-bar-show nil)
+
+
+(use-package qutebrowser
+  :vc (                                 ;; use fork
+       :url "https://github.com/sarg/qutebrowser.el"
+       :rev "optional-exwm"))
