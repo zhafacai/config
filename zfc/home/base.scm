@@ -41,6 +41,7 @@
 						"notmuch"
 						"emacs-notmuch"
 						"isync"
+						"msmtp"
 						"emacs-pgtk"
 						
 						;; fonts
@@ -173,6 +174,10 @@
 		                  home-files-service-type
 		                  (list `(".gitconfig"
 		                          ,(local-file "plain/gitconfig"))))
+		  (simple-service 'notmuch-prenew-config
+		                  home-xdg-configuration-files-service-type
+		                  (list `("notmuch/default/hooks/pre-new"
+		                          ,(local-file "plain/pre-new" #:recursive? #t))))
 
 		  )
             %base-home-services))))

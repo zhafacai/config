@@ -427,10 +427,10 @@
   :bind
   ("C-x C-b" . persp-list-buffers)
   :custom
-  (persp-mode-prefix-key (kbd "M-P"))
+  (persp-mode-prefix-key (kbd "C-c M-p")) 
   :config
   (consult-customize consult-source-buffer :hidden t :default nil)
-  (add-to-list 'consult-buffer-sources persp-consult-source)
+  ;; (add-to-list 'consult-buffer-sources persp-consult-source)
   :init
   (persp-mode))
 
@@ -1626,17 +1626,6 @@
 (setq ewm-output-config
       '(("eDP-1" :width 2560 :height 1440 :scale 1.8)))
 
-(defvar consult-source-xdg-apps
-  `(:name "Apps"
-          :narrow ?a
-          :category app
-          :items ,(lambda ()
-                    (mapcar #'car (ewm-list-xdg-apps)))
-          :action ,#'ewm-launch-xdg-command))
-
-
-(add-to-list 'consult-buffer-sources consult-source-xdg-apps t)
-
 (use-package ewm
   :ensure nil
   :bind (:map ewm-mode-map
@@ -1647,7 +1636,43 @@
               ("s-w" . (lambda () (interactive)
                          (start-process "ghostty" nil "nixGLIntel" "ghostty")))))
 
+(defvar my:bufferlo-consult--source-all-buffers
+  (list :name "Bufferlo All Buffers"
+        :narrow   ?a
+        :hidden   t
+        :category 'buffer
+        :face     'consult-buffer
+        :history  'buffer-name-history
+        :state    #'consult--buffer-state
+        :items    (lambda () (consult--buffer-query
+                              :sort 'visibility
+                              :as #'buffer-name)))
+  "All Bufferlo buffer candidate source for `consult-buffer'.")
+
+(defvar my:bufferlo-consult--source-local-buffers
+  (list :name "Bufferlo Local Buffers"
+        :narrow   ?l
+        :category 'buffer
+        :face     'consult-buffer
+        :history  'buffer-name-history
+        :state    #'consult--buffer-state
+        :default  t
+        :items    (lambda () (consult--buffer-query
+                              :predicate #'bufferlo-local-buffer-p
+                              :sort 'visibility
+                              :as #'buffer-name)))
+  "Local Bufferlo buffer candidate source for `consult-buffer'.")
+
+(setq tab-bar-new-tab-choice "*scratch*")
+
+(add-to-list 'consult-buffer-sources #'my:bufferlo-consult--source-all-buffers)
+(add-to-list 'consult-buffer-sources #'my:bufferlo-consult--source-local-buffers)
 
 (add-hook 'emacs-startup-hook
           (lambda ()
             (start-process "noctalia" nil "noctalia-shell")))
+
+(use-package bufferlo
+  :init
+  (bufferlo-mode)
+  (bufferlo-anywhere-mode))
