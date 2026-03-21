@@ -1672,7 +1672,15 @@
           (lambda ()
             (start-process "noctalia" nil "noctalia-shell")))
 
-(use-package bufferlo
-  :init
-  (bufferlo-mode)
-  (bufferlo-anywhere-mode))
+(defun fc/ewm-tab-select-or-return (orig-fun &rest args)
+  "Force `ewm-tab-select-or-return` to always use `tab-bar-select-tab`."
+  (let* ((key (event-basic-type last-command-event))
+         (tab (if (and (characterp key) (>= key ?1) (<= key ?9))
+                  (- key ?0)
+                0)))
+    (tab-bar-select-tab tab)))
+
+(advice-add 'ewm-tab-select-or-return :around #'fc/ewm-tab-select-or-return)
+
+(tab-bar-mode -1)
+(setq tab-bar-show nil)

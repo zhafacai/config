@@ -1596,19 +1596,19 @@ nov
 (general-define-key "C-c a s" #'agent-shell)
 #+end_src
 **** Email
+basic personal info config
 #+begin_src emacs-lisp
 (setq auth-sources '("~/.authinfo.gpg")
       user-full-name "zhafacai"
       user-mail-address "zhafacai@gmail.com")
 #+end_src
-=epkgs=
+=epkgs= for email
 #+begin_src scheme :noweb-ref epkgs
 "notmuch"
 "emacs-notmuch"
 "isync"
 "msmtp"
 #+end_src
-***** NotMuch
 #+begin_src emacs-lisp
 (use-package notmuch
   :ensure nil
@@ -2134,13 +2134,19 @@ nov
 (add-hook 'emacs-startup-hook
           (lambda ()
             (start-process "noctalia" nil "noctalia-shell")))
-#+end_src
-**** bufferlo
-#+begin_src emacs-lisp
-(use-package bufferlo
-  :init
-  (bufferlo-mode)
-  (bufferlo-anywhere-mode))
+
+(defun fc/ewm-tab-select-or-return (orig-fun &rest args)
+  "Force `ewm-tab-select-or-return` to always use `tab-bar-select-tab`."
+  (let* ((key (event-basic-type last-command-event))
+         (tab (if (and (characterp key) (>= key ?1) (<= key ?9))
+                  (- key ?0)
+                0)))
+    (tab-bar-select-tab tab)))
+
+(advice-add 'ewm-tab-select-or-return :around #'fc/ewm-tab-select-or-return)
+
+(tab-bar-mode -1)
+(setq tab-bar-show nil)
 #+end_src
 * Guix
 ** The =art.scm= section for Lenovo AHP9 system
