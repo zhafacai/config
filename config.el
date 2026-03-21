@@ -1287,6 +1287,8 @@
 
 (use-package notmuch
   :ensure nil
+  :bind
+  ("C-c e" . notmuch)
   :config
   (setq notmuch-identities '("zfc <zhafacai@gmail.com>"))
   (setq notmuch-fcc-dirs
@@ -1317,8 +1319,11 @@
           ( :name "🏆 unread coaching"
             :query "tag:unread and tag:coach"
             :sort-order newest-first
-            :key ,(kbd "c"))))
-  )
+            :key ,(kbd "c")))))
+
+
+(setq browse-url-browser-function 'browse-url-generic
+      browse-url-generic-program "librewolf")
 
 (use-package pinentry
   :demand t
