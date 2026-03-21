@@ -415,20 +415,19 @@
     (kbd "M-s") nil))
 
 (use-package projectile
+  :bind
+  ("C-c p" . projectile-command-map)
   :custom
   (projectile-project-search-path '("~/dev/"))
   :config
   (projectile-mode +1))
-
-(fc/map 'normal
-  "p" #'projectile-command-map)
 
 (use-package perspective
   :after consult
   :bind
   ("C-x C-b" . persp-list-buffers)
   :custom
-  (persp-mode-prefix-key (kbd "C-c M-p")) 
+  (persp-mode-prefix-key (kbd "C-c w")) 
   :config
   (consult-customize consult-source-buffer :hidden t :default nil)
   (add-to-list 'consult-buffer-sources persp-consult-source)
@@ -585,7 +584,7 @@
 (use-package cape
   ;; Bind prefix keymap providing all Cape commands under a mnemonic key.
   ;; Press C-c p ? to for help.
-  :bind ("C-c p" . cape-prefix-map) ;; Alternative key: M-<tab>, M-p, M-+
+  :bind ("C-c c" . cape-prefix-map) ;; Alternative key: M-<tab>, M-p, M-+
   ;; Alternatively bind Cape commands individually.
   ;; :bind (("C-c p d" . cape-dabbrev)
   ;;        ("C-c p h" . cape-history)
@@ -1691,10 +1690,7 @@
 (use-package ewm
   :ensure nil
   :bind (:map ewm-mode-map
-              ("s-q" . tab-close)
               ("s-0" . ewm-launch-app)
-              ("s-n" . tab-next)
-              ("s-p" . tab-previous)
               ("s-w" . (lambda ()
                          (interactive)
                          (start-process "ghostty" nil "nixGLIntel" "ghostty"))))
