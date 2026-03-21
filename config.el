@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 (setq package-archives '(("gnu" . "https://mirrors.ustc.edu.cn/elpa/gnu/")
                          ("melpa" . "https://mirrors.ustc.edu.cn/elpa/melpa/")
                          ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")))
@@ -430,7 +431,7 @@
   (persp-mode-prefix-key (kbd "C-c M-p")) 
   :config
   (consult-customize consult-source-buffer :hidden t :default nil)
-  ;; (add-to-list 'consult-buffer-sources persp-consult-source)
+  (add-to-list 'consult-buffer-sources persp-consult-source)
   :init
   (persp-mode))
 
@@ -1678,6 +1679,15 @@
 (setq ewm-output-config
       '(("eDP-1" :width 2560 :height 1440 :scale 1.8)))
 
+(defun fc/persp-select-by-index (index)
+  "Switch perspective based on the INDEX."
+  (let* ((target-persp (cond
+                        ((eq index 1) "main")
+                        ((eq index 2) "browser")
+                        ((eq index 3) "terminal")
+                        (t (format "PER-%d" index)))))
+    (persp-switch target-persp)))
+
 (use-package ewm
   :ensure nil
   :bind (:map ewm-mode-map
@@ -1685,59 +1695,22 @@
               ("s-0" . ewm-launch-app)
               ("s-n" . tab-next)
               ("s-p" . tab-previous)
-              ("s-w" . (lambda () (interactive)
-                         (start-process "ghostty" nil "nixGLIntel" "ghostty")))))
-
-(defvar my:bufferlo-consult--source-all-buffers
-  (list :name "Bufferlo All Buffers"
-        :narrow   ?a
-        :hidden   t
-        :category 'buffer
-        :face     'consult-buffer
-        :history  'buffer-name-history
-        :state    #'consult--buffer-state
-        :items    (lambda () (consult--buffer-query
-                              :sort 'visibility
-                              :as #'buffer-name)))
-  "All Bufferlo buffer candidate source for `consult-buffer'.")
-
-(defvar my:bufferlo-consult--source-local-buffers
-  (list :name "Bufferlo Local Buffers"
-        :narrow   ?l
-        :category 'buffer
-        :face     'consult-buffer
-        :history  'buffer-name-history
-        :state    #'consult--buffer-state
-        :default  t
-        :items    (lambda () (consult--buffer-query
-                              :predicate #'bufferlo-local-buffer-p
-                              :sort 'visibility
-                              :as #'buffer-name)))
-  "Local Bufferlo buffer candidate source for `consult-buffer'.")
-
-(use-package bufferlo
-  :ensure t
-  :init
-  (bufferlo-mode))
-
-(setq tab-bar-new-tab-choice "*scratch*")
-
-(add-to-list 'consult-buffer-sources #'my:bufferlo-consult--source-all-buffers)
-(add-to-list 'consult-buffer-sources #'my:bufferlo-consult--source-local-buffers)
+              ("s-w" . (lambda ()
+                         (interactive)
+                         (start-process "ghostty" nil "nixGLIntel" "ghostty"))))
+  :config
+  (dotimes (i 9)
+    (let ((n (1+ i)))
+      (define-key ewm-mode-map
+                  (kbd (format "s-%d" n))
+                  (lambda ()
+                    (interactive)
+                    (fc/persp-select-by-index n))))))
 
 (add-hook 'emacs-startup-hook
           (lambda ()
             (start-process "noctalia" nil "noctalia-shell")))
 
-(defun fc/ewm-tab-select-or-return (orig-fun &rest args)
-  "Force `ewm-tab-select-or-return` to always use `tab-bar-select-tab`."
-  (let* ((key (event-basic-type last-command-event))
-         (tab (if (and (characterp key) (>= key ?1) (<= key ?9))
-                  (- key ?0)
-                0)))
-    (tab-bar-select-tab tab)))
-
-(advice-add 'ewm-tab-select-or-return :around #'fc/ewm-tab-select-or-return)
 
 (tab-bar-mode -1)
 (setq tab-bar-show nil)
