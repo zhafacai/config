@@ -95,7 +95,8 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 
-(setq help-at-pt-display-when-idle t)
+(setq help-at-pt-display-when-idle t) 
+(setq initial-scratch-message ";; What's the QUESTION today?\n\n")
 
 (defun fc/toggle-alpha-background ()
   "toggle tranparency of background"
@@ -643,9 +644,12 @@
 
 (use-package yasnippet-snippets)
 
+;; TODO https://stackoverflow.com/questions/79894036/org-lint-errors-after-package-updates
 (use-package flycheck
   :init
-  (global-flycheck-mode +1))
+  (global-flycheck-mode +1)
+  :custom
+  (flycheck-disabled-checkers '(org-lint)))
 
 (use-package lsp-mode
   :init
@@ -1700,6 +1704,8 @@
                          (interactive)
                          (start-process "ghostty" nil "nixGLIntel" "ghostty"))))
   :config
+  ;; (add-to-list 'ewm-intercept-prefixes ?\C-c)   
+  ;; (add-to-list 'ewm-intercept-prefixes ?\M-&)   
   (dotimes (i 9)
     (let ((n (1+ i)))
       (define-key ewm-mode-map
@@ -1717,6 +1723,7 @@
 (setq tab-bar-show nil)
 
 
+;; TODO switch to glide-browser once https://github.com/NixOS/nixpkgs/pull/447604 is merged
 (use-package qutebrowser
   :vc (                                 ;; use fork
        :url "https://github.com/sarg/qutebrowser.el"
