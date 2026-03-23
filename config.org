@@ -8,7 +8,8 @@ This repo consists of guix and emacs configuration.
 * Emacs
 ** The =early-init.el= section
 #+begin_src emacs-lisp :tangle early-init.el
-(setq gc-cons-threshold most-positive-fixnum)
+(setq gc-cons-threshold most-positive-fixnum
+      use-short-answers t)
 #+end_src
 ** The =init.el= section
 #+begin_src emacs-lisp :tangle init.el
@@ -412,7 +413,8 @@ tranparent background is beautiful... Right?
     (flash-evil-setup t)
     (setq flash-char-jump-labels t))
 
-  (evil-define-key 'normal 'global "s" #'flash-evil-jump)
+  (evil-define-key 'normal 'global (kbd "C-s") #'flash-evil-jump)
+  (evil-define-key 'visual 'global (kbd "C-s") #'flash-evil-jump)
   (after! evil
     (evil-define-key 'normal 'global [down-mouse-3] 'gt-translate)
     (evil-global-set-key 'normal (kbd "g s") #'avy-goto-line))
@@ -561,10 +563,13 @@ linediff
 projectile
 #+begin_src emacs-lisp
 (use-package projectile
-  :bind
+  :bind-keymap
   ("C-c p" . projectile-command-map)
   :custom
-  (projectile-project-search-path '("~/dev/"))
+  (projectile-project-search-path '("~/Dev/"))
+  (projectile-ignored-project-function
+   (lambda (project-root)
+     (string-prefix-p "/tmp" project-root)))
   :config
   (projectile-mode +1))
 
@@ -1150,6 +1155,7 @@ diff-hl
 
   :custom
   (consult-async-min-input 2)
+  (consult-fd-args '("fd" "--full-path --color=never -E node_modules -H -E .git"))
   ;; The :init configuration is always executed (Not lazy)
   :init
 
@@ -2695,6 +2701,7 @@ I would like to install all newly packages from nix.
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixgl.url = "github:nix-community/nixGL";
     nixgl.inputs.nixpkgs.follows = "nixpkgs";
+    # TODO refactor my config after 0.12
     nvim-nightly.url = "github:nix-community/neovim-nightly-overlay";
   };
   nixConfig = {

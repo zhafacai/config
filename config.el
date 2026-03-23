@@ -302,7 +302,8 @@
     (flash-evil-setup t)
     (setq flash-char-jump-labels t))
 
-  (evil-define-key 'normal 'global "s" #'flash-evil-jump)
+  (evil-define-key 'normal 'global (kbd "C-s") #'flash-evil-jump)
+  (evil-define-key 'visual 'global (kbd "C-s") #'flash-evil-jump)
   (after! evil
     (evil-define-key 'normal 'global [down-mouse-3] 'gt-translate)
     (evil-global-set-key 'normal (kbd "g s") #'avy-goto-line))
@@ -416,10 +417,13 @@
     (kbd "M-s") nil))
 
 (use-package projectile
-  :bind
+  :bind-keymap
   ("C-c p" . projectile-command-map)
   :custom
-  (projectile-project-search-path '("~/dev/"))
+  (projectile-project-search-path '("~/Dev/"))
+  (projectile-ignored-project-function
+   (lambda (project-root)
+     (string-prefix-p "/tmp" project-root)))
   :config
   (projectile-mode +1))
 
@@ -888,6 +892,7 @@
 
   :custom
   (consult-async-min-input 2)
+  (consult-fd-args '("fd" "--full-path --color=never -E node_modules -H -E .git"))
   ;; The :init configuration is always executed (Not lazy)
   :init
 
