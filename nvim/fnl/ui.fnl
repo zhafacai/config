@@ -28,7 +28,7 @@
 
 (gh-pkg! :lewis6991/satellite.nvim {:setup {}})
 
-(gh-pkg! :aileot/emission.nvim {:setup {}})
+(gh-pkg! :aileot/emission.nvim {:setup {:attach {:excluded_filetypes [:oil]}}})
 
 (gh-pkg! :uga-rosa/ccc.nvim {:setup {}})
 

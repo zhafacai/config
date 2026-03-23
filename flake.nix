@@ -27,8 +27,11 @@
             pnpm
             bun
             tailwindcss-language-server
-            vtsls
+            typescript-go
 
+            # fennel
+            fnlfmt
+            
             # lua
             stylua
             lua-language-server
@@ -37,6 +40,7 @@
 
             # nix
             nixd
+            nixfmt
 
             # cli
             opencode
