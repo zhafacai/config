@@ -20,6 +20,9 @@ This repo consists of guix and emacs configuration.
 
 (setq warning-minimum-level :error)
 
+;; why do we need this?
+(setq native-comp-async-report-warnings-errors 'silent)
+
 (setq inhibit-startup-message t
 
       ;; No backup files, please
@@ -92,9 +95,9 @@ $SHELL has to be POSIX one
 **** Custom File
 I do not want custom variables in config file
 #+begin_src emacs-lisp
-(setq custom-file (locate-user-emacs-file "custom.el"))
-(when (file-exists-p custom-file)
-  (load custom-file 'noerror 'nomessage))
+(setq custom-file (make-temp-file "emacs-custom-"))
+
+;; (setq custom-safe-themes t)
 #+end_src
 
 **** Leader key
@@ -1488,6 +1491,12 @@ reader
   :ensure nil
   :hook (reader-mode . (lambda () (hl-line-mode 0))))
 #+end_src
+~epkgs~
+#+begin_src scheme :noweb-ref epkgs
+
+"emacs-reader"
+
+#+end_src
 nov
 #+begin_src emacs-lisp
 (use-package nov
@@ -2456,84 +2465,80 @@ basic personal info config
   #:use-module (guix channels)
   #:use-module (guix transformations)
   #:use-module (zfc home packages rime-ice)
+  #:use-module (zfc packages emacs-xyz)
   #:export (home-base))
-
-(define transform1
-  (options->transformation '((with-branch . "emacs-reader=master"))))
 
 (define home-base
   (home-environment
-   ;; Below is the list of packages that will show up in your
-   ;; Home profile, under ~/.guix-home/profile.
-   (packages (append (list (transform1 (specification->package "emacs-reader")))
-		     (specifications->packages (list
-						;; emacs
-						<<epkgs>>
-						"emacs-pgtk"
-						
-						;; fonts
-						"font-google-noto-emoji"
-						"font-aporetic"
-						"font-iosevka-ss02"
-						"font-nerd-symbols"
-						"font-lxgw-wenkai"
+    (packages
+     (append
+	  (specifications->packages (list
+						         ;; emacs
+						         <<epkgs>>
+						         "emacs-pgtk"
+						         ;; fonts
+						         "font-google-noto-emoji"
+						         "font-aporetic"
+						         "font-iosevka-ss02"
+						         "font-nerd-symbols"
+						         "font-lxgw-wenkai"
 
-						"librewolf"
-                        "qutebrowser"
-                        "qtwayland"
-						"google-chrome-stable"
-						"noctalia-shell"
-						"virt-manager"
-						
-						;; cli
-						"starship"
-						"make"
-						"unzip"
-						"zoxide"
-						"btop"
-						"yt-dlp"
-                        "krdc"
-						"ripgrep"
-						"fd"
-						"openssh"
-						"mpv"
-						"alacritty"
-						"fish"
-						"gcc-toolchain@14"
-						"xwayland-satellite"
-						"gnome-tweaks"
-						"git"
-						"mihomo"
-						"file"
-						"vim"
-						"neofetch"
-						"curl"
-						"cryptsetup"))))
+						         "librewolf"
+                                 "qutebrowser"
+                                 "qtwayland"
+						         "google-chrome-stable"
+						         "noctalia-shell"
+						         "virt-manager"
+						         
+						         ;; cli
+						         "starship"
+						         "make"
+						         "unzip"
+						         "zoxide"
+						         "btop"
+						         "yt-dlp"
+                                 "krdc"
+						         "ripgrep"
+						         "fd"
+						         "openssh"
+						         "mpv"
+						         "alacritty"
+						         "fish"
+						         "gcc-toolchain@14"
+						         "xwayland-satellite"
+						         "gnome-tweaks"
+						         "git"
+						         "mihomo"
+						         "file"
+						         "vim"
+						         "neofetch"
+						         "curl"
+						         "cryptsetup"))))
 
-   (services
-    (append (list (service home-bash-service-type
-			   (home-bash-configuration
-			    (aliases '())
-			    (environment-variables '(("EDITOR" . "emacsclient")))
-			    (bashrc (list (local-file "plain/.bashrc" "bashrc")))
-			    (bash-profile (list (local-file
-						 "plain/.bash_profile"
-						 "bash_profile")))))
-		  (service home-pipewire-service-type)
-                  (service home-gpg-agent-service-type
-			   (home-gpg-agent-configuration
-			    ;; (pinentry-program
-                ;;              (file-append pinentry-gnome3 "/bin/pinentry-gnome3"))
-                ;; TODO should use loopback
-			    (pinentry-program
-                             (file-append pinentry-emacs "/bin/pinentry-emacs"))
-                (extra-content "allow-loopback-pinentry")
-			    (ssh-support? #t)))
+    (services
+     (append (list (service home-bash-service-type
+			                (home-bash-configuration
+			                  (aliases '())
+			                  (environment-variables '(("EDITOR" . "emacsclient")))
+			                  (bashrc (list (local-file "plain/.bashrc" "bashrc")))
+			                  (bash-profile (list (local-file
+						                           "plain/.bash_profile"
+						                           "bash_profile")))))
+		           (service home-pipewire-service-type)
+                   (service home-gpg-agent-service-type
+			                (home-gpg-agent-configuration
+			                  ;; (pinentry-program
+                              ;;              (file-append pinentry-gnome3 "/bin/pinentry-gnome3"))
+                              ;; TODO should use loopback
+			                  (pinentry-program
+                               (file-append pinentry-emacs "/bin/pinentry-emacs"))
+                              (extra-content "allow-loopback-pinentry")
+			                  (ssh-support? #t)))
 
-		  <<hm-services>>
+		           <<hm-services>>
 
-		  )
-            %base-home-services))))
+		           )
+             %base-home-services))))
 #+end_src
 *** The =base.scm= section about fcitx5
 ~hm-services~
@@ -2610,37 +2615,36 @@ patch:
 ~hm-services~
 #+begin_src scheme :noweb-ref hm-services
 (simple-service 'variant-packages-service
-    home-channels-service-type
-  (list
-   (channel
-     (inherit (car %default-channels))
-     (url "https://mirror.sjtu.edu.cn/git/guix.git"))
-   (channel
-     (name 'nonguix)
-     (url "https://gitlab.com/nonguix/nonguix")
-     (introduction
-      (make-channel-introduction
-       "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
-       (openpgp-fingerprint
-        "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
-   (channel
-     (name 'rosenthal)
-     (url "https://codeberg.org/hako/rosenthal.git")
-     (branch "trunk")
-     (introduction
-      (make-channel-introduction
-       "7677db76330121a901604dfbad19077893865f35"
-       (openpgp-fingerprint
-        "13E7 6CD6 E649 C28C 3385  4DF5 5E5A A665 6149 17F7"))))
-   (channel
-     (name 'divya-lambda)
-     (url "https://codeberg.org/divyaranjan/divya-lambda.git")
-     (branch "master")
-     (introduction
-      (make-channel-introduction
-       "fe2010125fcbe003de42436b1a73ab53cc5e8288"
-       (openpgp-fingerprint
-        "F0B3 1A69 8006 8FB8 096A  2F12 B245 10C6 108C 8D4A"))))))
+                home-channels-service-type
+                (list
+                 (channel
+                   (inherit (car %default-channels))
+                   (url "https://mirror.sjtu.edu.cn/git/guix.git"))
+                 (channel
+                   (name 'nonguix)
+                   (url "https://gitlab.com/nonguix/nonguix")
+                   (introduction
+                    (make-channel-introduction
+                     "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+                     (openpgp-fingerprint
+                      "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+                 (channel
+                   (name 'rosenthal)
+                   (url "https://codeberg.org/hako/rosenthal.git")
+                   (branch "trunk")
+                   (introduction
+                    (make-channel-introduction
+                     "7677db76330121a901604dfbad19077893865f35"
+                     (openpgp-fingerprint
+                      "13E7 6CD6 E649 C28C 3385  4DF5 5E5A A665 6149 17F7"))))
+                 (channel
+                   (name 'guixcn)
+                   (url "https://codeberg.org/guixcn/guix-channel.git")
+                   (introduction
+                    (make-channel-introduction
+                     "993d200265630e9c408028a022f32f34acacdf29"
+                     (openpgp-fingerprint
+                      "7EBE A494 60CE 5E2C 0875  7FDB 3B5A A993 E1A2 DFF0"))))))
 #+end_src
 *** The =base.scm= section about rustconfig
 ~hm-services~
@@ -2705,7 +2709,7 @@ I would like to install all newly packages from nix.
     nvim-nightly.url = "github:nix-community/neovim-nightly-overlay";
   };
   nixConfig = {
-    extra-substituters = [ "https://app.cachix.org/cache/nix-community" ];
+    # extra-substituters = [ "https://app.cachix.org/cache/nix-community" ];
     extra-trusted-public-keys = [ "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=" ];
   };
   outputs={ nixpkgs, nixgl, nvim-nightly, ...}:
@@ -2725,16 +2729,24 @@ I would like to install all newly packages from nix.
             pnpm
             bun
             tailwindcss-language-server
-            vtsls
+            typescript-go
 
+            # fennel
+            fnlfmt
+            
             # lua
             stylua
             lua-language-server
             luajit
             
 
+            vscode-json-languageserver
+            shfmt
+            black
+
             # nix
             nixd
+            nixfmt
 
             # cli
             opencode

@@ -36,9 +36,9 @@
 (setq-default indent-tabs-mode nil
               tab-width 4)
 
-(setq custom-file (locate-user-emacs-file "custom.el"))
-(when (file-exists-p custom-file)
-  (load custom-file 'noerror 'nomessage))
+(setq custom-file (make-temp-file "emacs-custom-"))
+
+;; (setq custom-safe-themes t)
 
 (defvar fc/leader-key "SPC"
   "my leader key.")

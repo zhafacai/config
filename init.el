@@ -5,6 +5,9 @@
 
 (setq warning-minimum-level :error)
 
+;; why do we need this?
+(setq native-comp-async-report-warnings-errors 'silent)
+
 (setq inhibit-startup-message t
 
       ;; No backup files, please

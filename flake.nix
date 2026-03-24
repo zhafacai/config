@@ -38,6 +38,10 @@
             luajit
             
 
+            vscode-json-languageserver
+            shfmt
+            black
+
             # nix
             nixd
             nixfmt
