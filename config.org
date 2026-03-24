@@ -293,13 +293,11 @@ tranparent background is beautiful... Right?
 
           ;; MORNING: Crisp, cold lights, high legibility
           :morning
-          (modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light
-                          doom-one-light doom-opera-light doom-tomorrow-day doom-acario-light)
+          (modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light)
 
           ;; AFTERNOON: Warm lights, tinted backgrounds, soft contrast
           :afternoon
-          (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie
-                                 doom-solarized-light doom-gruvbox-light doom-flatwhite doom-earl-grey)
+          (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
 
           ;; EVENING: Warm darks, lower contrast, cozy/earthy tones
           :evening
@@ -495,9 +493,15 @@ align
 #+end_src
 comment
 #+begin_src emacs-lisp
-(use-package evil-commentary
+(use-package evil-nerd-commenter
   :config
-  (evil-commentary-mode))
+  (evil-define-text-object evil-a-comment-block (count &optional beg end type)
+    (let ((bounds (evilnc-get-comment-bounds)))
+      (if bounds
+          (evil-range (car bounds) (cdr bounds))
+        (user-error "Not inside a comment"))))
+  (evil-define-key '(normal visual) 'global "gc" #'evilnc-comment-operator)
+  (define-key evil-operator-state-map "gc" 'evil-a-comment-block))
 #+end_src
 numbers
 #+begin_src emacs-lisp
@@ -2618,33 +2622,43 @@ patch:
                 home-channels-service-type
                 (list
                  (channel
-                   (inherit (car %default-channels))
-                   (url "https://mirror.sjtu.edu.cn/git/guix.git"))
+                  (inherit (car %default-channels))
+                  (url "https://mirror.sjtu.edu.cn/git/guix.git"))
                  (channel
-                   (name 'nonguix)
-                   (url "https://gitlab.com/nonguix/nonguix")
-                   (introduction
-                    (make-channel-introduction
-                     "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
-                     (openpgp-fingerprint
-                      "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+                  (name 'nonguix)
+                  (url "https://gitlab.com/nonguix/nonguix")
+                  (introduction
+                   (make-channel-introduction
+                    "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+                    (openpgp-fingerprint
+                     "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
                  (channel
-                   (name 'rosenthal)
-                   (url "https://codeberg.org/hako/rosenthal.git")
-                   (branch "trunk")
-                   (introduction
-                    (make-channel-introduction
-                     "7677db76330121a901604dfbad19077893865f35"
-                     (openpgp-fingerprint
-                      "13E7 6CD6 E649 C28C 3385  4DF5 5E5A A665 6149 17F7"))))
+                  (name 'rosenthal)
+                  (url "https://codeberg.org/hako/rosenthal.git")
+                  (branch "trunk")
+                  (introduction
+                   (make-channel-introduction
+                    "7677db76330121a901604dfbad19077893865f35"
+                    (openpgp-fingerprint
+                     "13E7 6CD6 E649 C28C 3385  4DF5 5E5A A665 6149 17F7"))))
                  (channel
-                   (name 'guixcn)
-                   (url "https://codeberg.org/guixcn/guix-channel.git")
-                   (introduction
-                    (make-channel-introduction
-                     "993d200265630e9c408028a022f32f34acacdf29"
-                     (openpgp-fingerprint
-                      "7EBE A494 60CE 5E2C 0875  7FDB 3B5A A993 E1A2 DFF0"))))))
+                  (name 'sops-guix)
+                  (url "https://github.com/fishinthecalculator/sops-guix.git")
+                  (branch "main")
+                  ;; Enable signature verification:
+                  (introduction
+                   (make-channel-introduction
+                    "0bbaf1fdd25266c7df790f65640aaa01e6d2dbc9"
+                    (openpgp-fingerprint
+                     "8D10 60B9 6BB8 292E 829B  7249 AED4 1CC1 93B7 01E2"))))
+                 (channel
+                  (name 'guixcn)
+                  (url "https://codeberg.org/guixcn/guix-channel.git")
+                  (introduction
+                   (make-channel-introduction
+                    "993d200265630e9c408028a022f32f34acacdf29"
+                    (openpgp-fingerprint
+                     "7EBE A494 60CE 5E2C 0875  7FDB 3B5A A993 E1A2 DFF0"))))))
 #+end_src
 *** The =base.scm= section about rustconfig
 ~hm-services~

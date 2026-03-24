@@ -194,13 +194,11 @@
 
           ;; MORNING: Crisp, cold lights, high legibility
           :morning
-          (modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light
-                          doom-one-light doom-opera-light doom-tomorrow-day doom-acario-light)
+          (modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light)
 
           ;; AFTERNOON: Warm lights, tinted backgrounds, soft contrast
           :afternoon
-          (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie
-                                 doom-solarized-light doom-gruvbox-light doom-flatwhite doom-earl-grey)
+          (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
 
           ;; EVENING: Warm darks, lower contrast, cozy/earthy tones
           :evening
@@ -361,9 +359,15 @@
   :config
   (evil-lion-mode))
 
-(use-package evil-commentary
+(use-package evil-nerd-commenter
   :config
-  (evil-commentary-mode))
+  (evil-define-text-object evil-a-comment-block (count &optional beg end type)
+    (let ((bounds (evilnc-get-comment-bounds)))
+      (if bounds
+          (evil-range (car bounds) (cdr bounds))
+        (user-error "Not inside a comment"))))
+  (evil-define-key '(normal visual) 'global "gc" #'evilnc-comment-operator)
+  (define-key evil-operator-state-map "gc" 'evil-a-comment-block))
 
 (use-package evil-numbers
   :config
