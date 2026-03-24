@@ -724,9 +724,11 @@
   :ensure nil
   :config
   (setq treesit-language-source-alist
-        '((bash "https://github.com/tree-sitter/tree-sitter-bash")))
+        '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+          (yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml")))
   (setq major-mode-remap-alist
-        '((bash-mode . bash-ts-mode))))
+        '((bash-mode . bash-ts-mode)
+          (yaml-mode . yaml-ts-mode))))
 
 
 (use-package evil-textobj-tree-sitter
@@ -1685,6 +1687,9 @@
   :mode "\\.astro\\'")
 
 (use-package json-mode)
+
+;; (use-package justl)
+(use-package just-ts-mode)
 
 (setq ewm-input-config
       '((touchpad :natural-scroll t :tap t :dwt t)

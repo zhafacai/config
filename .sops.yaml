@@ -1,0 +1,8 @@
+keys:
+    - &zfc C176BA02C681709FFA04C0D815C237010CD54EE3
+
+creation_rules:
+    - path_regex: .*secrets\.yaml$
+      key_groups:
+          - pgp:
+                - *zfc
