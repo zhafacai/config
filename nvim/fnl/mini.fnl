@@ -6,7 +6,6 @@
 (gh-pkg! :nvim-mini/mini.diff {:setup {}})
 (gh-pkg! :nvim-mini/mini.pick {:setup {}})
 (gh-pkg! :nvim-mini/mini.operators {:setup {}})
-(gh-pkg! :nvim-mini/mini.pairs {:setup {}})
 (gh-pkg! :nvim-mini/mini.align {:setup {}})
 (gh-pkg! :nvim-mini/mini.cursorword {:setup {}})
 (gh-pkg! :nvim-mini/mini.indentscope {:setup {}})
@@ -17,6 +16,9 @@
 (gh-pkg! :nvim-mini/mini-git {:setup {} :name :mini.git})
 
 (gh-pkg! :kylechui/nvim-surround)
+
+; (gh-pkg! :nvim-mini/mini.pairs {:setup {}})
+(gh-pkg! :windwp/nvim-autopairs {:setup {:disable_filetype [:fennel]}})
 
 (nmap! :<leader><leader> "<cmd>Pick files<CR>")
 (nmap! :<leader>f "<cmd>Pick grep_live<CR>")

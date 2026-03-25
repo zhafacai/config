@@ -46,6 +46,9 @@
 						        "isync"
 						        "msmtp"
 						        "emacs-pgtk"
+                                ;; dev
+                                "rust"
+
 						        ;; fonts
 						        "font-google-noto-emoji"
 						        "font-aporetic"
@@ -62,6 +65,7 @@
                                 "wl-clipboard"
 						        
 						        ;; cli
+                                "fzf"
                                 "just"
 						        "starship"
 						        "make"

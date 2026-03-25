@@ -533,6 +533,13 @@ linediff
   ;; some red color (as defined by the color theme)
   ;; other faces such as `diff-added` will be used for other actions
   (evil-goggles-use-diff-faces))
+
+
+(use-package anzu
+  :config
+  (global-anzu-mode +1))
+
+(use-package evil-anzu)
 #+end_src
 **** Wgrep
 #+begin_src emacs-lisp
@@ -2584,6 +2591,9 @@ here is =sops= secrets config for my dae config.
 						        ;; emacs
 						        <<epkgs>>
 						        "emacs-pgtk"
+                                ;; dev
+                                "rust"
+
 						        ;; fonts
 						        "font-google-noto-emoji"
 						        "font-aporetic"
@@ -2600,6 +2610,7 @@ here is =sops= secrets config for my dae config.
                                 "wl-clipboard"
 						        
 						        ;; cli
+                                "fzf"
                                 "just"
 						        "starship"
 						        "make"

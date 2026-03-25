@@ -392,6 +392,13 @@
   ;; other faces such as `diff-added` will be used for other actions
   (evil-goggles-use-diff-faces))
 
+
+(use-package anzu
+  :config
+  (global-anzu-mode +1))
+
+(use-package evil-anzu)
+
 (use-package wgrep)
 
 (use-package lispy

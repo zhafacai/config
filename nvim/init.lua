@@ -3,6 +3,7 @@ vim.g.maplocalleader = ","
 vim.pack.add({
 	"https://git.sr.ht/~technomancy/fennel",
 	"https://github.com/aileot/nvim-thyme",
+	"https://github.com/eraserhd/parinfer-rust",
 })
 -- Wrapping the `require` in `function-end` is important for lazy-load.
 table.insert(package.loaders, function(...)
