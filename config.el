@@ -1354,6 +1354,18 @@
   :config
   (elfeed-org))
 
+(use-package sops
+  ;; :ensure (:type git :host github :repo "djgoku/sops")
+  :bind (("C-c C-c" . sops-save-file)
+         ("C-c C-k" . sops-cancel)
+         ("C-c C-e" . sops-edit-file))
+  :init
+  ;; (setq sops-before-encrypt-decrypt-hook 'sops-setup-env)
+  (global-sops-mode 1))
+
+(use-package yaml-mode
+  :mode ("\\.yaml\\'" . yaml-mode))
+
 (use-package org
   :ensure nil
   :custom
