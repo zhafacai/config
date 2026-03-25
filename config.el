@@ -1211,6 +1211,7 @@
 (use-package gptel
   :bind
   (("C-c a p" . gptel)
+   ("C-c a r" . gptel-rewrite)
    ("C-c a m" . gptel-menu))
   :config
   (gptel-make-openai "opencode"

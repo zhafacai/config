@@ -9,7 +9,10 @@
   (tostring x))
 
 (lambda set! [scope key ?value]
-  "set options"
+  "Set a scoped variable or option value.
+   Scopes: :g (global), :w (window), :b (buffer).
+   Options: :o (vim.opt). Handles %+ append, %- remove, :no toggle.
+   Arguments: scope keyword/sym, key string/sym, ?value optional."
   (assert-compile (sym? scope) "expected sym for scope")
   (assert-compile (sym? key) "expected sym for key")
   (let [scope (->str scope)
@@ -35,6 +38,15 @@
   (= :string (type s)))
 
 (fn pkg! [host url opts]
+  "Pack a plugin from a given host and repository URL.
+  
+  Usage:
+    (pkg! \"https://github.com/\" \"username/repo\" {:setup ... :name ...})
+  
+  Args:
+    - host: Base URL host (string)
+    - url: Repository path (string)
+    - opts: Configuration table with optional :setup and :name keys"
   (assert-compile (str? host) "HOST should be string." host)
   (assert-compile (str? url) "URL should be string." url)
   (let [opts (or opts {})
@@ -51,22 +63,40 @@
           `((. (require ,module-name) :setup) ,setup-val)))))
 
 (fn gh-pkg! [url opts]
-  "usage: (gh-pkg! \"url\" \"opts\")."
+  "Pack a plugin specifically from GitHub using a repository path.
+  
+  Usage:
+    (gh-pkg! \"username/repo\" {:setup ... :name ...})"
   (pkg! "https://github.com/" url opts))
 
 (lambda map! [mode lhs rhs ?opts]
-  "usage: (map! :n \"<leader>f\" \"<cmd>telescope<cr>\" {:desc \"find files\"})
-   expand: (vim.keymap.set :n \"<leader>f\" \"<cmd>telescope<cr>\" {:desc \"find files\"})"
+  "Set a global keymap binding.
+  
+  Usage:
+    (map! :n \"<leader>f\" \"<cmd>Telescope find_files<cr>\" {:desc \"Find files\"})
+  
+  Expands to:
+    (vim.keymap.set :n \"<leader>f\" \"<cmd>Telescope find_files<cr>\" {:desc \"Find files\"})"
   `(vim.keymap.set ,mode ,lhs ,rhs ,?opts))
 
 (lambda nmap! [lhs rhs ?opts]
-  "usage: (nmap! \"<leader>f\" \"<cmd>telescope<cr>\" {:desc \"find files\"})
-   expand: (vim.keymap.set :n \"<leader>f\" \"<cmd>telescope<cr>\" {:desc \"find files\"})"
+  "Set a keymap binding for normal mode.
+  
+  Usage:
+    (nmap! \"<leader>f\" \"<cmd>Telescope find_files<cr>\" {:desc \"Find files\"})
+  
+  Expands to:
+    (vim.keymap.set :n \"<leader>f\" \"<cmd>Telescope find_files<cr>\" {:desc \"Find files\"})"
   `(vim.keymap.set :n ,lhs ,rhs ,?opts))
 
 (fn autocmd! [event pattern action opts]
-  "usage: (autocmd! :BufWritePost \"*.fnl\" #(print \"Saved!\") {:desc \"description\"})
-   expand: (vim.api.nvim_create_autocmd :BufWritePost {:pattern \"*.fnl\" :callback ...})"
+  "Create a custom autocommand event handler.
+  
+  Usage:
+    (autocmd! :BufWritePost \"*.fnl\" #(print \"Saved!\") {:desc \"On save\")
+  
+  Expands to:
+    (vim.api.nvim_create_autocmd :BufWritePost {:pattern \"*.fnl\" :callback ...})"
   (assert-compile (or (list? action) (str? action))
                   "ACTION should be string/list." action)
   (let [opts (or opts {})]
