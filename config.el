@@ -670,6 +670,8 @@
   :init
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
   (setq lsp-keymap-prefix "C-c l")
+  :custom
+  (lsp-inlay-hint-enable t)
   :config
   (setq lsp-disabled-clients '(pyright basedpyright)) ; Disable defaults if they conflict
   (lsp-register-client

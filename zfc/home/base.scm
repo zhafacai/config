@@ -80,7 +80,7 @@
 						        "mpv"
 						        "alacritty"
 						        "fish"
-						        "gcc-toolchain@14"
+						        "gcc-toolchain"
 						        "xwayland-satellite"
 						        "gnome-tweaks"
 						        "git"
