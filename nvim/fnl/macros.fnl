@@ -1,13 +1,3 @@
-; (fn set! [scope key value]
-;   "usage: (set! g mapleader \",\").
-;   expand: (tset vim.g :mapleader \",\")."
-;   (assert-compile (sym? scope) "scope must be a symbol (g, b, w, o, v)" scope)
-;   (let [scope-str (tostring scope)
-;         key (tostring key)
-;         vim-scope (.. :vim. scope-str)]
-;     `(tset ,(sym vim-scope) ,key ,value)))
-;
-
 (fn nil? [n]
   (= nil n))
 
@@ -34,14 +24,14 @@
                (if begin-with-no `(tset vim.opt ,(string.sub key 3) false)
                    (nil? ?value) `(tset vim.opt ,key true)
                    `(tset vim.opt ,key ,?value)))))))
+
 (fn str? [s]
   (= :string (type s)))
 
 (fn pkg! [host url opts]
   (assert-compile (str? host) "HOST should be string." host)
   (assert-compile (str? url) "URL should be string." url)
-  (let [
-        opts (or opts {}) 
+  (let [opts (or opts {})
         repo-name (match (url:match "/([^/]+)$") n n _ url)
         module-name (repo-name:gsub "%.nvim$" "")
         setup-val (. opts :setup)
@@ -62,15 +52,13 @@
 (fn map! [mode lhs rhs opts]
   "usage: (map! :n \"<leader>f\" \"<cmd>telescope<cr>\" {:desc \"find files\"})
    expand: (vim.keymap.set :n \"<leader>f\" \"<cmd>telescope<cr>\" {:desc \"find files\"})"
-  (let [
-        opts (or opts {})]
+  (let [opts (or opts {})]
     `(vim.keymap.set ,mode ,lhs ,rhs ,opts)))
 
 (fn nmap! [lhs rhs opts]
   "usage: (nmap! \"<leader>f\" \"<cmd>telescope<cr>\" {:desc \"find files\"})
    expand: (vim.keymap.set :n \"<leader>f\" \"<cmd>telescope<cr>\" {:desc \"find files\"})"
-  (let [
-        opts (or opts {})]
+  (let [opts (or opts {})]
     `(vim.keymap.set :n ,lhs ,rhs ,opts)))
 
 (fn autocmd! [event pattern action opts]
@@ -79,7 +67,7 @@
   (let [opts (or opts {})]
     (tset opts :pattern pattern)
     (if (list? action)
-        (tset opts :callback action) 
+        (tset opts :callback action)
         (tset opts :command action))
     `(vim.api.nvim_create_autocmd ,event ,opts)))
 

@@ -24,6 +24,7 @@
   (home-environment
    (packages
     (append
+     (list emacs-reader)
 	 (specifications->packages (list
 						        ;; emacs
 						        "sdcv"
@@ -34,7 +35,7 @@
 						        "emacs-eat"
 						        "direnv"
 						        
-						        "emacs-reader"
+						        ;; "emacs-reader"
 						        
 						        "emacs-rime"
 						        
@@ -191,6 +192,26 @@
 		                          home-xdg-configuration-files-service-type
 		                          (list `("notmuch/default/hooks/pre-new"
 		                                  ,(local-file "plain/pre-new" #:recursive? #t))))
+		          ;; XXX does not work
+		          ;; (service home-sops-secrets-service-type
+		          ;;          (home-sops-service-configuration
+		          ;;           (secrets
+		          ;;            (list
+		          ;;             (sops-secret
+		          ;;              (key '())
+		          ;;              (output-type "binary")
+		          ;;              (file (local-file "../../secrets/elfeed.org"))
+		          ;;              (permissions #o400))))))
+		          
+		          
+		          (service home-sops-secrets-service-type
+		                   (home-sops-service-configuration
+		                    (secrets
+		                     (list
+		                      (sops-secret
+		                       (key '("elfeed"))
+		                       (file (local-file "../../secrets/long.yaml"))
+		                       (permissions #o400))))))
 
 		          )
             %base-home-services))))

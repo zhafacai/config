@@ -1345,6 +1345,15 @@
   :config
   (pinentry-start))
 
+(use-package elfeed
+  :bind
+  ("C-c f" . elfeed))
+(use-package elfeed-org
+  :custom
+  (rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed"))
+  :config
+  (elfeed-org))
+
 (use-package org
   :ensure nil
   :custom

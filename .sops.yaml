@@ -1,8 +1,19 @@
 keys:
-    - &zfc C176BA02C681709FFA04C0D815C237010CD54EE3
+  - &root C176BA02C681709FFA04C0D815C237010CD54EE3
+  - &home 4F3BAAE30FE2E3064BC7ECA05ABCBDEC900FD06A
 
 creation_rules:
-    - path_regex: .*secrets\.yaml$
+    - path_regex: secrets/subs\.yaml
       key_groups:
           - pgp:
-                - *zfc
+                - *root
+
+    - path_regex: secrets/.*\.org$
+      key_groups:
+          - pgp:
+                - *home
+        
+    - path_regex: secrets/.*\.yaml
+      key_groups:
+          - pgp:
+                - *home

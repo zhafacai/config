@@ -1500,7 +1500,7 @@ reader
 ~epkgs~
 #+begin_src scheme :noweb-ref epkgs
 
-"emacs-reader"
+;; "emacs-reader"
 
 #+end_src
 nov
@@ -1737,6 +1737,17 @@ basic personal info config
   :demand t
   :config
   (pinentry-start))
+#+end_src
+**** Elfeed
+#+begin_src emacs-lisp
+(use-package elfeed
+  :bind
+  ("C-c f" . elfeed))
+(use-package elfeed-org
+  :custom
+  (rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed"))
+  :config
+  (elfeed-org))
 #+end_src
 *** Org
 **** Basic
@@ -2554,6 +2565,7 @@ here is =sops= secrets config for my dae config.
   (home-environment
    (packages
     (append
+     (list emacs-reader)
 	 (specifications->packages (list
 						        ;; emacs
 						        <<epkgs>>
@@ -2789,6 +2801,30 @@ git config
 #+begin_src bash :tangle zfc/home/plain/pre-new :tangle-mode (identity #o544)
 #!/bin/sh
 mbsync -a
+#+end_src
+*** The =base.scm= section about elfeed
+~hm-services~
+#+begin_src scheme :noweb-ref hm-services
+;; XXX does not work
+;; (service home-sops-secrets-service-type
+;;          (home-sops-service-configuration
+;;           (secrets
+;;            (list
+;;             (sops-secret
+;;              (key '())
+;;              (output-type "binary")
+;;              (file (local-file "../../secrets/elfeed.org"))
+;;              (permissions #o400))))))
+
+
+(service home-sops-secrets-service-type
+         (home-sops-service-configuration
+          (secrets
+           (list
+            (sops-secret
+             (key '("elfeed"))
+             (file (local-file "../../secrets/long.yaml"))
+             (permissions #o400))))))
 #+end_src
 * Nix
 ** Profiles
