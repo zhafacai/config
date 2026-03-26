@@ -1707,6 +1707,13 @@ basic personal info config
 (setq auth-sources '("~/.authinfo.gpg")
       user-full-name "zhafacai"
       user-mail-address "zhafacai@gmail.com")
+
+(setq smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-service 587
+      smtpmail-stream-type 'starttls
+      smtpmail-auth-credentials "~/.authinfo.gpg")
+
+(setq message-send-mail-function 'smtpmail-send-it)
 #+end_src
 =epkgs= for email
 #+begin_src scheme :noweb-ref epkgs
