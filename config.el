@@ -168,6 +168,25 @@
   (setq doom-modeline-buffer-encoding nil)
   (setq doom-modeline-always-show-macro-register t)
   (setq doom-modeline-position-column-line-format '(""))
+
+  (defun fc/ewm-format-buffer-name (name)
+    (if (and (derived-mode-p 'ewm-surface-mode)
+             (string-match "\\*ewm:\\([^—]*\\)" name))
+        (let ((title (string-trim (match-string 1 name))))
+          (if (> (string-width title) 20)
+              (concat (truncate-string-to-width title 20 nil nil t) "...")
+            title))
+      name))
+
+  (defun fc/doom-modeline-update-buffer-file-name (orig &rest args)
+    (let ((res (apply orig args)))
+      ;; res is also stored in doom-modeline--buffer-file-name
+      (setq doom-modeline--buffer-file-name
+            (fc/ewm-format-buffer-name (buffer-name)))
+      doom-modeline--buffer-file-name))
+
+  (advice-add 'doom-modeline-update-buffer-file-name
+              :around #'fc/doom-modeline-update-buffer-file-name)
   :init (doom-modeline-mode 1))
 
 (use-package pulsar
@@ -1098,9 +1117,18 @@
 ;; (use-package nm
 ;;   :vc (:url "https://github.com/Kodkollektivet/emacs-nm"))
 
-(use-package direnv
+;; (use-package direnv
+;;   :config
+;;   (direnv-mode))
+(use-package ben
+  :vc (:url "https://codeberg.org/pastor/ben.el")
+  :bind
+  ("C-c E" . ben-command-map)
   :config
-  (direnv-mode))
+  (setq ben-indicator `(,(substring-no-properties (nerd-icons-faicon "nf-fa-cubes"))
+                        "[" (:eval (ben--status)) "]"))
+  :init
+  (add-hook 'after-init-hook #'ben-global-mode 99))
 
 (use-package emms
   :after evil
