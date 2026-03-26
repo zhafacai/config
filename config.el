@@ -1735,7 +1735,8 @@
               ("s-0" . ewm-launch-app)
               ("s-w" . (lambda ()
                          (interactive)
-                         (start-process "ghostty" nil "nixGLIntel" "ghostty"))))
+                         ;; (start-process "ghostty" nil "nixGLIntel" "ghostty")
+                         (start-process "alacritty" nil "alacritty"))))
   :config
   ;; (add-to-list 'ewm-intercept-prefixes ?\C-c)   
   ;; (add-to-list 'ewm-intercept-prefixes ?\M-&)   

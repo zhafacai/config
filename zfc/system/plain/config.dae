@@ -26,7 +26,7 @@ global {
 
     # The LAN interface to bind. Use it if you want to proxy LAN.
     # Multiple interfaces split by ",".
-    #lan_interface: docker0
+    lan_interface: virbr0
 
     # The WAN interface to bind. Use it if you want to proxy localhost.
     # Multiple interfaces split by ",". Use "auto" to auto detect.
