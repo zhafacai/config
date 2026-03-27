@@ -24,6 +24,8 @@
 (setq-default explicit-shell-file-name (executable-find "fish"))
 
 (recentf-mode)
+
+(global-auto-revert-mode 1)
 (use-package isearch
   :ensure nil
   :custom
@@ -279,6 +281,13 @@
   ;; If you are using the GNOME desktop and want to synchronise the
   ;; `lin-face' with GNOME's accent colour:
   (lin-gnome-accent-color-mode 1))
+
+(setq ediff-split-window-function 'split-window-horizontally)
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+(setq ediff-keep-variants nil)
+(setq ediff-make-buffers-readonly-at-startup nil)
+(setq ediff-merge-revisions-with-ancestor t)
+(setq ediff-show-clashes-only t)
 
 (use-package evil
   :custom
@@ -834,14 +843,14 @@
   :config
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
+(use-package browse-at-remote
+  :config
+  (fc/map 'normal "gb" #'browse-at-remote))
+
 (use-package forge
   :after magit
   :custom
   (forge-add-default-bindings nil))
-
-(use-package browse-at-remote
-  :config
-  (fc/map 'normal "gb" #'browse-at-remote))
 
 (use-package git-timemachine
   :after transient
@@ -1097,6 +1106,8 @@
 
 (use-package telega
   :ensure nil
+  :bind
+  ("C-c t" . telega)
   :commands telega
   :config
   (setq telega-use-tracking-for '(or unmuted mention)
@@ -1401,6 +1412,9 @@
 
 (use-package org
   :ensure nil
+  :bind
+  ("C-c l" . org-store-link)
+  ("C-c o" . org-open-at-point-global)
   :custom
   ;; org-default-notes-file (concat org-directory "notes.org")
   ;; org-clock-in-switch-to-state "DOING"

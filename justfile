@@ -3,3 +3,6 @@ update:
 
 edit-sub:
     sudo GNUPGHOME=/var/lib/sops sops secrets/sub.yaml
+
+build:
+    guix build emacs-ewm -L .
