@@ -1101,6 +1101,8 @@ diff-hl
   (global-diff-hl-mode)
   :config
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
+(evil-global-set-key 'normal (kbd "]h") #'diff-hl-next-hunk)
+(evil-global-set-key 'normal (kbd "[h") #'diff-hl-previous-hunk)
 #+end_src
 ***** Browse
 #+begin_src emacs-lisp

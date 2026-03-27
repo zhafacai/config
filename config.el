@@ -842,6 +842,8 @@
   (global-diff-hl-mode)
   :config
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
+(evil-global-set-key 'normal (kbd "]h") #'diff-hl-next-hunk)
+(evil-global-set-key 'normal (kbd "[h") #'diff-hl-previous-hunk)
 
 (use-package browse-at-remote
   :config
