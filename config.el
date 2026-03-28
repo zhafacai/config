@@ -758,12 +758,12 @@
         '((bash-mode . bash-ts-mode)
           (yaml-mode . yaml-ts-mode))))
 
-;; (use-package treesit-auto
-;;   :custom
-;;   (treesit-auto-install 'prompt)
-;;   :config
-;;   (treesit-auto-add-to-auto-mode-alist 'all)
-;;   (global-treesit-auto-mode))
+(use-package treesit-auto
+  :custom
+  (treesit-auto-install t)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 
 (use-package evil-textobj-tree-sitter
   :config
@@ -1694,23 +1694,7 @@
 (use-package sol-mode
   :mode "\\.sol\\'")
 
-(with-eval-after-load 'treesit
-  (add-to-list 'treesit-language-source-alist 
-               '(solidity "https://github.com/JoranHonig/tree-sitter-solidity")))
-
-(with-eval-after-load 'treesit
-  (add-to-list 'treesit-language-source-alist 
-               '(cpp "https://github.com/tree-sitter/tree-sitter-cpp"))
-  (add-to-list 'treesit-language-source-alist 
-               '(c "https://github.com/tree-sitter/tree-sitter-c"))
-  (add-to-list 'treesit-language-source-alist 
-               '(cmake "https://github.com/uyha/tree-sitter-cmake")))
-
 ;; NOTE https://github.com/liblit/demangle-mode this one might be helpful
-(add-to-list 'major-mode-remap-alist
-             '(c++-mode . c++-ts-mode))
-(add-to-list 'major-mode-remap-alist
-             '(c-mode . c-ts-mode))
 (use-package disaster
   :commands (disaster)
   :init
@@ -1721,50 +1705,20 @@
 ;;       :desc "Disaster" "d" #'disaster))
 (use-package cmake-mode)
 
-(with-eval-after-load 'treesit
-  (add-to-list 'treesit-language-source-alist 
-               '(python "https://github.com/tree-sitter/tree-sitter-python")))
-
-(add-to-list 'major-mode-remap-alist
-             '(python-mode . python-ts-mode))
 (use-package uv-mode
   :hook (python-ts-mode . uv-mode-auto-activate-hook))
 
-(with-eval-after-load 'treesit
-  (add-to-list 'treesit-language-source-alist 
-               '(rust "https://github.com/tree-sitter/tree-sitter-rust")))
-
 (add-to-list 'major-mode-remap-alist
              '(rust-mode . rustic-mode))
+
 (use-package rust-mode
   :custom
   (rust-mode-treesitter-derive t))
+
 (use-package rustic
   :custom
   ;; (rustic-lsp-client 'eglot)
   (rustic-format-on-save t))
-
-(with-eval-after-load 'treesit
-  (add-to-list 'treesit-language-source-alist 
-               '(css "https://github.com/tree-sitter/tree-sitter-css"))
-  (add-to-list 'treesit-language-source-alist 
-               '(json "https://github.com/tree-sitter/tree-sitter-json"))
-  (add-to-list 'treesit-language-source-alist 
-               '(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
-  (add-to-list 'treesit-language-source-alist 
-               '(tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
-  (add-to-list 'treesit-language-source-alist 
-               '(javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")))
-
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
-(add-to-list 'major-mode-remap-alist
-             '(json-mode . json-ts-mode))
-(add-to-list 'major-mode-remap-alist
-             '(css-mode . css-ts-mode))
-(add-to-list 'major-mode-remap-alist
-             '(typescript-mode . typescript-ts-mode))
-(add-to-list 'major-mode-remap-alist
-             '(js-mode . js-ts-mode))
 
 (use-package lsp-tailwindcss
   :init
@@ -1779,13 +1733,6 @@
 (use-package nix-ts-mode
  :mode "\\.nix\\'")
 
-(after! treesit
-  (add-to-list 'treesit-language-source-alist 
-               '(nix "https://github.com/nix-community/tree-sitter-nix")))
-
-(after! treesit
-  (add-to-list 'treesit-language-source-alist 
-               '(astro "https://github.com/virchau13/tree-sitter-astro")))
 (use-package astro-ts-mode
   :mode "\\.astro\\'")
 
