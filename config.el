@@ -163,6 +163,9 @@
 
 (use-package hl-todo
   :hook (prog-mode . hl-todo-mode))
+(after! evil
+  (evil-global-set-key 'normal "]t" #'hl-todo-next)
+  (evil-global-set-key 'normal "[t" #'hl-todo-previous))
 
 (use-package doom-modeline
   :config
@@ -755,6 +758,12 @@
         '((bash-mode . bash-ts-mode)
           (yaml-mode . yaml-ts-mode))))
 
+;; (use-package treesit-auto
+;;   :custom
+;;   (treesit-auto-install 'prompt)
+;;   :config
+;;   (treesit-auto-add-to-auto-mode-alist 'all)
+;;   (global-treesit-auto-mode))
 
 (use-package evil-textobj-tree-sitter
   :config
@@ -1304,6 +1313,30 @@
                      :output-cost 0.0))))
   (setq gptel-default-mode #'org-mode)
   (setq gptel-model 'qwen3-flash))
+
+(use-package gptel-agent
+  :vc ( :url "https://github.com/karthink/gptel-agent"
+        :rev :newest)
+  :config (gptel-agent-update))         
+
+(use-package ob-gptel
+  :vc (:url "https://github.com/jwiegley/ob-gptel")
+  :config
+  (add-to-list 'org-babel-load-languages '(gptel . t))
+  (add-hook 'completion-at-point-functions
+            'ob-gptel-capf nil t)) 
+
+(use-package gptel-prompts
+  :vc (:url "https://github.com/jwiegley/gptel-prompts")
+  :after (gptel)
+  :demand t
+  :custom
+  (gptel-prompts-directory "~/.config/emacs/prompts")
+  :config
+  (gptel-prompts-update)
+  ;; Ensure prompts are updated if prompt files change
+  ;; (gptel-prompts-add-update-watchers)
+  )
 
 ;; TODO use this in melpa
 ;; (use-package acp
