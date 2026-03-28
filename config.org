@@ -435,7 +435,6 @@ tranparent background is beautiful... Right?
   (evil-collection-init))
 
 (use-package flash
-  :vc (:url "https://github.com/Prgebish/flash")
   :commands (flash-jump flash-jump-continue
 			            flash-treesitter)
   :custom
@@ -945,7 +944,7 @@ perspective
   (flycheck-disabled-checkers '(org-lint)))
 #+end_src
 ***** Lsp-mode
-
+use eglot
 #+begin_src emacs-lisp
 (use-package lsp-mode
   :init
@@ -1002,20 +1001,15 @@ perspective
 **** Treesitter
 #+begin_src emacs-lisp
 (use-package treesit
-  :ensure nil
-  :config
-  (setq treesit-language-source-alist
-        '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-          (yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml")))
-  (setq major-mode-remap-alist
-        '((bash-mode . bash-ts-mode)
-          (yaml-mode . yaml-ts-mode))))
+  :ensure nil)
+  
 
 (use-package treesit-auto
   :custom
   (treesit-auto-install t)
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
+  (setq major-mode-remap-alist (treesit-auto--build-major-mode-remap-alist))
   (global-treesit-auto-mode))
 
 (use-package evil-textobj-tree-sitter
@@ -2206,20 +2200,10 @@ basic personal info config
 #+begin_src emacs-lisp
 (use-package kdl-mode)
 #+end_src
-**** Nix
-#+begin_src emacs-lisp
-(use-package nix-ts-mode
- :mode "\\.nix\\'")
-
-#+end_src
 **** Astro
 #+begin_src emacs-lisp
 (use-package astro-ts-mode
   :mode "\\.astro\\'")
-#+end_src
-**** Json
-#+begin_src emacs-lisp
-(use-package json-mode)
 #+end_src
 **** Just
 #+begin_src emacs-lisp
@@ -2883,7 +2867,7 @@ mbsync -a
 * Nix
 ** Profiles
 I would like to install all newly packages from nix.
-#+begin_src nix :tangle flake.nix
+#+begin_src nix-ts :tangle flake.nix
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";

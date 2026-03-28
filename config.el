@@ -317,7 +317,6 @@
   (evil-collection-init))
 
 (use-package flash
-  :vc (:url "https://github.com/Prgebish/flash")
   :commands (flash-jump flash-jump-continue
 			            flash-treesitter)
   :custom
@@ -749,20 +748,15 @@
   )
 
 (use-package treesit
-  :ensure nil
-  :config
-  (setq treesit-language-source-alist
-        '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-          (yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml")))
-  (setq major-mode-remap-alist
-        '((bash-mode . bash-ts-mode)
-          (yaml-mode . yaml-ts-mode))))
+  :ensure nil)
+  
 
 (use-package treesit-auto
   :custom
   (treesit-auto-install t)
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
+  (setq major-mode-remap-alist (treesit-auto--build-major-mode-remap-alist))
   (global-treesit-auto-mode))
 
 (use-package evil-textobj-tree-sitter
@@ -1730,13 +1724,8 @@
 
 (use-package kdl-mode)
 
-(use-package nix-ts-mode
- :mode "\\.nix\\'")
-
 (use-package astro-ts-mode
   :mode "\\.astro\\'")
-
-(use-package json-mode)
 
 ;; (use-package justl)
 (use-package just-ts-mode)
