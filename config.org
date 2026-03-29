@@ -2218,7 +2218,7 @@ basic personal info config
 
 (use-package rustic
   :custom
-  ;; (rustic-lsp-client 'eglot)
+  (rustic-lsp-client 'eglot)
   (rustic-format-on-save t))
 #+end_src
 **** Web +3+?

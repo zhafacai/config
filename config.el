@@ -1754,7 +1754,7 @@
 
 (use-package rustic
   :custom
-  ;; (rustic-lsp-client 'eglot)
+  (rustic-lsp-client 'eglot)
   (rustic-format-on-save t))
 
 ;; (use-package lsp-tailwindcss
