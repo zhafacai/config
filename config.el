@@ -389,8 +389,21 @@
   :config
   (evil-lion-mode))
 
+;; (defun my/org-smart-comment (arg)
+;;   "Comment headings with org-toggle-comment, otherwise use evilnc."
+;;   (interactive "P")
+;;   (if (org-at-heading-p)
+;;       (org-toggle-comment)
+;;     (evilnc-comment-or-uncomment-lines arg)))
+
+
 (use-package evil-nerd-commenter
   :config
+  ;; (with-eval-after-load 'org
+  ;;   ;; This remaps any key bound to the commenter to our smart function
+  ;;   (define-key org-mode-map [remap evilnc-comment-or-uncomment-lines] #'my/org-smart-comment)
+  ;;   ;; (define-key org-mode-map [remap evilnc-comment-operator] #'my/org-smart-comment)
+  ;;   )
   (evil-define-text-object evil-a-comment-block (count &optional beg end type)
     (let ((bounds (evilnc-get-comment-bounds)))
       (if bounds
@@ -469,16 +482,17 @@
   (projectile-mode +1))
 
 (use-package perspective
-  :after consult
+  :demand t
   :bind
   ("C-x C-b" . persp-list-buffers)
   :custom
   (persp-mode-prefix-key (kbd "C-c w")) 
   :config
-  (consult-customize consult-source-buffer :hidden t :default nil)
-  (add-to-list 'consult-buffer-sources persp-consult-source)
   :init
   (persp-mode))
+(after! consult
+  (consult-customize consult-source-buffer :hidden t :default nil)
+  (add-to-list 'consult-buffer-sources persp-consult-source))
 
 (use-package smartparens
   :hook (prog-mode text-mode markdown-mode)
@@ -689,63 +703,83 @@
 
 (use-package yasnippet-snippets)
 
-;; TODO https://stackoverflow.com/questions/79894036/org-lint-errors-after-package-updates
-(use-package flycheck
-  :init
-  (global-flycheck-mode +1)
-  :custom
-  (flycheck-disabled-checkers '(org-lint)))
+(use-package eglot
+  :ensure nil              ;; install from ELPA if missing (usually not needed in Emacs ≥29)
+  :defer t                ;; load only when needed
 
-(use-package lsp-mode
-  :init
-  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-  (setq lsp-keymap-prefix "C-c l")
+  ;; 1. Automatically start Eglot in these major modes
+  ;;    (add more modes as you use more languages)
+  :hook
+  ((python-ts-mode       . eglot-ensure)   ;; python-ts-mode or python-mode
+   (rustic-mode           . eglot-ensure)
+   (typescript-ts-mode     . eglot-ensure)
+   (tsx-ts-mode     . eglot-ensure)
+   (js-ts-mode             . eglot-ensure)
+   (astro-ts-mode             . eglot-ensure)
+   (c-mode         . eglot-ensure)
+   (bash-ts-mode           . eglot-ensure))
+
+  ;; 2. Good defaults / tweaks
   :custom
-  (lsp-inlay-hint-enable t)
+  (eglot-autoshutdown         t)    ;; kill server when last buffer is closed
+  (eglot-send-changes-idle-time 0.5) ;; send changes faster (default is 0.5 anyway)
+  ;; (eglot-ignored-server-capabilities
+  ;;  '(:documentHighlightProvider      ;; disable if too slow/noisy
+  ;;    :foldingRangeProvider
+  ;;    ))            ;; many people disable inlay hints or use a dedicated package
+
+  ;; 3. Optional: better event logging (useful when debugging)
+  ;; :custom (eglot-events-buffer-size 2000000)  ;; bigger log buffer
+
   :config
-  (setq lsp-disabled-clients '(pyright basedpyright)) ; Disable defaults if they conflict
-  (lsp-register-client
-   (make-lsp-client :new-connection (lsp-stdio-connection '("ty" "server"))
-                    :major-modes '(python-mode python-ts-mode)
-                    :server-id 'ty))
+  ;; (add-to-list 'eglot-server-programs
+  ;;              '(astro-ts-mode . ("astro-ls" "--stdio"
+  ;;                                 :initializationOptions
+  ;;                                 (:typescript (:tsdk "./node_modules/typescript/lib")))))
+
+  (add-to-list 'eglot-server-programs
+               '((python-mode python-ts-mode) . ("ty" "server")))
+
+  (add-to-list 'eglot-server-programs
+               '(((typescript-ts-mode :language-id "typescript")
+                  (tsx-ts-mode :language-id "typescriptreact")
+                  (typescript-mode :language-id "typescript")
+                  (js-mode :language-id "javascript")
+                  (js-ts-mode :language-id "javascript"))
+                 . ("tsgo" "--lsp" "--stdio")))
 
 
-  (lsp-register-client
-   (make-lsp-client :new-connection (lsp-stdio-connection "nixd")
-                    :major-modes '(nix-mode)
-                    :priority 0
-                    :server-id 'nixd))
+  
+  :bind
+  (:map eglot-mode-map
+	("grn" . eglot-rename)             
+	("gra" . eglot-code-actions)))
 
+(use-package consult-eglot
+  :bind
+  (:map eglot-mode-map
+	("gO" . consult-eglot-symbols)))
+;; (use-package eldoc-box
+;;   :hook
+;;   (eglot-managed-mode . eldoc-box-hover-at-point-mode))
 
-  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-         (python-ts-mode . lsp-deferred)
-         (nix-ts-mode . lsp-deferred)
-         (rustic-mode           . lsp-deferred)
-         (typescript-ts-mode     . lsp-deferred)
-         (tsx-ts-mode     . lsp-deferred)
-         (js-ts-mode             . lsp-deferred)
-         (astro-ts-mode             . lsp-deferred)
-         (c-mode         . lsp-deferred)
-         ;; if you want which-key integration
-         (lsp-mode . lsp-enable-which-key-integration))
-  :commands (lsp lsp-deferred))
+(use-package eldoc
+  :ensure nil
+  :bind (:map evil-motion-state-map
+              ("K" . eldoc)))
 
+(use-package flymake
+  :ensure nil
+  :custom
+  (flymake-show-diagnostics-at-end-of-line t)
+  :config
+  (evil-global-set-key 'normal (kbd "]d") 'flymake-goto-next-error)
+  (evil-global-set-key 'normal (kbd "[d") 'flymake-goto-prev-error))
 
-(use-package lsp-ui :commands lsp-ui-mode)
-(use-package consult-lsp)
-
-
-(evil-define-key 'motion 'global
-  "K"   #'lsp-describe-thing-at-point   ; Hover doc
-  "gd"  #'lsp-find-definition           ; Go to definition
-  "gD"  #'lsp-find-declaration          ; Go to declaration
-  "gI"  #'lsp-find-implementation       ; Go to implementation
-  "gy"  #'lsp-find-type-definition      ; Go to type definition
-  "gO"  #'consult-lsp-file-symbols      ; Go to file symbols
-  "grn" #'lsp-rename                    ; Rename symbol
-  "gra" #'lsp-execute-code-action       ; Code actions
-  "grr" #'lsp-find-references           ; Find references
-  )
+(use-package xref
+  :ensure nil
+  :bind (:map evil-motion-state-map
+              ("gd" . xref-find-definitions)))
 
 (use-package treesit
   :ensure nil)
@@ -756,7 +790,7 @@
   (treesit-auto-install t)
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
-  (setq major-mode-remap-alist (treesit-auto--build-major-mode-remap-alist))
+  ;; (setq major-mode-remap-alist (treesit-auto--build-major-mode-remap-alist))
   (global-treesit-auto-mode))
 
 (use-package evil-textobj-tree-sitter
@@ -1262,7 +1296,7 @@
     :host "opencode.ai"
     :endpoint "/zen/v1/chat/completions"            
     :stream t                                      
-    ;; :key #'gptel-api-key-from-auth-source         
+    :key #'gptel-api-key-from-auth-source         
     :models '((minimax-m2.5-free
                :description "minimax"
                :capabilities (tool-use json)
@@ -1276,11 +1310,12 @@
                :input-cost 0.0
                :output-cost 0.0)))
   (setq gptel-backend
-        (gptel-make-openai "bl"
+        (gptel-make-openai "bailian"
           :host "dashscope.aliyuncs.com"
           :endpoint "/compatible-mode/v1/chat/completions"            
           :stream t                                      
-          :key (auth-source-pick-first-password :host "api.aliyuncs.com")
+          :key #'gptel-api-key-from-auth-source         
+          ;; :key (auth-source-pick-first-password :host "api.aliyuncs.com")
           :models '((qwen3.5-flash
                      :description "qwen3.5-flash"
                      :capabilities (tool-use json)
@@ -1362,14 +1397,15 @@
 
 (general-define-key "C-c a s" #'agent-shell)
 
-(setq auth-sources '("~/.authinfo.gpg")
+(setq
+ ;; auth-sources '("~/.authinfo.gpg")
       user-full-name "zhafacai"
       user-mail-address "zhafacai@gmail.com")
 
-(setq smtpmail-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-service 587
-      smtpmail-stream-type 'starttls
-      smtpmail-auth-credentials "~/.authinfo.gpg")
+;; (setq smtpmail-smtp-server "smtp.gmail.com"
+;;       smtpmail-smtp-service 587
+;;       smtpmail-stream-type 'starttls
+;;       smtpmail-auth-credentials "~/.authinfo.gpg")
 
 (setq message-send-mail-function 'smtpmail-send-it)
 
@@ -1775,6 +1811,17 @@
 
 (tab-bar-mode -1)
 (setq tab-bar-show nil)
+
+(defmacro ewm--cmd (&rest args)
+  "Create an interactive command that runs ARGS as a subprocess."
+  `(lambda () (interactive) (start-process ,(car args) nil ,@args)))
+
+(define-key global-map (kbd "<AudioRaiseVolume>")  (ewm--cmd "wpctl" "set-volume" "-l" "1.0" "@DEFAULT_AUDIO_SINK@" "5%+"))
+(define-key global-map (kbd "<AudioLowerVolume>")  (ewm--cmd "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"))
+(define-key global-map (kbd "<AudioMute>")         (ewm--cmd "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"))
+(define-key global-map (kbd "<AudioMicMute>")      (ewm--cmd "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"))
+(define-key global-map (kbd "<MonBrightnessUp>")   (ewm--cmd "brightnessctl" "set" "5%+"))
+(define-key global-map (kbd "<MonBrightnessDown>") (ewm--cmd "brightnessctl" "set" "5%-"))
 
 
 ;; TODO switch to glide-browser once https://github.com/NixOS/nixpkgs/pull/447604 is merged

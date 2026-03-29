@@ -65,6 +65,7 @@
                                 "wl-clipboard"
 						        
 						        ;; cli
+                                "brightnessctl"
                                 "fzf"
                                 "just"
 						        "starship"

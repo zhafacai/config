@@ -2,6 +2,7 @@
 
 ;; Single VC backend inscreases booting speed
 (setq vc-handled-backends '(Git))
+(setq auth-source-debug t)
 
 (setq warning-minimum-level :error)
 
