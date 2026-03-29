@@ -2298,6 +2298,12 @@ basic personal info config
 (define-key global-map (kbd "<MonBrightnessUp>")   (ewm--cmd "brightnessctl" "set" "5%+"))
 (define-key global-map (kbd "<MonBrightnessDown>") (ewm--cmd "brightnessctl" "set" "5%-"))
 
+(add-to-list 'ewm-intercept-prefixes "<AudioRaiseVolume>") 
+(add-to-list 'ewm-intercept-prefixes "<AudioLowerVolume>")
+(add-to-list 'ewm-intercept-prefixes "<AudioMute>")
+(add-to-list 'ewm-intercept-prefixes "<AudioMicMute>")
+(add-to-list 'ewm-intercept-prefixes "<MonBrightnessUp>")
+(add-to-list 'ewm-intercept-prefixes "<MonBrightnessDown>")
 
 ;; TODO switch to glide-browser once https://github.com/NixOS/nixpkgs/pull/447604 is merged
 (use-package qutebrowser
