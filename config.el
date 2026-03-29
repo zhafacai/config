@@ -749,8 +749,11 @@
                   (js-ts-mode :language-id "javascript"))
                  . ("tsgo" "--lsp" "--stdio")))
 
+  (add-to-list 'eglot-server-programs
+               '(tsx-ts-mode . ("tailwindcss-language-server" "--stdio")))
 
-  
+
+
   :bind
   (:map eglot-mode-map
 	    ("grn" . eglot-rename)             
