@@ -723,6 +723,7 @@
   :custom
   (eglot-autoshutdown         t)    ;; kill server when last buffer is closed
   (eglot-send-changes-idle-time 0.5) ;; send changes faster (default is 0.5 anyway)
+
   ;; (eglot-ignored-server-capabilities
   ;;  '(:documentHighlightProvider      ;; disable if too slow/noisy
   ;;    :foldingRangeProvider
@@ -752,21 +753,27 @@
   
   :bind
   (:map eglot-mode-map
-	("grn" . eglot-rename)             
-	("gra" . eglot-code-actions)))
+	    ("grn" . eglot-rename)             
+	    ("gra" . eglot-code-actions)))
 
 (use-package consult-eglot
+  :after eglot
   :bind
   (:map eglot-mode-map
-	("gO" . consult-eglot-symbols)))
-;; (use-package eldoc-box
-;;   :hook
-;;   (eglot-managed-mode . eldoc-box-hover-at-point-mode))
+	    ("gO" . consult-eglot-symbols)))
 
 (use-package eldoc
   :ensure nil
-  :bind (:map evil-motion-state-map
-              ("K" . eldoc)))
+  :custom
+  (eldoc-echo-area-use-multiline-p nil)      ; Only show one line in minibuffer
+  (eldoc-echo-area-prefer-doc-buffer t)      ; Put the long stuff in the *eldoc* buffer
+  )
+
+(use-package eldoc-box
+  :vc (:url "https://github.com/casouri/eldoc-box")
+  :after eglot
+  :config
+  (evil-define-key 'normal eglot-mode-map "K" #'eldoc-box-help-at-point))
 
 (use-package flymake
   :ensure nil
@@ -1750,10 +1757,10 @@
   ;; (rustic-lsp-client 'eglot)
   (rustic-format-on-save t))
 
-(use-package lsp-tailwindcss
-  :init
-  (setq lsp-tailwindcss-add-on-mode t)
-  :after lsp-mode)
+;; (use-package lsp-tailwindcss
+;;   :init
+;;   (setq lsp-tailwindcss-add-on-mode t)
+;;   :after lsp-mode)
 
 (use-package fennel-mode
   :mode "\\.fnl\\'")
@@ -1796,6 +1803,13 @@
   :config
   ;; (add-to-list 'ewm-intercept-prefixes ?\C-c)   
   ;; (add-to-list 'ewm-intercept-prefixes ?\M-&)   
+
+  (add-to-list 'ewm-intercept-prefixes "<AudioRaiseVolume>") 
+  (add-to-list 'ewm-intercept-prefixes "<AudioLowerVolume>")
+  (add-to-list 'ewm-intercept-prefixes "<AudioMute>")
+  (add-to-list 'ewm-intercept-prefixes "<AudioMicMute>")
+  (add-to-list 'ewm-intercept-prefixes "<MonBrightnessUp>")
+  (add-to-list 'ewm-intercept-prefixes "<MonBrightnessDown>")
   (dotimes (i 9)
     (let ((n (1+ i)))
       (define-key ewm-mode-map
@@ -1823,12 +1837,6 @@
 (define-key global-map (kbd "<MonBrightnessUp>")   (ewm--cmd "brightnessctl" "set" "5%+"))
 (define-key global-map (kbd "<MonBrightnessDown>") (ewm--cmd "brightnessctl" "set" "5%-"))
 
-(add-to-list 'ewm-intercept-prefixes "<AudioRaiseVolume>") 
-(add-to-list 'ewm-intercept-prefixes "<AudioLowerVolume>")
-(add-to-list 'ewm-intercept-prefixes "<AudioMute>")
-(add-to-list 'ewm-intercept-prefixes "<AudioMicMute>")
-(add-to-list 'ewm-intercept-prefixes "<MonBrightnessUp>")
-(add-to-list 'ewm-intercept-prefixes "<MonBrightnessDown>")
 
 ;; TODO switch to glide-browser once https://github.com/NixOS/nixpkgs/pull/447604 is merged
 (use-package qutebrowser
