@@ -450,32 +450,6 @@
 
 (use-package wgrep)
 
-(use-package lispy
-  :hook
-  (fennel-mode . lispy-mode)
-  (scheme-mode . lispy-mode)
-  (emacs-lisp-mode . lispy-mode))
-
-(use-package lispyville
-  :after evil
-  :init
-  (setq lispyville-key-theme
-        '((operators normal)
-          c-w
-          (prettify insert)
-          (atom-movement t)
-          slurp/barf-lispy
-          additional
-          additional-insert))
-  :hook 
-  (lispy-mode . lispyville-mode)
-  :config
-  (lispyville-set-key-theme)
-  (evil-define-key '(normal visual) lispyville-mode-map
-    (kbd "M-i") 'lispy-splice)
-  (evil-define-key '(normal visual) lispyville-mode-map
-    (kbd "M-s") nil))
-
 (use-package projectile
   :bind-keymap
   ("C-c p" . projectile-command-map)

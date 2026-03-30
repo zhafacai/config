@@ -601,7 +601,7 @@ linediff
 #+begin_src emacs-lisp
 (use-package wgrep)
 #+end_src
-**** Lispy
+**** COMMENT Lispy
 #+begin_src emacs-lisp
 (use-package lispy
   :hook
