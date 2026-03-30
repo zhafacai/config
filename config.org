@@ -783,8 +783,6 @@ perspective
   ;; Enable optional extension modes:
   ;; (corfu-history-mode)
   (corfu-popupinfo-mode))
-;; TODO remove this after testing
-(global-set-key (kbd "<f9>") #'describe-key-briefly)
 (with-eval-after-load 'yasnippet
   (keymap-unset yas-minor-mode-map "TAB")
   (keymap-unset yas-minor-mode-map "<tab>"))
@@ -1707,11 +1705,6 @@ nov
 #+end_src
 ***** Agent-shell
 #+begin_src emacs-lisp
-;; TODO use this in melpa
-;; (use-package acp
-;;   :ensure t
-;;   :vc (:url "https://github.com/xenodium/acp.el"))
-
 (use-package agent-shell
   :custom
   ;; BUG https://github.com/niri-wm/niri/issues/2664
@@ -2888,7 +2881,6 @@ I would like to install all newly packages from nix.
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixgl.url = "github:nix-community/nixGL";
     nixgl.inputs.nixpkgs.follows = "nixpkgs";
-    # TODO refactor my config after 0.12
     nvim-nightly.url = "github:nix-community/neovim-nightly-overlay";
   };
   nixConfig = {

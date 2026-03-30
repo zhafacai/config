@@ -577,8 +577,6 @@
   ;; Enable optional extension modes:
   ;; (corfu-history-mode)
   (corfu-popupinfo-mode))
-;; TODO remove this after testing
-(global-set-key (kbd "<f9>") #'describe-key-briefly)
 (with-eval-after-load 'yasnippet
   (keymap-unset yas-minor-mode-map "TAB")
   (keymap-unset yas-minor-mode-map "<tab>"))
@@ -1357,11 +1355,6 @@
   ;; Ensure prompts are updated if prompt files change
   ;; (gptel-prompts-add-update-watchers)
   )
-
-;; TODO use this in melpa
-;; (use-package acp
-;;   :ensure t
-;;   :vc (:url "https://github.com/xenodium/acp.el"))
 
 (use-package agent-shell
   :custom

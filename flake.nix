@@ -3,7 +3,6 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixgl.url = "github:nix-community/nixGL";
     nixgl.inputs.nixpkgs.follows = "nixpkgs";
-    # TODO refactor my config after 0.12
     nvim-nightly.url = "github:nix-community/neovim-nightly-overlay";
   };
   nixConfig = {
