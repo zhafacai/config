@@ -772,11 +772,16 @@
   (eldoc-echo-area-prefer-doc-buffer t)      ; Put the long stuff in the *eldoc* buffer
   )
 
-(use-package eldoc-box
-  :vc (:url "https://github.com/casouri/eldoc-box")
-  :after eglot
+;; (use-package eldoc-box
+;;   :ensure nil
+;;   :vc (:url "https://github.com/casouri/eldoc-box")
+;;   :after eglot
+;;   :config
+;;   (evil-define-key 'normal eglot-mode-map "K" #'eldoc-box-help-at-point))
+
+(use-package eldoc-mouse
   :config
-  (evil-define-key 'normal eglot-mode-map "K" #'eldoc-box-help-at-point))
+  (evil-define-key 'normal eglot-mode-map "K" #'eldoc-mouse-pop-doc-at-cursor))
 
 (use-package flymake
   :ensure nil
@@ -1019,10 +1024,6 @@
   "f" #'consult-ripgrep
   "SPC" #'consult-fd)
 
-(use-package consult-emms
-  :after consult
-  :vc (:url "https://github.com/Hugo-Heagren/consult-emms"))
-
 (use-package helpful)
 (evil-define-key '(insert normal) 'global
     (kbd "C-h f") #'helpful-callable
@@ -1194,15 +1195,14 @@
   :after evil
   :commands emms
   :custom
-  (emms-mode-line-format nil)
+  ;; (emms-mode-line-format nil)
   (emms-player-list '(emms-player-mpv))
-  (emms-lyrics-display-on-modeline nil)
+  ;; (emms-lyrics-display-on-modeline nil)
   :config
   (emms-all)
   (repeat-mode)
   (emms-add-directory-tree "~/Music/")
   (emms-shuffle)
-  (emms-mode-line-mode -1)
   ;; Volume commands in repeat mode
   (dolist (elm '(emms-volume-raise
                  emms-volume-lower
@@ -1233,6 +1233,7 @@
   (setq emms-volume-change-function 'emms-volume-pulse-change)
 
   (evil-define-key 'normal emms-playlist-mode-map
+    "s" #'emms-sort
     "q" #'emms-playlist-mode-bury-buffer))
 
 (use-package reader
@@ -1386,7 +1387,7 @@
   :custom
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
-  (agent-shell-opencode-default-model-id "alibaba-cn/qwen3.5-plus")
+  (agent-shell-opencode-default-model-id "alibaba-cn/MiniMax-M2.5")
   :config
   ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
   (general-define-key
