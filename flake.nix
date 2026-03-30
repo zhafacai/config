@@ -16,6 +16,7 @@
       pkgs = import nixpkgs {
         inherit system;
         overlays = [ nixgl.overlay ];
+        config.allowUnfree = true;
       };
     in 
       {
@@ -45,6 +46,10 @@
             # nix
             nixd
             nixfmt
+
+            #ai
+            ollama-rocm
+            open-webui
 
             # cli
             opencode

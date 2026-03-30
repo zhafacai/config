@@ -2953,6 +2953,7 @@ I would like to install all newly packages from nix.
       pkgs = import nixpkgs {
         inherit system;
         overlays = [ nixgl.overlay ];
+        config.allowUnfree = true;
       };
     in 
       {
@@ -2982,6 +2983,10 @@ I would like to install all newly packages from nix.
             # nix
             nixd
             nixfmt
+
+            #ai
+            ollama-rocm
+            open-webui
 
             # cli
             opencode
