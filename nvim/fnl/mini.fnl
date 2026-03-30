@@ -5,7 +5,9 @@
 (gh-pkg! :nvim-mini/mini.icons {:setup {}})
 (gh-pkg! :nvim-mini/mini.diff {:setup {}})
 (gh-pkg! :nvim-mini/mini.pick {:setup {}})
-(gh-pkg! :nvim-mini/mini.operators {:setup {}})
+(gh-pkg! :nvim-mini/mini.operators
+         {:setup {:replace {:prefix :R :reindent_linewise true}}})
+
 (gh-pkg! :nvim-mini/mini.align {:setup {}})
 (gh-pkg! :nvim-mini/mini.cursorword {:setup {}})
 (gh-pkg! :nvim-mini/mini.indentscope {:setup {}})

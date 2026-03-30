@@ -35,5 +35,6 @@
              (nmap! :q vim.cmd.q {:buffer true})
              (nmap! :gq :q {:buffer true})))
 
-; (autocmd! :TextYankPost "*"
-;           #(vim.highlight.on_yank {:higroup :WildMenu :timeout 400}))
+(autocmd! :LspAttach "*"
+          #(do
+             (nmap! :gd vim.lsp.buf.definition {:buffer true})))

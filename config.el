@@ -292,6 +292,10 @@
 (setq ediff-merge-revisions-with-ancestor t)
 (setq ediff-show-clashes-only t)
 
+(use-package idle-highlight-mode
+  :config (setq idle-highlight-idle-time 0.2)
+  :hook (eglot--managed-mode . idle-highlight-mode))
+
 (use-package evil
   :custom
   (evil-want-keybinding nil)

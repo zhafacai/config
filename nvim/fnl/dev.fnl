@@ -55,8 +55,9 @@
 (let [flash (require :flash)]
   (map! [:n :x :o] :<c-s> #(flash.jump))
   (nmap! :S #(flash.treesitter))
-  (map! :o :r #(flash.remote))
-  (map! [:o :x] :R #(flash.treesitter_search))
+  ;; NOTE these mappings are used by textobjs
+  ;; (map! :o :r #(flash.remote))
+  ;; (map! [:o :x] :R #(flash.treesitter_search))
   (map! :c :<c-s> #(flash.toggle)))
 
 ;; Treesitter
