@@ -300,9 +300,11 @@
   :custom
   (evil-want-keybinding nil)
   :init
-  (setq evil-disable-insert-state-bindings t)
+  ;; (setq evil-disable-insert-state-bindings t)
   (setq evil-respect-visual-line-mode t)
   (setq evil-want-Y-yank-to-eol t)
+  ;; (setq evil-want-C-w-delete t)
+  ;; (setq evil-want-C-w-in-emacs-state t)
   (setq evil-undo-system 'undo-fu)
   (global-visual-line-mode 1)
   :config
@@ -1391,7 +1393,7 @@
   :custom
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
-  (agent-shell-opencode-default-model-id "alibaba-cn/MiniMax-M2.5")
+  (agent-shell-opencode-default-model-id "alibaba-cn/qwen3.5-flash")
   :config
   ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
   (general-define-key

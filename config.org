@@ -421,9 +421,11 @@ tranparent background is beautiful... Right?
   :custom
   (evil-want-keybinding nil)
   :init
-  (setq evil-disable-insert-state-bindings t)
+  ;; (setq evil-disable-insert-state-bindings t)
   (setq evil-respect-visual-line-mode t)
   (setq evil-want-Y-yank-to-eol t)
+  ;; (setq evil-want-C-w-delete t)
+  ;; (setq evil-want-C-w-in-emacs-state t)
   (setq evil-undo-system 'undo-fu)
   (global-visual-line-mode 1)
   :config
@@ -992,60 +994,6 @@ perspective
   :ensure nil
   :bind (:map evil-motion-state-map
               ("gd" . xref-find-definitions)))
-#+end_src
-***** COMMENT Lsp-mode
-#+begin_src emacs-lisp
-(use-package lsp-mode
-  :init
-  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-  (setq lsp-keymap-prefix "C-c l")
-  :custom
-  (lsp-inlay-hint-enable t)
-  :config
-  (setq lsp-disabled-clients '(pyright basedpyright)) ; Disable defaults if they conflict
-  (lsp-register-client
-   (make-lsp-client :new-connection (lsp-stdio-connection '("ty" "server"))
-                    :major-modes '(python-mode python-ts-mode)
-                    :server-id 'ty))
-
-
-  (lsp-register-client
-   (make-lsp-client :new-connection (lsp-stdio-connection "nixd")
-                    :major-modes '(nix-mode)
-                    :priority 0
-                    :server-id 'nixd))
-
-
-  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-         (python-ts-mode . lsp-deferred)
-         (nix-ts-mode . lsp-deferred)
-         (rustic-mode           . lsp-deferred)
-         (typescript-ts-mode     . lsp-deferred)
-         (tsx-ts-mode     . lsp-deferred)
-         (js-ts-mode             . lsp-deferred)
-         (astro-ts-mode             . lsp-deferred)
-         (c-mode         . lsp-deferred)
-         ;; if you want which-key integration
-         (lsp-mode . lsp-enable-which-key-integration))
-  :commands (lsp lsp-deferred))
-
-
-(use-package lsp-ui :commands lsp-ui-mode)
-(use-package consult-lsp)
-
-
-(evil-define-key 'motion 'global
-  "K"   #'lsp-describe-thing-at-point   ; Hover doc
-  "gd"  #'lsp-find-definition           ; Go to definition
-  "gD"  #'lsp-find-declaration          ; Go to declaration
-  "gI"  #'lsp-find-implementation       ; Go to implementation
-  "gy"  #'lsp-find-type-definition      ; Go to type definition
-  "gO"  #'consult-lsp-file-symbols      ; Go to file symbols
-  "grn" #'lsp-rename                    ; Rename symbol
-  "gra" #'lsp-execute-code-action       ; Code actions
-  "grr" #'lsp-find-references           ; Find references
-  )
-
 #+end_src
 **** Treesitter
 #+begin_src emacs-lisp
@@ -1768,7 +1716,7 @@ nov
   :custom
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
-  (agent-shell-opencode-default-model-id "alibaba-cn/MiniMax-M2.5")
+  (agent-shell-opencode-default-model-id "alibaba-cn/qwen3.5-flash")
   :config
   ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
   (general-define-key
