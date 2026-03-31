@@ -692,6 +692,7 @@
    (rustic-mode           . eglot-ensure)
    (typescript-ts-mode     . eglot-ensure)
    (tsx-ts-mode     . eglot-ensure)
+   (nix-ts-mode     . eglot-ensure)
    (js-ts-mode             . eglot-ensure)
    (astro-ts-mode             . eglot-ensure)
    (c-mode         . eglot-ensure)

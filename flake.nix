@@ -3,13 +3,22 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixgl.url = "github:nix-community/nixGL";
     nixgl.inputs.nixpkgs.follows = "nixpkgs";
+    #TODO: remove this until https://nixpk.gs/pr-tracker.html?pr=504078
     nvim-nightly.url = "github:nix-community/neovim-nightly-overlay";
   };
   nixConfig = {
     # extra-substituters = [ "https://app.cachix.org/cache/nix-community" ];
-    extra-trusted-public-keys = [ "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=" ];
+    extra-trusted-public-keys = [
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+    ];
   };
-  outputs={ nixpkgs, nixgl, nvim-nightly, ...}:
+  outputs =
+    {
+      nixpkgs,
+      nixgl,
+      nvim-nightly,
+      ...
+    }:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
@@ -17,49 +26,48 @@
         overlays = [ nixgl.overlay ];
         config.allowUnfree = true;
       };
-    in 
-      {
-        packages."${system}".default = pkgs.buildEnv {
-          name = "dev-pkgs";
-          paths = with pkgs; [
-            # web
-            nodejs
-            pnpm
-            bun
-            tailwindcss-language-server
-            typescript-go
+    in
+    {
+      packages."${system}".default = pkgs.buildEnv {
+        name = "dev-pkgs";
+        paths = with pkgs; [
+          # web
+          nodejs
+          pnpm
+          bun
+          tailwindcss-language-server
+          typescript-go
 
-            # fennel
-            fnlfmt
-            
-            # lua
-            stylua
-            lua-language-server
-            luajit
-            
+          # fennel
+          fnlfmt
 
-            vscode-json-languageserver
-            shfmt
-            black
+          # lua
+          stylua
+          lua-language-server
+          luajit
 
-            # nix
-            nixd
-            nixfmt
+          vscode-json-languageserver
+          shfmt
+          black
 
-            #ai
-            ollama-rocm
-            open-webui
+          # nix
+          nixd
+          nixfmt
 
-            # cli
-            opencode
-            yazi
-            ghostty
-            jq
-            nvim-nightly.packages.${system}.default
+          #ai
+          ollama-rocm
+          open-webui
 
-            #flake
-            pkgs.nixgl.nixGLIntel
-          ];
-        };
+          # cli
+          opencode
+          yazi
+          ghostty
+          jq
+          nvim-nightly.packages.${system}.default
+
+          #flake
+          pkgs.nixgl.nixGLIntel
+        ];
       };
+    };
 }
