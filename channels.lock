@@ -1,8 +1,8 @@
 (list (channel
        (name 'guix)
-       (url "https://git.guix.gnu.org/guix.git")
+       (url "https://mirror.sjtu.edu.cn/git/guix.git")
        (branch "master")
-       (commit "21946173a05869dd40a38012e65b9e35dc47a9fc")
+       (commit "a6ef548294a8a46ea761ae261118e3313d768a6e")
        (introduction
         (make-channel-introduction
          "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -19,10 +19,20 @@
          (openpgp-fingerprint
           "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
       (channel
+       (name 'bluebox)
+       (url "https://codeberg.org/lapislazuli/bluebox")
+       (branch "main")
+       (commit "f7f3b1565d626099dd68aae20abb36371ab8a9af")
+       (introduction
+        (make-channel-introduction
+         "63350484aaacc362aea28fb14236019fced4050f"
+         (openpgp-fingerprint
+          "5132 3571 CEED 988F 52FC  467C 6F98 DBF3 EA7F 4B37"))))
+      (channel
        (name 'rosenthal)
        (url "https://codeberg.org/hako/rosenthal.git")
        (branch "trunk")
-       (commit "90dff491554cbd4514e41193569b352285bc0ac9")
+       (commit "9d95263fcf4d0158477ccbb51712b17f2b642eb5")
        (introduction
         (make-channel-introduction
          "7677db76330121a901604dfbad19077893865f35"
@@ -32,7 +42,7 @@
        (name 'sops-guix)
        (url "https://github.com/fishinthecalculator/sops-guix.git")
        (branch "main")
-       (commit "5a88726e1be11e2df0bb85b597a1f597e334e0b7")
+       (commit "a3a890c82b5ff05cbe67636d5b8f7cf92a6f2f82")
        (introduction
         (make-channel-introduction
          "0bbaf1fdd25266c7df790f65640aaa01e6d2dbc9"
