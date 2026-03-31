@@ -1,6 +1,6 @@
 (import-macros {: gh-pkg! : nmap!} :macros)
 
-(gh-pkg! :nvim-mini/mini.starter {:setup {}})
+(gh-pkg! :nvim-mini/mini.starter {:setup {:evaluate_single true}})
 (gh-pkg! :nvim-mini/mini.statusline {:setup {}})
 (gh-pkg! :nvim-mini/mini.icons {:setup {}})
 (gh-pkg! :nvim-mini/mini.diff {:setup {}})
