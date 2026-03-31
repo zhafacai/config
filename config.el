@@ -1271,7 +1271,15 @@
    ("C-c a r" . gptel-rewrite)
    ("C-c a m" . gptel-menu))
   :config
-  (gptel-make-openai "opencode"
+  (gptel-make-openai "OpenRouter"             
+    :host "openrouter.ai"
+    :endpoint "/api/v1/chat/completions"
+    :key #'gptel-api-key-from-auth-source         
+    :stream t
+    :models '(qwen/qwen3.6-plus-preview:free
+              google/gemini-pro))
+
+  (gptel-make-openai "OpenCode"
     :host "opencode.ai"
     :endpoint "/zen/v1/chat/completions"            
     :stream t                                      
@@ -1288,39 +1296,40 @@
                :context-window 200
                :input-cost 0.0
                :output-cost 0.0)))
-  (setq gptel-backend
-        (gptel-make-openai "bailian"
-          :host "dashscope.aliyuncs.com"
-          :endpoint "/compatible-mode/v1/chat/completions"            
-          :stream t                                      
-          :key #'gptel-api-key-from-auth-source         
-          ;; :key (auth-source-pick-first-password :host "api.aliyuncs.com")
-          :models '((qwen3.5-flash
-                     :description "qwen3.5-flash"
-                     :capabilities (tool-use json)
-                     :context-window 200
-                     :input-cost 0.0
-                     :output-cost 0.0)
-                    (kimi-k2.5
-                     :description "kimi-k2.5"
-                     :capabilities (tool-use json)
-                     :context-window 200
-                     :input-cost 0.0
-                     :output-cost 0.0)
-                    (qwen3.5-plus
-                     :description "qwen3.5-plus"
-                     :capabilities (tool-use json)
-                     :context-window 200
-                     :input-cost 0.0
-                     :output-cost 0.0)
-                    (MiniMax-M25
-                     :description "MiniMax-M2.5"
-                     :capabilities (tool-use json)
-                     :context-window 200
-                     :input-cost 0.0
-                     :output-cost 0.0))))
+
+  (gptel-make-openai "BaiLian"
+    :host "dashscope.aliyuncs.com"
+    :endpoint "/compatible-mode/v1/chat/completions"            
+    :stream t                                      
+    :key #'gptel-api-key-from-auth-source         
+    ;; :key (auth-source-pick-first-password :host "api.aliyuncs.com")
+    :models '((qwen3.5-flash
+               :description "qwen3.5-flash"
+               :capabilities (tool-use json)
+               :context-window 200
+               :input-cost 0.0
+               :output-cost 0.0)
+              (kimi-k2.5
+               :description "kimi-k2.5"
+               :capabilities (tool-use json)
+               :context-window 200
+               :input-cost 0.0
+               :output-cost 0.0)
+              (qwen3.5-plus
+               :description "qwen3.5-plus"
+               :capabilities (tool-use json)
+               :context-window 200
+               :input-cost 0.0
+               :output-cost 0.0)
+              (MiniMax-M25
+               :description "MiniMax-M2.5"
+               :capabilities (tool-use json)
+               :context-window 200
+               :input-cost 0.0
+               :output-cost 0.0)))
+  (setq gptel-backend (gptel-get-backend "OpenRouter"))
   (setq gptel-default-mode #'org-mode)
-  (setq gptel-model 'qwen3-flash))
+  (setq gptel-model 'qwen/qwen3.6-plus-preview:free))
 
 (use-package gptel-agent
   :vc ( :url "https://github.com/karthink/gptel-agent"
@@ -1350,7 +1359,7 @@
   :custom
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
-  (agent-shell-opencode-default-model-id "alibaba-cn/qwen3.5-flash")
+  (agent-shell-opencode-default-model-id "openrouter/qwen/qwen3.6-plus-preview:free")
   :config
   ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
   (general-define-key

@@ -7,13 +7,13 @@ build:
 lock:
     guix describe -f channels > channels.lock
 
-update:
+upgrade:
     sudo guix time-machine -C channels.lock --  system reconfigure /home/zfc/dots/zfc/system/art.scm -L /home/zfc/dots
 
 update-nix:
     nix profile upgrade dots
 
-upgrade:
+update:
     guix pull -C channels.scm
     just lock
 

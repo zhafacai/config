@@ -5,7 +5,7 @@
 (setq auth-source-debug t)
 
 (setq warning-minimum-level :error)
-
+(setq completion-ignore-case t)
 ;; why do we need this?
 (setq native-comp-async-report-warnings-errors 'silent)
 
