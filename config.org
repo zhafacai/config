@@ -170,8 +170,8 @@ the mode that I do not use
 (scroll-bar-mode -1)
 #+end_src
 make default frame maximized by default
-#+begin_src emacs-lisp :tangle no
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
+#+begin_src emacs-lisp
+;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 #+end_src
 always help me please :)
 #+begin_src emacs-lisp
@@ -731,8 +731,8 @@ perspective
 ;;    ("M-b" . dirvish-history-go-backward)
 ;;    ("M-e" . dirvish-emerge-menu)))
 #+end_src
-***** Ready-player
-#+begin_src emacs-lisp :tangle no
+***** COMMENT Ready-player
+#+begin_src emacs-lisp
 (use-package ready-player
   :demand t
   :custom
@@ -747,6 +747,7 @@ perspective
 #+begin_src emacs-lisp
 (use-package apheleia
   :config
+  (add-to-list 'apheleia-mode-alist '(scheme-mode . lisp-indent))
   (apheleia-global-mode +1))
 #+end_src
 **** Completion
@@ -1602,21 +1603,21 @@ nov
 "emacs-guix"
 
 #+end_src
-**** EEE
+**** COMMENT EEE
 #+begin_src emacs-lisp
-;; (use-package eee
-;;   :vc (:url "https://github.com/eval-exec/eee.el")
-;;   :config
-;;   ;; Issues and pull requests are welcome
-;;   (setq ee-terminal-command "alacritty")
+(use-package eee
+  :vc (:url "https://github.com/eval-exec/eee.el")
+  :config
+  ;; Issues and pull requests are welcome
+  (setq ee-terminal-command "alacritty")
 
-;;   ;; (global-definer "f" 'ee-find)
-;;   ;; (global-definer "g" 'ee-lazygit)
-;;   ;; (global-definer "y" 'ee-yazi-project)
-;;   ;; (general-def "C-x C-f" 'ee-yazi)
-;;   ;; (general-def "C-S-f" 'ee-rg)
-;;   ;; (general-evil-define-key 'normal 'global "M-f" 'ee-line)
-;;   )
+  ;; (global-definer "f" 'ee-find)
+  ;; (global-definer "g" 'ee-lazygit)
+  ;; (global-definer "y" 'ee-yazi-project)
+  ;; (general-def "C-x C-f" 'ee-yazi)
+  ;; (general-def "C-S-f" 'ee-rg)
+  ;; (general-evil-define-key 'normal 'global "M-f" 'ee-line)
+  )
 
 #+end_src
 **** AI
@@ -1881,30 +1882,30 @@ basic personal info config
   :hook
   (org-mode . valign-mode))
 #+end_src
-**** Habit
+**** COMMENT Habit
 #+begin_src emacs-lisp
-;; (after! org
-;;   (add-to-list 'org-modules 'org-habit t)
-;;   (add-to-list 'org-modules 'ol-info t)
-;;   (setq org-habit-show-habits t
-;;         org-habit-show-all-today nil))
+(after! org
+  (add-to-list 'org-modules 'org-habit t)
+  (add-to-list 'org-modules 'ol-info t)
+  (setq org-habit-show-habits t
+        org-habit-show-all-today nil))
 
-;; (after! modus-themes
-;;   (defun fc/apply-org-habit-faces ()
-;;     "Apply org-habit faces using Modus/Ef palette."
-;;     (when custom-enabled-themes
-;;       (modus-themes-with-colors
-;; 	(custom-set-faces
-;;          `(org-habit-clear-face
-;;            ((t (:background ,bg-dim :foreground ,green-warmer))))
-;;          `(org-habit-ready-face
-;;            ((t (:background ,bg-active :foreground ,blue))))
-;;          `(org-habit-alert-face
-;;            ((t (:background ,bg-yellow-subtle :foreground ,yellow))))
-;;          `(org-habit-overdue-face
-;;            ((t (:background ,bg-red-subtle :foreground ,red))))))))
+(after! modus-themes
+  (defun fc/apply-org-habit-faces ()
+    "Apply org-habit faces using Modus/Ef palette."
+    (when custom-enabled-themes
+      (modus-themes-with-colors
+	(custom-set-faces
+         `(org-habit-clear-face
+           ((t (:background ,bg-dim :foreground ,green-warmer))))
+         `(org-habit-ready-face
+           ((t (:background ,bg-active :foreground ,blue))))
+         `(org-habit-alert-face
+           ((t (:background ,bg-yellow-subtle :foreground ,yellow))))
+         `(org-habit-overdue-face
+           ((t (:background ,bg-red-subtle :foreground ,red))))))))
 
-;;   (add-hook 'doom-load-theme-hook #'fc/apply-org-habit-faces))
+  (add-hook 'doom-load-theme-hook #'fc/apply-org-habit-faces))
 
 #+end_src
 **** Pretty
@@ -1927,8 +1928,8 @@ basic personal info config
   :config
   (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
 #+end_src
-**** Verb
-#+begin_src emacs-lisp :tangle no
+**** COMMENT Verb
+#+begin_src emacs-lisp
 (with-eval-after-load 'verb
   (fc/map :keymaps org-mode-map
     "s" #'verb-send-request-on-point-other-window   ; SPC m v s : Send request, show response in other window & switch
@@ -2271,54 +2272,6 @@ basic personal info config
        :rev "optional-exwm"))
 #+end_src
 * Guix
-** The =channels.scm= section 
-#+begin_src scheme :tangle channels.scm
-(list (channel
-        (name 'guix)
-        (url "https://git.guix.gnu.org/guix.git")
-        (branch "master")
-        (introduction
-         (make-channel-introduction
-          "9edb3f66fd807b096b48283debdcddccfea34bad"
-          (openpgp-fingerprint
-           "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
-      (channel
-        (name 'nonguix)
-        (url "https://gitlab.com/nonguix/nonguix")
-        (branch "master")
-        (introduction
-         (make-channel-introduction
-          "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
-          (openpgp-fingerprint
-           "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
-      (channel
-        (name 'rosenthal)
-        (url "https://codeberg.org/hako/rosenthal.git")
-        (branch "trunk")
-        (introduction
-         (make-channel-introduction
-          "7677db76330121a901604dfbad19077893865f35"
-          (openpgp-fingerprint
-           "13E7 6CD6 E649 C28C 3385  4DF5 5E5A A665 6149 17F7"))))
-      (channel
-        (name 'sops-guix)
-        (url "https://github.com/fishinthecalculator/sops-guix.git")
-        (branch "main")
-        (introduction
-         (make-channel-introduction
-          "0bbaf1fdd25266c7df790f65640aaa01e6d2dbc9"
-          (openpgp-fingerprint
-           "8D10 60B9 6BB8 292E 829B  7249 AED4 1CC1 93B7 01E2"))))
-      (channel
-        (name 'guixcn)
-        (url "https://codeberg.org/guixcn/guix-channel.git")
-        (branch "master")
-        (introduction
-         (make-channel-introduction
-          "993d200265630e9c408028a022f32f34acacdf29"
-          (openpgp-fingerprint
-           "7EBE A494 60CE 5E2C 0875  7FDB 3B5A A993 E1A2 DFF0")))))
-#+end_src
 ** The =art.scm= section for Lenovo AHP9 system
 #+begin_src scheme :tangle zfc/system/art.scm :noweb yes
 ;; -*- mode: scheme; -*-

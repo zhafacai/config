@@ -97,6 +97,8 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 
+;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
+
 (setq help-at-pt-display-when-idle t) 
 (setq initial-scratch-message ";; What's the QUESTION today?\n\n")
 
@@ -544,6 +546,7 @@
 
 (use-package apheleia
   :config
+  (add-to-list 'apheleia-mode-alist '(scheme-mode . lisp-indent))
   (apheleia-global-mode +1))
 
 (use-package corfu
@@ -1262,20 +1265,6 @@
   :config
   (fc/map 'normal "gi" #'guix))
 
-;; (use-package eee
-;;   :vc (:url "https://github.com/eval-exec/eee.el")
-;;   :config
-;;   ;; Issues and pull requests are welcome
-;;   (setq ee-terminal-command "alacritty")
-
-;;   ;; (global-definer "f" 'ee-find)
-;;   ;; (global-definer "g" 'ee-lazygit)
-;;   ;; (global-definer "y" 'ee-yazi-project)
-;;   ;; (general-def "C-x C-f" 'ee-yazi)
-;;   ;; (general-def "C-S-f" 'ee-rg)
-;;   ;; (general-evil-define-key 'normal 'global "M-f" 'ee-line)
-;;   )
-
 (use-package gptel
   :bind
   (("C-c a p" . gptel)
@@ -1510,29 +1499,6 @@
 (use-package valign
   :hook
   (org-mode . valign-mode))
-
-;; (after! org
-;;   (add-to-list 'org-modules 'org-habit t)
-;;   (add-to-list 'org-modules 'ol-info t)
-;;   (setq org-habit-show-habits t
-;;         org-habit-show-all-today nil))
-
-;; (after! modus-themes
-;;   (defun fc/apply-org-habit-faces ()
-;;     "Apply org-habit faces using Modus/Ef palette."
-;;     (when custom-enabled-themes
-;;       (modus-themes-with-colors
-;; 	(custom-set-faces
-;;          `(org-habit-clear-face
-;;            ((t (:background ,bg-dim :foreground ,green-warmer))))
-;;          `(org-habit-ready-face
-;;            ((t (:background ,bg-active :foreground ,blue))))
-;;          `(org-habit-alert-face
-;;            ((t (:background ,bg-yellow-subtle :foreground ,yellow))))
-;;          `(org-habit-overdue-face
-;;            ((t (:background ,bg-red-subtle :foreground ,red))))))))
-
-;;   (add-hook 'doom-load-theme-hook #'fc/apply-org-habit-faces))
 
 (use-package org-modern
   :custom
