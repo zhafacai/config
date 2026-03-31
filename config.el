@@ -1385,10 +1385,10 @@
       user-full-name "zhafacai"
       user-mail-address "zhafacai@gmail.com")
 
-;; (setq smtpmail-smtp-server "smtp.gmail.com"
-;;       smtpmail-smtp-service 587
-;;       smtpmail-stream-type 'starttls
-;;       smtpmail-auth-credentials "~/.authinfo.gpg")
+(setq smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-service 587
+      smtpmail-stream-type 'starttls
+      smtpmail-auth-credentials "~/.authinfo.gpg")
 
 (setq message-send-mail-function 'smtpmail-send-it)
 
