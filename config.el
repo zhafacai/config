@@ -1380,8 +1380,7 @@
 
 (general-define-key "C-c a s" #'agent-shell)
 
-(setq
- ;; auth-sources '("~/.authinfo.gpg")
+(setq auth-sources '("~/.authinfo.gpg")
       user-full-name "zhafacai"
       user-mail-address "zhafacai@gmail.com")
 
@@ -1419,14 +1418,14 @@
             :query "tag:unread and tag:inbox"
             :sort-order newest-first
             :key ,(kbd "u"))
-          ( :name "🛠️ unread packages"
-            :query "tag:unread and tag:package"
+          ( :name "🔮 unread crypto"
+            :query "tag:unread and tag:crypto"
             :sort-order newest-first
-            :key ,(kbd "p"))
-          ( :name "🏆 unread coaching"
-            :query "tag:unread and tag:coach"
+            :key ,(kbd "c"))
+          ( :name "🌞 unread life"
+            :query "tag:unread and tag:life"
             :sort-order newest-first
-            :key ,(kbd "c")))))
+            :key ,(kbd "l")))))
 
 
 (setq browse-url-browser-function 'browse-url-generic
