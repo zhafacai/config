@@ -498,6 +498,7 @@ escape
 (use-package evil-escape
   :custom
   (evil-escape-key-sequence "jk")
+  (evil-escape-excluded-major-modes '(magit-status-mode))
   :config
   (evil-escape-mode))
 #+end_src
@@ -2205,6 +2206,10 @@ basic personal info config
 #+begin_src emacs-lisp
 ;; (use-package justl)
 (use-package just-ts-mode)
+#+end_src
+**** Guile
+#+begin_src emacs-lisp
+(add-hook 'scheme-mode-hook (lambda () (evil-local-set-key 'normal "K" #'geiser-doc-look-up-manual)))
 #+end_src
 *** EWM
 #+begin_src emacs-lisp

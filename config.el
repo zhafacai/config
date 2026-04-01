@@ -371,6 +371,7 @@
 (use-package evil-escape
   :custom
   (evil-escape-key-sequence "jk")
+  (evil-escape-excluded-major-modes '(magit-status-mode))
   :config
   (evil-escape-mode))
 
@@ -1724,6 +1725,8 @@
 
 ;; (use-package justl)
 (use-package just-ts-mode)
+
+(add-hook 'scheme-mode-hook (lambda () (evil-local-set-key 'normal "K" #'geiser-doc-look-up-manual)))
 
 (setq ewm-input-config
       '((touchpad :natural-scroll t :tap t :dwt t)
