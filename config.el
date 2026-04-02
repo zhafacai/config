@@ -96,6 +96,7 @@
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
+(tooltip-mode -1)
 
 ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
@@ -781,12 +782,23 @@
 
 (use-package treesit
   :ensure nil)
-  
+
 
 (use-package treesit-auto
   :custom
   (treesit-auto-install t)
   :config
+  (after! org
+    (dolist (mode
+             '(("cmake"      . cmake-ts)
+               ("dockerfile" . dockerfile-ts)
+               ("go"         . go-ts)
+               ("lua"        . lua-ts)
+               ("rust"       . rust-ts)
+               ("typescript" . typescript-ts)
+               ("yaml"       . yaml-ts)))
+      (add-to-list 'org-src-lang-modes mode)))
+  
   (treesit-auto-add-to-auto-mode-alist 'all)
   ;; (setq major-mode-remap-alist (treesit-auto--build-major-mode-remap-alist))
   (global-treesit-auto-mode))
