@@ -1020,13 +1020,16 @@
   "SPC" #'consult-fd)
 
 (use-package helpful)
-(evil-define-key '(insert normal) 'global
-    (kbd "C-h f") #'helpful-callable
-    (kbd "C-c C-d") #'helpful-at-point
-    (kbd "C-h F") #'helpful-function
-    (kbd "C-h v") #'helpful-variable
-    (kbd "C-h k") #'helpful-key
-    (kbd "C-h x") #'helpful-command)
+(evil-define-key 'insert 'global
+  (kbd "C-c C-d") #'helpful-at-point)
+(evil-define-key 'normal 'global
+  (kbd "<leader>hi") #'info-emacs-manual
+  (kbd "<leader>hr") #'info-display-manual
+  (kbd "<leader>hf") #'helpful-callable
+  (kbd "<leader>hv") #'helpful-variable
+  (kbd "<leader>hk") #'helpful-key
+  (kbd "<leader>hp") #'describe-package
+  (kbd "<leader>hc") #'helpful-command)
 (use-package elisp-demos
   :after helpful
   :config
@@ -1195,7 +1198,6 @@
   ;; (emms-lyrics-display-on-modeline nil)
   :config
   (emms-all)
-  (repeat-mode)
   (emms-add-directory-tree "~/Music/")
   (emms-shuffle)
   ;; Volume commands in repeat mode

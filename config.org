@@ -54,8 +54,6 @@ This repo consists of guix and emacs configuration.
   (grep-command "rg -nS --no-heading ") ; TODO: make it dinamic check if ripgrep is available before setting it and if it costs too much of the init time
   (grep-find-ignored-directories
    '("SCCS" "RCS" "CVS" "MCVS" ".src" ".svn" ".jj" ".git" ".hg" ".bzr" "_MTN" "_darcs" "{arch}" "node_modules" "build" "dist"))
-  :config
-
   :init
   (tooltip-mode nil)
   (recentf-mode 1)
@@ -63,6 +61,8 @@ This repo consists of guix and emacs configuration.
   (savehist-mode 1)
   (save-place-mode 1))
 
+;; Conflicts with evil-open-below
+(put 'other-window 'repeat-map nil)
 ;; Single VC backend inscreases booting speed
 (setq vc-handled-backends '(Git))
 (setq auth-source-debug t)
@@ -1304,13 +1304,16 @@ diff-hl
 **** Helpful
 #+begin_src emacs-lisp
 (use-package helpful)
-(evil-define-key '(insert normal) 'global
-    (kbd "C-h f") #'helpful-callable
-    (kbd "C-c C-d") #'helpful-at-point
-    (kbd "C-h F") #'helpful-function
-    (kbd "C-h v") #'helpful-variable
-    (kbd "C-h k") #'helpful-key
-    (kbd "C-h x") #'helpful-command)
+(evil-define-key 'insert 'global
+  (kbd "C-c C-d") #'helpful-at-point)
+(evil-define-key 'normal 'global
+  (kbd "<leader>hi") #'info-emacs-manual
+  (kbd "<leader>hr") #'info-display-manual
+  (kbd "<leader>hf") #'helpful-callable
+  (kbd "<leader>hv") #'helpful-variable
+  (kbd "<leader>hk") #'helpful-key
+  (kbd "<leader>hp") #'describe-package
+  (kbd "<leader>hc") #'helpful-command)
 (use-package elisp-demos
   :after helpful
   :config
@@ -1549,7 +1552,6 @@ org-mode
   ;; (emms-lyrics-display-on-modeline nil)
   :config
   (emms-all)
-  (repeat-mode)
   (emms-add-directory-tree "~/Music/")
   (emms-shuffle)
   ;; Volume commands in repeat mode

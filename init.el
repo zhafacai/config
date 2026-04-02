@@ -36,8 +36,6 @@
   (grep-command "rg -nS --no-heading ") ; TODO: make it dinamic check if ripgrep is available before setting it and if it costs too much of the init time
   (grep-find-ignored-directories
    '("SCCS" "RCS" "CVS" "MCVS" ".src" ".svn" ".jj" ".git" ".hg" ".bzr" "_MTN" "_darcs" "{arch}" "node_modules" "build" "dist"))
-  :config
-
   :init
   (tooltip-mode nil)
   (recentf-mode 1)
@@ -45,6 +43,8 @@
   (savehist-mode 1)
   (save-place-mode 1))
 
+;; Conflicts with evil-open-below
+(put 'other-window 'repeat-map nil)
 ;; Single VC backend inscreases booting speed
 (setq vc-handled-backends '(Git))
 (setq auth-source-debug t)

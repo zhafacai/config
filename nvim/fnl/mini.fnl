@@ -24,4 +24,4 @@
 
 (nmap! :<leader><leader> "<cmd>Pick files<CR>")
 (nmap! :<leader>f "<cmd>Pick grep_live<CR>")
-(nmap! :<leader>sh "<cmd>Pick help<CR>")
+(nmap! :<leader>hh "<cmd>Pick help<CR>")
