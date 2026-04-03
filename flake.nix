@@ -3,12 +3,15 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixgl.url = "github:nix-community/nixGL";
     nixgl.inputs.nixpkgs.follows = "nixpkgs";
-    #TODO: remove this until https://nixpk.gs/pr-tracker.html?pr=504078
-    nvim-nightly.url = "github:nix-community/neovim-nightly-overlay";
+    comfyui-nix.url = "github:utensils/comfyui-nix";
   };
   nixConfig = {
-    # extra-substituters = [ "https://app.cachix.org/cache/nix-community" ];
+    extra-substituters = [
+      "https://comfyui.cachix.org"
+      "https://nix-community.cachix.org"
+    ];
     extra-trusted-public-keys = [
+      "comfyui.cachix.org-1:33mf9VzoIjzVbp0zwj+fT51HG0y31ZTK3nzYZAX0rec="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
     ];
   };
@@ -16,7 +19,7 @@
     {
       nixpkgs,
       nixgl,
-      nvim-nightly,
+      comfyui-nix,
       ...
     }:
     let
@@ -55,15 +58,16 @@
           nixfmt
 
           #ai
-          ollama-rocm
+          llama-cpp-rocm
           open-webui
+          comfyui-nix.packages.${system}.rocm
 
           # cli
           opencode
           yazi
           ghostty
           jq
-          nvim-nightly.packages.${system}.default
+          neovim
 
           #flake
           pkgs.nixgl.nixGLIntel

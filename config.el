@@ -735,19 +735,18 @@
 
   (add-to-list 'eglot-server-programs
                '(tsx-ts-mode . ("tailwindcss-language-server" "--stdio")))
+  (evil-define-key 'normal eglot-mode-map
+    "grn" #'eglot-rename
+    "gra" #'eglot-code-actions))
 
 
 
-  :bind
-  (:map eglot-mode-map
-	    ("grn" . eglot-rename)             
-	    ("gra" . eglot-code-actions)))
 
 (use-package consult-eglot
   :after eglot
-  :bind
-  (:map eglot-mode-map
-	    ("gO" . consult-eglot-symbols)))
+  :config
+  (evil-define-key 'normal eglot-mode-map
+    "grn" #'consult-eglot-symbols))
 
 (use-package eldoc
   :ensure nil
@@ -1028,6 +1027,7 @@
   (kbd "<leader>hf") #'helpful-callable
   (kbd "<leader>hv") #'helpful-variable
   (kbd "<leader>hk") #'helpful-key
+  (kbd "<leader>hm") #'describe-mode
   (kbd "<leader>hp") #'describe-package
   (kbd "<leader>hc") #'helpful-command)
 (use-package elisp-demos
@@ -1471,6 +1471,12 @@
 
 (use-package yaml-mode
   :mode ("\\.yaml\\'" . yaml-mode))
+
+(use-package blue
+  :init
+  ;; Enable custom filters to handle different escape sequences in compilation
+  ;; and comint buffers.
+  (blue-prettify-compilation-mode 1))
 
 (use-package org
   :ensure nil
