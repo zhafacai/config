@@ -28,8 +28,17 @@ require("blink.cmp").setup({
 			lua = { inherit_defaults = true, "lazydev" },
 			gitcommit = { inherit_defaults = true, "emoji" },
 			sql = { inherit_defaults = true, "dadbod" },
+			codecompanion = {
+				inherit_defaults = true,
+				"codecompanion",
+			},
 		},
 		providers = {
+			codecompanion = {
+				name = "CodeCompanion",
+				module = "codecompanion.providers.completion.blink",
+				score_offset = 7, -- Tune by preference
+			},
 			emoji = {
 				module = "blink-emoji",
 				name = "Emoji",

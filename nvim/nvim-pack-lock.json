@@ -89,6 +89,10 @@
       "rev": "518789535a0cb146224a428edf93a70f98b795db",
       "src": "https://github.com/OXY2DEV/helpview.nvim"
     },
+    "img-clip.nvim": {
+      "rev": "b6ddfb97b5600d99afe3452d707444afda658aca",
+      "src": "https://github.com/HakonHarnes/img-clip.nvim"
+    },
     "incline.nvim": {
       "rev": "8b54c59bcb23366645ae10edca6edfb9d3a0853e",
       "src": "https://github.com/b0o/incline.nvim"
@@ -292,6 +296,10 @@
     "schemastore.nvim": {
       "rev": "cf2b276dc88696b35d55ea4bd55dfaf7d608c9a2",
       "src": "https://github.com/b0o/schemastore.nvim"
+    },
+    "snacks.nvim": {
+      "rev": "ad9ede6a9cddf16cedbd31b8932d6dcdee9b716e",
+      "src": "https://github.com/folke/snacks.nvim"
     },
     "tiny-code-action.nvim": {
       "rev": "8e72efa075ba3154bbc4c7d1db532b03b4e68373",
