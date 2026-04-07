@@ -53,3 +53,8 @@
                                      :fennel [:fnlfmt]}}})
 
 (gh-pkg! :lambdalisue/vim-suda)
+
+(gh-pkg! :benoror/gpg.nvim)
+; (gh-pkg! :icarios-dev/privymd.nvim {:setup {}})
+(gh-pkg! :olimorris/codecompanion.nvim
+         {:setup {:interactions {:chat {:adapter :opencode}}}})

@@ -9,6 +9,7 @@
 (map! [:c :i] :<C-f> :<Right> {:desc "Move forward"})
 (map! [:c] :<C-g> :<C-c> {:desc :quit})
 (map! [:x :t] :<C-g> :<ESC> {:desc :quit})
+(nmap! :<a-x> ":")
 
 (map! :v :J :5j)
 (map! :v :K :5k)
