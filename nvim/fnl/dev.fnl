@@ -15,7 +15,7 @@
 
 ;; Lsp
 (gh-pkg! :neovim/nvim-lspconfig)
-(let [ser [:tsgo :lua_ls :ty :zls :clangd :tailwindcss :nixd :jsonls]]
+(let [ser [:tsgo :lua_ls :ty :zls :clangd :tailwindcss :nixd :jsonls :org]]
   (vim.lsp.enable ser))
 
 (gh-pkg! :mfussenegger/nvim-lint)

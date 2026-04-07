@@ -26,6 +26,7 @@ require("blink.cmp").setup({
 		},
 		per_filetype = {
 			lua = { inherit_defaults = true, "lazydev" },
+			org = { inherit_defaults = true, "orgmode" },
 			gitcommit = { inherit_defaults = true, "emoji" },
 			sql = { inherit_defaults = true, "dadbod" },
 			codecompanion = {
@@ -34,6 +35,11 @@ require("blink.cmp").setup({
 			},
 		},
 		providers = {
+			orgmode = {
+				name = "Org",
+				module = "orgmode.org.autocompletion.blink",
+				score_offset = 7, -- Tune by preference
+			},
 			codecompanion = {
 				name = "CodeCompanion",
 				module = "codecompanion.providers.completion.blink",

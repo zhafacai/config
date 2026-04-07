@@ -30,29 +30,39 @@
 (let [keys [{:action ":lua Snacks.dashboard.pick('files')"
              :desc "Find File"
              :icon " "
-             :key :f}
-            {:action ":ene | startinsert"
-             :desc "New File"
-             :icon " "
-             :key :n}
+             :key :<space>}
+            {:action ":Neogit" :desc :Git :icon " " :key :n}
+            {:action :<cmd>OrgSuperAgenda!<CR>
+             :desc :Agenda
+             :icon "󰠮 "
+             :key :a}
+            {:action "<cmd>Org capture<CR>"
+             :desc :Capture
+             :icon " "
+             :key :c}
             {:action ":lua Snacks.dashboard.pick('live_grep')"
-             :desc "Find Text"
+             :desc "Live Grep"
              :icon " "
-             :key :g}
+             :key :f}
             {:action ":lua Snacks.dashboard.pick('oldfiles')"
              :desc "Recent Files"
              :icon " "
              :key :r}
-            {:action ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})"
+            {:action ":lua Snacks.dashboard.pick('files', {cwd = '~/dots'})"
              :desc :Config
              :icon " "
-             :key :c}
+             :key :C}
             {:desc "Restore Session"
              :icon " "
              :key :s
              :action ":lua MiniSessions.read()"}
             {:action ":qa" :desc :Quit :icon " " :key :q}]
-      sections [{:section :header}
+      sections [; {:section :header}
+                ; {:section :terminal
+                ;  :cmd "figlet -f slant 'zfc' | lolcat -F 0.3 -t -p 100 -f"
+                ;  :padding 1
+                ;  ; :indent 30
+                ;  :panel 2}
                 {:icon " "
                  :indent 2
                  :padding 1
@@ -70,7 +80,7 @@
                  :title :Projects}]]
   (gh-pkg! :folke/snacks.nvim
            {:setup {:bigfile {:enabled true}
-                    :input {:enabled true}
+                    ; :input {:enabled true}
                     :image {:enabled true}
                     :scratch {:enabled true}
                     :dashboard {:enabled true :preset {: keys} : sections}
@@ -91,5 +101,5 @@
 (nmap! :<leader>ho #(Snacks.picker.colorschemes) :Colorschemes)
 (nmap! :<leader>gb #(Snacks.gitbrowse) "Git browse")
 (nmap! :<leader>ss #(Snacks.scratch) "Scratch buffer")
-(nmap! :<leader>sl #(Snacks.scratch.select) "Select scratch")
-(nmap! :<leader>si #(Snacks.picker.icons) :Icons)
+(nmap! :<leader>sS #(Snacks.scratch.select) "Select scratch")
+(nmap! :<leader>sI #(Snacks.picker.icons) :Icons)
