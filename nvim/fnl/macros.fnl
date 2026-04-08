@@ -73,11 +73,15 @@
   "Set a global keymap binding.
   
   Usage:
+    (map! :n \"<leader>f\" \"<cmd>Telescope find_files<cr>\" \"Find files\")
     (map! :n \"<leader>f\" \"<cmd>Telescope find_files<cr>\" {:desc \"Find files\"})
   
   Expands to:
     (vim.keymap.set :n \"<leader>f\" \"<cmd>Telescope find_files<cr>\" {:desc \"Find files\"})"
-  `(vim.keymap.set ,mode ,lhs ,rhs ,?opts))
+  (let [opts (if (and ?opts (str? ?opts))
+                 {:desc ?opts}
+                 ?opts)]
+    `(vim.keymap.set ,mode ,lhs ,rhs ,opts)))
 
 (lambda nmap! [lhs rhs ?opts]
   "Set a keymap binding for normal mode.
@@ -88,10 +92,7 @@
   
   Expands to:
     (vim.keymap.set :n \"<leader>f\" \"<cmd>Telescope find_files<cr>\" {:desc \"Find files\"})"
-  (let [opts (if (and ?opts (str? ?opts))
-                 {:desc ?opts}
-                 ?opts)]
-    `(vim.keymap.set :n ,lhs ,rhs ,opts)))
+  (map! :n lhs rhs ?opts))
 
 (fn autocmd! [event pattern action opts]
   "Create a custom autocommand event handler.

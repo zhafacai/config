@@ -130,3 +130,17 @@
 (gh-pkg! :andrewferrier/debugprint.nvim {:setup {}})
 ;; fstring
 ; (gh-pkg! :chrisgrieser/nvim-puppeteer)
+
+(gh-pkg! :chrisgrieser/nvim-chainsaw {:setup {} :name :chainsaw})
+(let [cs (require :chainsaw)]
+  (nmap! :gll #(cs.variableLog))
+  (nmap! :glo #(cs.objectLog))
+  (nmap! :glt #(cs.typeLog))
+  (nmap! :gla #(cs.assertLog))
+  (nmap! :gle #(cs.emojiLog))
+  (nmap! :glm #(cs.messageLog))
+  (nmap! :glt #(cs.timeLog))
+  (nmap! :gls #(cs.stacktraceLog))
+  (nmap! :glc #(cs.clearLog))
+  (nmap! :glr #(cs.removeLog))
+  (nmap! :gld #(cs.debugLog)))

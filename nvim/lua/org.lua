@@ -7,6 +7,8 @@ vim.pack.add({
 	{ src = "https://github.com/nvim-orgmode/org-bullets.nvim" },
 })
 
+-- local org_dir = vim.fn.expand("~/notes")
+
 vim.g.denote = {
 	filetype = "org",
 	directory = "~/orgfiles/",
