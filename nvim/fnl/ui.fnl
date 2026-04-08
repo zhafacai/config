@@ -36,8 +36,10 @@
 
 (gh-pkg! :kevinhwang91/nvim-hlslens {:setup {} :name :hlslens})
 (let [hlslens "<Cmd>lua require('hlslens').start()<CR>"]
-  (nmap! :n (.. "<Cmd>execute('normal! ' . v:count1 . 'n')<CR>" hlslens) "Search next with hlslens")
-  (nmap! :N (.. "<Cmd>execute('normal! ' . v:count1 . 'N')<CR>" hlslens) "Search prev with hlslens")
+  (nmap! :n (.. "<Cmd>execute('normal! ' . v:count1 . 'n')<CR>" hlslens)
+         "Search next with hlslens")
+  (nmap! :N (.. "<Cmd>execute('normal! ' . v:count1 . 'N')<CR>" hlslens)
+         "Search prev with hlslens")
   (nmap! "*" (.. "*" hlslens) "Search word forward")
   (nmap! "#" (.. "#" hlslens) "Search word backward")
   (nmap! :g* (.. :g* hlslens) "Search word forward (no bounds)")

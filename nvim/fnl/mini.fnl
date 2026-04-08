@@ -30,7 +30,7 @@
 (let [keys [{:action ":lua Snacks.dashboard.pick('files')"
              :desc "Find File"
              :icon " "
-             :key :<space>}
+             :key :<space><space>}
             {:action ":Neogit" :desc :Git :icon " " :key :n}
             {:action :<cmd>OrgSuperAgenda!<CR>
              :desc :Agenda
@@ -87,20 +87,20 @@
                     :picker {:enabled true}}}))
 
 (nmap! :<leader><leader> #(Snacks.picker.smart) "Smart picker")
-(nmap! :<leader>f #(Snacks.picker.grep) "Grep")
-(nmap! :<leader>hh #(Snacks.picker.help) "Help")
-(nmap! :<leader>hr #(Snacks.picker.registers) "Registers")
-(nmap! :<leader>ha #(Snacks.picker.autocmds) "Autocmds")
-(nmap! :<leader>hc #(Snacks.picker.commands) "Commands")
-(nmap! :<leader>hd #(Snacks.picker.diagnostics) "Diagnostics")
-(nmap! :<leader>hl #(Snacks.picker.highlight) "Highlights")
-(nmap! :<leader>hk #(Snacks.picker.keymaps) "Keymaps")
-(nmap! :<leader>hm #(Snacks.picker.marks) "Marks")
-(nmap! :<leader>ho #(Snacks.picker.colorschemes) "Colorschemes")
+(nmap! :<leader>f #(Snacks.picker.grep) :Grep)
+(nmap! :<leader>hh #(Snacks.picker.help) :Help)
+(nmap! :<leader>hr #(Snacks.picker.registers) :Registers)
+(nmap! :<leader>ha #(Snacks.picker.autocmds) :Autocmds)
+(nmap! :<leader>hc #(Snacks.picker.commands) :Commands)
+(nmap! :<leader>hd #(Snacks.picker.diagnostics) :Diagnostics)
+(nmap! :<leader>hl #(Snacks.picker.highlight) :Highlights)
+(nmap! :<leader>hk #(Snacks.picker.keymaps) :Keymaps)
+(nmap! :<leader>hm #(Snacks.picker.marks) :Marks)
+(nmap! :<leader>ho #(Snacks.picker.colorschemes) :Colorschemes)
 (nmap! :<leader>gb #(Snacks.gitbrowse) "Git browse")
 (nmap! :<leader>ss #(Snacks.scratch) "Scratch buffer")
 (nmap! :<leader>sS #(Snacks.scratch.select) "Select scratch")
-(nmap! :<leader>sI #(Snacks.picker.icons) "Icons")
+(nmap! :<leader>sI #(Snacks.picker.icons) :Icons)
 
 (autocmd! :User :SnacksDashboardOpened
           #(tset vim.b $1.buf :miniindentscope_disable true))

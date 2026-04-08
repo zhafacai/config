@@ -83,6 +83,7 @@
 
 (nmap! :<leader>ca :<cmd>CodeCompanionActions<CR> "Open CodeCompanion actions")
 
-(nmap! :<leader>cr :<cmd>CodeCompanionReview<CR> "Review code with CodeCompanion")
+(nmap! :<leader>cr :<cmd>CodeCompanionReview<CR>
+       "Review code with CodeCompanion")
 
 (vim.cmd "cab cc CodeCompanion")
