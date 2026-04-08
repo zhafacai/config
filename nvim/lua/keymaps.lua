@@ -1,0 +1,51 @@
+-- [nfnl] fnl/keymaps.fnl
+vim.keymap.set("n", "<leader>r", "<CMD>restart<CR>", { desc = "restart" })
+vim.keymap.set({ "c", "i" }, "<C-a>", "<Home>", { desc = "Move to beginning of line" })
+vim.keymap.set({ "c", "i", "n" }, "<C-e>", "<End>", { desc = "Move to end of line" })
+vim.keymap.set({ "c", "i" }, "<C-b>", "<Left>", { desc = "Move backward" })
+vim.keymap.set({ "c", "i" }, "<C-f>", "<Right>", { desc = "Move forward" })
+vim.keymap.set({ "c" }, "<C-g>", "<C-c>", { desc = "quit" })
+vim.keymap.set({ "x", "t" }, "<C-g>", "<ESC>", { desc = "quit" })
+vim.keymap.set("n", "<a-x>", ":", { desc = "Enter command mode" })
+vim.keymap.set("v", "J", "5j", { desc = "Move down 5 lines" })
+vim.keymap.set("v", "K", "5k", { desc = "Move up 5 lines" })
+vim.keymap.set("n", "j", "gj", { desc = "Move down (visual)" })
+vim.keymap.set("n", "k", "gk", { desc = "Move up (visual)" })
+vim.keymap.set("n", "<C-g>", "<esc><cmd>noh<cr>", { desc = "Clear search highlight" })
+local function _1_()
+	return vim.keymap.set("n", "q", vim.cmd.bd, { buffer = true, desc = "Close buffer" })
+end
+vim.api.nvim_create_autocmd("FileType", { callback = _1_, pattern = { "mininotify-history" } })
+local function _2_()
+	vim.keymap.set("n", "q", vim.cmd.q, { buffer = true, desc = "Close window" })
+	return vim.keymap.set("n", "gq", "q", { buffer = true, desc = "Record macro" })
+end
+vim.api.nvim_create_autocmd(
+	"FileType",
+	{
+		callback = _2_,
+		pattern = {
+			"help",
+			"grug-far*",
+			"qf",
+			"lspinfo",
+			"man",
+			"query",
+			"checkhealth",
+			"Neogit*",
+			"norg*",
+			"org*",
+			"markdown",
+			"octo",
+			"text",
+		},
+	}
+)
+local function _3_()
+	return vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = true, desc = "Go to definition" })
+end
+vim.api.nvim_create_autocmd("LspAttach", { callback = _3_, pattern = "*" })
+local function _4_()
+	return vim.highlight.on_yank({ higroup = "WildMenu", timeout = 400 })
+end
+return vim.api.nvim_create_autocmd("TextYankPost", { callback = _4_, pattern = "*" })

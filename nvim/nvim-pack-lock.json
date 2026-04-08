@@ -45,6 +45,10 @@
       "rev": "086a40dc7ed8242c03be9f47fbcee68699cc2395",
       "src": "https://github.com/stevearc/conform.nvim"
     },
+    "conjure": {
+      "rev": "ecf783607efaf33c69c6f80a737a93d572cfc688",
+      "src": "https://github.com/Olical/conjure"
+    },
     "debugprint.nvim": {
       "rev": "76c98c000b9eccce7edfe5cc5f9d41bf255b7425",
       "src": "https://github.com/andrewferrier/debugprint.nvim"
@@ -200,6 +204,10 @@
     "neotest-vitest": {
       "rev": "f01addc6f07b79ef1be5f4297eafbee9e0959018",
       "src": "https://github.com/marilari88/neotest-vitest"
+    },
+    "nfnl": {
+      "rev": "f39a7ec6fe0ace2b2ea108ce04d954549e36c76d",
+      "src": "https://github.com/Olical/nfnl"
     },
     "numb.nvim": {
       "rev": "12ef3913dea8727d4632c6f2ed47957a993de627",

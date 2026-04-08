@@ -89,3 +89,5 @@
       "Review code with CodeCompanion")
 
 (vim.cmd "cab cc CodeCompanion")
+
+(gh-pkg! :Olical/conjure)

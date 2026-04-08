@@ -1,3 +1,5 @@
+;; [nfnl-macro]
+
 (fn nil? [n]
   (= nil n))
 
