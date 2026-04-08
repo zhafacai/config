@@ -121,15 +121,19 @@ local function _14_()
 end
 vim.keymap.set("n", "<leader>ss", _14_, {desc = "Scratch buffer"})
 local function _15_()
+  return Snacks.picker.todo_comments()
+end
+vim.keymap.set("n", "<leader>st", _15_, {desc = "Todo Comments"})
+local function _16_()
   return Snacks.scratch.select()
 end
-vim.keymap.set("n", "<leader>sS", _15_, {desc = "Select scratch"})
-local function _16_()
+vim.keymap.set("n", "<leader>sS", _16_, {desc = "Select scratch"})
+local function _17_()
   return Snacks.picker.icons()
 end
-vim.keymap.set("n", "<leader>sI", _16_, {desc = "Icons"})
-local function _17_(_241)
+vim.keymap.set("n", "<leader>sI", _17_, {desc = "Icons"})
+local function _18_(_241)
   vim.b[_241.buf]["miniindentscope_disable"] = true
   return nil
 end
-return vim.api.nvim_create_autocmd("User", {callback = _17_, pattern = "SnacksDashboardOpened"})
+return vim.api.nvim_create_autocmd("User", {callback = _18_, pattern = "SnacksDashboardOpened"})

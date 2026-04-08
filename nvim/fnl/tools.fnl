@@ -91,4 +91,5 @@
 (vim.cmd "cab cc CodeCompanion")
 
 (gh-pkg! :Olical/conjure)
+(gh-pkg! :Olical/nfnl)
 (set! g conjure#filetypes [:fennel :scheme])

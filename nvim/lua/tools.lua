@@ -85,5 +85,8 @@ vim.cmd("cab cc CodeCompanion")
 do
   vim.pack.add({{src = "https://github.com/Olical/conjure"}})
 end
+do
+  vim.pack.add({{src = "https://github.com/Olical/nfnl"}})
+end
 vim.g["conjure#filetypes"] = {"fennel", "scheme"}
 return nil
