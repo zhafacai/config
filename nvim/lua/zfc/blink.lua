@@ -111,6 +111,7 @@ require("blink.cmp").setup({
 		enabled = true,
 	},
 
+	signature = { enabled = true },
 	completion = {
 		accept = {
 			auto_brackets = {
