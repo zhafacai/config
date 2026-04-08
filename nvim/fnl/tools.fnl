@@ -46,6 +46,7 @@
          {:setup {:format_on_save {:timeout_ms 500 :lsp_format :fallback}
                   :formatters_by_ft {:lua [:stylua]
                                      :sh [:shfmt]
+                                     :markdown [:rumdl]
                                      :python [:black]
                                      :fennel [:fnlfmt]
                                      :nix [:nixfmt]
@@ -58,20 +59,33 @@
 ; (gh-pkg! :icarios-dev/privymd.nvim {:setup {}})
 (gh-pkg! :HakonHarnes/img-clip.nvim {:setup {}})
 (nmap! :<leader>p :<Cmd>PasteImage<CR> "Paste image")
-(gh-pkg! :olimorris/codecompanion.nvim
-         {:setup {:interactions {:chat {:adapter :opencode}
-                                 :cli {:agent :opencode
-                                       :agents {:opencode {:cmd :opencode
-                                                           :args []
-                                                           :description "OpenCode Cli"
-                                                           :provider :terminalj}}}}}})
 
-(nmap! :<leader>cp :<cmd>CodeCompanion<CR> "Toggle CodeCompanion panel")
-(nmap! :<leader>cc :<cmd>CodeCompanionChat<CR> "Open CodeCompanion chat")
+(gh-pkg! :olimorris/codecompanion.nvim)
+(let [cca (require :codecompanion.adapters)
+      openrouter #(cca.extend :openai_compatible
+                              {:schema {:model {:default "nvidia/nemotron-3-nano-30b-a3b:free"}}
+                               ;; :choices {"google/gemma-4-31b-it:free" {}}}}
+                               :env {:api_key vim.env.OPENROUTER_API_KEY
+                                     :chat_url :/v1/chat/completions
+                                     :url "https://openrouter.ai/api"}})]
+  (gh-pkg! :olimorris/codecompanion.nvim
+           {:setup {:interactions {:chat {:adapter :opencode}
+                                   :cli {:agent :opencode
+                                         :agents {:opencode {:cmd :opencode
+                                                             :args []
+                                                             :description "OpenCode Cli"
+                                                             :provider :terminal}}}
+                                   :inline {:adapter :openrouter}
+                                   :cmd {:adapter :opencode}}
+                    :adapters {:http {: openrouter}}
+                    :prompt_library {:markdown {:dirs [(vim.fn.expand "~/dots/prompts/")]}}}}))
 
-(nmap! :<leader>ca :<cmd>CodeCompanionActions<CR> "Open CodeCompanion actions")
+(map! [:n :v] :<leader>cp :<cmd>CodeCompanion<CR> "Toggle CodeCompanion panel")
+(map! [:n :v] :<leader>cc :<cmd>CodeCompanionChat<CR> "Open CodeCompanion chat")
+(map! [:n :v] :<leader>ca :<cmd>CodeCompanionActions<CR>
+      "Open CodeCompanion actions")
 
-(nmap! :<leader>cr :<cmd>CodeCompanionReview<CR>
-       "Review code with CodeCompanion")
+(map! [:n :v] :<leader>cr :<cmd>CodeCompanionReview<CR>
+      "Review code with CodeCompanion")
 
 (vim.cmd "cab cc CodeCompanion")

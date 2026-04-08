@@ -20,7 +20,7 @@
 
 (gh-pkg! :mfussenegger/nvim-lint)
 (let [lint (require :lint)
-      linters {:python [:ruff]}]
+      linters {:python [:ruff] :markdown [:rumdl]}]
   (autocmd! :BufWritePost "*" #(lint.try_lint))
   (tset lint :linters_by_ft linters))
 
