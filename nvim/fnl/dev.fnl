@@ -126,8 +126,7 @@
   (nmap! :<leader>to #(nt.output_panel.toggle) "test output_panel")
   (nmap! :<leader>ts #(nt.summary.toggle) "test summary"))
 
-;; fstring
-; (gh-pkg! :chrisgrieser/nvim-puppeteer)
+(gh-pkg! :chrisgrieser/nvim-puppeteer)
 
 (gh-pkg! :chrisgrieser/nvim-chainsaw {:setup {} :name :chainsaw})
 (let [cs (require :chainsaw)]
