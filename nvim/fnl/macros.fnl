@@ -96,7 +96,26 @@
     (vim.keymap.set :n \"<leader>f\" \"<cmd>Telescope find_files<cr>\" {:desc \"Find files\"})"
   (map! :n lhs rhs ?opts))
 
-(fn autocmd! [event pattern action opts]
+(fn augroup! [name & body]
+  "Create an augroup with nested autocmds, Vimscript-style.\r
+   Usage:\r
+     (augroup! :mydata\r
+       (autocmd! :BufWritePost \"*.fnl\" handler)\r
+       (autocmd! :BufReadPost \"*.fnl\" handler2 {:desc \"Load\"}))"
+  (let [group (tostring name)]
+    (let [group `(vim.api.nvim_create_augroup ,group {:clear true})]
+      (fcollect [i 1 (length body)]
+        (match (. body i)
+          (where [cmd e p a] (= (tostring cmd) :autocmd!))
+          ;; simple 
+          `(,cmd ,e ,p ,a {:group ,group})
+          (where [cmd e p a o] (= (tostring cmd) :autocmd!))
+          ;; with opts
+          `(,cmd ,e ,p ,a (doto ,o (tset :group ,group)))
+          x
+          x)))))
+
+(lambda autocmd! [event pattern action ?opts]
   "Create a custom autocommand event handler.
   
   Usage:
@@ -106,11 +125,11 @@
     (vim.api.nvim_create_autocmd :BufWritePost {:pattern \"*.fnl\" :callback ...})"
   (assert-compile (or (list? action) (str? action))
                   "ACTION should be string/list." action)
-  (let [opts (or opts {})]
+  (let [opts (or ?opts {})]
     (tset opts :pattern pattern)
     (if (list? action)
         (tset opts :callback action)
         (tset opts :command action))
     `(vim.api.nvim_create_autocmd ,event ,opts)))
 
-{: gh-pkg! : nmap! : map! : set! : autocmd! : seto!}
+{: gh-pkg! : nmap! : map! : set! : autocmd! : seto! : augroup!}

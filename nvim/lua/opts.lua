@@ -1,13 +1,13 @@
 -- [nfnl] fnl/opts.fnl
 if vim.g.neovide then
-	vim.g["neovide_opacity"] = 0.8
-	vim.g["neovide_floating_blur_amount_x"] = 2
-	vim.g["floating_blur_amount_y"] = 2
-	vim.g["neovide_fullscreen"] = false
-	vim.g["neovide_cursor_animation_length"] = 0.1
-	vim.g["neovide_cursor_vfx_mode"] = "ripple"
-	vim.opt["guifont"] = "Iosevka SS02:h14"
-	vim.opt["scrolloff"] = 0
+  vim.g["neovide_opacity"] = 0.8
+  vim.g["neovide_floating_blur_amount_x"] = 2
+  vim.g["floating_blur_amount_y"] = 2
+  vim.g["neovide_fullscreen"] = false
+  vim.g["neovide_cursor_animation_length"] = 0.1
+  vim.g["neovide_cursor_vfx_mode"] = "ripple"
+  vim.opt["guifont"] = "Iosevka SS02:h14"
+  vim.opt["scrolloff"] = 0
 else
 end
 vim.opt["clipboard"] = "unnamedplus"
@@ -36,21 +36,11 @@ vim.opt["shellcmdflag"] = "-c"
 vim.opt["shellredir"] = "| save %s"
 vim.opt["updatetime"] = 300
 vim.opt["mouse"] = "a"
-vim.opt["listchars"] = { tab = "\194\187 ", nbsp = "\226\144\163", trail = "\226\128\162" }
+vim.opt["listchars"] = {tab = "\194\187 ", nbsp = "\226\144\163", trail = "\226\128\162"}
 vim.opt["guicursor"] = "n-v-sm:block,i-c-ci-ve:ver25,r-cr-o:hor20"
-vim.opt["fillchars"] = {
-	vert = "\226\149\145",
-	horiz = "\226\149\144",
-	horizup = "\226\149\169",
-	horizdown = "\226\149\166",
-	vertleft = "\226\149\163",
-	vertright = "\226\149\160",
-	verthoriz = "\226\149\172",
-	foldopen = "\239\145\188",
-	foldclose = "\239\145\160",
-}
+vim.opt["fillchars"] = {vert = "\226\149\145", horiz = "\226\149\144", horizup = "\226\149\169", horizdown = "\226\149\166", vertleft = "\226\149\163", vertright = "\226\149\160", verthoriz = "\226\149\172", foldopen = "\239\145\188", foldclose = "\239\145\160"}
 vim.opt.formatoptions:append("r")
-vim.opt.shortmess:append({ I = true, r = true })
+vim.opt.shortmess:append({I = true, r = true})
 vim.opt.diffopt:append("linematch:60")
 vim.opt["undofile"] = true
 vim.opt["list"] = true
