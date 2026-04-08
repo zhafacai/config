@@ -63,7 +63,7 @@
 (gh-pkg! :olimorris/codecompanion.nvim)
 (let [cca (require :codecompanion.adapters)
       openrouter #(cca.extend :openai_compatible
-                              {:schema {:model {:default "nvidia/nemotron-3-nano-30b-a3b:free"}}
+                              {:schema {:model {:default "nvidia/nemotron-3-super-120b-a12b:free"}}
                                ;; :choices {"google/gemma-4-31b-it:free" {}}}}
                                :env {:api_key vim.env.OPENROUTER_API_KEY
                                      :chat_url :/v1/chat/completions

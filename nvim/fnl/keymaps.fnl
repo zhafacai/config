@@ -19,6 +19,9 @@
 
 (nmap! :<C-g> :<esc><cmd>noh<cr> "Clear search highlight")
 
+(autocmd! :FileType [:mininotify-history]
+          #(nmap! :q vim.cmd.bd {:buffer true :desc "Close buffer"}))
+
 (autocmd! :FileType [:help
                      :grug-far*
                      :qf

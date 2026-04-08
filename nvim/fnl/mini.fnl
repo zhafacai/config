@@ -89,6 +89,7 @@
 (nmap! :<leader><leader> #(Snacks.picker.smart) "Smart picker")
 (nmap! :<leader>f #(Snacks.picker.grep) :Grep)
 (nmap! :<leader>hh #(Snacks.picker.help) :Help)
+(nmap! :<leader>hn #(MiniNotify.show_history) :Notifications)
 (nmap! :<leader>hr #(Snacks.picker.registers) :Registers)
 (nmap! :<leader>ha #(Snacks.picker.autocmds) :Autocmds)
 (nmap! :<leader>hc #(Snacks.picker.commands) :Commands)
