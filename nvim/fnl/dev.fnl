@@ -5,8 +5,8 @@
 
 (gh-pkg! :chrisgrieser/nvim-scissors)
 (let [scissors (require :scissors)]
-  (nmap! :<leader>se #(scissors.editSnippet) {:desc "Snippet: Edit"})
-  (map! [:n :x] :<leader>sa #(scissors.addNewSnippet) {:desc "Snippet: Add"}))
+  (nmap! :<leader>se #(scissors.editSnippet) "Snippet: Edit")
+  (map! [:n :x] :<leader>sa #(scissors.addNewSnippet) "Snippet: Add"))
 
 (gh-pkg! :mikavilpas/blink-ripgrep.nvim)
 (gh-pkg! :moyiz/blink-emoji.nvim)
@@ -41,10 +41,10 @@
 (gh-pkg! :chrisgrieser/nvim-spider)
 (let [spider-motion #(let [m $1]
                        (.. "<cmd>lua require('spider').motion('" m "')<CR>"))]
-  (map! [:n :o :x] :w (spider-motion :w))
-  (map! [:n :o :x] :e (spider-motion :e))
-  (map! [:n :o :x] :b (spider-motion :b))
-  (map! [:n :o :x] :ge (spider-motion :ge)))
+  (map! [:n :o :x] :w (spider-motion :w) "Spider: w")
+  (map! [:n :o :x] :e (spider-motion :e) "Spider: e")
+  (map! [:n :o :x] :b (spider-motion :b) "Spider: b")
+  (map! [:n :o :x] :ge (spider-motion :ge) "Spider: ge"))
 
 (gh-pkg! :farmergreg/vim-lastplace)
 
@@ -53,12 +53,12 @@
 
 (gh-pkg! :folke/flash.nvim {:setup {:label {:uppercase false}}})
 (let [flash (require :flash)]
-  (map! [:n :x :o] :<c-s> #(flash.jump))
-  (nmap! :S #(flash.treesitter))
+  (map! [:n :x :o] :<c-s> #(flash.jump) "Flash jump")
+  (nmap! :S #(flash.treesitter) "Flash treesitter")
   ;; NOTE these mappings are used by textobjs
   ;; (map! :o :r #(flash.remote))
   ;; (map! [:o :x] :R #(flash.treesitter_search))
-  (map! :c :<c-s> #(flash.toggle)))
+  (map! :c :<c-s> #(flash.toggle) "Flash toggle"))
 
 ;; Treesitter
 (gh-pkg! :nvim-treesitter/nvim-treesitter)
@@ -88,7 +88,7 @@
 (gh-pkg! :kristijanhusak/vim-dadbod-ui)
 (gh-pkg! :tpope/vim-dadbod)
 (gh-pkg! :kristijanhusak/vim-dadbod-completion)
-(nmap! :<leader>td #(vim.cmd.DBUIToggle) {:desc "DBUI toggle"})
+(nmap! :<leader>td #(vim.cmd.DBUIToggle) "DBUI toggle")
 
 ;; Comments
 (gh-pkg! :folke/ts-comments.nvim)
@@ -120,27 +120,25 @@
   (gh-pkg! :nvim-neotest/neotest {:setup {:adapters [py vi rt]}}))
 
 (let [nt (require :neotest)]
-  (nmap! :<leader>tf #(nt.run.run (vim.fn.expand "%")) {:desc "test file"})
-  (nmap! :<leader>tt #(nt.run.run) {:desc "test nearest"})
-  (nmap! :<leader>tw #(nt.watch.toggle) {:desc "test watch"})
-  (nmap! :<leader>to #(nt.output_panel.toggle) {:desc "test output_panel"})
-  (nmap! :<leader>ts #(nt.summary.toggle) {:desc "test summary"}))
+  (nmap! :<leader>tf #(nt.run.run (vim.fn.expand "%")) "test file")
+  (nmap! :<leader>tt #(nt.run.run) "test nearest")
+  (nmap! :<leader>tw #(nt.watch.toggle) "test watch")
+  (nmap! :<leader>to #(nt.output_panel.toggle) "test output_panel")
+  (nmap! :<leader>ts #(nt.summary.toggle) "test summary"))
 
-;; log
-(gh-pkg! :andrewferrier/debugprint.nvim {:setup {}})
 ;; fstring
 ; (gh-pkg! :chrisgrieser/nvim-puppeteer)
 
 (gh-pkg! :chrisgrieser/nvim-chainsaw {:setup {} :name :chainsaw})
 (let [cs (require :chainsaw)]
-  (nmap! :gll #(cs.variableLog))
-  (nmap! :glo #(cs.objectLog))
-  (nmap! :glt #(cs.typeLog))
-  (nmap! :gla #(cs.assertLog))
-  (nmap! :gle #(cs.emojiLog))
-  (nmap! :glm #(cs.messageLog))
-  (nmap! :glt #(cs.timeLog))
-  (nmap! :gls #(cs.stacktraceLog))
-  (nmap! :glc #(cs.clearLog))
-  (nmap! :glr #(cs.removeLog))
-  (nmap! :gld #(cs.debugLog)))
+  (nmap! :gll #(cs.variableLog) "Chainsaw: log variable")
+  (nmap! :glo #(cs.objectLog) "Chainsaw: log object")
+  (nmap! :glt #(cs.typeLog) "Chainsaw: log type")
+  (nmap! :gla #(cs.assertLog) "Chainsaw: log assert")
+  (nmap! :gle #(cs.emojiLog) "Chainsaw: log emoji")
+  (nmap! :glm #(cs.messageLog) "Chainsaw: log message")
+  (nmap! :glt #(cs.timeLog) "Chainsaw: log time")
+  (nmap! :gls #(cs.stacktraceLog) "Chainsaw: log stacktrace")
+  (nmap! :glc #(cs.clearLog) "Chainsaw: clear log")
+  (nmap! :glr #(cs.removeLog) "Chainsaw: remove log")
+  (nmap! :gld #(cs.debugLog) "Chainsaw: debug log"))

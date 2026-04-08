@@ -1,23 +1,23 @@
 (import-macros {: map! : nmap! : autocmd!} :macros)
 
-(nmap! :<leader>r :<CMD>restart<CR> {:desc :restart})
+(nmap! :<leader>r :<CMD>restart<CR> :restart)
 
 ;; Emacs keybinds
-(map! [:c :i] :<C-a> :<Home> {:desc "Move to beginning of line"})
-(map! [:c :i :n] :<C-e> :<End> {:desc "Move to end of line"})
-(map! [:c :i] :<C-b> :<Left> {:desc "Move backward"})
-(map! [:c :i] :<C-f> :<Right> {:desc "Move forward"})
-(map! [:c] :<C-g> :<C-c> {:desc :quit})
-(map! [:x :t] :<C-g> :<ESC> {:desc :quit})
-(nmap! :<a-x> ":")
+(map! [:c :i] :<C-a> :<Home> "Move to beginning of line")
+(map! [:c :i :n] :<C-e> :<End> "Move to end of line")
+(map! [:c :i] :<C-b> :<Left> "Move backward")
+(map! [:c :i] :<C-f> :<Right> "Move forward")
+(map! [:c] :<C-g> :<C-c> :quit)
+(map! [:x :t] :<C-g> :<ESC> :quit)
+(nmap! :<a-x> ":" "Enter command mode")
 
-(map! :v :J :5j)
-(map! :v :K :5k)
+(map! :v :J :5j "Move down 5 lines")
+(map! :v :K :5k "Move up 5 lines")
 
-(nmap! :j :gj)
-(nmap! :k :gk)
+(nmap! :j :gj "Move down (visual)")
+(nmap! :k :gk "Move up (visual)")
 
-(nmap! :<C-g> :<esc><cmd>noh<cr>)
+(nmap! :<C-g> :<esc><cmd>noh<cr> "Clear search highlight")
 
 (autocmd! :FileType [:help
                      :grug-far*
@@ -33,9 +33,10 @@
                      :octo
                      :text]
           #(do
-             (nmap! :q vim.cmd.q {:buffer true})
-             (nmap! :gq :q {:buffer true})))
+             (nmap! :q vim.cmd.q {:buffer true :desc "Close window"})
+             (nmap! :gq :q {:buffer true :desc "Record macro"})))
 
 (autocmd! :LspAttach "*"
           #(do
-             (nmap! :gd vim.lsp.buf.definition {:buffer true})))
+             (nmap! :gd vim.lsp.buf.definition
+                    {:buffer true :desc "Go to definition"})))

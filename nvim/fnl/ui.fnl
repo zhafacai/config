@@ -36,19 +36,19 @@
 
 (gh-pkg! :kevinhwang91/nvim-hlslens {:setup {} :name :hlslens})
 (let [hlslens "<Cmd>lua require('hlslens').start()<CR>"]
-  (nmap! :n (.. "<Cmd>execute('normal! ' . v:count1 . 'n')<CR>" hlslens))
-  (nmap! :N (.. "<Cmd>execute('normal! ' . v:count1 . 'N')<CR>" hlslens))
-  (nmap! "*" (.. "*" hlslens))
-  (nmap! "#" (.. "#" hlslens))
-  (nmap! :g* (.. :g* hlslens))
-  (nmap! "g#" (.. "g#" hlslens)))
+  (nmap! :n (.. "<Cmd>execute('normal! ' . v:count1 . 'n')<CR>" hlslens) "Search next with hlslens")
+  (nmap! :N (.. "<Cmd>execute('normal! ' . v:count1 . 'N')<CR>" hlslens) "Search prev with hlslens")
+  (nmap! "*" (.. "*" hlslens) "Search word forward")
+  (nmap! "#" (.. "#" hlslens) "Search word backward")
+  (nmap! :g* (.. :g* hlslens) "Search word forward (no bounds)")
+  (nmap! "g#" (.. "g#" hlslens) "Search word backward (no bounds)"))
 
 (gh-pkg! :chrisgrieser/nvim-origami {:setup {} :name :origami})
 
 (gh-pkg! :folke/todo-comments.nvim {:setup {}})
 (let [todo (require :todo-comments)]
-  (nmap! "]t" #(todo.jump_next) {:desc "Next Todo Comment"})
-  (nmap! "[t" #(todo.jump_prev) {:desc "Previous Todo Comment"}))
+  (nmap! "]t" #(todo.jump_next) "Next Todo Comment")
+  (nmap! "[t" #(todo.jump_prev) "Previous Todo Comment"))
 
 (gh-pkg! :rebelot/kanagawa.nvim)
 (vim.cmd "colorscheme kanagawa")

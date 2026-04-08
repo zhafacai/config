@@ -5,16 +5,16 @@
 (gh-pkg! :rktjmp/paperplanes.nvim {:setup {}})
 
 (gh-pkg! :NeogitOrg/neogit {:setup {}})
-(nmap! :<leader>gg :<cmd>Neogit<CR>)
+(nmap! :<leader>gg :<cmd>Neogit<CR> "Open Neogit")
 
 (gh-pkg! :esmuellert/codediff.nvim {:setup {}})
-(nmap! :<leader>gd :<cmd>CodeDiff<CR>)
+(nmap! :<leader>gd :<cmd>CodeDiff<CR> "Open CodeDiff")
 
 (gh-pkg! :MagicDuck/grug-far.nvim {:setup {}})
-(nmap! :<leader>sf :<cmd>GrugFar<CR>)
+(nmap! :<leader>sf :<cmd>GrugFar<CR> "Open GrugFar")
 
 (gh-pkg! :mikavilpas/yazi.nvim {:setup {}})
-(nmap! :<a-e> :<cmd>Yazi<cr>)
+(nmap! :<a-e> :<cmd>Yazi<cr> "Open Yazi")
 
 (gh-pkg! :nvzone/volt)
 (gh-pkg! :nvzone/floaterm
@@ -22,7 +22,7 @@
                               {:name :Terminal}
                               {:name :Terminal}]}})
 
-(map! [:n :t] :<a-i> :<CMD>FloatermToggle<CR> {:desc "Toggle floaterm"})
+(map! [:n :t] :<a-i> :<CMD>FloatermToggle<CR> "Toggle floaterm")
 
 (set! g loaded_netrwPlugin 1)
 (gh-pkg! :stevearc/oil.nvim
@@ -40,7 +40,7 @@
                                                    (oil.set_columns [:icon]))))
                                  :desc "Toggle file detail view"}}}})
 
-(nmap! "-" :<CMD>Oil<CR> {:desc "Open parent directory"})
+(nmap! "-" :<CMD>Oil<CR> "Open parent directory")
 
 (gh-pkg! :stevearc/conform.nvim
          {:setup {:format_on_save {:timeout_ms 500 :lsp_format :fallback}
@@ -69,7 +69,7 @@
 ;         ,}
 ;
 (gh-pkg! :HakonHarnes/img-clip.nvim {:setup {}})
-(nmap! :<leader>p :<Cmd>PasteImage<CR>)
+(nmap! :<leader>p :<Cmd>PasteImage<CR> "Paste image")
 (gh-pkg! :olimorris/codecompanion.nvim
          {:setup {:interactions {:chat {:adapter :opencode}
                                  :cli {:agent :opencode
@@ -78,14 +78,11 @@
                                                            :description "OpenCode Cli"
                                                            :provider :terminalj}}}}}})
 
-(nmap! :<leader>cp :<cmd>CodeCompanion<CR> {:desc "Toggle CodeCompanion panel"})
-(nmap! :<leader>cc :<cmd>CodeCompanionChat<CR>
-       {:desc "Open CodeCompanion chat"})
+(nmap! :<leader>cp :<cmd>CodeCompanion<CR> "Toggle CodeCompanion panel")
+(nmap! :<leader>cc :<cmd>CodeCompanionChat<CR> "Open CodeCompanion chat")
 
-(nmap! :<leader>ca :<cmd>CodeCompanionActions<CR>
-       {:desc "Open CodeCompanion actions"})
+(nmap! :<leader>ca :<cmd>CodeCompanionActions<CR> "Open CodeCompanion actions")
 
-(nmap! :<leader>cr :<cmd>CodeCompanionReview<CR>
-       {:desc "Review code with CodeCompanion"})
+(nmap! :<leader>cr :<cmd>CodeCompanionReview<CR> "Review code with CodeCompanion")
 
 (vim.cmd "cab cc CodeCompanion")
