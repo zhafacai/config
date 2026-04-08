@@ -1,4 +1,4 @@
-(import-macros {: gh-pkg! : nmap!} :macros)
+(import-macros {: gh-pkg! : nmap! : autocmd!} :macros)
 
 (gh-pkg! :nvim-mini/mini.statusline {:setup {}})
 (gh-pkg! :nvim-mini/mini.icons {:setup {}})
@@ -103,3 +103,6 @@
 (nmap! :<leader>ss #(Snacks.scratch) "Scratch buffer")
 (nmap! :<leader>sS #(Snacks.scratch.select) "Select scratch")
 (nmap! :<leader>sI #(Snacks.picker.icons) :Icons)
+
+(autocmd! :User :SnacksDashboardOpened
+          #(tset vim.b $1.buf :miniindentscope_disable true))
