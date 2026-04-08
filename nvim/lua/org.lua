@@ -7,11 +7,11 @@ vim.pack.add({
 	{ src = "https://github.com/nvim-orgmode/org-bullets.nvim" },
 })
 
--- local org_dir = vim.fn.expand("~/notes")
+local od = vim.fn.expand("~/notes")
 
 vim.g.denote = {
 	filetype = "org",
-	directory = "~/orgfiles/",
+	directory = od .. "/denote/",
 	prompts = { "title", "keywords" },
 	integrations = {
 		oil = true,
@@ -19,8 +19,8 @@ vim.g.denote = {
 	},
 }
 require("orgmode").setup({
-	org_agenda_files = "~/orgfiles/**/*",
-	org_default_notes_file = "~/orgfiles/refile.org",
+	org_agenda_files = od .. "/agenda/*",
+	org_default_notes_file = od .. "/refile.org",
 	org_startup_indented = true,
 	hyperlinks = {
 		sources = {
@@ -39,7 +39,7 @@ require("orgmode").setup({
 })
 
 require("org-super-agenda").setup({
-	org_files = { "~/orgfiles/refile.org" },
+	org_files = { od .. "/refile.org" },
 })
 
 require("org-bullets").setup()
@@ -53,7 +53,6 @@ vim.keymap.set("n", "<leader>nn", "<cmd>Denote<cr>")
 vim.keymap.set("n", "<leader>sd", "<cmd>Telescope denote search<cr>")
 
 vim.api.nvim_create_autocmd("FileType", {
-
 	pattern = "org",
 	callback = function(ev)
 		local tom = require("telescope-orgmode")
