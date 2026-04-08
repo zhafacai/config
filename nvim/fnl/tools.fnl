@@ -56,18 +56,6 @@
 
 (gh-pkg! :benoror/gpg.nvim)
 ; (gh-pkg! :icarios-dev/privymd.nvim {:setup {}})
-; return {
-;         "HakonHarnes/img-clip.nvim",
-;         event = "VeryLazy",
-;         opts = {
-;                 -- add options here
-;                 -- or leave it empty to use the default settings}
-;         ,
-;         keys = {
-;                 -- suggested keymap
-;                 { "<leader>p", "<cmd>PasteImage<cr>", desc = "Paste image from system clipboard" },}
-;         ,}
-;
 (gh-pkg! :HakonHarnes/img-clip.nvim {:setup {}})
 (nmap! :<leader>p :<Cmd>PasteImage<CR> "Paste image")
 (gh-pkg! :olimorris/codecompanion.nvim
