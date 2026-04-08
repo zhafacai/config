@@ -12,9 +12,25 @@
 
 (lambda set! [scope key ?value]
   "Set a scoped variable or option value.
-   Scopes: :g (global), :w (window), :b (buffer).
-   Options: :o (vim.opt). Handles %+ append, %- remove, :no toggle.
-   Arguments: scope keyword/sym, key string/sym, ?value optional."
+
+  Scopes: :g (global), :w (window), :b (buffer).
+  Options: :o (vim.opt). Handles + append, - remove, no disable.
+
+  Usage:
+    (set! g myvar 123)
+    (set! b myvar \"value\")
+    (set! o wrap)
+    (set! o nornu)
+    (set! o +path \"~/foo\")
+    (set! o -path \"~/bar\")
+
+  Expands to:
+    (tset vim.g.myvar 123)
+    (tset vim.b.myvar \"value\")
+    (tset vim.opt.wrap true)
+    (tset vim.opt.rnu false)
+    (: (. vim.opt :path) :append \"~/foo\")
+    (: (. vim.opt :path) :remove \"~/bar\")"
   (assert-compile (sym? scope) "expected sym for scope")
   (assert-compile (sym? key) "expected sym for key")
   (let [scope (->str scope)
@@ -41,14 +57,17 @@
 
 (fn pkg! [host url opts]
   "Pack a plugin from a given host and repository URL.
-  
+
   Usage:
-    (pkg! \"https://github.com/\" \"username/repo\" {:setup ... :name ...})
-  
+    (pkg! \"https://github.com/\" \"username/repo\" {:setup fn})
+
   Args:
     - host: Base URL host (string)
     - url: Repository path (string)
-    - opts: Configuration table with optional :setup and :name keys"
+    - opts: Configuration table with :setup and :name keys
+
+  Example:
+    (pkg! \"https://github.com/\" \"neovim/nvim-lspconfig\" {:setup #()})"
   (assert-compile (str? host) "HOST should be string." host)
   (assert-compile (str? url) "URL should be string." url)
   (let [opts (or opts {})
@@ -65,10 +84,13 @@
           `((. (require ,module-name) :setup) ,setup-val)))))
 
 (fn gh-pkg! [url opts]
-  "Pack a plugin specifically from GitHub using a repository path.
-  
+  "Pack a plugin specifically from GitHub.
+
   Usage:
-    (gh-pkg! \"username/repo\" {:setup ... :name ...})"
+    (gh-pkg! \"neovim/nvim-lspconfig\" {:setup {}})
+
+  Alias for:
+    (pkg! \"https://github.com/\" \"neovim/nvim-lspconfig\" opts)"
   (pkg! "https://github.com/" url opts))
 
 (lambda map! [mode lhs rhs ?opts]
@@ -97,11 +119,17 @@
   (map! :n lhs rhs ?opts))
 
 (fn augroup! [name & body]
-  "Create an augroup with nested autocmds, Vimscript-style.\r
-   Usage:\r
-     (augroup! :mydata\r
-       (autocmd! :BufWritePost \"*.fnl\" handler)\r
-       (autocmd! :BufReadPost \"*.fnl\" handler2 {:desc \"Load\"}))"
+  "Create an augroup with nested autocmds, Vimscript-style.
+
+  Usage:
+    (augroup! :mydata
+      (autocmd! :BufWritePost \"*.fnl\" handler)
+      (autocmd! :BufReadPost \"*.fnl\" handler2 {:desc \"Load\"}))
+
+  Expands to:
+    (let [group `(vim.api.nvim_create_augroup \"mydata\" {:clear true})]
+      [(autocmd! :BufWritePost \"*.fnl\" handler {:group group})
+       (autocmd! :BufReadPost \"*.fnl\" handler2 {:desc \"Load\" :group group})])"
   (let [group (tostring name)]
     (let [group `(vim.api.nvim_create_augroup ,group {:clear true})]
       (fcollect [i 1 (length body)]
@@ -117,10 +145,11 @@
 
 (lambda autocmd! [event pattern action ?opts]
   "Create a custom autocommand event handler.
-  
+
   Usage:
-    (autocmd! :BufWritePost \"*.fnl\" #(print \"Saved!\") {:desc \"On save\")
-  
+    (autocmd! :BufWritePost \"*.fnl\" #(print \"Saved!\"))
+    (autocmd! :BufWritePost \"*.fnl\" #(print \"Saved!\") {:desc \"On save\"})
+
   Expands to:
     (vim.api.nvim_create_autocmd :BufWritePost {:pattern \"*.fnl\" :callback ...})"
   (assert-compile (or (list? action) (str? action))
