@@ -10,7 +10,9 @@
 
 (gh-pkg! :mikavilpas/blink-ripgrep.nvim)
 (gh-pkg! :moyiz/blink-emoji.nvim)
-(gh-pkg! :xzbdmw/colorful-menu.nvim {:setup true})
+;; NOTE: maybe drop these fancy plugins when blink.cmp is ready.
+(gh-pkg! :xzbdmw/colorful-menu.nvim {:setup {}})
+(gh-pkg! :onsails/lspkind.nvim)
 (gh-pkg! :saghen/blink.cmp {:version (vim.version.range "*")})
 
 ;; Lsp

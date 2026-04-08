@@ -24,6 +24,10 @@ do
 end
 do
   vim.pack.add({{src = "https://github.com/xzbdmw/colorful-menu.nvim"}})
+  require("colorful-menu").setup({})
+end
+do
+  vim.pack.add({{src = "https://github.com/onsails/lspkind.nvim"}})
 end
 do
   vim.pack.add({{src = "https://github.com/saghen/blink.cmp", version = vim.version.range("*")}})

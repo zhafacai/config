@@ -137,6 +137,11 @@ require("blink.cmp").setup({
 							return require("colorful-menu").blink_components_highlight(ctx)
 						end,
 					},
+					kind_icon = {
+						text = function(ctx)
+							return require("lspkind").symbol_map[ctx.kind] or ""
+						end,
+					},
 				},
 			},
 		},
