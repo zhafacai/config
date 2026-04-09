@@ -9,6 +9,7 @@
 (map! [:c :i] :<C-f> :<Right> "Move forward")
 (map! [:c] :<C-g> :<C-c> :quit)
 (map! [:x :t] :<C-g> :<ESC> :quit)
+(nmap! :<C-g> :<esc><cmd>noh<cr> "Clear search highlight")
 (nmap! :<a-x> ":" "Enter command mode")
 
 (map! :v :J :5j "Move down 5 lines")
@@ -16,8 +17,6 @@
 
 (nmap! :j :gj "Move down (visual)")
 (nmap! :k :gk "Move up (visual)")
-
-(nmap! :<C-g> :<esc><cmd>noh<cr> "Clear search highlight")
 
 (autocmd! :FileType [:mininotify-history]
           #(nmap! :q vim.cmd.bd {:buffer true :desc "Close buffer"}))

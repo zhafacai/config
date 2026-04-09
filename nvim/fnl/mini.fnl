@@ -27,6 +27,7 @@
 ; (nmap! :<leader>hh "<cmd>Pick help<CR>")
 ; (gh-pkg! :nvim-mini/mini.starter {:setup {:evaluate_single true}})
 (gh-pkg! :nvim-mini/mini.sessions {:setup {}})
+(nmap! :<leader>S :<cmd>mksession<CR>)
 
 (let [keys [{:action ":lua Snacks.dashboard.pick('files')"
              :desc "Find File"
