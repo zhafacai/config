@@ -78,6 +78,8 @@
         pack-opts (collect [k v (pairs opts)]
                     (if (and (not= k :name) (not= k :setup)) (values k v)))]
     (tset pack-opts :src (.. host url))
+    (when (. opts :name)
+      (tset pack-opts :name module-name))
     `(do
        (vim.pack.add [,pack-opts])
        ,(when (table? setup-val)

@@ -43,7 +43,7 @@ do
   require("mini.bracketed").setup({treesitter = {suffix = ""}})
 end
 do
-  vim.pack.add({{src = "https://github.com/nvim-mini/mini-git"}})
+  vim.pack.add({{name = "mini.git", src = "https://github.com/nvim-mini/mini-git"}})
   require("mini.git").setup({})
 end
 do

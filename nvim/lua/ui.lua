@@ -41,11 +41,11 @@ do
   require("ccc").setup({})
 end
 do
-  vim.pack.add({{src = "https://github.com/catgoose/nvim-colorizer.lua"}})
+  vim.pack.add({{name = "colorizer", src = "https://github.com/catgoose/nvim-colorizer.lua"}})
   require("colorizer").setup({})
 end
 do
-  vim.pack.add({{src = "https://github.com/kevinhwang91/nvim-hlslens"}})
+  vim.pack.add({{name = "hlslens", src = "https://github.com/kevinhwang91/nvim-hlslens"}})
   require("hlslens").setup({})
 end
 do
@@ -58,7 +58,7 @@ do
   vim.keymap.set("n", "g#", ("g#" .. hlslens), {desc = "Search word backward (no bounds)"})
 end
 do
-  vim.pack.add({{src = "https://github.com/chrisgrieser/nvim-origami"}})
+  vim.pack.add({{name = "origami", src = "https://github.com/chrisgrieser/nvim-origami"}})
   require("origami").setup({})
 end
 do
@@ -99,9 +99,9 @@ do
   vim.pack.add({{src = "https://github.com/ellisonleao/gruvbox.nvim"}})
 end
 do
-  vim.pack.add({{src = "https://github.com/catppuccin/nvim"}})
+  vim.pack.add({{name = "catppuccin", src = "https://github.com/catppuccin/nvim"}})
 end
 do
-  vim.pack.add({{src = "https://github.com/everviolet/nvim"}})
+  vim.pack.add({{name = "everviolet", src = "https://github.com/everviolet/nvim"}})
 end
 return vim.cmd.colorscheme("kanagawa")

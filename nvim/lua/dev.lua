@@ -79,7 +79,7 @@ do
   vim.pack.add({{src = "https://github.com/farmergreg/vim-lastplace"}})
 end
 do
-  vim.pack.add({{src = "https://github.com/max397574/better-escape.nvim"}})
+  vim.pack.add({{name = "better_escape", src = "https://github.com/max397574/better-escape.nvim"}})
   require("better_escape").setup({mappings = {t = {j = {k = false}}}})
 end
 do
@@ -120,7 +120,7 @@ do
   require("nvim-ts-autotag").setup({})
 end
 do
-  vim.pack.add({{src = "https://github.com/chrisgrieser/nvim-various-textobjs"}})
+  vim.pack.add({{name = "various-textobjs", src = "https://github.com/chrisgrieser/nvim-various-textobjs"}})
   require("various-textobjs").setup({keymaps = {useDefaults = true}})
 end
 vim.g["db_ui_use_nerd_fonts"] = 1
@@ -208,7 +208,7 @@ do
   vim.pack.add({{src = "https://github.com/chrisgrieser/nvim-puppeteer"}})
 end
 do
-  vim.pack.add({{src = "https://github.com/chrisgrieser/nvim-chainsaw"}})
+  vim.pack.add({{name = "chainsaw", src = "https://github.com/chrisgrieser/nvim-chainsaw"}})
   require("chainsaw").setup({})
 end
 local cs = require("chainsaw")
