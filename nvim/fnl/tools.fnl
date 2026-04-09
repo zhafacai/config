@@ -66,7 +66,13 @@
 (let [cca (require :codecompanion.adapters)
       openrouter #(cca.extend :openai_compatible
                               {:schema {:model {:default "nvidia/nemotron-3-super-120b-a12b:free"
-                                                :choices {:black-forest-labs/flux.2-klein-4b {}}}}
+                                                :choices ["nvidia/nemotron-3-super-120b-a12b:free"
+                                                          "minimax/minimax-m2.5:free"
+                                                          "arcee-ai/trinity-large-preview:free"
+                                                          "google/gemma-4-26b-a4b-it:free"
+                                                          "google/gemma-4-31b-it:free"
+                                                          "liquid/lfm-2.5-1.2b-instruct:free"
+                                                          "liquid/lfm-2.5-1.2b-thinking:free"]}}
                                :env {:api_key vim.env.OPENROUTER_API_KEY
                                      :chat_url :/v1/chat/completions
                                      :url "https://openrouter.ai/api"}})]
