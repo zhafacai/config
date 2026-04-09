@@ -1,7 +1,6 @@
 -- [nfnl] fnl/mini.fnl
 do
   vim.pack.add({{src = "https://github.com/nvim-mini/mini.statusline"}})
-  require("mini.statusline").setup({})
 end
 do
   vim.pack.add({{src = "https://github.com/nvim-mini/mini.icons"}})
@@ -97,7 +96,7 @@ local function _8_()
 end
 vim.keymap.set("n", "<leader>hd", _8_, {desc = "Diagnostics"})
 local function _9_()
-  return Snacks.picker.highlight()
+  return Snacks.picker.highlights()
 end
 vim.keymap.set("n", "<leader>hl", _9_, {desc = "Highlights"})
 local function _10_()
@@ -136,4 +135,5 @@ local function _18_(_241)
   vim.b[_241.buf]["miniindentscope_disable"] = true
   return nil
 end
-return vim.api.nvim_create_autocmd("User", {callback = _18_, pattern = "SnacksDashboardOpened"})
+vim.api.nvim_create_autocmd("User", {callback = _18_, pattern = "SnacksDashboardOpened"})
+return require("zfc.mini")

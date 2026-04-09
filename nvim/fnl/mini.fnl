@@ -1,6 +1,6 @@
 (import-macros {: gh-pkg! : nmap! : autocmd! : augroup!} :macros)
 
-(gh-pkg! :nvim-mini/mini.statusline {:setup {}})
+(gh-pkg! :nvim-mini/mini.statusline)
 (gh-pkg! :nvim-mini/mini.icons {:setup {}})
 (gh-pkg! :nvim-mini/mini.diff {:setup {}})
 (gh-pkg! :nvim-mini/mini.operators
@@ -94,7 +94,7 @@
 (nmap! :<leader>ha #(Snacks.picker.autocmds) :Autocmds)
 (nmap! :<leader>hc #(Snacks.picker.commands) :Commands)
 (nmap! :<leader>hd #(Snacks.picker.diagnostics) :Diagnostics)
-(nmap! :<leader>hl #(Snacks.picker.highlight) :Highlights)
+(nmap! :<leader>hl #(Snacks.picker.highlights) :Highlights)
 (nmap! :<leader>hk #(Snacks.picker.keymaps) :Keymaps)
 (nmap! :<leader>hm #(Snacks.picker.marks) :Marks)
 (nmap! :<leader>ho #(Snacks.picker.colorschemes) :Colorschemes)
@@ -106,3 +106,5 @@
 
 (autocmd! :User :SnacksDashboardOpened
           #(tset vim.b $1.buf :miniindentscope_disable true))
+
+(require :zfc.mini)

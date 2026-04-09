@@ -14,6 +14,7 @@
 (gh-pkg! :xzbdmw/colorful-menu.nvim {:setup {}})
 (gh-pkg! :onsails/lspkind.nvim)
 (gh-pkg! :saghen/blink.cmp {:version (vim.version.range "*")})
+(require :zfc.blink)
 
 ;; Lsp
 (gh-pkg! :neovim/nvim-lspconfig)

@@ -32,6 +32,7 @@ end
 do
   vim.pack.add({{src = "https://github.com/saghen/blink.cmp", version = vim.version.range("*")}})
 end
+require("zfc.blink")
 do
   vim.pack.add({{src = "https://github.com/neovim/nvim-lspconfig"}})
 end

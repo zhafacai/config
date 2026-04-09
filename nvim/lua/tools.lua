@@ -51,7 +51,7 @@ end
 vim.keymap.set("n", "-", "<CMD>Oil<CR>", {desc = "Open parent directory"})
 do
   vim.pack.add({{src = "https://github.com/stevearc/conform.nvim"}})
-  require("conform").setup({format_on_save = {timeout_ms = 500, lsp_format = "fallback"}, formatters_by_ft = {lua = {"stylua"}, sh = {"shfmt"}, markdown = {"rumdl"}, python = {"black"}, fennel = {"fnlfmt"}, nix = {"nixfmt"}, rust = {"rustfmt"}}})
+  require("conform").setup({format_on_save = {timeout_ms = 500, lsp_format = "fallback"}, formatters_by_ft = {lua = {"stylua"}, sh = {"shfmt"}, markdown = {"rumdl"}, python = {"black"}, fennel = {"fnlfmt"}, nix = {"nixfmt"}, json = {"jq"}, rust = {"rustfmt"}}})
 end
 do
   vim.pack.add({{src = "https://github.com/lambdalisue/vim-suda"}})
@@ -71,7 +71,7 @@ do
   local cca = require("codecompanion.adapters")
   local openrouter
   local function _3_()
-    return cca.extend("openai_compatible", {schema = {model = {default = "nvidia/nemotron-3-super-120b-a12b:free"}}, env = {api_key = vim.env.OPENROUTER_API_KEY, chat_url = "/v1/chat/completions", url = "https://openrouter.ai/api"}})
+    return cca.extend("openai_compatible", {schema = {model = {default = "nvidia/nemotron-3-super-120b-a12b:free", choices = {["black-forest-labs/flux.2-klein-4b"] = {}}}}, env = {api_key = vim.env.OPENROUTER_API_KEY, chat_url = "/v1/chat/completions", url = "https://openrouter.ai/api"}})
   end
   openrouter = _3_
   vim.pack.add({{src = "https://github.com/olimorris/codecompanion.nvim"}})
