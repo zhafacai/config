@@ -48,8 +48,9 @@ vim.keymap.set("n", "<leader>oA", "<cmd>OrgSuperAgenda!<cr>")
 
 -- Denote:
 vim.keymap.set("n", "<leader>nn", "<cmd>Denote<cr>")
+vim.keymap.set("n", "<leader>ns", "<cmd>DenoteSearch<cr>")
 vim.keymap.set("n", "<leader>nl", "<cmd>DenoteInsertLink<cr>")
-vim.keymap.set("n", "<leader>nb", "<cmd>DenoteBackLinks<cr>")
+vim.keymap.set("n", "<leader>nb", "<cmd>DenoteBacklinks<cr>")
 
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "org",
