@@ -157,6 +157,10 @@ do
   vim.lsp.config("jsonls", {settings = {json = {schemas = scm.json.schemas(), validate = {enable = true}}}})
 end
 do
+  vim.pack.add({{src = "https://github.com/moonbit-community/moonbit.nvim"}})
+  require("moonbit").setup({})
+end
+do
   vim.pack.add({{src = "https://github.com/nvim-neotest/nvim-nio"}})
 end
 do
@@ -171,9 +175,10 @@ end
 do
   local py = require("neotest-python")
   local vi = require("neotest-vitest")
+  local mn = require("neotest-moonbit")
   local rt = require("rustaceanvim.neotest")
   vim.pack.add({{src = "https://github.com/nvim-neotest/neotest"}})
-  require("neotest").setup({adapters = {py, vi, rt}})
+  require("neotest").setup({adapters = {py, vi, rt, mn}})
 end
 do
   local nt = require("neotest")

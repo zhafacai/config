@@ -111,6 +111,9 @@
                   {:settings {:json {:schemas (scm.json.schemas)
                                      :validate {:enable true}}}}))
 
+;; moonbit
+(gh-pkg! :moonbit-community/moonbit.nvim {:setup {}})
+
 ;; test
 (gh-pkg! :nvim-neotest/nvim-nio)
 (gh-pkg! :nvim-neotest/neotest-python)
@@ -118,8 +121,9 @@
 (gh-pkg! :nvim-neotest/neotest)
 (let [py (require :neotest-python)
       vi (require :neotest-vitest)
+      mn (require :neotest-moonbit)
       rt (require :rustaceanvim.neotest)]
-  (gh-pkg! :nvim-neotest/neotest {:setup {:adapters [py vi rt]}}))
+  (gh-pkg! :nvim-neotest/neotest {:setup {:adapters [py vi rt mn]}}))
 
 (let [nt (require :neotest)]
   (nmap! :<leader>tf #(nt.run.run (vim.fn.expand "%")) "test file")
