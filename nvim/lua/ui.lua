@@ -79,4 +79,7 @@ end
 do
   vim.pack.add({{src = "https://github.com/rebelot/kanagawa.nvim"}})
 end
-return vim.cmd("colorscheme kanagawa")
+do
+  vim.pack.add({{src = "https://github.com/nyoom-engineering/oxocarbon.nvim"}})
+end
+return vim.cmd.colorscheme("kanagawa-dragon")

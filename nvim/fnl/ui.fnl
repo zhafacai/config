@@ -53,4 +53,6 @@
   (nmap! "[t" #(todo.jump_prev) "Previous Todo Comment"))
 
 (gh-pkg! :rebelot/kanagawa.nvim)
-(vim.cmd "colorscheme kanagawa")
+(gh-pkg! :nyoom-engineering/oxocarbon.nvim)
+; (vim.cmd.colorscheme :oxocarbon)
+(vim.cmd.colorscheme :kanagawa-dragon)

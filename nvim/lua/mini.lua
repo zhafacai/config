@@ -110,7 +110,7 @@ vim.keymap.set("n", "<leader>hm", _11_, {desc = "Marks"})
 local function _12_()
   return Snacks.picker.colorschemes()
 end
-vim.keymap.set("n", "<leader>ho", _12_, {desc = "Colorschemes"})
+vim.keymap.set("n", "<leader>hs", _12_, {desc = "Colorschemes"})
 local function _13_()
   return Snacks.gitbrowse()
 end

@@ -310,6 +310,10 @@
       "rev": "1ab7b456020de8bdaed7d8135b5376a0b4419b11",
       "src": "https://github.com/nvim-orgmode/orgmode"
     },
+    "oxocarbon.nvim": {
+      "rev": "a7ba74849a00546a311f8c146320b433900393e7",
+      "src": "https://github.com/nyoom-engineering/oxocarbon.nvim"
+    },
     "paperplanes.nvim": {
       "rev": "dfe43f895ec6f43f4a0a2af006ee74c79e5e1028",
       "src": "https://github.com/rktjmp/paperplanes.nvim"
