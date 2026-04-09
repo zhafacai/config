@@ -14,7 +14,7 @@
   "Set a scoped variable or option value.
 
   Scopes: :g (global), :w (window), :b (buffer).
-  Options: :o (vim.opt). Handles + append, - remove, no disable.
+  Options: :o (vim.opt). + append, - remove, no disable.
 
   Usage:
     (set! g myvar 123)
@@ -55,29 +55,35 @@
 (fn str? [s]
   (= :string (type s)))
 
-(fn pkg! [host url opts]
+(lambda pkg! [host repo ?opts]
   "Pack a plugin from a given host and repository URL.
 
   Usage:
-    (pkg! \"https://github.com/\" \"username/repo\" {:setup fn})
+    (pkg! \"https://github.com/\" \"username/repo\" {:setup {}})
+    (pkg! \"https://github.com/\" \"username/repo\" {:setup {} :name another})
 
   Args:
     - host: Base URL host (string)
-    - url: Repository path (string)
+    - repo: Repository path (string)
     - opts: Configuration table with :setup and :name keys
 
-  Example:
-    (pkg! \"https://github.com/\" \"neovim/nvim-lspconfig\" {:setup #()})"
+  Expands to:
+    (do
+      (vim.pack.add [{:src \"https://github.com/username/repo\"}])
+      ((. (require :repo) :setup) {}))
+    (do
+      (vim.pack.add [{:src \"https://github.com/username/repo\"}])
+      ((. (require :another) :setup) {}))"
   (assert-compile (str? host) "HOST should be string." host)
-  (assert-compile (str? url) "URL should be string." url)
-  (let [opts (or opts {})
-        repo-name (or (url:match "/([^/]+)$") url)
+  (assert-compile (str? repo) "URL should be string." repo)
+  (let [opts (or ?opts {})
+        repo-name (or (repo:match "/([^/]+)$") repo)
         module-name (repo-name:gsub "%.nvim$" "")
         setup-val (. opts :setup)
         module-name (or (. opts :name) module-name)
         pack-opts (collect [k v (pairs opts)]
                     (if (and (not= k :name) (not= k :setup)) (values k v)))]
-    (tset pack-opts :src (.. host url))
+    (tset pack-opts :src (.. host repo))
     (when (. opts :name)
       (tset pack-opts :name module-name))
     `(do
@@ -85,23 +91,23 @@
        ,(when (table? setup-val)
           `((. (require ,module-name) :setup) ,setup-val)))))
 
-(fn gh-pkg! [url opts]
+(fn gh-pkg! [repo opts]
   "Pack a plugin specifically from GitHub.
 
   Usage:
     (gh-pkg! \"neovim/nvim-lspconfig\" {:setup {}})
 
-  Alias for:
-    (pkg! \"https://github.com/\" \"neovim/nvim-lspconfig\" opts)"
-  (pkg! "https://github.com/" url opts))
+  Expands to:
+    (pkg! \"https://github.com/\" \"neovim/nvim-lspconfig\" {:setup {}})"
+  (pkg! "https://github.com/" repo opts))
 
 (lambda map! [mode lhs rhs ?opts]
   "Set a global keymap binding.
-  
+
   Usage:
     (map! :n \"<leader>f\" \"<cmd>Telescope find_files<cr>\" \"Find files\")
     (map! :n \"<leader>f\" \"<cmd>Telescope find_files<cr>\" {:desc \"Find files\"})
-  
+
   Expands to:
     (vim.keymap.set :n \"<leader>f\" \"<cmd>Telescope find_files<cr>\" {:desc \"Find files\"})"
   (let [opts (if (and ?opts (str? ?opts))
@@ -111,11 +117,11 @@
 
 (lambda nmap! [lhs rhs ?opts]
   "Set a keymap binding for normal mode.
-  
+
   Usage:
     (nmap! \"<leader>f\" \"<cmd>Telescope find_files<cr>\" \"Find files\")
     (nmap! \"<leader>f\" \"<cmd>Telescope find_files<cr>\" {:desc \"Find files\"})
-  
+
   Expands to:
     (vim.keymap.set :n \"<leader>f\" \"<cmd>Telescope find_files<cr>\" {:desc \"Find files\"})"
   (map! :n lhs rhs ?opts))
@@ -124,26 +130,24 @@
   "Create an augroup with nested autocmds, Vimscript-style.
 
   Usage:
-    (augroup! :mydata
+    (augroup! :mygroup
       (autocmd! :BufWritePost \"*.fnl\" handler)
       (autocmd! :BufReadPost \"*.fnl\" handler2 {:desc \"Load\"}))
 
   Expands to:
-    (let [group `(vim.api.nvim_create_augroup \"mydata\" {:clear true})]
+    (let [group (vim.api.nvim_create_augroup \"mygroup\" {:clear true})]
       [(autocmd! :BufWritePost \"*.fnl\" handler {:group group})
        (autocmd! :BufReadPost \"*.fnl\" handler2 {:desc \"Load\" :group group})])"
-  (let [group (tostring name)]
-    (let [group `(vim.api.nvim_create_augroup ,group {:clear true})]
-      (fcollect [i 1 (length body)]
-        (match (. body i)
-          (where [cmd e p a] (= (tostring cmd) :autocmd!))
-          ;; simple 
-          `(,cmd ,e ,p ,a {:group ,group})
-          (where [cmd e p a o] (= (tostring cmd) :autocmd!))
-          ;; with opts
-          `(,cmd ,e ,p ,a (doto ,o (tset :group ,group)))
-          x
-          x)))))
+  (let [group (vim.api.nvim_create_augroup (->str name) {:clear true})]
+    (fcollect [i 1 (length body)]
+      (match (. body i)
+        (where [cmd e p a] (= (->str cmd) :autocmd!))
+        ;; fnlfmt: skip
+        `(,cmd ,e ,p ,a {:group ,group})
+        (where [cmd e p a o] (= (->str cmd) :autocmd!))
+        `(,cmd ,e ,p ,a (doto ,o (tset :group ,group)))
+        x
+        x))))
 
 (lambda autocmd! [event pattern action ?opts]
   "Create a custom autocommand event handler.
@@ -153,7 +157,13 @@
     (autocmd! :BufWritePost \"*.fnl\" #(print \"Saved!\") {:desc \"On save\"})
 
   Expands to:
-    (vim.api.nvim_create_autocmd :BufWritePost {:pattern \"*.fnl\" :callback ...})"
+    (vim.api.nvim_create_autocmd :BufWritePost
+                                 {:pattern \"*.fnl\"
+                                  :callback #(print \"Saved!\")})
+    (vim.api.nvim_create_autocmd :BufWritePost
+                                 {:pattern \"*.fnl\"
+                                  :callback #(print \"Saved!\")
+                                  :desc \"On save\"})"
   (assert-compile (or (list? action) (str? action))
                   "ACTION should be string/list." action)
   (let [opts (or ?opts {})]
