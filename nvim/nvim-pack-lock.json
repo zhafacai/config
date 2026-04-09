@@ -30,7 +30,7 @@
       "src": "https://github.com/dchinmay2/clangd_extensions.nvim"
     },
     "codecompanion.nvim": {
-      "rev": "522680a13d6359f16459de3882bd023d07348fe8",
+      "rev": "fe792b30974893d8809b06c5e31c5c876c14bbc7",
       "src": "https://github.com/olimorris/codecompanion.nvim"
     },
     "codediff.nvim": {
@@ -54,8 +54,9 @@
       "src": "https://github.com/andrewferrier/debugprint.nvim"
     },
     "denote.nvim": {
-      "rev": "dce935cbc4ea18612a5e73bfdfb12fe49c205c6e",
-      "src": "https://github.com/cvigilv/denote.nvim"
+      "rev": "72d4e3cdfc95eca537744b4ab73825ed424c722d",
+      "src": "https://github.com/zhafacai/denote.nvim",
+      "version": "'uiselect'"
     },
     "dial.nvim": {
       "rev": "f2634758455cfa52a8acea6f142dcd6271a1bf57",
@@ -242,7 +243,7 @@
       "src": "https://github.com/kevinhwang91/nvim-hlslens"
     },
     "nvim-lint": {
-      "rev": "4b03656c09c1561f89b6aa0665c15d292ba9499d",
+      "rev": "eab58b48eb11d7745c11c505e0f3057165902461",
       "src": "https://github.com/mfussenegger/nvim-lint"
     },
     "nvim-lspconfig": {

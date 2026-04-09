@@ -51,7 +51,7 @@ end
 vim.keymap.set("n", "-", "<CMD>Oil<CR>", {desc = "Open parent directory"})
 do
   vim.pack.add({{src = "https://github.com/stevearc/conform.nvim"}})
-  require("conform").setup({format_on_save = {timeout_ms = 500, lsp_format = "fallback"}, formatters_by_ft = {lua = {"stylua"}, sh = {"shfmt"}, markdown = {"rumdl"}, python = {"black"}, fennel = {"fnlfmt"}, nix = {"nixfmt"}, json = {"jq"}, rust = {"rustfmt"}}})
+  require("conform").setup({format_on_save = {timeout_ms = 500, lsp_format = "fallback"}, formatters_by_ft = {lua = {"stylua"}, sh = {"shfmt"}, markdown = {"rumdl"}, toml = {"tombi"}, python = {"black"}, fennel = {"fnlfmt"}, nix = {"nixfmt"}, json = {"jq"}, rust = {"rustfmt"}}})
 end
 do
   vim.pack.add({{src = "https://github.com/lambdalisue/vim-suda"}})

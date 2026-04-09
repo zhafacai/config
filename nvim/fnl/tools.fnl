@@ -47,6 +47,7 @@
                   :formatters_by_ft {:lua [:stylua]
                                      :sh [:shfmt]
                                      :markdown [:rumdl]
+                                     :toml [:tombi]
                                      :python [:black]
                                      :fennel [:fnlfmt]
                                      :nix [:nixfmt]
