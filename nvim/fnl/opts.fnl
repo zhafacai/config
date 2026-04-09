@@ -50,6 +50,7 @@
 
 (seto! +formatoptions :r)
 (seto! +shortmess {:I true :r true})
+(seto! +wildignore :**/nvim/runtime/colors/*)
 (seto! +diffopt "linematch:60")
 (seto! undofile)
 (seto! list)

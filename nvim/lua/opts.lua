@@ -41,6 +41,7 @@ vim.opt["guicursor"] = "n-v-sm:block,i-c-ci-ve:ver25,r-cr-o:hor20"
 vim.opt["fillchars"] = {vert = "\226\149\145", horiz = "\226\149\144", horizup = "\226\149\169", horizdown = "\226\149\166", vertleft = "\226\149\163", vertright = "\226\149\160", verthoriz = "\226\149\172", foldopen = "\239\145\188", foldclose = "\239\145\160"}
 vim.opt.formatoptions:append("r")
 vim.opt.shortmess:append({I = true, r = true})
+vim.opt.wildignore:append("**/nvim/runtime/colors/*")
 vim.opt.diffopt:append("linematch:60")
 vim.opt["undofile"] = true
 vim.opt["list"] = true

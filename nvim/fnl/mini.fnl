@@ -18,7 +18,8 @@
 (gh-pkg! :kylechui/nvim-surround)
 
 ; (gh-pkg! :nvim-mini/mini.pairs {:setup {}})
-(gh-pkg! :windwp/nvim-autopairs {:setup {:disable_filetype [:fennel]}})
+(gh-pkg! :windwp/nvim-autopairs {:setup {;; :disable_filetype [:fennel]
+                                         }})
 
 ; (gh-pkg! :nvim-mini/mini.pick {:setup {}})
 ; (nmap! :<leader><leader> "<cmd>Pick files<CR>")

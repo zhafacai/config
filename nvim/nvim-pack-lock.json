@@ -70,6 +70,10 @@
       "rev": "9a8e8806b01723da229befc95d3f7ecbcc35faac",
       "src": "https://github.com/aileot/emission.nvim"
     },
+    "everforest": {
+      "rev": "b03a03148c8b34c24c96960b93da9c8883d11f54",
+      "src": "https://github.com/sainnhe/everforest"
+    },
     "fennel": {
       "rev": "dfa816e83421436ee9259164acbf2a8d2af79e84",
       "src": "https://git.sr.ht/~technomancy/fennel"
@@ -93,6 +97,10 @@
     "grug-far.nvim": {
       "rev": "37d0eafc6a2dcf8641aa19fc2a8db5e391b7f16b",
       "src": "https://github.com/MagicDuck/grug-far.nvim"
+    },
+    "gruvbox.nvim": {
+      "rev": "334d5fd49fc8033f26408425366c66c6390c57bb",
+      "src": "https://github.com/ellisonleao/gruvbox.nvim"
     },
     "helpview.nvim": {
       "rev": "518789535a0cb146224a428edf93a70f98b795db",
@@ -194,6 +202,10 @@
       "rev": "2715e04bea3ec9244f15b421dc5b18c0fe326210",
       "src": "https://github.com/nvim-mini/mini.surround"
     },
+    "modus-themes.nvim": {
+      "rev": "17a64464c27c1be605adca13dbe48f2f402fe107",
+      "src": "https://github.com/miikanissi/modus-themes.nvim"
+    },
     "moonbit.nvim": {
       "rev": "625b9e64a9fbd1227b7d51b9bc035ba887d75ed5",
       "src": "https://github.com/moonbit-community/moonbit.nvim"
@@ -218,9 +230,17 @@
       "rev": "f39a7ec6fe0ace2b2ea108ce04d954549e36c76d",
       "src": "https://github.com/Olical/nfnl"
     },
+    "nordic.nvim": {
+      "rev": "9f757428264ef1fcd1703e17702d3a28f307a2f7",
+      "src": "https://github.com/AlexvZyl/nordic.nvim"
+    },
     "numb.nvim": {
       "rev": "12ef3913dea8727d4632c6f2ed47957a993de627",
       "src": "https://github.com/nacro90/numb.nvim"
+    },
+    "nvim": {
+      "rev": "f74fc61a5345818caf7c56bd4c6dcd16f17a1fdd",
+      "src": "https://github.com/everviolet/nvim"
     },
     "nvim-autopairs": {
       "rev": "59bce2eef357189c3305e25bc6dd2d138c1683f5",
@@ -365,6 +385,10 @@
     "todo-comments.nvim": {
       "rev": "31e3c38ce9b29781e4422fc0322eb0a21f4e8668",
       "src": "https://github.com/folke/todo-comments.nvim"
+    },
+    "tokyonight.nvim": {
+      "rev": "cdc07ac78467a233fd62c493de29a17e0cf2b2b6",
+      "src": "https://github.com/folke/tokyonight.nvim"
     },
     "treesj": {
       "rev": "26bc2a8432ba3ea79ed6aa346fba780a3d372570",

@@ -1,4 +1,4 @@
-(import-macros {: gh-pkg! : nmap!} :macros)
+(import-macros {: gh-pkg! : nmap! : set!} :macros)
 
 (gh-pkg! :b0o/incline.nvim {:setup {}})
 
@@ -52,7 +52,14 @@
   (nmap! "]t" #(todo.jump_next) "Next Todo Comment")
   (nmap! "[t" #(todo.jump_prev) "Previous Todo Comment"))
 
+(gh-pkg! :sainnhe/everforest)
+(set! g everforest_background :hard)
 (gh-pkg! :rebelot/kanagawa.nvim)
 (gh-pkg! :nyoom-engineering/oxocarbon.nvim)
-; (vim.cmd.colorscheme :oxocarbon)
-(vim.cmd.colorscheme :kanagawa-dragon)
+(gh-pkg! :folke/tokyonight.nvim)
+(gh-pkg! :miikanissi/modus-themes.nvim)
+(gh-pkg! :AlexvZyl/nordic.nvim)
+(gh-pkg! :ellisonleao/gruvbox.nvim)
+(gh-pkg! :catppuccin/nvim {:name :catppuccin})
+(gh-pkg! :everviolet/nvim {:name :everforest})
+(vim.cmd.colorscheme :kanagawa)

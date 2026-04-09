@@ -77,9 +77,31 @@ do
   vim.keymap.set("n", "[t", _2_, {desc = "Previous Todo Comment"})
 end
 do
+  vim.pack.add({{src = "https://github.com/sainnhe/everforest"}})
+end
+vim.g["everforest_background"] = "hard"
+do
   vim.pack.add({{src = "https://github.com/rebelot/kanagawa.nvim"}})
 end
 do
   vim.pack.add({{src = "https://github.com/nyoom-engineering/oxocarbon.nvim"}})
 end
-return vim.cmd.colorscheme("kanagawa-dragon")
+do
+  vim.pack.add({{src = "https://github.com/folke/tokyonight.nvim"}})
+end
+do
+  vim.pack.add({{src = "https://github.com/miikanissi/modus-themes.nvim"}})
+end
+do
+  vim.pack.add({{src = "https://github.com/AlexvZyl/nordic.nvim"}})
+end
+do
+  vim.pack.add({{src = "https://github.com/ellisonleao/gruvbox.nvim"}})
+end
+do
+  vim.pack.add({{src = "https://github.com/catppuccin/nvim"}})
+end
+do
+  vim.pack.add({{src = "https://github.com/everviolet/nvim"}})
+end
+return vim.cmd.colorscheme("kanagawa")

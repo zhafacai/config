@@ -51,7 +51,7 @@ do
 end
 do
   vim.pack.add({{src = "https://github.com/windwp/nvim-autopairs"}})
-  require("nvim-autopairs").setup({disable_filetype = {"fennel"}})
+  require("nvim-autopairs").setup({})
 end
 do
   vim.pack.add({{src = "https://github.com/nvim-mini/mini.sessions"}})
