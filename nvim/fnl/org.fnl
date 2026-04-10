@@ -11,7 +11,7 @@
   (gh-pkg! :nvim-orgmode/orgmode
            {:setup {:org_agenda_files [(fd :/agenda/*) (fd :/refile.org)]
                     :org_default_notes_file (fd :/refile.org)
-                    :win_split_mode :float
+                    :win_split_mode [:float 0.88]
                     :org_startup_indented true
                     :hyperlinks {:sources [(: (require :denote.extensions.orgmode)
                                               :new {:files (fd :/denote/)})]}}})

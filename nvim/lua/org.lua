@@ -12,7 +12,7 @@ do
   end
   do
     vim.pack.add({{src = "https://github.com/nvim-orgmode/orgmode"}})
-    require("orgmode").setup({org_agenda_files = {fd("/agenda/*"), fd("/refile.org")}, org_default_notes_file = fd("/refile.org"), win_split_mode = "float", org_startup_indented = true, hyperlinks = {sources = {require("denote.extensions.orgmode"):new({files = fd("/denote/")})}}})
+    require("orgmode").setup({org_agenda_files = {fd("/agenda/*"), fd("/refile.org")}, org_default_notes_file = fd("/refile.org"), win_split_mode = {"float", 0.88}, org_startup_indented = true, hyperlinks = {sources = {require("denote.extensions.orgmode"):new({files = fd("/denote/")})}}})
   end
   do
     vim.pack.add({{src = "https://github.com/nvim-orgmode/telescope-orgmode.nvim"}})
