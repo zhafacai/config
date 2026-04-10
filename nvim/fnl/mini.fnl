@@ -33,12 +33,13 @@
              :desc "Find File"
              :icon " "
              :key :<space><space>}
-            {:action ":Neogit" :desc :Git :icon " " :key :n}
+            {:action ":Neogit" :desc :Git :icon " " :key :g}
             {:action "<cmd>Org agenda<CR>" :desc :Agenda :icon "󱨋 " :key :a}
             ; {:action :<cmd>OrgSuperAgenda!<CR>
             ;  :desc :SuperAgenda
             ;  :icon "󰠮 "
             ;  :key :a}
+            {:action ":Denote" :desc :Denote :icon "✍️" :key :n}
             {:action "<cmd>Org capture<CR>"
              :desc :Capture
              :icon " "
