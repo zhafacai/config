@@ -142,10 +142,6 @@ require("mini.statusline").setup({
 	content = {
 		-- Content for active window
 		active = statusline,
-		-- Content for inactive window(s)
-		inactive = function()
-			return MiniStatusline.inactive()
-		end,
 	},
 })
 
