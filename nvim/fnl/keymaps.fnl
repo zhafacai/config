@@ -1,6 +1,8 @@
 (import-macros {: map! : nmap! : autocmd!} :macros)
 
 (nmap! :<leader>r :<CMD>restart<CR> :restart)
+(nmap! :<leader>w :<CMD>w<CR> :write)
+(nmap! :<leader>q :<CMD>q<CR> :quit)
 
 ;; Emacs keybinds
 (map! [:c :i] :<C-a> :<Home> "Move to beginning of line")
