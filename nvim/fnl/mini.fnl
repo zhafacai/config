@@ -33,25 +33,25 @@
              :desc "Find File"
              :icon " "
              :key :<space><space>}
+            {:action ":lua Snacks.dashboard.pick('live_grep')"
+             :desc "Live Grep"
+             :icon "󱡴 "
+             :key :f}
+            {:action ":lua Snacks.dashboard.pick('oldfiles')"
+             :desc "Recent Files"
+             :icon " "
+             :key :r}
             {:action ":Neogit" :desc :Git :icon " " :key :g}
             {:action "<cmd>Org agenda<CR>" :desc :Agenda :icon "󱨋 " :key :a}
             ; {:action :<cmd>OrgSuperAgenda!<CR>
             ;  :desc :SuperAgenda
             ;  :icon "󰠮 "
             ;  :key :a}
-            {:action ":Denote" :desc :Denote :icon "✍️" :key :n}
+            {:action ":Denote" :desc :Denote :icon " " :key :n}
             {:action "<cmd>Org capture<CR>"
              :desc :Capture
-             :icon " "
+             :icon "󰛨 "
              :key :c}
-            {:action ":lua Snacks.dashboard.pick('live_grep')"
-             :desc "Live Grep"
-             :icon " "
-             :key :f}
-            {:action ":lua Snacks.dashboard.pick('oldfiles')"
-             :desc "Recent Files"
-             :icon " "
-             :key :r}
             {:action ":lua Snacks.dashboard.pick('files', {cwd = '~/dots'})"
              :desc :Config
              :icon " "
