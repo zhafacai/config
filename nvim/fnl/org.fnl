@@ -1,21 +1,23 @@
 (import-macros {: gh-pkg! : nmap! : autocmd! : augroup!} :macros)
 
-(let [od (vim.fn.expand "~/notes")]
+(let [od (vim.fn.expand "~/notes")
+      fd #(.. od $1)]
   (gh-pkg! :zhafacai/denote.nvim
            {:setup {:filetype :org
-                    :directory (.. od :/denote/)
+                    :directory (fd :/denote/)
                     :prompts [:title :keywords]
                     :integrations {:oil true}}
             :version :uiselect})
   (gh-pkg! :nvim-orgmode/orgmode
-           {:setup {:org_agenda_files (.. od :/agenda/*)
-                    :org_default_notes_file (.. od :/refile.org)
+           {:setup {:org_agenda_files [(fd :/agenda/*) (fd :/refile.org)]
+                    :org_default_notes_file (fd :/refile.org)
                     :org_startup_indented true
                     :hyperlinks {:sources [(: (require :denote.extensions.orgmode)
-                                              :new {:files (.. od :/denote/)})]}
+                                              :new {:files (fd :/denote/)})]}
                     :mappings {:global {:org_agenda false}}}})
-  (gh-pkg! :hamidi-dev/org-super-agenda.nvim
-           {:setup {:org_files [(.. od :/refile.org)]}})
+  (gh-pkg! :zhafacai/org-super-agenda.nvim
+           {:setup {:org_files [(fd :/agenda/*) (fd :/refile.org)]}
+            :version :fix/close-window-cleanly})
   (gh-pkg! :nvim-orgmode/telescope-orgmode.nvim)
   (gh-pkg! :nvim-orgmode/org-bullets.nvim {:setup {}}))
 
