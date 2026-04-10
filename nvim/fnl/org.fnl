@@ -14,8 +14,7 @@
                     :win_split_mode :float
                     :org_startup_indented true
                     :hyperlinks {:sources [(: (require :denote.extensions.orgmode)
-                                              :new {:files (fd :/denote/)})]}
-                    :mappings {:global {:org_agenda false}}}})
+                                              :new {:files (fd :/denote/)})]}}})
   ;; BUG:Buggy
   ;; (gh-pkg! :zhafacai/org-super-agenda.nvim
   ;;          {:setup {:org_files [(fd :/agenda/*) (fd :/refile.org)]}
