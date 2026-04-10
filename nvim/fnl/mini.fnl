@@ -107,6 +107,10 @@
 (nmap! :<leader>st #(Snacks.picker.todo_comments) "Todo Comments")
 (nmap! :<leader>sS #(Snacks.scratch.select) "Select scratch")
 (nmap! :<leader>sI #(Snacks.picker.icons) :Icons)
+(nmap! :<leader>gi #(Snacks.picker.gh_issue) :Issue)
+(nmap! :<leader>gI #(Snacks.picker.gh_issue {:state :all}) "Issue All")
+(nmap! :<leader>gp #(Snacks.picker.gh_pr) :Pr)
+(nmap! :<leader>gP #(Snacks.picker.gh_pr {:state :all}) "Pr All")
 
 (autocmd! :User :SnacksDashboardOpened
           #(tset vim.b $1.buf :miniindentscope_disable true))

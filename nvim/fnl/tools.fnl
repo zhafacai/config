@@ -7,6 +7,7 @@
 (gh-pkg! :NeogitOrg/neogit {:setup {}})
 (nmap! :<leader>gg :<cmd>Neogit<CR> "Open Neogit")
 
+(gh-pkg! :pwntester/octo.nvim {:setup {:picker :default}})
 (gh-pkg! :esmuellert/codediff.nvim {:setup {}})
 (nmap! :<leader>gd :<cmd>CodeDiff<CR> "Open CodeDiff")
 

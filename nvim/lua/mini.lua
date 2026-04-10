@@ -132,9 +132,25 @@ local function _17_()
   return Snacks.picker.icons()
 end
 vim.keymap.set("n", "<leader>sI", _17_, {desc = "Icons"})
-local function _18_(_241)
+local function _18_()
+  return Snacks.picker.gh_issue()
+end
+vim.keymap.set("n", "<leader>gi", _18_, {desc = "Issue"})
+local function _19_()
+  return Snacks.picker.gh_issue({state = "all"})
+end
+vim.keymap.set("n", "<leader>gI", _19_, {desc = "Issue All"})
+local function _20_()
+  return Snacks.picker.gh_pr()
+end
+vim.keymap.set("n", "<leader>gp", _20_, {desc = "Pr"})
+local function _21_()
+  return Snacks.picker.gh_pr({state = "all"})
+end
+vim.keymap.set("n", "<leader>gP", _21_, {desc = "Pr All"})
+local function _22_(_241)
   vim.b[_241.buf]["miniindentscope_disable"] = true
   return nil
 end
-vim.api.nvim_create_autocmd("User", {callback = _18_, pattern = "SnacksDashboardOpened"})
+vim.api.nvim_create_autocmd("User", {callback = _22_, pattern = "SnacksDashboardOpened"})
 return require("zfc.mini")

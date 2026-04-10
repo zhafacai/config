@@ -451,6 +451,10 @@
       "rev": "e049b24fc2042a424843a8db79af5ceb273be6f6",
       "src": "https://github.com/chrisgrieser/nvim-various-textobjs"
     },
+    "octo.nvim": {
+      "rev": "7f0173a102a9feb3eddbfc0266a5a7e4e61daabf",
+      "src": "https://github.com/pwntester/octo.nvim"
+    },
     "oil": {
       "rev": "0fcc83805ad11cf714a949c98c605ed717e0b83e",
       "src": "https://github.com/stevearc/oil.nvim"

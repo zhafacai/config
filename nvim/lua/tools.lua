@@ -12,6 +12,10 @@ do
 end
 vim.keymap.set("n", "<leader>gg", "<cmd>Neogit<CR>", {desc = "Open Neogit"})
 do
+  vim.pack.add({{src = "https://github.com/pwntester/octo.nvim"}})
+  require("octo").setup({picker = "default"})
+end
+do
   vim.pack.add({{src = "https://github.com/esmuellert/codediff.nvim"}})
   require("codediff").setup({})
 end
