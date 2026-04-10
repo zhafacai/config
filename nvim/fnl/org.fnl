@@ -11,18 +11,20 @@
   (gh-pkg! :nvim-orgmode/orgmode
            {:setup {:org_agenda_files [(fd :/agenda/*) (fd :/refile.org)]
                     :org_default_notes_file (fd :/refile.org)
+                    :win_split_mode :float
                     :org_startup_indented true
                     :hyperlinks {:sources [(: (require :denote.extensions.orgmode)
                                               :new {:files (fd :/denote/)})]}
                     :mappings {:global {:org_agenda false}}}})
-  (gh-pkg! :zhafacai/org-super-agenda.nvim
-           {:setup {:org_files [(fd :/agenda/*) (fd :/refile.org)]}
-            :version :fix/close-window-cleanly})
+  ;; BUG:Buggy
+  ;; (gh-pkg! :zhafacai/org-super-agenda.nvim
+  ;;          {:setup {:org_files [(fd :/agenda/*) (fd :/refile.org)]}
+  ;;           :version :fix/close-window-cleanly})
   (gh-pkg! :nvim-orgmode/telescope-orgmode.nvim)
   (gh-pkg! :nvim-orgmode/org-bullets.nvim {:setup {}}))
 
-(nmap! :<leader>oa :<cmd>OrgSuperAgenda<CR>)
-(nmap! :<leader>oA :<cmd>OrgSuperAgenda!<CR>)
+; (nmap! :<leader>oa :<cmd>OrgSuperAgenda<CR>)
+; (nmap! :<leader>oA :<cmd>OrgSuperAgenda!<CR>)
 
 (nmap! :<leader>nn :<cmd>Denote<CR> :Denote)
 (nmap! :<leader>ns :<cmd>DenoteSearch<CR> :DenoteSearch)

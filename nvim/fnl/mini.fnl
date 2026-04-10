@@ -34,11 +34,11 @@
              :icon " "
              :key :<space><space>}
             {:action ":Neogit" :desc :Git :icon " " :key :n}
-            {:action "<cmd>Org agenda<CR>" :desc :Agenda :icon "󰠮 " :key :A}
-            {:action :<cmd>OrgSuperAgenda!<CR>
-             :desc :SuperAgenda
-             :icon "󱨋 "
-             :key :a}
+            {:action "<cmd>Org agenda<CR>" :desc :Agenda :icon "󱨋 " :key :a}
+            ; {:action :<cmd>OrgSuperAgenda!<CR>
+            ;  :desc :SuperAgenda
+            ;  :icon "󰠮 "
+            ;  :key :a}
             {:action "<cmd>Org capture<CR>"
              :desc :Capture
              :icon " "

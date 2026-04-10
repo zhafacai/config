@@ -12,11 +12,7 @@ do
   end
   do
     vim.pack.add({{src = "https://github.com/nvim-orgmode/orgmode"}})
-    require("orgmode").setup({org_agenda_files = {fd("/agenda/*"), fd("/refile.org")}, org_default_notes_file = fd("/refile.org"), org_startup_indented = true, hyperlinks = {sources = {require("denote.extensions.orgmode"):new({files = fd("/denote/")})}}, mappings = {global = {org_agenda = false}}})
-  end
-  do
-    vim.pack.add({{src = "https://github.com/zhafacai/org-super-agenda.nvim", version = "fix/close-window-cleanly"}})
-    require("org-super-agenda").setup({org_files = {fd("/agenda/*"), fd("/refile.org")}})
+    require("orgmode").setup({org_agenda_files = {fd("/agenda/*"), fd("/refile.org")}, org_default_notes_file = fd("/refile.org"), win_split_mode = "float", org_startup_indented = true, hyperlinks = {sources = {require("denote.extensions.orgmode"):new({files = fd("/denote/")})}}, mappings = {global = {org_agenda = false}}})
   end
   do
     vim.pack.add({{src = "https://github.com/nvim-orgmode/telescope-orgmode.nvim"}})
@@ -24,8 +20,6 @@ do
   vim.pack.add({{src = "https://github.com/nvim-orgmode/org-bullets.nvim"}})
   require("org-bullets").setup({})
 end
-vim.keymap.set("n", "<leader>oa", "<cmd>OrgSuperAgenda<CR>")
-vim.keymap.set("n", "<leader>oA", "<cmd>OrgSuperAgenda!<CR>")
 vim.keymap.set("n", "<leader>nn", "<cmd>Denote<CR>", {desc = "Denote"})
 vim.keymap.set("n", "<leader>ns", "<cmd>DenoteSearch<CR>", {desc = "DenoteSearch"})
 vim.keymap.set("n", "<leader>nl", "<cmd>DenoteInsertLink<CR>", {desc = "DenoteInsertLink"})
