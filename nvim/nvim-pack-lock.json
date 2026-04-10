@@ -12,6 +12,15 @@
       "rev": "79261d02213a5093135e5d02431682f04459f0f7",
       "src": "https://github.com/elkowar/antifennel-nvim"
     },
+    "auth.nvim": {
+      "rev": "caea582a747b7b74186a670a38162a910f4954fe",
+      "src": "file:///home/zfc/repo/auth.nvim",
+      "version": "'G'"
+    },
+    "authinfo.nvim": {
+      "rev": "96dd14d38b3e9d0c8797306bc96d1b0c75bb89e7",
+      "src": "https://github.com/zhafacai/authinfo.nvim"
+    },
     "better-escape.nvim": {
       "rev": "19a38aab94961016430905ebec30d272a01e9742",
       "src": "https://github.com/max397574/better-escape.nvim"

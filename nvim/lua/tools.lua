@@ -69,13 +69,17 @@ do
 end
 vim.keymap.set("n", "<leader>p", "<Cmd>PasteImage<CR>", {desc = "Paste image"})
 do
+  vim.pack.add({{src = "https://github.com/zhafacai/authinfo.nvim"}})
+  require("authinfo").setup({})
+end
+do
   vim.pack.add({{src = "https://github.com/olimorris/codecompanion.nvim"}})
 end
 do
   local cca = require("codecompanion.adapters")
   local openrouter
   local function _3_()
-    return cca.extend("openai_compatible", {schema = {model = {default = "nvidia/nemotron-3-super-120b-a12b:free", choices = {"nvidia/nemotron-3-super-120b-a12b:free", "minimax/minimax-m2.5:free", "arcee-ai/trinity-large-preview:free", "google/gemma-4-26b-a4b-it:free", "google/gemma-4-31b-it:free", "liquid/lfm-2.5-1.2b-instruct:free", "liquid/lfm-2.5-1.2b-thinking:free"}}}, env = {api_key = vim.env.OPENROUTER_API_KEY, chat_url = "/v1/chat/completions", url = "https://openrouter.ai/api"}})
+    return cca.extend("openai_compatible", {schema = {model = {default = "nvidia/nemotron-3-super-120b-a12b:free", choices = {"nvidia/nemotron-3-super-120b-a12b:free", "minimax/minimax-m2.5:free", "arcee-ai/trinity-large-preview:free", "google/gemma-4-26b-a4b-it:free", "google/gemma-4-31b-it:free", "liquid/lfm-2.5-1.2b-instruct:free", "liquid/lfm-2.5-1.2b-thinking:free"}}}, env = {api_key = AUTHINFO["api.opencode.ai"].password, chat_url = "/v1/chat/completions", url = "https://openrouter.ai/api"}})
   end
   openrouter = _3_
   vim.pack.add({{src = "https://github.com/olimorris/codecompanion.nvim"}})

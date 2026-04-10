@@ -63,6 +63,7 @@
 (gh-pkg! :HakonHarnes/img-clip.nvim {:setup {}})
 (nmap! :<leader>p :<Cmd>PasteImage<CR> "Paste image")
 
+(gh-pkg! :zhafacai/authinfo.nvim {:setup {}})
 (gh-pkg! :olimorris/codecompanion.nvim)
 (let [cca (require :codecompanion.adapters)
       openrouter #(cca.extend :openai_compatible
@@ -74,7 +75,8 @@
                                                           "google/gemma-4-31b-it:free"
                                                           "liquid/lfm-2.5-1.2b-instruct:free"
                                                           "liquid/lfm-2.5-1.2b-thinking:free"]}}
-                               :env {:api_key vim.env.OPENROUTER_API_KEY
+                               :env {:api_key (. AUTHINFO :api.opencode.ai
+                                                 :password)
                                      :chat_url :/v1/chat/completions
                                      :url "https://openrouter.ai/api"}})]
   (gh-pkg! :olimorris/codecompanion.nvim
