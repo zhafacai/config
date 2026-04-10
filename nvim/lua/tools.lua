@@ -83,6 +83,12 @@ vim.keymap.set({"n", "v"}, "<leader>ca", "<cmd>CodeCompanionActions<CR>", {desc 
 vim.keymap.set({"n", "v"}, "<leader>cr", "<cmd>CodeCompanionReview<CR>", {desc = "Review code with CodeCompanion"})
 vim.cmd("cab cc CodeCompanion")
 do
+  vim.pack.add({{src = "https://github.com/Olical/aniseed"}})
+end
+do
+  vim.pack.add({{src = "https://github.com/elkowar/antifennel-nvim"}})
+end
+do
   vim.pack.add({{src = "https://github.com/Olical/conjure"}})
 end
 do

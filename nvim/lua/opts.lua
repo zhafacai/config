@@ -10,6 +10,8 @@ if vim.g.neovide then
   vim.opt["scrolloff"] = 0
 else
 end
+vim.g["mapleader"] = " "
+vim.g["maplocalleader"] = ","
 vim.opt["clipboard"] = "unnamedplus"
 vim.opt["completeopt"] = "menuone,noselect"
 vim.opt["numberwidth"] = 4

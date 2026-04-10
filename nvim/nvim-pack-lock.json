@@ -4,6 +4,14 @@
       "rev": "5234e93013b86de0af54d9691b1781d9f2820e22",
       "src": "https://github.com/carlos-algms/agentic.nvim"
     },
+    "aniseed": {
+      "rev": "97078331cf59765613d248ca6d6c7942ebbd219b",
+      "src": "https://github.com/Olical/aniseed"
+    },
+    "antifennel-nvim": {
+      "rev": "79261d02213a5093135e5d02431682f04459f0f7",
+      "src": "https://github.com/elkowar/antifennel-nvim"
+    },
     "better-escape.nvim": {
       "rev": "19a38aab94961016430905ebec30d272a01e9742",
       "src": "https://github.com/max397574/better-escape.nvim"

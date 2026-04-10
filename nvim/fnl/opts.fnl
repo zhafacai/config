@@ -10,6 +10,8 @@
   (seto! guifont "Iosevka SS02:h14")
   (set! o scrolloff 0))
 
+(set! g mapleader " ")
+(set! g maplocalleader ",")
 (seto! clipboard :unnamedplus)
 (seto! completeopt "menuone,noselect")
 (seto! numberwidth 4)

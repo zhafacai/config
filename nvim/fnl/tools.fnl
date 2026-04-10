@@ -98,6 +98,9 @@
 
 (vim.cmd "cab cc CodeCompanion")
 
+;; for antifennel-nvim
+(gh-pkg! :Olical/aniseed)
+(gh-pkg! :elkowar/antifennel-nvim)
 (gh-pkg! :Olical/conjure)
 (gh-pkg! :Olical/nfnl)
 (set! g conjure#filetypes [:fennel :scheme])

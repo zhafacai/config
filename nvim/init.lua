@@ -1,12 +1,6 @@
+-- [nfnl] init.fnl
 vim.loader.enable()
-
-vim.g.mapleader = " "
-vim.g.maplocalleader = ","
-
-require("vim._core.ui2").enable({
-	enable = true, -- Whether to enable or disable the UI.
-})
-
+require("vim._core.ui2").enable({enable = true})
 require("opts")
 require("keymaps")
 require("ui")
@@ -14,4 +8,4 @@ require("mini")
 require("tools")
 require("dev")
 require("org")
-require("zfc.dial")
+return require("zfc.dial")
