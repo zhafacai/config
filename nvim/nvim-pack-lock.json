@@ -18,7 +18,7 @@
       "version": "'G'"
     },
     "authinfo.nvim": {
-      "rev": "96dd14d38b3e9d0c8797306bc96d1b0c75bb89e7",
+      "rev": "cf28e67feec20bc7b05846d9302b49b1f069a8ed",
       "src": "https://github.com/zhafacai/authinfo.nvim"
     },
     "better-escape.nvim": {

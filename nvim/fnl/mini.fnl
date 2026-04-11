@@ -1,4 +1,4 @@
-(import-macros {: gh-pkg! : nmap! : autocmd! : augroup!} :macros)
+(import-macros {: set! : gh-pkg! : nmap! : autocmd! : augroup!} :macros)
 
 (gh-pkg! :nvim-mini/mini.statusline)
 (gh-pkg! :nvim-mini/mini.icons {:setup {}})
@@ -113,7 +113,9 @@
 (nmap! :<leader>gp #(Snacks.picker.gh_pr) :Pr)
 (nmap! :<leader>gP #(Snacks.picker.gh_pr {:state :all}) "Pr All")
 
-(autocmd! :User :SnacksDashboardOpened
-          #(tset vim.b $1.buf :miniindentscope_disable true))
+(autocmd! :User :SnacksDashboardOpened #(set! b miniindentscope_disable true))
+
+; (autocmd! :User :SnacksDashboardOpened
+;           #(tset vim.b $1.buf :miniindentscope_disable true))
 
 (require :zfc.mini)

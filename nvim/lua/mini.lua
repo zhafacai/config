@@ -152,8 +152,8 @@ local function _22_()
   return Snacks.picker.gh_pr({state = "all"})
 end
 vim.keymap.set("n", "<leader>gP", _22_, {desc = "Pr All"})
-local function _23_(_241)
-  vim.b[_241.buf]["miniindentscope_disable"] = true
+local function _23_()
+  vim.b["miniindentscope_disable"] = true
   return nil
 end
 vim.api.nvim_create_autocmd("User", {callback = _23_, pattern = "SnacksDashboardOpened"})
