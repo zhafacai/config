@@ -66,6 +66,18 @@
 (gh-pkg! :zhafacai/authinfo.nvim {:setup {}})
 (gh-pkg! :olimorris/codecompanion.nvim)
 (let [cca (require :codecompanion.adapters)
+      qwen-code (cca.extend :gemini_cli
+                            {:commands {:default [:qwen :--acp]
+                                        :yolo [:qwen :--yolo :--acp]}
+                             :defaults {:auth_method :qwen-oauth
+                                        :oauth_credentials_path (vim.fs.abspath "~/.qwen/oauth_creds.json")}
+                             :formatted_name "Qwen Code"
+                             :handlers {:auth (fn [self]
+                                                (let [path self.defaults.oauth_credentials_path]
+                                                  (= 1
+                                                     (and path
+                                                          (vim.fn.filereadable path)))))}
+                             :name :qwen_code})
       openrouter #(cca.extend :openai_compatible
                               {:schema {:model {:default "nvidia/nemotron-3-super-120b-a12b:free"
                                                 :choices ["nvidia/nemotron-3-super-120b-a12b:free"
@@ -88,7 +100,7 @@
                                                              :provider :terminal}}}
                                    :inline {:adapter :openrouter}
                                    :cmd {:adapter :opencode}}
-                    :adapters {:http {: openrouter}}
+                    :adapters {:http {: openrouter} :acp {: qwen-code}}
                     :prompt_library {:markdown {:dirs [(vim.fn.expand "~/dots/prompts/")]}}}}))
 
 (map! [:n :v] :<leader>cp :<cmd>CodeCompanion<CR> "Toggle CodeCompanion panel")

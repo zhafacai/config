@@ -77,13 +77,19 @@ do
 end
 do
   local cca = require("codecompanion.adapters")
+  local qwen_code
+  local function _3_(self)
+    local path = self.defaults.oauth_credentials_path
+    return (1 == (path and vim.fn.filereadable(path)))
+  end
+  qwen_code = cca.extend("gemini_cli", {commands = {default = {"qwen", "--acp"}, yolo = {"qwen", "--yolo", "--acp"}}, defaults = {auth_method = "qwen-oauth", oauth_credentials_path = vim.fs.abspath("~/.qwen/oauth_creds.json")}, formatted_name = "Qwen Code", handlers = {auth = _3_}, name = "qwen_code"})
   local openrouter
-  local function _3_()
+  local function _4_()
     return cca.extend("openai_compatible", {schema = {model = {default = "nvidia/nemotron-3-super-120b-a12b:free", choices = {"nvidia/nemotron-3-super-120b-a12b:free", "minimax/minimax-m2.5:free", "arcee-ai/trinity-large-preview:free", "google/gemma-4-26b-a4b-it:free", "google/gemma-4-31b-it:free", "liquid/lfm-2.5-1.2b-instruct:free", "liquid/lfm-2.5-1.2b-thinking:free"}}}, env = {api_key = AUTHINFO["api.opencode.ai"].password, chat_url = "/v1/chat/completions", url = "https://openrouter.ai/api"}})
   end
-  openrouter = _3_
+  openrouter = _4_
   vim.pack.add({{src = "https://github.com/olimorris/codecompanion.nvim"}})
-  require("codecompanion").setup({interactions = {chat = {adapter = "opencode"}, cli = {agent = "opencode", agents = {opencode = {cmd = "opencode", args = {}, description = "OpenCode Cli", provider = "terminal"}}}, inline = {adapter = "openrouter"}, cmd = {adapter = "opencode"}}, adapters = {http = {openrouter = openrouter}}, prompt_library = {markdown = {dirs = {vim.fn.expand("~/dots/prompts/")}}}})
+  require("codecompanion").setup({interactions = {chat = {adapter = "opencode"}, cli = {agent = "opencode", agents = {opencode = {cmd = "opencode", args = {}, description = "OpenCode Cli", provider = "terminal"}}}, inline = {adapter = "openrouter"}, cmd = {adapter = "opencode"}}, adapters = {http = {openrouter = openrouter}, acp = {["qwen-code"] = qwen_code}}, prompt_library = {markdown = {dirs = {vim.fn.expand("~/dots/prompts/")}}}})
 end
 vim.keymap.set({"n", "v"}, "<leader>cp", "<cmd>CodeCompanion<CR>", {desc = "Toggle CodeCompanion panel"})
 vim.keymap.set({"n", "v"}, "<leader>cc", "<cmd>CodeCompanionChat<CR>", {desc = "Open CodeCompanion chat"})
