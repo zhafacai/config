@@ -1,4 +1,4 @@
-(import-macros {: gh-pkg! : nmap! : autocmd! : augroup!} :macros)
+(import-macros {: gh-pkg! : nmap! : autocmd! : augroup! : map!} :macros)
 
 (let [od (vim.fn.expand "~/notes")
       fd #(.. od $1)]
@@ -10,16 +10,21 @@
             :version :uiselect})
   (gh-pkg! :nvim-orgmode/orgmode
            {:setup {:org_agenda_files [(fd :/agenda/*)
-                                       (fd :/agenda/refile.org)]
+                                       ; (fd :/agenda/refile.org)
+                                       ]
+                    :mappings {:agenda {:org_agenda_schedule :s
+                                        :org_agenda_deadline :d}
+                               :org {:org_meta_return :<a-cr>}}
                     :org_hide_emphasis_markers true
                     :org_agenda_custom_commands {:a {:description :Agenda
-                                                     :types [{:match "+TODO='NEXT'"
+                                                     :types [{:type :agenda}
+                                                             {:match "+TODO=\"NEXT\""
                                                               :org_agenda_overriding_header :Tasks
                                                               :type :tags_todo}
-                                                             {:match "+TODO='TODO'"
+                                                             {:match "+TODO=\"TODO\""
                                                               :org_agenda_overriding_header :Process
                                                               :type :tags_todo}
-                                                             {:match "DEADLINE>=\"<+1d>\"&DEADLINE<\"<+2d>\""
+                                                             {:match "DEADLINE>=\"<+1d>\"&DEADLINE<\"<+2d>\"|SCHEDULED>=\"<+1d>\"&SCHEDULED<\"<+2d>\""
                                                               :org_agenda_overriding_header "Due Tomorrow"
                                                               :type :tags_todo}
                                                              {:match "DEADLINE<\"<today>\"&DEADLINE>\"<-7d>\"|SCHEDULED<\"<today>\"&SCHEDULED>\"<-7d>\""
@@ -66,15 +71,19 @@ SCHEDULED: %T"}
 (nmap! :<leader>nl :<cmd>DenoteInsertLink<CR> :DenoteInsertLink)
 (nmap! :<leader>nb :<cmd>DenoteBacklinks<CR> :DenoteBacklinks)
 
-(autocmd! :FileType :org
-          (fn [ev]
-            (let [tom (require :telescope-orgmode)]
-              (tom.setup {:adapter :snacks})
-              (nmap! :<leader>sh tom.search_headings
-                     {:desc "Org headlines" :buffer ev.buf})
-              (nmap! :<leader>st tom.search_tags
-                     {:desc "Org tags" :buffer ev.buf})
-              (nmap! :<leader>sr tom.refile_heading
-                     {:desc "Org refile" :buffer ev.buf})
-              (nmap! :<leader>sl tom.insert_link
-                     {:desc "Org insert link" :buffer ev.buf}))))
+(augroup! :OrgMaps ;;
+          (autocmd! :FileType :org
+                    #(let [tom (require :telescope-orgmode)]
+                       (tom.setup {:adapter :snacks})
+                       (map! :i :<S-CR>
+                             #(let [orgmode (require :orgmode)]
+                                (orgmode.action :org_mappings.meta_return))
+                             {:buffer true :silent true})
+                       (nmap! :<leader>sh tom.search_headings
+                              {:desc "Org headlines" :buffer true})
+                       (nmap! :<leader>st tom.search_tags
+                              {:desc "Org tags" :buffer true})
+                       (nmap! :<leader>sr tom.refile_heading
+                              {:desc "Org refile" :buffer true})
+                       (nmap! :<leader>sl tom.insert_link
+                              {:desc "Org insert link" :buffer true}))))
