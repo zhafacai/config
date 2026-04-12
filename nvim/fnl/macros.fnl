@@ -138,7 +138,7 @@
     (let [group (vim.api.nvim_create_augroup \"mygroup\" {:clear true})]
       [(autocmd! :BufWritePost \"*.fnl\" handler {:group group})
        (autocmd! :BufReadPost \"*.fnl\" handler2 {:desc \"Load\" :group group})])"
-  (let [group (vim.api.nvim_create_augroup (->str name) {:clear true})]
+  (let [group `(vim.api.nvim_create_augroup ,(->str name) {:clear true})]
     (fcollect [i 1 (length body)]
       (match (. body i)
         (where [cmd e p a] (= (->str cmd) :autocmd!))
