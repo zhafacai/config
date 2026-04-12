@@ -129,7 +129,7 @@ local function _16_()
 end
 vim.keymap.set("n", "<leader>st", _16_, {desc = "Todo Comments"})
 local function _17_()
-  return Snacks.scratch.select()
+  return Snacks.picker.scratch({win = {input = {keys = {["<c-n>"] = {"list_down", mode = {"i"}}, ["<c-x>"] = {"scratch_delete", mode = {"n", "i"}}}}}})
 end
 vim.keymap.set("n", "<leader>sS", _17_, {desc = "Select scratch"})
 local function _18_()

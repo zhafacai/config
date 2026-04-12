@@ -106,7 +106,13 @@
 (nmap! :<leader>gb #(Snacks.gitbrowse) "Git browse")
 (nmap! :<leader>ss #(Snacks.scratch) "Scratch buffer")
 (nmap! :<leader>st #(Snacks.picker.todo_comments) "Todo Comments")
-(nmap! :<leader>sS #(Snacks.scratch.select) "Select scratch")
+(nmap! :<leader>sS
+       #(Snacks.picker.scratch {:win {:input {:keys {:<c-n> {1 :list_down
+                                                             :mode [:i]}
+                                                     :<c-x> {1 :scratch_delete
+                                                             :mode [:n :i]}}}}})
+       "Select scratch")
+
 (nmap! :<leader>sI #(Snacks.picker.icons) :Icons)
 (nmap! :<leader>gi #(Snacks.picker.gh_issue) :Issue)
 (nmap! :<leader>gI #(Snacks.picker.gh_issue {:state :all}) "Issue All")

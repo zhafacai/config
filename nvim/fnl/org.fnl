@@ -9,10 +9,46 @@
                     :integrations {:oil true}}
             :version :uiselect})
   (gh-pkg! :nvim-orgmode/orgmode
-           {:setup {:org_agenda_files [(fd :/agenda/*) (fd :/refile.org)]
-                    :org_default_notes_file (fd :/refile.org)
+           {:setup {:org_agenda_files [(fd :/agenda/*)
+                                       (fd :/agenda/refile.org)]
+                    :org_hide_emphasis_markers true
+                    :org_agenda_custom_commands {:a {:description :Agenda
+                                                     :types [{:match "+TODO='NEXT'"
+                                                              :org_agenda_overriding_header :Tasks
+                                                              :type :tags_todo}
+                                                             {:match "+TODO='TODO'"
+                                                              :org_agenda_overriding_header :Process
+                                                              :type :tags_todo}
+                                                             {:match "DEADLINE>=\"<+1d>\"&DEADLINE<\"<+2d>\""
+                                                              :org_agenda_overriding_header "Due Tomorrow"
+                                                              :type :tags_todo}
+                                                             {:match "DEADLINE<\"<today>\"&DEADLINE>\"<-7d>\"|SCHEDULED<\"<today>\"&SCHEDULED>\"<-7d>\""
+                                                              :org_agenda_overriding_header :Overdue
+                                                              :type :tags_todo}
+                                                             {:match "DEADLINE<\"<-7d>\"|SCHEDULED<\"<-7d>\""
+                                                              :org_agenda_overriding_header "Long Overdue"
+                                                              :type :tags_todo}]}}
+                    :org_capture_templates {:d {:description :Deadline
+                                                :template "* TODO %?
+DEADLINE: %T"}
+                                            :s {:description :Schedule
+                                                :template "* TODO %?
+SCHEDULED: %T"}
+                                            :t {:description :Todo
+                                                :template "* TODO %?\n"}
+                                            :n {:description :Next
+                                                :template "* NEXT %?\n"}}
+                    :org_agenda_start_on_weekday false
+                    :org_log_into_drawer :LOGBOOK
+                    :org_todo_keywords ["TODO(t)"
+                                        "NEXT(n)"
+                                        "|"
+                                        "DONE(d)"
+                                        "CNCL(c)"]
+                    :org_default_notes_file (fd :/agenda/refile.org)
                     :win_split_mode [:float 0.88]
                     :org_startup_indented true
+                    :ui {:agenda {:preview_window {:border :single}}}
                     :hyperlinks {:sources [(: (require :denote.extensions.orgmode)
                                               :new {:files (fd :/denote/)})]}}})
   ;; BUG:Buggy

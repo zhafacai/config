@@ -5,7 +5,7 @@ require("blink.cmp").setup({
 		preset = "super-tab",
 		-- ["<C-u>"] = { "scroll_documentation_up", "fallback" },
 		-- ["<C-d>"] = { "scroll_documentation_down", "fallback" },
-		["<c-r>"] = {
+		["<c-g>"] = {
 			function()
 				require("blink-cmp").show({ providers = { "ripgrep" } })
 			end,

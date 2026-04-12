@@ -6,7 +6,7 @@
 
 ;; Emacs keybinds
 (map! [:c :i] :<C-a> :<Home> "Move to beginning of line")
-(map! [:c :i :n] :<C-e> :<End> "Move to end of line")
+(map! [:c :i :n :v] :<C-e> :<End> "Move to end of line")
 (map! [:c :i] :<C-b> :<Left> "Move backward")
 (map! [:c :i] :<C-f> :<Right> "Move forward")
 (map! [:c] :<C-g> :<C-c> :quit)
