@@ -60,7 +60,7 @@ SCHEDULED: %T"}
   ;; (gh-pkg! :zhafacai/org-super-agenda.nvim
   ;;          {:setup {:org_files [(fd :/agenda/*) (fd :/refile.org)]}
   ;;           :version :fix/close-window-cleanly})
-  (gh-pkg! :nvim-orgmode/telescope-orgmode.nvim)
+  (gh-pkg! :nvim-orgmode/telescope-orgmode.nvim {:setup {:adapter :snacks}})
   (gh-pkg! :nvim-orgmode/org-bullets.nvim {:setup {}}))
 
 ; (nmap! :<leader>oa :<cmd>OrgSuperAgenda<CR>)
@@ -74,7 +74,6 @@ SCHEDULED: %T"}
 (augroup! :OrgMaps ;;
           (autocmd! :FileType :org
                     #(let [tom (require :telescope-orgmode)]
-                       (tom.setup {:adapter :snacks})
                        (map! :i :<S-CR>
                              #(let [orgmode (require :orgmode)]
                                 (orgmode.action :org_mappings.meta_return))

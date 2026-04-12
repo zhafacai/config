@@ -16,6 +16,7 @@ do
   end
   do
     vim.pack.add({{src = "https://github.com/nvim-orgmode/telescope-orgmode.nvim"}})
+    require("telescope-orgmode").setup({adapter = "snacks"})
   end
   vim.pack.add({{src = "https://github.com/nvim-orgmode/org-bullets.nvim"}})
   require("org-bullets").setup({})
@@ -26,7 +27,6 @@ vim.keymap.set("n", "<leader>nl", "<cmd>DenoteInsertLink<CR>", {desc = "DenoteIn
 vim.keymap.set("n", "<leader>nb", "<cmd>DenoteBacklinks<CR>", {desc = "DenoteBacklinks"})
 local function _2_()
   local tom = require("telescope-orgmode")
-  tom.setup({adapter = "snacks"})
   local function _3_()
     local orgmode = require("orgmode")
     return orgmode.action("org_mappings.meta_return")
