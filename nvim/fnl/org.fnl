@@ -13,8 +13,7 @@
                                        ; (fd :/agenda/refile.org)
                                        ]
                     :mappings {:agenda {:org_agenda_schedule :s
-                                        :org_agenda_deadline :d}
-                               :org {:org_meta_return :<a-cr>}}
+                                        :org_agenda_deadline :d}}
                     :org_hide_emphasis_markers true
                     :org_agenda_custom_commands {:a {:description :Agenda
                                                      :types [{:type :agenda}
@@ -23,6 +22,12 @@
                                                               :type :tags_todo}
                                                              {:match "+TODO=\"TODO\""
                                                               :org_agenda_overriding_header :Process
+                                                              :type :tags_todo}
+                                                             {:match "+TODO=\"WAIT\""
+                                                              :org_agenda_overriding_header :Wait
+                                                              :type :tags_todo}
+                                                             {:match "+TODO=\"SMDY\""
+                                                              :org_agenda_overriding_header :Someday
                                                               :type :tags_todo}
                                                              {:match "DEADLINE>=\"<+1d>\"&DEADLINE<\"<+2d>\"|SCHEDULED>=\"<+1d>\"&SCHEDULED<\"<+2d>\""
                                                               :org_agenda_overriding_header "Due Tomorrow"
@@ -47,6 +52,8 @@ SCHEDULED: %T"}
                     :org_log_into_drawer :LOGBOOK
                     :org_todo_keywords ["TODO(t)"
                                         "NEXT(n)"
+                                        "WAIT(w)"
+                                        "SMDY(s)"
                                         "|"
                                         "DONE(d)"
                                         "CNCL(c)"]
@@ -74,7 +81,7 @@ SCHEDULED: %T"}
 (augroup! :OrgMaps ;;
           (autocmd! :FileType :org
                     #(let [tom (require :telescope-orgmode)]
-                       (map! :i :<S-CR>
+                       (map! :i :<A-CR>
                              #(let [orgmode (require :orgmode)]
                                 (orgmode.action :org_mappings.meta_return))
                              {:buffer true :silent true})
