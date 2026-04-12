@@ -59,7 +59,7 @@ do
 end
 vim.keymap.set("n", "<leader>S", "<cmd>mksession<CR>")
 do
-  local keys = {{action = ":lua Snacks.dashboard.pick('files')", desc = "File", icon = "\239\128\130 ", key = "<space><space>"}, {action = ":lua Snacks.dashboard.pick('live_grep')", desc = "Grep", icon = "\243\177\161\180 ", key = "f"}, {action = ":lua Snacks.dashboard.pick('oldfiles')", desc = "Recent", icon = "\239\131\133 ", key = "r"}, {action = ":lua Snacks.picker.help()", desc = "Help", icon = "\239\131\133 ", key = "h"}, {action = ":Neogit", desc = "Git", icon = "\238\153\157 ", key = "g"}, {action = "<cmd>Org agenda<CR>", desc = "Agenda", icon = "\243\177\168\139 ", key = "a"}, {action = ":Denote", desc = "Note", icon = "\238\185\180 ", key = "n"}, {action = "<cmd>Org capture<CR>", desc = "Capture", icon = "\243\176\155\168 ", key = "c"}, {action = ":lua Snacks.dashboard.pick('files', {cwd = '~/dots'})", desc = "Config", icon = "\239\144\163 ", key = "C"}, {desc = "Session", icon = "\238\141\136 ", key = "s", action = ":lua MiniSessions.read()"}, {action = ":qa", desc = "Quit", icon = "\239\144\166 ", key = "q"}}
+  local keys = {{action = ":lua Snacks.dashboard.pick('files')", desc = "File", icon = "\239\128\130 ", key = "<space><space>"}, {action = ":lua Snacks.dashboard.pick('live_grep')", desc = "Grep", icon = "\243\177\161\180 ", key = "f"}, {action = ":lua Snacks.dashboard.pick('oldfiles')", desc = "Recent", icon = "\239\131\133 ", key = "r"}, {action = ":lua Snacks.picker.help()", desc = "Help", icon = "\243\176\158\139 ", key = "h"}, {action = ":Neogit", desc = "Git", icon = "\238\153\157 ", key = "g"}, {action = "<cmd>Org agenda<CR>", desc = "Agenda", icon = "\243\177\168\139 ", key = "a"}, {action = ":Denote", desc = "Note", icon = "\238\185\180 ", key = "n"}, {action = "<cmd>Org capture<CR>", desc = "Capture", icon = "\243\176\155\168 ", key = "c"}, {action = ":lua Snacks.dashboard.pick('files', {cwd = '~/dots'})", desc = "Config", icon = "\239\144\163 ", key = "C"}, {desc = "Session", icon = "\238\141\136 ", key = "s", action = ":lua MiniSessions.read()"}, {action = ":qa", desc = "Quit", icon = "\239\144\166 ", key = "q"}}
   local sections = {{icon = "\239\132\156 ", indent = 2, padding = 1, section = "keys", title = "Keymaps"}, {icon = "\239\133\155 ", indent = 2, padding = 1, section = "recent_files", title = "Recent Files"}, {icon = "\239\129\188 ", indent = 2, padding = 1, section = "projects", title = "Projects"}}
   vim.pack.add({{src = "https://github.com/folke/snacks.nvim"}})
   require("snacks").setup({bigfile = {enabled = true}, image = {enabled = true}, scratch = {enabled = true}, dashboard = {enabled = true, preset = {keys = keys}, sections = sections}, picker = {enabled = true}})
@@ -95,7 +95,7 @@ vim.keymap.set("n", "<leader>hc", _7_, {desc = "Commands"})
 local function _8_()
   return Snacks.picker.command_history()
 end
-vim.keymap.set("n", "<leader>hy", _8_, {desc = "CommandHistory"})
+vim.keymap.set("n", "<leader>hH", _8_, {desc = "CommandHistory"})
 local function _9_()
   return Snacks.picker.diagnostics()
 end

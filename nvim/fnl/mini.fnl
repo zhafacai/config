@@ -43,7 +43,7 @@
              :key :r}
             {:action ":lua Snacks.picker.help()"
              :desc :Help
-             :icon " "
+             :icon "󰞋 "
              :key :h}
             {:action ":Neogit" :desc :Git :icon " " :key :g}
             {:action "<cmd>Org agenda<CR>" :desc :Agenda :icon "󱨋 " :key :a}
@@ -101,7 +101,7 @@
 (nmap! :<leader>hr #(Snacks.picker.registers) :Registers)
 (nmap! :<leader>ha #(Snacks.picker.autocmds) :Autocmds)
 (nmap! :<leader>hc #(Snacks.picker.commands) :Commands)
-(nmap! :<leader>hy #(Snacks.picker.command_history) :CommandHistory)
+(nmap! :<leader>hH #(Snacks.picker.command_history) :CommandHistory)
 (nmap! :<leader>hd #(Snacks.picker.diagnostics) :Diagnostics)
 (nmap! :<leader>hl #(Snacks.picker.highlights) :Highlights)
 (nmap! :<leader>hk #(Snacks.picker.keymaps) :Keymaps)
