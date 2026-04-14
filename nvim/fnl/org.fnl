@@ -63,15 +63,126 @@ SCHEDULED: %T"}
                     :ui {:agenda {:preview_window {:border :single}}}
                     :hyperlinks {:sources [(: (require :denote.extensions.orgmode)
                                               :new {:files (fd :/denote/)})]}}})
-  ;; BUG:Buggy
-  ;; (gh-pkg! :zhafacai/org-super-agenda.nvim
-  ;;          {:setup {:org_files [(fd :/agenda/*) (fd :/refile.org)]}
-  ;;           :version :fix/close-window-cleanly})
+  (gh-pkg! :hamidi-dev/org-super-agenda.nvim
+           {:setup {:groups [{:matcher (fn [i]
+                                         (and i.scheduled
+                                              (i.scheduled:is_today)))
+                              :name "📅 Today"
+                              :sort {:by :scheduled_time :order :asc}}
+                             {:matcher (fn [i]
+                                         (and i.scheduled
+                                              (= (i.scheduled:days_from_today)
+                                                 1)))
+                              :name "🗓️ Tomorrow"
+                              :sort {:by :scheduled_time :order :asc}}
+                             {:matcher (fn [i]
+                                         (and i.deadline
+                                              (not= i.todo_state :DONE)))
+                              :name "☠️ Deadlines"
+                              :sort {:by :deadline :order :asc}}
+                             {:matcher (fn [i]
+                                         (and (= i.priority :A)
+                                              (or i.deadline i.scheduled)))
+                              :name "⭐ Important"
+                              :sort {:by :date_nearest :order :asc}}
+                             {:matcher (fn [i]
+                                         (and (not= i.todo_state :DONE)
+                                              (or (and i.deadline
+                                                       (i.deadline:is_past))
+                                                  (and i.scheduled
+                                                       (i.scheduled:is_past)))))
+                              :name "⏳ Overdue"
+                              :sort {:by :date_nearest :order :asc}}
+                             {:matcher (fn [i]
+                                         (local days
+                                                (or (. ((. (require :org-super-agenda.config)
+                                                           :get))
+                                                       :upcoming_days)
+                                                    10))
+                                         (local d1
+                                                (and i.deadline
+                                                     (i.deadline:days_from_today)))
+                                         (local d2
+                                                (and i.scheduled
+                                                     (i.scheduled:days_from_today)))
+                                         (or (and (and d1 (>= d1 0))
+                                                  (<= d1 days))
+                                             (and (and d2 (>= d2 0))
+                                                  (<= d2 days))))
+                              :name "📆 Upcoming"
+                              :sort {:by :date_nearest :order :asc}}]
+                    :todo-states [{:color "#E46876"
+                                   ; TODO - samuraiRed
+                                   :fields [:filename
+                                            :todo
+                                            :headline
+                                            :priority
+                                            :date
+                                            :tags]
+                                   :keymap :ot
+                                   :name :TODO
+                                   :strike_through false}
+                                  {:color "#FF9E3B"
+                                   ; NEXT - roninYellow
+                                   :fields [:filename
+                                            :todo
+                                            :headline
+                                            :priority
+                                            :date
+                                            :tags]
+                                   :keymap :on
+                                   :name :NEXT
+                                   :strike_through false}
+                                  {:color "#957FB8"
+                                   ; WAIT - springBlue
+                                   :fields [:filename
+                                            :todo
+                                            :headline
+                                            :priority
+                                            :date
+                                            :tags]
+                                   :keymap :ow
+                                   :name :WAIT
+                                   :strike_through false}
+                                  {:color "#D27E99"
+                                   ; SMDY - sakuraPink
+                                   :fields [:filename
+                                            :todo
+                                            :headline
+                                            :priority
+                                            :date
+                                            :tags]
+                                   :keymap :os
+                                   :name :SMDY
+                                   :strike_through false}
+                                  {:color "#76946A"
+                                   ; DONE - springGreen
+                                   :fields [:filename
+                                            :todo
+                                            :headline
+                                            :priority
+                                            :date
+                                            :tags]
+                                   :keymap :od
+                                   :name :DONE
+                                   :strike_through true}
+                                  {:color "#8383A8"
+                                   ; CNCL - fujiGray
+                                   :fields [:filename
+                                            :todo
+                                            :headline
+                                            :priority
+                                            :date
+                                            :tags]
+                                   :keymap :oc
+                                   :name :CNCL
+                                   :strike_through true}]}
+            :version :develop})
   (gh-pkg! :nvim-orgmode/telescope-orgmode.nvim {:setup {:adapter :snacks}})
   (gh-pkg! :nvim-orgmode/org-bullets.nvim {:setup {}}))
 
 ; (nmap! :<leader>oa :<cmd>OrgSuperAgenda<CR>)
-; (nmap! :<leader>oA :<cmd>OrgSuperAgenda!<CR>)
+(nmap! :<leader>oA :<cmd>OrgSuperAgenda!<CR>)
 
 (nmap! :<leader>nn :<cmd>Denote<CR> :Denote)
 (nmap! :<leader>ns :<cmd>DenoteSearch<CR> :DenoteSearch)
