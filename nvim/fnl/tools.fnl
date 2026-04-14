@@ -113,6 +113,12 @@
 
 (vim.cmd "cab cc CodeCompanion")
 
+(gh-pkg! :kkharji/sqlite.lua)
+(gh-pkg! :JuanZoran/Trans.nvim
+         {:setup {:frontend {:default {:animation {:interval 3}}}}})
+
+(map! [:n :v] :<leader>l :<cmd>Translate<CR> :Translate)
+
 ;; for antifennel-nvim
 (gh-pkg! :Olical/aniseed)
 (gh-pkg! :elkowar/antifennel-nvim)

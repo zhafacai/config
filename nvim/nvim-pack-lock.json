@@ -1,5 +1,9 @@
 {
   "plugins": {
+    "Trans.nvim": {
+      "rev": "e58d63a8f6621845776da4657a06ca29ca75ef1a",
+      "src": "https://github.com/JuanZoran/Trans.nvim"
+    },
     "aniseed": {
       "rev": "97078331cf59765613d248ca6d6c7942ebbd219b",
       "src": "https://github.com/Olical/aniseed"
@@ -334,6 +338,10 @@
     "snacks.nvim": {
       "rev": "ad9ede6a9cddf16cedbd31b8932d6dcdee9b716e",
       "src": "https://github.com/folke/snacks.nvim"
+    },
+    "sqlite.lua": {
+      "rev": "50092d60feb242602d7578398c6eb53b4a8ffe7b",
+      "src": "https://github.com/kkharji/sqlite.lua"
     },
     "telescope-orgmode.nvim": {
       "rev": "0a9872f7932bcf4d08a8278b1493119ffcdc83c6",

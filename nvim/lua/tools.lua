@@ -97,6 +97,14 @@ vim.keymap.set({"n", "v"}, "<leader>ca", "<cmd>CodeCompanionActions<CR>", {desc 
 vim.keymap.set({"n", "v"}, "<leader>cr", "<cmd>CodeCompanionReview<CR>", {desc = "Review code with CodeCompanion"})
 vim.cmd("cab cc CodeCompanion")
 do
+  vim.pack.add({{src = "https://github.com/kkharji/sqlite.lua"}})
+end
+do
+  vim.pack.add({{src = "https://github.com/JuanZoran/Trans.nvim"}})
+  require("Trans").setup({frontend = {default = {animation = {interval = 3}}}})
+end
+vim.keymap.set({"n", "v"}, "<leader>l", "<cmd>Translate<CR>", {desc = "Translate"})
+do
   vim.pack.add({{src = "https://github.com/Olical/aniseed"}})
 end
 do
