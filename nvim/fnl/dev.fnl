@@ -103,6 +103,41 @@
 
 (gh-pkg! :mrcjkb/rustaceanvim)
 
+(autocmd! :FileType :rust
+          #(do
+             (nmap! :gra #(vim.cmd.RustLsp :codeAction)
+                    {:buffer true :desc "Rust: Code Action"})
+             (nmap! :K #(vim.cmd "RustLsp hover actions")
+                    {:buffer true :desc "Rust: Hover Actions"})
+             (map! [:v] :K #(vim.cmd "RustLsp hover range")
+                   {:buffer true :desc "Rust: Hover Range"})
+             (nmap! :<leader>dr #(vim.cmd.RustLsp :runnables)
+                    {:buffer true :desc "Rust: Runnables"})
+             (nmap! :<leader>dd #(vim.cmd.RustLsp :debuggables)
+                    {:buffer true :desc "Rust: Debuggables"})
+             (nmap! :<leader>dt #(vim.cmd.RustLsp :testables)
+                    {:buffer true :desc "Rust: Testables"})
+             (nmap! :<leader>de #(vim.cmd.RustLsp :expandMacro)
+                    {:buffer true :desc "Rust: Expand Macro"})
+             (nmap! :<leader>dm #(vim.cmd.RustLsp :moveItem)
+                    {:buffer true :desc "Rust: Move Item"})
+             (nmap! :<leader>dx #(vim.cmd.RustLsp :renderDiagnostic)
+                    {:buffer true :desc "Rust: Render Diagnostic"})
+             (nmap! :<leader>do #(vim.cmd.RustLsp :openDocs)
+                    {:buffer true :desc "Rust: Open Docs"})
+             (nmap! :<leader>dc #(vim.cmd.RustLsp :openCargo)
+                    {:buffer true :desc "Rust: Open Cargo"})
+             (nmap! :<leader>dj #(vim.cmd.RustLsp :joinLines)
+                    {:buffer true :desc "Rust: Join Lines"})
+             (nmap! :<leader>dw #(vim.cmd.RustLsp :workspaceSymbol)
+                    {:buffer true :desc "Rust: Workspace Symbol"})
+             (nmap! :<leader>dp #(vim.cmd.RustLsp :parentModule)
+                    {:buffer true :desc "Rust: Parent Module"})
+             (nmap! :<leader>dy #(vim.cmd.RustLsp :explainError)
+                    {:buffer true :desc "Rust: Explain Error"})
+             (nmap! :<leader>dg #(vim.cmd.RustLsp :relatedDiagnostics)
+                    {:buffer true :desc "Rust: Related Diagnostics"})))
+
 ;; Cpp
 (gh-pkg! :dchinmay2/clangd_extensions.nvim)
 ;; Json

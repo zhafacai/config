@@ -147,6 +147,73 @@ vim.g["rustaceanvim"] = {server = {default_settings = {["rust-analyzer"] = {rust
 do
   vim.pack.add({{src = "https://github.com/mrcjkb/rustaceanvim"}})
 end
+local function _11_()
+  local function _12_()
+    return vim.cmd.RustLsp("codeAction")
+  end
+  vim.keymap.set("n", "gra", _12_, {buffer = true, desc = "Rust: Code Action"})
+  local function _13_()
+    return vim.cmd("RustLsp hover actions")
+  end
+  vim.keymap.set("n", "K", _13_, {buffer = true, desc = "Rust: Hover Actions"})
+  local function _14_()
+    return vim.cmd("RustLsp hover range")
+  end
+  vim.keymap.set({"v"}, "K", _14_, {buffer = true, desc = "Rust: Hover Range"})
+  local function _15_()
+    return vim.cmd.RustLsp("runnables")
+  end
+  vim.keymap.set("n", "<leader>dr", _15_, {buffer = true, desc = "Rust: Runnables"})
+  local function _16_()
+    return vim.cmd.RustLsp("debuggables")
+  end
+  vim.keymap.set("n", "<leader>dd", _16_, {buffer = true, desc = "Rust: Debuggables"})
+  local function _17_()
+    return vim.cmd.RustLsp("testables")
+  end
+  vim.keymap.set("n", "<leader>dt", _17_, {buffer = true, desc = "Rust: Testables"})
+  local function _18_()
+    return vim.cmd.RustLsp("expandMacro")
+  end
+  vim.keymap.set("n", "<leader>de", _18_, {buffer = true, desc = "Rust: Expand Macro"})
+  local function _19_()
+    return vim.cmd.RustLsp("moveItem")
+  end
+  vim.keymap.set("n", "<leader>dm", _19_, {buffer = true, desc = "Rust: Move Item"})
+  local function _20_()
+    return vim.cmd.RustLsp("renderDiagnostic")
+  end
+  vim.keymap.set("n", "<leader>dx", _20_, {buffer = true, desc = "Rust: Render Diagnostic"})
+  local function _21_()
+    return vim.cmd.RustLsp("openDocs")
+  end
+  vim.keymap.set("n", "<leader>do", _21_, {buffer = true, desc = "Rust: Open Docs"})
+  local function _22_()
+    return vim.cmd.RustLsp("openCargo")
+  end
+  vim.keymap.set("n", "<leader>dc", _22_, {buffer = true, desc = "Rust: Open Cargo"})
+  local function _23_()
+    return vim.cmd.RustLsp("joinLines")
+  end
+  vim.keymap.set("n", "<leader>dj", _23_, {buffer = true, desc = "Rust: Join Lines"})
+  local function _24_()
+    return vim.cmd.RustLsp("workspaceSymbol")
+  end
+  vim.keymap.set("n", "<leader>dw", _24_, {buffer = true, desc = "Rust: Workspace Symbol"})
+  local function _25_()
+    return vim.cmd.RustLsp("parentModule")
+  end
+  vim.keymap.set("n", "<leader>dp", _25_, {buffer = true, desc = "Rust: Parent Module"})
+  local function _26_()
+    return vim.cmd.RustLsp("explainError")
+  end
+  vim.keymap.set("n", "<leader>dy", _26_, {buffer = true, desc = "Rust: Explain Error"})
+  local function _27_()
+    return vim.cmd.RustLsp("relatedDiagnostics")
+  end
+  return vim.keymap.set("n", "<leader>dg", _27_, {buffer = true, desc = "Rust: Related Diagnostics"})
+end
+vim.api.nvim_create_autocmd("FileType", {callback = _11_, pattern = "rust"})
 do
   vim.pack.add({{src = "https://github.com/dchinmay2/clangd_extensions.nvim"}})
 end
@@ -183,26 +250,26 @@ do
 end
 do
   local nt = require("neotest")
-  local function _11_()
+  local function _28_()
     return nt.run.run(vim.fn.expand("%"))
   end
-  vim.keymap.set("n", "<leader>tf", _11_, {desc = "test file"})
-  local function _12_()
+  vim.keymap.set("n", "<leader>tf", _28_, {desc = "test file"})
+  local function _29_()
     return nt.run.run()
   end
-  vim.keymap.set("n", "<leader>tt", _12_, {desc = "test nearest"})
-  local function _13_()
+  vim.keymap.set("n", "<leader>tt", _29_, {desc = "test nearest"})
+  local function _30_()
     return nt.watch.toggle()
   end
-  vim.keymap.set("n", "<leader>tw", _13_, {desc = "test watch"})
-  local function _14_()
+  vim.keymap.set("n", "<leader>tw", _30_, {desc = "test watch"})
+  local function _31_()
     return nt.output_panel.toggle()
   end
-  vim.keymap.set("n", "<leader>to", _14_, {desc = "test output_panel"})
-  local function _15_()
+  vim.keymap.set("n", "<leader>to", _31_, {desc = "test output_panel"})
+  local function _32_()
     return nt.summary.toggle()
   end
-  vim.keymap.set("n", "<leader>ts", _15_, {desc = "test summary"})
+  vim.keymap.set("n", "<leader>ts", _32_, {desc = "test summary"})
 end
 do
   vim.pack.add({{src = "https://github.com/chrisgrieser/nvim-puppeteer"}})
@@ -212,47 +279,47 @@ do
   require("chainsaw").setup({})
 end
 local cs = require("chainsaw")
-local function _16_()
+local function _33_()
   return cs.variableLog()
 end
-vim.keymap.set("n", "gll", _16_, {desc = "Chainsaw: log variable"})
-local function _17_()
+vim.keymap.set("n", "gll", _33_, {desc = "Chainsaw: log variable"})
+local function _34_()
   return cs.objectLog()
 end
-vim.keymap.set("n", "glo", _17_, {desc = "Chainsaw: log object"})
-local function _18_()
+vim.keymap.set("n", "glo", _34_, {desc = "Chainsaw: log object"})
+local function _35_()
   return cs.typeLog()
 end
-vim.keymap.set("n", "glt", _18_, {desc = "Chainsaw: log type"})
-local function _19_()
+vim.keymap.set("n", "glt", _35_, {desc = "Chainsaw: log type"})
+local function _36_()
   return cs.assertLog()
 end
-vim.keymap.set("n", "gla", _19_, {desc = "Chainsaw: log assert"})
-local function _20_()
+vim.keymap.set("n", "gla", _36_, {desc = "Chainsaw: log assert"})
+local function _37_()
   return cs.emojiLog()
 end
-vim.keymap.set("n", "gle", _20_, {desc = "Chainsaw: log emoji"})
-local function _21_()
+vim.keymap.set("n", "gle", _37_, {desc = "Chainsaw: log emoji"})
+local function _38_()
   return cs.messageLog()
 end
-vim.keymap.set("n", "glm", _21_, {desc = "Chainsaw: log message"})
-local function _22_()
+vim.keymap.set("n", "glm", _38_, {desc = "Chainsaw: log message"})
+local function _39_()
   return cs.timeLog()
 end
-vim.keymap.set("n", "glt", _22_, {desc = "Chainsaw: log time"})
-local function _23_()
+vim.keymap.set("n", "glt", _39_, {desc = "Chainsaw: log time"})
+local function _40_()
   return cs.stacktraceLog()
 end
-vim.keymap.set("n", "gls", _23_, {desc = "Chainsaw: log stacktrace"})
-local function _24_()
+vim.keymap.set("n", "gls", _40_, {desc = "Chainsaw: log stacktrace"})
+local function _41_()
   return cs.clearLog()
 end
-vim.keymap.set("n", "glc", _24_, {desc = "Chainsaw: clear log"})
-local function _25_()
+vim.keymap.set("n", "glc", _41_, {desc = "Chainsaw: clear log"})
+local function _42_()
   return cs.removeLog()
 end
-vim.keymap.set("n", "glr", _25_, {desc = "Chainsaw: remove log"})
-local function _26_()
+vim.keymap.set("n", "glr", _42_, {desc = "Chainsaw: remove log"})
+local function _43_()
   return cs.debugLog()
 end
-return vim.keymap.set("n", "gld", _26_, {desc = "Chainsaw: debug log"})
+return vim.keymap.set("n", "gld", _43_, {desc = "Chainsaw: debug log"})
