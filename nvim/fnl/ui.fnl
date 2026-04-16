@@ -63,4 +63,47 @@
 (gh-pkg! :catppuccin/nvim {:name :catppuccin})
 (gh-pkg! :everviolet/nvim {:name :everviolet})
 (gh-pkg! :ember-theme/nvim {:name :ember})
-(vim.cmd.colorscheme :kanagawa)
+
+(let [light [:ember-light
+             :evergarden-summer
+             :catppuccin-latte
+             :tokyonight-day
+             :modus_operandi
+             :kanagawa-lotus
+             :gruvbox
+             :oxocarbon
+             :everforest]
+      dark [:ember-soft
+            :ember
+            :evergarden-fall
+            :evergarden-spring
+            :evergarden-winter
+            :evergarden
+            :catppuccin-frappe
+            :catppuccin-macchiato
+            :catppuccin-mocha
+            :catppuccin-nvim
+            :catppuccin
+            :gruvbox
+            :nordic
+            :modus
+            :modus_vivendi
+            :tokyonight-moon
+            :tokyonight-night
+            :tokyonight-storm
+            :tokyonight
+            :oxocarbon
+            :kanagawa-dragon
+            :kanagawa-wave
+            :kanagawa
+            :everforest]
+      hour (tonumber (os.date "%H"))
+      bg (if (and (>= hour 7) (< hour 19)) :light :dark)
+      themes (if (and (>= hour 7) (< hour 19))
+                 light
+                 dark)
+      _ (math.randomseed (os.time))
+      idx (+ 1 (math.random (length themes)))
+      theme (. themes idx)]
+  (set! o background bg)
+  (vim.cmd.colorscheme (tostring theme)))
