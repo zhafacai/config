@@ -62,4 +62,5 @@
 (gh-pkg! :ellisonleao/gruvbox.nvim)
 (gh-pkg! :catppuccin/nvim {:name :catppuccin})
 (gh-pkg! :everviolet/nvim {:name :everviolet})
+(gh-pkg! :ember-theme/nvim {:name :ember})
 (vim.cmd.colorscheme :kanagawa)

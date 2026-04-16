@@ -104,4 +104,7 @@ end
 do
   vim.pack.add({{name = "everviolet", src = "https://github.com/everviolet/nvim"}})
 end
+do
+  vim.pack.add({{name = "ember", src = "https://github.com/ember-theme/nvim"}})
+end
 return vim.cmd.colorscheme("kanagawa")

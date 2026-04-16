@@ -50,7 +50,7 @@
       "src": "https://github.com/dchinmay2/clangd_extensions.nvim"
     },
     "codecompanion.nvim": {
-      "rev": "680c445eb357c72129d175ea5d481aa9e92ae6a5",
+      "rev": "1d01c5e8befb7f0cd283641289f8e798f8a0a01c",
       "src": "https://github.com/olimorris/codecompanion.nvim"
     },
     "codediff.nvim": {
@@ -86,6 +86,10 @@
       "rev": "ce202248134e3949aac375fd66c28e5207785b10",
       "src": "https://github.com/Bekaboo/dropbar.nvim"
     },
+    "ember": {
+      "rev": "4736d0362cdb621bed4189d789b5ba00a66d33c7",
+      "src": "https://github.com/ember-theme/nvim"
+    },
     "emission.nvim": {
       "rev": "9a8e8806b01723da229befc95d3f7ecbcc35faac",
       "src": "https://github.com/aileot/emission.nvim"
@@ -119,7 +123,7 @@
       "src": "https://github.com/MagicDuck/grug-far.nvim"
     },
     "gruvbox.nvim": {
-      "rev": "334d5fd49fc8033f26408425366c66c6390c57bb",
+      "rev": "154eb5ff5b96d0641307113fa385eaf0d36d9796",
       "src": "https://github.com/ellisonleao/gruvbox.nvim"
     },
     "helpview.nvim": {
@@ -151,7 +155,7 @@
       "src": "https://github.com/onsails/lspkind.nvim"
     },
     "markview.nvim": {
-      "rev": "1861f959599ae03cfd59f56222a542035b0cd947",
+      "rev": "5a890277ba7edd7823d20f4d0525132d277aea9a",
       "src": "https://github.com/OXY2DEV/markview.nvim"
     },
     "mini.align": {
@@ -175,7 +179,7 @@
       "src": "https://github.com/nvim-mini/mini-git"
     },
     "mini.icons": {
-      "rev": "7fdae2443a0e2910015ca39ad74b50524ee682d3",
+      "rev": "bac6317300e205335df425296570d84322730067",
       "src": "https://github.com/nvim-mini/mini.icons"
     },
     "mini.indentscope": {
@@ -187,7 +191,7 @@
       "src": "https://github.com/nvim-mini/mini.move"
     },
     "mini.notify": {
-      "rev": "32d3544b9368c76c562f22027ab25b750647fdf1",
+      "rev": "9e68ab0a54f90567b4fec2de22c851dba8480439",
       "src": "https://github.com/nvim-mini/mini.notify"
     },
     "mini.operators": {
@@ -255,7 +259,7 @@
       "src": "https://github.com/mfussenegger/nvim-lint"
     },
     "nvim-lspconfig": {
-      "rev": "8a9378a822719346a0288fa004dab302ca3c0a8f",
+      "rev": "b80f82f59544f0770981b5a6c7d129ca276dab36",
       "src": "https://github.com/neovim/nvim-lspconfig"
     },
     "nvim-nio": {
@@ -283,11 +287,11 @@
       "src": "https://github.com/nvim-treesitter/nvim-treesitter"
     },
     "nvim-ts-autotag": {
-      "rev": "8e1c0a389f20bf7f5b0dd0e00306c1247bda2595",
+      "rev": "88c1453db4ba7dd24131086fe51fdf74e587d275",
       "src": "https://github.com/windwp/nvim-ts-autotag"
     },
     "octo.nvim": {
-      "rev": "351b2922642c3ade27c1d13374c685d1d6ab27a9",
+      "rev": "19e7381c3487c94015fceaf8c35364e3ed44c4e0",
       "src": "https://github.com/pwntester/octo.nvim"
     },
     "oil.nvim": {
@@ -304,7 +308,7 @@
       "version": "'develop'"
     },
     "orgmode": {
-      "rev": "3fb33c6e2dd90891474f8955711b9e76619392b7",
+      "rev": "a214db3c8ed7eb68cb74924575b91ffc658e7d82",
       "src": "https://github.com/nvim-orgmode/orgmode"
     },
     "origami": {
@@ -324,7 +328,7 @@
       "src": "https://github.com/nvim-lua/plenary.nvim"
     },
     "rustaceanvim": {
-      "rev": "f95309a90295be99644efc46fa8127336d21730c",
+      "rev": "1a3eab0901faedbe784cf43971ecf76304190476",
       "src": "https://github.com/mrcjkb/rustaceanvim"
     },
     "satellite.nvim": {
@@ -348,7 +352,7 @@
       "src": "https://github.com/nvim-orgmode/telescope-orgmode.nvim"
     },
     "tiny-code-action.nvim": {
-      "rev": "1c75d7e121ea38bf362d939ddb9064ca9bb6884f",
+      "rev": "9f4b05c2f93f76a7bd517d9587ad0dc73cca0d0d",
       "src": "https://github.com/rachartier/tiny-code-action.nvim"
     },
     "tiny-inline-diagnostic.nvim": {
