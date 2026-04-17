@@ -106,4 +106,4 @@
       idx (+ 1 (math.random (length themes)))
       theme (. themes idx)]
   (set! o background bg)
-  (vim.cmd.colorscheme (tostring theme)))
+  (vim.cmd.colorscheme theme))
