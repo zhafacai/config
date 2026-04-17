@@ -99,6 +99,7 @@
 (nmap! :<leader>hh #(Snacks.picker.help) :Help)
 (nmap! :<leader>hn #(MiniNotify.show_history) :Notifications)
 (nmap! :<leader>hr #(Snacks.picker.registers) :Registers)
+(nmap! :<leader>hb #(Snacks.picker.buffers) :Buffers)
 (nmap! :<leader>ha #(Snacks.picker.autocmds) :Autocmds)
 (nmap! :<leader>hc #(Snacks.picker.commands) :Commands)
 (nmap! :<leader>hH #(Snacks.picker.command_history) :CommandHistory)

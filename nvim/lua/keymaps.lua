@@ -28,6 +28,6 @@ local function _3_()
 end
 vim.api.nvim_create_autocmd("LspAttach", {callback = _3_, pattern = "*"})
 local function _4_()
-  return vim.highlight.on_yank({higroup = "WildMenu", timeout = 400})
+  return vim.hl.on_yank({higroup = "WildMenu", timeout = 400})
 end
 return vim.api.nvim_create_autocmd("TextYankPost", {callback = _4_, pattern = "*"})

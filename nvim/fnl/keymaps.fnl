@@ -45,5 +45,4 @@
              (nmap! :gd vim.lsp.buf.definition
                     {:buffer true :desc "Go to definition"})))
 
-(autocmd! :TextYankPost "*"
-          #(vim.highlight.on_yank {:higroup :WildMenu :timeout 400}))
+(autocmd! :TextYankPost "*" #(vim.hl.on_yank {:higroup :WildMenu :timeout 400}))
