@@ -121,44 +121,48 @@ local function _14_()
 end
 vim.keymap.set("n", "<leader>hs", _14_, {desc = "Colorschemes"})
 local function _15_()
+  return Snacks.lazygit()
+end
+vim.keymap.set("n", "<leader>gl", _15_, {desc = "Lazygit"})
+local function _16_()
   return Snacks.gitbrowse()
 end
-vim.keymap.set("n", "<leader>gb", _15_, {desc = "Git browse"})
-local function _16_()
+vim.keymap.set("n", "<leader>gb", _16_, {desc = "Git browse"})
+local function _17_()
   return Snacks.scratch()
 end
-vim.keymap.set("n", "<leader>ss", _16_, {desc = "Scratch buffer"})
-local function _17_()
+vim.keymap.set("n", "<leader>ss", _17_, {desc = "Scratch buffer"})
+local function _18_()
   return Snacks.picker.todo_comments()
 end
-vim.keymap.set("n", "<leader>st", _17_, {desc = "Todo Comments"})
-local function _18_()
+vim.keymap.set("n", "<leader>st", _18_, {desc = "Todo Comments"})
+local function _19_()
   return Snacks.picker.scratch({win = {input = {keys = {["<c-n>"] = {"list_down", mode = {"i"}}, ["<c-x>"] = {"scratch_delete", mode = {"n", "i"}}}}}})
 end
-vim.keymap.set("n", "<leader>sS", _18_, {desc = "Select scratch"})
-local function _19_()
+vim.keymap.set("n", "<leader>sS", _19_, {desc = "Select scratch"})
+local function _20_()
   return Snacks.picker.icons()
 end
-vim.keymap.set("n", "<leader>sI", _19_, {desc = "Icons"})
-local function _20_()
+vim.keymap.set("n", "<leader>sI", _20_, {desc = "Icons"})
+local function _21_()
   return Snacks.picker.gh_issue()
 end
-vim.keymap.set("n", "<leader>gi", _20_, {desc = "Issue"})
-local function _21_()
+vim.keymap.set("n", "<leader>gi", _21_, {desc = "Issue"})
+local function _22_()
   return Snacks.picker.gh_issue({state = "all"})
 end
-vim.keymap.set("n", "<leader>gI", _21_, {desc = "Issue All"})
-local function _22_()
+vim.keymap.set("n", "<leader>gI", _22_, {desc = "Issue All"})
+local function _23_()
   return Snacks.picker.gh_pr()
 end
-vim.keymap.set("n", "<leader>gp", _22_, {desc = "Pr"})
-local function _23_()
+vim.keymap.set("n", "<leader>gp", _23_, {desc = "Pr"})
+local function _24_()
   return Snacks.picker.gh_pr({state = "all"})
 end
-vim.keymap.set("n", "<leader>gP", _23_, {desc = "Pr All"})
-local function _24_()
+vim.keymap.set("n", "<leader>gP", _24_, {desc = "Pr All"})
+local function _25_()
   vim.b["miniindentscope_disable"] = true
   return nil
 end
-vim.api.nvim_create_autocmd("User", {callback = _24_, pattern = "SnacksDashboardOpened"})
+vim.api.nvim_create_autocmd("User", {callback = _25_, pattern = "SnacksDashboardOpened"})
 return require("zfc.mini")

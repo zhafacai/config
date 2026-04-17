@@ -108,6 +108,7 @@
 (nmap! :<leader>hk #(Snacks.picker.keymaps) :Keymaps)
 (nmap! :<leader>hm #(Snacks.picker.marks) :Marks)
 (nmap! :<leader>hs #(Snacks.picker.colorschemes) :Colorschemes)
+(nmap! :<leader>gl #(Snacks.lazygit) :Lazygit)
 (nmap! :<leader>gb #(Snacks.gitbrowse) "Git browse")
 (nmap! :<leader>ss #(Snacks.scratch) "Scratch buffer")
 (nmap! :<leader>st #(Snacks.picker.todo_comments) "Todo Comments")
