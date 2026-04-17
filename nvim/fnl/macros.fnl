@@ -62,11 +62,6 @@
     (pkg! \"https://github.com/\" \"username/repo\" {:setup {}})
     (pkg! \"https://github.com/\" \"username/repo\" {:setup {} :name another})
 
-  Args:
-    - host: Base URL host (string)
-    - repo: Repository path (string)
-    - opts: Configuration table with :setup and :name keys
-
   Expands to:
     (do
       (vim.pack.add [{:src \"https://github.com/username/repo\"}])
