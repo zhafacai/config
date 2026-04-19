@@ -64,6 +64,10 @@
              :icon " "
              :key :s
              :action ":lua MiniSessions.read()"}
+            {:desc :Update
+             :icon "󰚰 "
+             :key :u
+             :action ":lua vim.pack.update()"}
             {:action ":qa" :desc :Quit :icon " " :key :q}]
       sections [; {:section :header}
                 ; {:section :terminal

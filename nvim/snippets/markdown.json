@@ -1,0 +1,23 @@
+{
+  "agent": {
+    "body": [
+      "---",
+      "name: $1",
+      "description: $2",
+      "license: ${3:MIT}",
+      "compatibility: opencode",
+      "metadata:",
+      "  $4",
+      "---",
+      "",
+      "## What I do",
+      "",
+      "- $5",
+      "",
+      "## When to use me",
+      "",
+      "$0"
+    ],
+    "prefix": "agent"
+  }
+}
