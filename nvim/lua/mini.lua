@@ -160,9 +160,14 @@ local function _24_()
   return Snacks.picker.gh_pr({state = "all"})
 end
 vim.keymap.set("n", "<leader>gP", _24_, {desc = "Pr All"})
-local function _25_()
-  vim.b["miniindentscope_disable"] = true
-  return nil
+do
+  local f
+  local function _25_()
+    vim.b["miniindentscope_disable"] = true
+    return nil
+  end
+  f = _25_
+  vim.api.nvim_create_autocmd("User", {callback = f, pattern = "SnacksDashboardOpened"})
+  vim.api.nvim_create_autocmd("Filetype", {callback = f, pattern = "orgagenda"})
 end
-vim.api.nvim_create_autocmd("User", {callback = _25_, pattern = "SnacksDashboardOpened"})
 return require("zfc.mini")

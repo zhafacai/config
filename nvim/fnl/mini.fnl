@@ -129,9 +129,8 @@
 (nmap! :<leader>gp #(Snacks.picker.gh_pr) :Pr)
 (nmap! :<leader>gP #(Snacks.picker.gh_pr {:state :all}) "Pr All")
 
-(autocmd! :User :SnacksDashboardOpened #(set! b miniindentscope_disable true))
-
-; (autocmd! :User :SnacksDashboardOpened
-;           #(tset vim.b $1.buf :miniindentscope_disable true))
+(let [f #(set! b miniindentscope_disable true)]
+  (autocmd! :User :SnacksDashboardOpened f)
+  (autocmd! :Filetype :orgagenda f))
 
 (require :zfc.mini)

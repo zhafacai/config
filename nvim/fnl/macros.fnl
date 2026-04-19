@@ -52,6 +52,9 @@
 (lambda seto! [key ?value]
   `(set! o ,key ,?value))
 
+(fn fn? [s]
+  (= :function (type s)))
+
 (fn str? [s]
   (= :string (type s)))
 
@@ -159,13 +162,11 @@
                                  {:pattern \"*.fnl\"
                                   :callback #(print \"Saved!\")
                                   :desc \"On save\"})"
-  (assert-compile (or (list? action) (str? action))
-                  "ACTION should be string/list." action)
   (let [opts (or ?opts {})]
     (tset opts :pattern pattern)
-    (if (list? action)
-        (tset opts :callback action)
-        (tset opts :command action))
+    (if (str? action)
+        (tset opts :command action)
+        (tset opts :callback action))
     `(vim.api.nvim_create_autocmd ,event ,opts)))
 
 {: gh-pkg! : nmap! : map! : set! : autocmd! : seto! : augroup!}
