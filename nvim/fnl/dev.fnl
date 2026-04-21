@@ -73,6 +73,7 @@
               :fennel
               :bpftrace
               :cpp
+              :zig
               :nix
               :python]
       nts (require :nvim-treesitter)]

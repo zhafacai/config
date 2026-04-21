@@ -105,7 +105,7 @@ do
   vim.pack.add({{src = "https://github.com/nvim-treesitter/nvim-treesitter"}})
 end
 do
-  local ts_fts = {"typescript", "lua", "html", "yaml", "comment", "fennel", "bpftrace", "cpp", "nix", "python"}
+  local ts_fts = {"typescript", "lua", "html", "yaml", "comment", "fennel", "bpftrace", "cpp", "zig", "nix", "python"}
   local nts = require("nvim-treesitter")
   nts.install(ts_fts)
   local function _8_()
