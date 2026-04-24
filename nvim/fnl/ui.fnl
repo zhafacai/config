@@ -64,11 +64,12 @@
 (gh-pkg! :everviolet/nvim {:name :everviolet})
 (gh-pkg! :ember-theme/nvim {:name :ember})
 
+;; fnlfmt: skip
 (let [light [:ember-light
              :evergarden-summer
              :catppuccin-latte
              :tokyonight-day
-             :modus_operandi
+             ; :modus_operandi
              :kanagawa-lotus
              :gruvbox
              :oxocarbon
@@ -86,8 +87,8 @@
             :catppuccin
             :gruvbox
             :nordic
-            :modus
-            :modus_vivendi
+            ; :modus
+            ; :modus_vivendi
             :tokyonight-moon
             :tokyonight-night
             :tokyonight-storm
@@ -98,10 +99,12 @@
             :kanagawa
             :everforest]
       hour (tonumber (os.date "%H"))
-      bg (if (and (>= hour 7) (< hour 19)) :light :dark)
-      themes (if (and (>= hour 7) (< hour 19))
-                 light
-                 dark)
+      ; bg (if (and (>= hour 7) (< hour 19)) :light :dark)
+      bg :dark
+      ;; themes (if (and (>= hour 7) (< hour 19))
+      ;;            light
+      ;;            dark)
+      themes dark
       _ (math.randomseed (os.time))
       idx (+ 1 (math.random (length themes)))
       theme (. themes idx)]

@@ -107,21 +107,11 @@ end
 do
   vim.pack.add({{name = "ember", src = "https://github.com/ember-theme/nvim"}})
 end
-local light = {"ember-light", "evergarden-summer", "catppuccin-latte", "tokyonight-day", "modus_operandi", "kanagawa-lotus", "gruvbox", "oxocarbon", "everforest"}
-local dark = {"ember-soft", "ember", "evergarden-fall", "evergarden-spring", "evergarden-winter", "evergarden", "catppuccin-frappe", "catppuccin-macchiato", "catppuccin-mocha", "catppuccin-nvim", "catppuccin", "gruvbox", "nordic", "modus", "modus_vivendi", "tokyonight-moon", "tokyonight-night", "tokyonight-storm", "tokyonight", "oxocarbon", "kanagawa-dragon", "kanagawa-wave", "kanagawa", "everforest"}
+local light = {"ember-light", "evergarden-summer", "catppuccin-latte", "tokyonight-day", "kanagawa-lotus", "gruvbox", "oxocarbon", "everforest"}
+local dark = {"ember-soft", "ember", "evergarden-fall", "evergarden-spring", "evergarden-winter", "evergarden", "catppuccin-frappe", "catppuccin-macchiato", "catppuccin-mocha", "catppuccin-nvim", "catppuccin", "gruvbox", "nordic", "tokyonight-moon", "tokyonight-night", "tokyonight-storm", "tokyonight", "oxocarbon", "kanagawa-dragon", "kanagawa-wave", "kanagawa", "everforest"}
 local hour = tonumber(os.date("%H"))
-local bg
-if ((hour >= 7) and (hour < 19)) then
-  bg = "light"
-else
-  bg = "dark"
-end
-local themes
-if ((hour >= 7) and (hour < 19)) then
-  themes = light
-else
-  themes = dark
-end
+local bg = "dark"
+local themes = dark
 local _ = math.randomseed(os.time())
 local idx = (1 + math.random(#themes))
 local theme = themes[idx]
