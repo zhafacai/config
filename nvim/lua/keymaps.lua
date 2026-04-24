@@ -1,5 +1,4 @@
 -- [nfnl] fnl/keymaps.fnl
-vim.keymap.set("n", "<leader>r", "<CMD>restart<CR>", {desc = "restart"})
 vim.keymap.set("n", "<leader>w", "<CMD>w<CR>", {desc = "write"})
 vim.keymap.set("n", "<leader>q", "<CMD>q<CR>", {desc = "quit"})
 vim.keymap.set({"c", "i"}, "<C-a>", "<Home>", {desc = "Move to beginning of line"})
