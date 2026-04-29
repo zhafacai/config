@@ -6,7 +6,8 @@ require("bunny"):setup({
 	hops = {
 		{ key = "/", path = "/" },
 		{ key = "t", path = "/tmp" },
-		{ key = "~", path = "~", desc = "Home" },
+		{ key = "h", path = "~", desc = "Home" },
+		{ key = "d", path = "~/Downloads/", desc = "Downloads" },
 		{ key = "c", path = "~/.config", desc = "Config files" },
 		{ key = { "l", "s" }, path = "~/.local/share", desc = "Local share" },
 		{ key = { "l", "b" }, path = "~/.local/bin", desc = "Local bin" },
