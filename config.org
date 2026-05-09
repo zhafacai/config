@@ -101,6 +101,7 @@ setup mirror for elpa
 **** Auto tangle
 tangle config file
 #+begin_src emacs-lisp
+;; TODO: add this to dir-local.el
 (defun fc/org-auto-tangle-config ()
   "Tangle only if the saved file is config.org"
   (when  (string-equal (buffer-file-name)

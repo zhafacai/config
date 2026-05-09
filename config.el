@@ -5,6 +5,7 @@
 (setq use-package-always-ensure t)
 (package-initialize)
 
+;; TODO: add this to dir-local.el
 (defun fc/org-auto-tangle-config ()
   "Tangle only if the saved file is config.org"
   (when  (string-equal (buffer-file-name)
