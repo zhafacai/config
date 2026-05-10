@@ -17,52 +17,33 @@
   #:use-module (guix channels)
   #:use-module (nongnu packages linux)
   #:use-module (nongnu system linux-initrd)
-  #:use-module (guixcn services networking)
+  ;; #:use-module (guixcn services networking)
   #:use-module (zfc packages networking)
   #:use-module (zfc system package)
-  #:use-module (sops secrets)
-  #:use-module (sops services sops)
+  ;; #:use-module (sops secrets)
+  ;; #:use-module (sops services sops)
   #:use-module ((ice-9 popen) #:select (open-input-pipe close-pipe))
   #:use-module ((rnrs io ports) #:select (get-string-all))
-  #:use-module ((sops secrets) #:select (sanitize-sops-key))
+  ;; #:use-module ((sops secrets) #:select (sanitize-sops-key))
   #:use-module (zfc home base))
 ;; (use-service-modules desktop sddm xorg)
 
 (define %subs-services
   ;; my service to use substituters
   (modify-services %desktop-services
-		           (guix-service-type
-		            config => (guix-configuration
-			                   (inherit config)
-			                   (authorized-keys
-				                (append (list (local-file "./signing-key.pub")
-					                          (plain-file "guix-moe.pub"
-							                              "(public-key (ecc (curve Ed25519) (q #552F670D5005D7EB6ACF05284A1066E52156B51D75DE3EBD3030CD046675D543#)))"))
-					                    %default-authorized-guix-keys))
-			                   (substitute-urls '("https://mirror.sjtu.edu.cn/guix/"
-						                          "https://cache-cdn.guix.moe"
-						                          "https://substitutes.nonguix.org"
-						                          "https://ci.guix.gnu.org"))))))
+                   (guix-service-type
+                    config => (guix-configuration
+                               (inherit config)
+                               (authorized-keys
+                                (append (list (local-file "./signing-key.pub")
+                                              (plain-file "guix-moe.pub"
+                                                          "(public-key (ecc (curve Ed25519) (q #552F670D5005D7EB6ACF05284A1066E52156B51D75DE3EBD3030CD046675D543#)))"))
+                                        %default-authorized-guix-keys))
+                               (substitute-urls '("https://mirror.sjtu.edu.cn/guix/"
+                                                  "https://cache-cdn.guix.moe"
+                                                  "https://substitutes.nonguix.org"
+                                                  "https://ci.guix.gnu.org"))))))
 
-(define* (get-sops-secret key #:key file (number? #f))
-  (let* ((cmd (format #f "GNUPGHOME=/var/lib/sops sops --decrypt --extract '~a' '~a'"
-                      (sops-list-key->sops-string-key key)
-                      file))
-         (port (open-input-pipe cmd))
-         (secret (get-string-all port)))
-    (close-pipe port)
-    (if number?
-        (string->number secret)
-        secret)))
-
-(define %dae-config-in-store
-  (mixed-text-file "config.dae"
-                   "include {\n  "
-                   "  base.dae"
-                   "\n}\n\n"
-		           "subscription {ssy: '"
-                   (get-sops-secret '("sec" "dae") #:file "./secrets/sub.yaml")
-                   "'}"))
 
 
 (operating-system
@@ -76,33 +57,31 @@
  ;; Choose US English keyboard layout.  The "altgr-intl"
  ;; variant provides dead keys for accented characters.
  (keyboard-layout (keyboard-layout "us"
-                  #:options '("ctrl:nocaps")))
+                                   #:options '("ctrl:nocaps")))
 
  ;; Use the UEFI variant of GRUB with the EFI System
  ;; Partition mounted on /boot/efi.
  (bootloader (bootloader-configuration
               (bootloader grub-efi-bootloader)
               (targets '("/boot/efi"))
-	          (keyboard-layout keyboard-layout)
-	          (extra-initrd "/boot/cryptroot.cpio")))
+	          (keyboard-layout keyboard-layout)))
 
  ;; Specify a mapped device for the encrypted root partition.
  ;; The UUID is that returned by 'cryptsetup luksUUID'.
  (mapped-devices
   (list (mapped-device
-         (source (uuid "5212f095-4ef7-4584-b9f1-93cb96ae6714"))
-         (target "cryptroot")
-	     (type luks-device-mapping)
-         (arguments '(#:key-file "/cryptroot.key")))))
+         (source (uuid "7a3e1a89-474c-4efb-8826-2470162e7a66"))
+         (target "root")
+	     (type luks-device-mapping))))
 
  (file-systems (append
                 (list (file-system
-                       (device (file-system-label "cryptroot"))
+                       (device (file-system-label "root"))
                        (mount-point "/")
                        (type "ext4")
                        (dependencies mapped-devices))
                       (file-system
-                       (device (uuid "7429-C291" 'fat))
+                       (device (uuid "558B-E023" 'fat))
                        (mount-point "/boot/efi")
                        (type "vfat")))
                 %base-file-systems))
@@ -116,7 +95,7 @@
                (name "zfc")
                (comment "zhafacai")
                (group "users")
-               (password (crypt ";'" "$6$saltydisk"))
+               (password "$6$RHK3ZQYo7KixPw/f$Wz1cc8nIU.AlQ7UuFQ/mPYQGa4.jt0vzZ8UeHlpS0znTEM7qg3ael8RJbCczYMp.I8YqIP0x7Nrg9A6opT1TU0")
                (supplementary-groups '("wheel" "netdev"
 				                       "libvirt"
                                        "audio" "video")))
@@ -128,7 +107,6 @@
 		            vim
 		            niri
 		            xdg-desktop-portal-gnome
-                    emacs-ewm
                     gvfs)
                    %base-packages))
 
@@ -144,32 +122,7 @@
 				                  (libvirt-configuration))
 			             (service virtlog-service-type
 				                  (virtlog-configuration))
-                         (service sops-secrets-service-type
-                                  (sops-service-configuration
-                                   (gnupg-home "/var/lib/sops")
-                                   ;; (generate-key? #t)
-                                   (secrets
-                                    (list
-                                     (sops-secret
-                                      (key '("sec" "dae"))
-                                      (file (local-file "../../secrets/sub.yaml"))
-                                      (user "zfc")
-                                      (group "wheel")
-                                      (permissions #o400)
-                                      )))))
-                         (service dae-service-type
-                                  (dae-service-configuration
-                                   (dae dae-bin)
-                                   (config-file "/etc/dae/config.dae")))
                          
-                         (simple-service 'dae-config-permission-fix activation-service-type
-                                         #~(begin
-                                             (use-modules (guix build utils))
-                                             (mkdir-p "/etc/dae")
-                                             (copy-file #$%dae-config-in-store "/etc/dae/config.dae")
-                                             (copy-file #$(local-file "plain/config.dae") "/etc/dae/base.dae")
-                                             (chmod "/etc/dae/base.dae" #o600)
-                                             (chmod "/etc/dae/config.dae" #o600)))
 			             (service guix-home-service-type
 				                  `(("zfc" ,home-base)))
 			             polkit-wheel-service

@@ -4,12 +4,15 @@
                          ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")))
 (setq use-package-always-ensure t)
 (package-initialize)
+(use-package gcmh
+  :config
+  (gcmh-mode 1))
 
 ;; TODO: add this to dir-local.el
 (defun fc/org-auto-tangle-config ()
   "Tangle only if the saved file is config.org"
   (when  (string-equal (buffer-file-name)
-                       (expand-file-name "~/dots/config.org"))
+                       (expand-file-name "~/config/config.org"))
     (let ((org-confirm-babel-evaluate nil))
       (org-babel-tangle))))
 
@@ -28,13 +31,9 @@
 
 (global-auto-revert-mode 1)
 (use-package isearch
-  :ensure nil
   :custom
   (isearch-lazy-count t))
 
-(use-package gcmh
-  :config
-  (gcmh-mode 1))
 
 (setq-default indent-tabs-mode nil
               tab-width 4)
@@ -55,44 +54,112 @@
   :prefix fc/leader-key)
 
 (defmacro after! (features &rest body)
-  "在指定的 feature(s) 加载完成后执行 body。
-第一个参数 features 支持：
-  - 单个 symbol，例如：evil
-  - 多个 feature 的列表，例如：(org evil magit)
-
-如果是列表，会自动展开成嵌套的 with-eval-after-load 结构。
-加载顺序：列表从左到右（最外层先加载）。
-
-示例：
-(after! evil
-  (evil-define-key 'normal global-map (kbd \"C-c t\") #'treemacs))
-
-(after! (org evil)
-  (map! :map org-mode-map
-        :n \"<tab>\" #'org-cycle))
-
-(after! (magit forge)
-  (setq forge-topic-list-limit '(50 . 100)))
-"
   (declare (indent 1) (debug t))
 
-  ;; 输入检查
   (unless (or (symbolp features) (consp features))
-    (error "after! 的第一个参数必须是 symbol 或 list"))
+    (error "the first param of after! should be symbol or list."))
 
-  ;; 统一转成列表
   (let ((fs (if (symbolp features)
                 (list features)
               features))
-        ;; 使用 `,@' 展开 body，避免被包装成 list
         (form `(progn ,@body)))
 
-    ;; 从列表尾部开始往外包
     (dolist (f (reverse fs))
       (setq form `(with-eval-after-load ',f
                     ,form)))
 
     form))
+
+(use-package tracking)
+
+(use-package telega
+  :ensure nil
+  :bind
+  ("C-c t" . telega)
+  :commands telega
+  :config
+  (setq telega-use-tracking-for '(or unmuted mention)
+        telega-completing-read-function #'completing-read
+        telega-msg-rainbow-title t
+        telega-chat-fill-column 75)
+
+  ;; Show notifications in the mode line
+  (add-hook 'telega-load-hook #'telega-mode-line-hook)
+
+  ;; Disable chat buffer auto-fill
+  (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
+
+;; (use-package reader
+;;   :ensure nil
+;;   :hook (reader-mode . (lambda () (hl-line-mode 0))))
+
+;; (use-package rime
+;;   :ensure nil
+;;   :custom
+;;   (default-input-method "rime")
+;;   :config
+;;   (setq
+;;    ;; rime-emacs-module-header-root (concat (shell-command-to-string "nix eval --raw nixpkgs#emacs-pgtk") "/include")
+;;    ;; rime-librime-root (shell-command-to-string "nix eval --raw nixpkgs#librime")
+;;    rime-user-data-dir "~/.local/share/fcitx5/rime/")
+;;   ;; rime-share-data-dir (concat (shell-command-to-string "nix eval --raw nixpkgs#rime-data") "/share/rime-data")
+;;   )
+
+(use-package guix
+  :ensure nil
+  :config
+  (fc/map 'normal "gi" #'guix))
+
+(setq auth-sources '("~/.authinfo.gpg")
+      user-full-name "zhafacai"
+      user-mail-address "zhafacai@gmail.com")
+
+(setq smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-service 587
+      smtpmail-stream-type 'starttls
+      smtpmail-auth-credentials "~/.authinfo.gpg")
+
+(setq message-send-mail-function 'smtpmail-send-it)
+
+(use-package notmuch
+  :ensure nil
+  :bind
+  ("C-c e" . notmuch)
+  :config
+  (setq notmuch-identities '("zfc <zhafacai@gmail.com>"))
+  (setq notmuch-fcc-dirs
+        '(("zhafacai@gmail.com" . "gmail/Sent")))
+  (setq notmuch-show-logo nil
+        notmuch-column-control 1.0
+        notmuch-hello-auto-refresh t
+        notmuch-hello-recent-searches-max 20
+        notmuch-hello-thousands-separator ""
+        notmuch-hello-sections '(notmuch-hello-insert-saved-searches)
+        notmuch-show-all-tags-list t)
+
+  (setq notmuch-search-oldest-first nil)
+
+  (setq notmuch-saved-searches
+        `(( :name "📥 inbox"
+            :query "tag:inbox"
+            :sort-order newest-first
+            :key ,(kbd "i"))
+          ( :name "💬 all unread (inbox)"
+            :query "tag:unread and tag:inbox"
+            :sort-order newest-first
+            :key ,(kbd "u"))
+          ( :name "🔮 unread crypto"
+            :query "tag:unread and tag:crypto"
+            :sort-order newest-first
+            :key ,(kbd "c"))
+          ( :name "🌞 unread life"
+            :query "tag:unread and tag:life"
+            :sort-order newest-first
+            :key ,(kbd "l")))))
+
+
+(setq browse-url-browser-function 'browse-url-generic
+      browse-url-generic-program "librewolf")
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -119,7 +186,6 @@
 (use-package page-break-lines)
 
 (use-package modus-themes
-  :demand t
   :init
   (modus-themes-include-derivatives-mode 1)
   :bind
@@ -736,9 +802,12 @@
 
   (add-to-list 'eglot-server-programs
                '(tsx-ts-mode . ("tailwindcss-language-server" "--stdio")))
-  (evil-define-key 'normal eglot-mode-map
-    "grn" #'eglot-rename
-    "gra" #'eglot-code-actions))
+  ;; (general-define-key
+  ;;  :states 'normal
+  ;;  :keymaps 'eglot-mode-map
+  ;;  "grn" 'eglot-rename
+  ;;  "gra" 'eglot-code-actions)
+  )
 
 
 
@@ -747,7 +816,7 @@
   :after eglot
   :config
   (evil-define-key 'normal eglot-mode-map
-    "grn" #'consult-eglot-symbols))
+    "gO" #'consult-eglot-symbols))
 
 (use-package eldoc
   :ensure nil
@@ -788,16 +857,16 @@
   :custom
   (treesit-auto-install t)
   :config
-  (after! org
-    (dolist (mode
-             '(("cmake"      . cmake-ts)
-               ("dockerfile" . dockerfile-ts)
-               ("go"         . go-ts)
-               ("lua"        . lua-ts)
-               ("rust"       . rust-ts)
-               ("typescript" . typescript-ts)
-               ("yaml"       . yaml-ts)))
-      (add-to-list 'org-src-lang-modes mode)))
+  ;; (after! org
+  ;;   (dolist (mode
+  ;;            '(("cmake"      . cmake-ts)
+  ;;              ("dockerfile" . dockerfile-ts)
+  ;;              ("go"         . go-ts)
+  ;;              ("lua"        . lua-ts)
+  ;;              ("rust"       . rust-ts)
+  ;;              ("typescript" . typescript-ts)
+  ;;              ("yaml"       . yaml-ts)))
+  ;;     (add-to-list 'org-src-lang-modes mode)))
   
   (treesit-auto-add-to-auto-mode-alist 'all)
   ;; (setq major-mode-remap-alist (treesit-auto--build-major-mode-remap-alist))
@@ -1140,6 +1209,9 @@
 
 (fc/map 'normal "l" 'gt-translate)
 
+(use-package ghostel
+  :ensure t)
+
 (use-package casual
   ;; :config
   ;; (fc/map 'normal Info-mode-map
@@ -1147,31 +1219,6 @@
   ;; (fc/map 'normal dired-mode-map
   ;;   "?" #'casual-dired-tmenu)
   )
-
-(use-package vterm
-  :ensure nil)
-
-(use-package tracking)
-
-(use-package telega
-  :ensure nil
-  :bind
-  ("C-c t" . telega)
-  :commands telega
-  :config
-  (setq telega-use-tracking-for '(or unmuted mention)
-        telega-completing-read-function #'completing-read
-        telega-msg-rainbow-title t
-        telega-chat-fill-column 75)
-
-  ;; Show notifications in the mode line
-  (add-hook 'telega-load-hook #'telega-mode-line-hook)
-
-  ;; Disable chat buffer auto-fill
-  (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
-
-(use-package eat
-  :ensure nil)
 
 ;; (use-package bluetooth)
 ;; (use-package nm
@@ -1234,36 +1281,9 @@
     "s" #'emms-sort
     "q" #'emms-playlist-mode-bury-buffer))
 
-(use-package reader
-  :ensure nil
-  :hook (reader-mode . (lambda () (hl-line-mode 0))))
-
 (use-package nov
   :config
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
-
-(use-package devdocs
-  :config
-  (add-hook 'rust-mode-hook
-            (lambda () (setq-local devdocs-current-docs '("rust"))))
-
-  (add-hook 'python-ts-mode-hook
-            (lambda () (setq-local devdocs-current-docs '("python~3.14"))))
-
-  (add-hook 'emacs-lisp-mode-hook
-            (lambda () (setq-local devdocs-current-docs '("elisp")))))
-
-(use-package rime
-  :ensure nil
-  :custom
-  (default-input-method "rime")
-  :config
-  (setq
-   ;; rime-emacs-module-header-root (concat (shell-command-to-string "nix eval --raw nixpkgs#emacs-pgtk") "/include")
-   ;; rime-librime-root (shell-command-to-string "nix eval --raw nixpkgs#librime")
-   rime-user-data-dir "~/.local/share/fcitx5/rime/")
-  ;; rime-share-data-dir (concat (shell-command-to-string "nix eval --raw nixpkgs#rime-data") "/share/rime-data")
-  )
 
 (use-package dwim-shell-command
   :custom
@@ -1275,11 +1295,6 @@
          ([remap dired-smart-shell-command] . dwim-shell-command))
   :config
   (require 'dwim-shell-commands))
-
-(use-package guix
-  :ensure nil
-  :config
-  (fc/map 'normal "gi" #'guix))
 
 (use-package gptel
   :bind
@@ -1364,7 +1379,7 @@
   :after (gptel)
   :demand t
   :custom
-  (gptel-prompts-directory "~/.config/emacs/prompts")
+  (gptel-prompts-directory "~/config/prompts")
   :config
   (gptel-prompts-update)
   ;; Ensure prompts are updated if prompt files change
@@ -1395,57 +1410,6 @@
 		        (evil-emacs-state)))))
 
 (general-define-key "C-c a s" #'agent-shell)
-
-(setq auth-sources '("~/.authinfo.gpg")
-      user-full-name "zhafacai"
-      user-mail-address "zhafacai@gmail.com")
-
-(setq smtpmail-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-service 587
-      smtpmail-stream-type 'starttls
-      smtpmail-auth-credentials "~/.authinfo.gpg")
-
-(setq message-send-mail-function 'smtpmail-send-it)
-
-(use-package notmuch
-  :ensure nil
-  :bind
-  ("C-c e" . notmuch)
-  :config
-  (setq notmuch-identities '("zfc <zhafacai@gmail.com>"))
-  (setq notmuch-fcc-dirs
-        '(("zhafacai@gmail.com" . "gmail/Sent")))
-  (setq notmuch-show-logo nil
-        notmuch-column-control 1.0
-        notmuch-hello-auto-refresh t
-        notmuch-hello-recent-searches-max 20
-        notmuch-hello-thousands-separator ""
-        notmuch-hello-sections '(notmuch-hello-insert-saved-searches)
-        notmuch-show-all-tags-list t)
-
-  (setq notmuch-search-oldest-first nil)
-
-  (setq notmuch-saved-searches
-        `(( :name "📥 inbox"
-            :query "tag:inbox"
-            :sort-order newest-first
-            :key ,(kbd "i"))
-          ( :name "💬 all unread (inbox)"
-            :query "tag:unread and tag:inbox"
-            :sort-order newest-first
-            :key ,(kbd "u"))
-          ( :name "🔮 unread crypto"
-            :query "tag:unread and tag:crypto"
-            :sort-order newest-first
-            :key ,(kbd "c"))
-          ( :name "🌞 unread life"
-            :query "tag:unread and tag:life"
-            :sort-order newest-first
-            :key ,(kbd "l")))))
-
-
-(setq browse-url-browser-function 'browse-url-generic
-      browse-url-generic-program "librewolf")
 
 (use-package pinentry
   :demand t
@@ -1741,81 +1705,7 @@
 
 (use-package kdl-mode)
 
-(use-package astro-ts-mode
-  :mode "\\.astro\\'")
-
 ;; (use-package justl)
 (use-package just-ts-mode)
 
 (add-hook 'scheme-mode-hook (lambda () (evil-local-set-key 'normal "K" #'geiser-doc-look-up-manual)))
-
-(setq ewm-input-config
-      '((touchpad :natural-scroll t :tap t :dwt t)
-        (mouse :accel-profile "flat")
-        (trackpoint :accel-speed 0.5)
-        (keyboard :repeat-delay 200 :repeat-rate 25
-                  :xkb-layouts "us"
-                  :xkb-options "ctrl:nocaps,grp:alt_shift_toggle")))
-(setq ewm-output-config
-      '(("eDP-1" :width 2560 :height 1440 :scale 1.8)))
-
-(defun fc/persp-select-by-index (index)
-  "Switch perspective based on the INDEX."
-  (let* ((target-persp (cond
-                        ((eq index 1) "main")
-                        ((eq index 2) "browser")
-                        ((eq index 3) "terminal")
-                        (t (format "PER-%d" index)))))
-    (persp-switch target-persp)))
-
-(use-package ewm
-  :ensure nil
-  :bind (:map ewm-mode-map
-              ("s-0" . ewm-launch-app)
-              ("s-w" . (lambda ()
-                         (interactive)
-                         ;; (start-process "ghostty" nil "nixGLIntel" "ghostty")
-                         (start-process "alacritty" nil "alacritty"))))
-  :config
-  ;; (add-to-list 'ewm-intercept-prefixes ?\C-c)   
-  ;; (add-to-list 'ewm-intercept-prefixes ?\M-&)   
-
-  (add-to-list 'ewm-intercept-prefixes "<AudioRaiseVolume>") 
-  (add-to-list 'ewm-intercept-prefixes "<AudioLowerVolume>")
-  (add-to-list 'ewm-intercept-prefixes "<AudioMute>")
-  (add-to-list 'ewm-intercept-prefixes "<AudioMicMute>")
-  (add-to-list 'ewm-intercept-prefixes "<MonBrightnessUp>")
-  (add-to-list 'ewm-intercept-prefixes "<MonBrightnessDown>")
-  (dotimes (i 9)
-    (let ((n (1+ i)))
-      (define-key ewm-mode-map
-                  (kbd (format "s-%d" n))
-                  (lambda ()
-                    (interactive)
-                    (fc/persp-select-by-index n))))))
-
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (start-process "noctalia" nil "noctalia-shell")))
-
-
-(tab-bar-mode -1)
-(setq tab-bar-show nil)
-
-(defmacro ewm--cmd (&rest args)
-  "Create an interactive command that runs ARGS as a subprocess."
-  `(lambda () (interactive) (start-process ,(car args) nil ,@args)))
-
-(define-key global-map (kbd "<AudioRaiseVolume>")  (ewm--cmd "wpctl" "set-volume" "-l" "1.0" "@DEFAULT_AUDIO_SINK@" "5%+"))
-(define-key global-map (kbd "<AudioLowerVolume>")  (ewm--cmd "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"))
-(define-key global-map (kbd "<AudioMute>")         (ewm--cmd "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"))
-(define-key global-map (kbd "<AudioMicMute>")      (ewm--cmd "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"))
-(define-key global-map (kbd "<MonBrightnessUp>")   (ewm--cmd "brightnessctl" "set" "5%+"))
-(define-key global-map (kbd "<MonBrightnessDown>") (ewm--cmd "brightnessctl" "set" "5%-"))
-
-
-;; TODO switch to glide-browser once https://github.com/NixOS/nixpkgs/pull/447604 is merged
-(use-package qutebrowser
-  :vc (                                 ;; use fork
-       :url "https://github.com/sarg/qutebrowser.el"
-       :rev "optional-exwm"))

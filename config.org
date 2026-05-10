@@ -89,7 +89,6 @@ This repo consists of guix and emacs configuration.
 #+end_src
 ** The =config.el= section
 *** Setup
-setup mirror for elpa
 #+begin_src emacs-lisp
 ;; -*- lexical-binding: t; -*-
 (setq package-archives '(("gnu" . "https://mirrors.ustc.edu.cn/elpa/gnu/")
@@ -97,15 +96,17 @@ setup mirror for elpa
                          ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")))
 (setq use-package-always-ensure t)
 (package-initialize)
+(use-package gcmh
+  :config
+  (gcmh-mode 1))
 #+end_src
-**** Auto tangle
 tangle config file
 #+begin_src emacs-lisp
 ;; TODO: add this to dir-local.el
 (defun fc/org-auto-tangle-config ()
   "Tangle only if the saved file is config.org"
   (when  (string-equal (buffer-file-name)
-                       (expand-file-name "~/dots/config.org"))
+                       (expand-file-name "~/config/config.org"))
     (let ((org-confirm-babel-evaluate nil))
       (org-babel-tangle))))
 
@@ -113,7 +114,6 @@ tangle config file
           (lambda ()
             (add-hook 'after-save-hook #'fc/org-auto-tangle-config nil 'local)))
 #+end_src
-**** Shell
 $SHELL has to be POSIX one
 #+begin_src emacs-lisp
 ;; Instruct Emacs to use a posix shell under the hood...
@@ -124,26 +124,20 @@ $SHELL has to be POSIX one
 (setq-default explicit-shell-file-name (executable-find "fish"))
 #+end_src
 
-**** Default mode
 #+begin_src emacs-lisp
 (recentf-mode)
 
 (global-auto-revert-mode 1)
 (use-package isearch
-  :ensure nil
   :custom
   (isearch-lazy-count t))
 
-(use-package gcmh
-  :config
-  (gcmh-mode 1))
 
 (setq-default indent-tabs-mode nil
               tab-width 4)
 
 #+end_src
 
-**** Custom File
 I do not want custom variables in config file
 #+begin_src emacs-lisp
 (setq custom-file (make-temp-file "emacs-custom-"))
@@ -151,7 +145,6 @@ I do not want custom variables in config file
 ;; (setq custom-safe-themes t)
 #+end_src
 
-**** Leader key
 #+begin_src emacs-lisp
 (defvar fc/leader-key "SPC"
   "my leader key.")
@@ -166,42 +159,18 @@ I do not want custom variables in config file
 
 #+end_src
 
-**** Macro
 #+begin_src emacs-lisp
 (defmacro after! (features &rest body)
-  "在指定的 feature(s) 加载完成后执行 body。
-第一个参数 features 支持：
-  - 单个 symbol，例如：evil
-  - 多个 feature 的列表，例如：(org evil magit)
-
-如果是列表，会自动展开成嵌套的 with-eval-after-load 结构。
-加载顺序：列表从左到右（最外层先加载）。
-
-示例：
-(after! evil
-  (evil-define-key 'normal global-map (kbd \"C-c t\") #'treemacs))
-
-(after! (org evil)
-  (map! :map org-mode-map
-        :n \"<tab>\" #'org-cycle))
-
-(after! (magit forge)
-  (setq forge-topic-list-limit '(50 . 100)))
-"
   (declare (indent 1) (debug t))
 
-  ;; 输入检查
   (unless (or (symbolp features) (consp features))
-    (error "after! 的第一个参数必须是 symbol 或 list"))
+    (error "the first param of after! should be symbol or list."))
 
-  ;; 统一转成列表
   (let ((fs (if (symbolp features)
                 (list features)
               features))
-        ;; 使用 `,@' 展开 body，避免被包装成 list
         (form `(progn ,@body)))
 
-    ;; 从列表尾部开始往外包
     (dolist (f (reverse fs))
       (setq form `(with-eval-after-load ',f
                     ,form)))
@@ -209,6 +178,143 @@ I do not want custom variables in config file
     form))
 #+end_src
 
+#+begin_src emacs-lisp
+  (use-package tracking)
+
+  (use-package telega
+    :ensure nil
+    :bind
+    ("C-c t" . telega)
+    :commands telega
+    :config
+    (setq telega-use-tracking-for '(or unmuted mention)
+          telega-completing-read-function #'completing-read
+          telega-msg-rainbow-title t
+          telega-chat-fill-column 75)
+
+    ;; Show notifications in the mode line
+    (add-hook 'telega-load-hook #'telega-mode-line-hook)
+
+    ;; Disable chat buffer auto-fill
+    (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
+#+end_src
+
+~epkgs~
+#+begin_src scheme :noweb-ref epkgs
+
+  "emacs-telega"
+
+#+end_src
+
+reader
+#+begin_src emacs-lisp
+  ;; (use-package reader
+  ;;   :ensure nil
+  ;;   :hook (reader-mode . (lambda () (hl-line-mode 0))))
+#+end_src
+~epkgs~
+#+begin_src scheme :noweb-ref epkgs
+
+  ;; "emacs-reader"
+
+#+end_src
+
+rime
+#+begin_src emacs-lisp
+;; (use-package rime
+;;   :ensure nil
+;;   :custom
+;;   (default-input-method "rime")
+;;   :config
+;;   (setq
+;;    ;; rime-emacs-module-header-root (concat (shell-command-to-string "nix eval --raw nixpkgs#emacs-pgtk") "/include")
+;;    ;; rime-librime-root (shell-command-to-string "nix eval --raw nixpkgs#librime")
+;;    rime-user-data-dir "~/.local/share/fcitx5/rime/")
+;;   ;; rime-share-data-dir (concat (shell-command-to-string "nix eval --raw nixpkgs#rime-data") "/share/rime-data")
+;;   )
+#+end_src
+~epkgs~
+#+begin_src scheme :noweb-ref epkgs
+"emacs-rime"
+#+end_src
+
+Guix
+#+begin_src emacs-lisp
+(use-package guix
+  :ensure nil
+  :config
+  (fc/map 'normal "gi" #'guix))
+#+end_src
+~epkgs~
+#+begin_src scheme :noweb-ref epkgs
+
+"emacs-guix"
+
+#+end_src
+
+email
+#+begin_src emacs-lisp
+(setq auth-sources '("~/.authinfo.gpg")
+      user-full-name "zhafacai"
+      user-mail-address "zhafacai@gmail.com")
+
+(setq smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-service 587
+      smtpmail-stream-type 'starttls
+      smtpmail-auth-credentials "~/.authinfo.gpg")
+
+(setq message-send-mail-function 'smtpmail-send-it)
+#+end_src
+=epkgs= for email
+#+begin_src scheme :noweb-ref epkgs
+"notmuch"
+"emacs-notmuch"
+"isync"
+"msmtp"
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package notmuch
+  :ensure nil
+  :bind
+  ("C-c e" . notmuch)
+  :config
+  (setq notmuch-identities '("zfc <zhafacai@gmail.com>"))
+  (setq notmuch-fcc-dirs
+        '(("zhafacai@gmail.com" . "gmail/Sent")))
+  (setq notmuch-show-logo nil
+        notmuch-column-control 1.0
+        notmuch-hello-auto-refresh t
+        notmuch-hello-recent-searches-max 20
+        notmuch-hello-thousands-separator ""
+        notmuch-hello-sections '(notmuch-hello-insert-saved-searches)
+        notmuch-show-all-tags-list t)
+
+  (setq notmuch-search-oldest-first nil)
+
+  (setq notmuch-saved-searches
+        `(( :name "📥 inbox"
+            :query "tag:inbox"
+            :sort-order newest-first
+            :key ,(kbd "i"))
+          ( :name "💬 all unread (inbox)"
+            :query "tag:unread and tag:inbox"
+            :sort-order newest-first
+            :key ,(kbd "u"))
+          ( :name "🔮 unread crypto"
+            :query "tag:unread and tag:crypto"
+            :sort-order newest-first
+            :key ,(kbd "c"))
+          ( :name "🌞 unread life"
+            :query "tag:unread and tag:life"
+            :sort-order newest-first
+            :key ,(kbd "l")))))
+
+
+(setq browse-url-browser-function 'browse-url-generic
+      browse-url-generic-program "librewolf")
+
+#+end_src
 *** UI
 **** Basic
 the mode that I do not use
@@ -246,10 +352,10 @@ tranparent background is beautiful... Right?
 #+begin_src emacs-lisp
 (use-package page-break-lines)
 #+end_src
+
 **** Themes
 #+begin_src emacs-lisp
 (use-package modus-themes
-  :demand t
   :init
   (modus-themes-include-derivatives-mode 1)
   :bind
@@ -339,6 +445,7 @@ tranparent background is beautiful... Right?
               :around #'fc/doom-modeline-update-buffer-file-name)
   :init (doom-modeline-mode 1))
 #+end_src
+
 **** Pulsar
 #+begin_src emacs-lisp
 (use-package pulsar
@@ -650,34 +757,6 @@ linediff
 **** Wgrep
 #+begin_src emacs-lisp
 (use-package wgrep)
-#+end_src
-**** COMMENT Lispy
-#+begin_src emacs-lisp
-(use-package lispy
-  :hook
-  (fennel-mode . lispy-mode)
-  (scheme-mode . lispy-mode)
-  (emacs-lisp-mode . lispy-mode))
-
-(use-package lispyville
-  :after evil
-  :init
-  (setq lispyville-key-theme
-        '((operators normal)
-          c-w
-          (prettify insert)
-          (atom-movement t)
-          slurp/barf-lispy
-          additional
-          additional-insert))
-  :hook 
-  (lispy-mode . lispyville-mode)
-  :config
-  (lispyville-set-key-theme)
-  (evil-define-key '(normal visual) lispyville-mode-map
-    (kbd "M-i") 'lispy-splice)
-  (evil-define-key '(normal visual) lispyville-mode-map
-    (kbd "M-s") nil))
 #+end_src
 **** Project
 projectile
@@ -996,9 +1075,12 @@ perspective
 
   (add-to-list 'eglot-server-programs
                '(tsx-ts-mode . ("tailwindcss-language-server" "--stdio")))
-  (evil-define-key 'normal eglot-mode-map
-    "grn" #'eglot-rename
-    "gra" #'eglot-code-actions))
+  ;; (general-define-key
+  ;;  :states 'normal
+  ;;  :keymaps 'eglot-mode-map
+  ;;  "grn" 'eglot-rename
+  ;;  "gra" 'eglot-code-actions)
+  )
 
 
 
@@ -1007,7 +1089,7 @@ perspective
   :after eglot
   :config
   (evil-define-key 'normal eglot-mode-map
-    "grn" #'consult-eglot-symbols))
+    "gO" #'consult-eglot-symbols))
 #+end_src
 #+begin_src emacs-lisp
 (use-package eldoc
@@ -1054,16 +1136,16 @@ perspective
   :custom
   (treesit-auto-install t)
   :config
-  (after! org
-    (dolist (mode
-             '(("cmake"      . cmake-ts)
-               ("dockerfile" . dockerfile-ts)
-               ("go"         . go-ts)
-               ("lua"        . lua-ts)
-               ("rust"       . rust-ts)
-               ("typescript" . typescript-ts)
-               ("yaml"       . yaml-ts)))
-      (add-to-list 'org-src-lang-modes mode)))
+  ;; (after! org
+  ;;   (dolist (mode
+  ;;            '(("cmake"      . cmake-ts)
+  ;;              ("dockerfile" . dockerfile-ts)
+  ;;              ("go"         . go-ts)
+  ;;              ("lua"        . lua-ts)
+  ;;              ("rust"       . rust-ts)
+  ;;              ("typescript" . typescript-ts)
+  ;;              ("yaml"       . yaml-ts)))
+  ;;     (add-to-list 'org-src-lang-modes mode)))
   
   (treesit-auto-add-to-auto-mode-alist 'all)
   ;; (setq major-mode-remap-alist (treesit-auto--build-major-mode-remap-alist))
@@ -1462,6 +1544,11 @@ org-mode
 #+begin_src scheme :noweb-ref epkgs
 "sdcv"
 #+end_src
+**** Ghostel
+#+begin_src emacs-lisp
+  (use-package ghostel
+    :ensure t)
+#+end_src
 **** Casual
 #+begin_src emacs-lisp
 (use-package casual
@@ -1472,51 +1559,7 @@ org-mode
   ;;   "?" #'casual-dired-tmenu)
   )
 #+end_src
-**** Vterm
-#+begin_src emacs-lisp
-(use-package vterm
-  :ensure nil)
-#+end_src
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
-"emacs-vterm"
-#+end_src
-**** Telega
-#+begin_src emacs-lisp
-(use-package tracking)
 
-(use-package telega
-  :ensure nil
-  :bind
-  ("C-c t" . telega)
-  :commands telega
-  :config
-  (setq telega-use-tracking-for '(or unmuted mention)
-        telega-completing-read-function #'completing-read
-        telega-msg-rainbow-title t
-        telega-chat-fill-column 75)
-
-  ;; Show notifications in the mode line
-  (add-hook 'telega-load-hook #'telega-mode-line-hook)
-
-  ;; Disable chat buffer auto-fill
-  (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
-#+end_src
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
-
-"emacs-telega"
-
-#+end_src
-**** Eat
-#+begin_src emacs-lisp
-(use-package eat
-  :ensure nil)
-#+end_src
-=epkgs=
-#+begin_src scheme :noweb-ref epkgs
-"emacs-eat"
-#+end_src
 **** Desktop
 #+begin_src emacs-lisp
 ;; (use-package bluetooth)
@@ -1590,18 +1633,6 @@ org-mode
 #+end_src
 
 **** PDF
-reader
-#+begin_src emacs-lisp
-(use-package reader
-  :ensure nil
-  :hook (reader-mode . (lambda () (hl-line-mode 0))))
-#+end_src
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
-
-;; "emacs-reader"
-
-#+end_src
 nov
 #+begin_src emacs-lisp
 (use-package nov
@@ -1609,37 +1640,6 @@ nov
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
 #+end_src
 
-**** Devdocs
-#+begin_src emacs-lisp
-(use-package devdocs
-  :config
-  (add-hook 'rust-mode-hook
-            (lambda () (setq-local devdocs-current-docs '("rust"))))
-
-  (add-hook 'python-ts-mode-hook
-            (lambda () (setq-local devdocs-current-docs '("python~3.14"))))
-
-  (add-hook 'emacs-lisp-mode-hook
-            (lambda () (setq-local devdocs-current-docs '("elisp")))))
-#+end_src
-**** Rime
-#+begin_src emacs-lisp
-(use-package rime
-  :ensure nil
-  :custom
-  (default-input-method "rime")
-  :config
-  (setq
-   ;; rime-emacs-module-header-root (concat (shell-command-to-string "nix eval --raw nixpkgs#emacs-pgtk") "/include")
-   ;; rime-librime-root (shell-command-to-string "nix eval --raw nixpkgs#librime")
-   rime-user-data-dir "~/.local/share/fcitx5/rime/")
-  ;; rime-share-data-dir (concat (shell-command-to-string "nix eval --raw nixpkgs#rime-data") "/share/rime-data")
-  )
-#+end_src
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
-"emacs-rime"
-#+end_src
 **** Dwim-shell-command
 #+begin_src emacs-lisp
 (use-package dwim-shell-command
@@ -1652,36 +1652,6 @@ nov
          ([remap dired-smart-shell-command] . dwim-shell-command))
   :config
   (require 'dwim-shell-commands))
-#+end_src
-**** Guix
-#+begin_src emacs-lisp
-(use-package guix
-  :ensure nil
-  :config
-  (fc/map 'normal "gi" #'guix))
-#+end_src
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
-
-"emacs-guix"
-
-#+end_src
-**** COMMENT EEE
-#+begin_src emacs-lisp
-(use-package eee
-  :vc (:url "https://github.com/eval-exec/eee.el")
-  :config
-  ;; Issues and pull requests are welcome
-  (setq ee-terminal-command "alacritty")
-
-  ;; (global-definer "f" 'ee-find)
-  ;; (global-definer "g" 'ee-lazygit)
-  ;; (global-definer "y" 'ee-yazi-project)
-  ;; (general-def "C-x C-f" 'ee-yazi)
-  ;; (general-def "C-S-f" 'ee-rg)
-  ;; (general-evil-define-key 'normal 'global "M-f" 'ee-line)
-  )
-
 #+end_src
 **** AI
 ***** Gptel
@@ -1769,7 +1739,7 @@ nov
   :after (gptel)
   :demand t
   :custom
-  (gptel-prompts-directory "~/.config/emacs/prompts")
+  (gptel-prompts-directory "~/config/prompts")
   :config
   (gptel-prompts-update)
   ;; Ensure prompts are updated if prompt files change
@@ -1803,69 +1773,6 @@ nov
 		        (evil-emacs-state)))))
 
 (general-define-key "C-c a s" #'agent-shell)
-#+end_src
-**** Email
-basic personal info config
-#+begin_src emacs-lisp
-(setq auth-sources '("~/.authinfo.gpg")
-      user-full-name "zhafacai"
-      user-mail-address "zhafacai@gmail.com")
-
-(setq smtpmail-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-service 587
-      smtpmail-stream-type 'starttls
-      smtpmail-auth-credentials "~/.authinfo.gpg")
-
-(setq message-send-mail-function 'smtpmail-send-it)
-#+end_src
-=epkgs= for email
-#+begin_src scheme :noweb-ref epkgs
-"notmuch"
-"emacs-notmuch"
-"isync"
-"msmtp"
-#+end_src
-#+begin_src emacs-lisp
-(use-package notmuch
-  :ensure nil
-  :bind
-  ("C-c e" . notmuch)
-  :config
-  (setq notmuch-identities '("zfc <zhafacai@gmail.com>"))
-  (setq notmuch-fcc-dirs
-        '(("zhafacai@gmail.com" . "gmail/Sent")))
-  (setq notmuch-show-logo nil
-        notmuch-column-control 1.0
-        notmuch-hello-auto-refresh t
-        notmuch-hello-recent-searches-max 20
-        notmuch-hello-thousands-separator ""
-        notmuch-hello-sections '(notmuch-hello-insert-saved-searches)
-        notmuch-show-all-tags-list t)
-
-  (setq notmuch-search-oldest-first nil)
-
-  (setq notmuch-saved-searches
-        `(( :name "📥 inbox"
-            :query "tag:inbox"
-            :sort-order newest-first
-            :key ,(kbd "i"))
-          ( :name "💬 all unread (inbox)"
-            :query "tag:unread and tag:inbox"
-            :sort-order newest-first
-            :key ,(kbd "u"))
-          ( :name "🔮 unread crypto"
-            :query "tag:unread and tag:crypto"
-            :sort-order newest-first
-            :key ,(kbd "c"))
-          ( :name "🌞 unread life"
-            :query "tag:unread and tag:life"
-            :sort-order newest-first
-            :key ,(kbd "l")))))
-
-
-(setq browse-url-browser-function 'browse-url-generic
-      browse-url-generic-program "librewolf")
-
 #+end_src
 **** Pinentry
 #+begin_src emacs-lisp
@@ -2267,11 +2174,6 @@ basic personal info config
 #+begin_src emacs-lisp
 (use-package kdl-mode)
 #+end_src
-**** Astro
-#+begin_src emacs-lisp
-(use-package astro-ts-mode
-  :mode "\\.astro\\'")
-#+end_src
 **** Just
 #+begin_src emacs-lisp
 ;; (use-package justl)
@@ -2281,82 +2183,9 @@ basic personal info config
 #+begin_src emacs-lisp
 (add-hook 'scheme-mode-hook (lambda () (evil-local-set-key 'normal "K" #'geiser-doc-look-up-manual)))
 #+end_src
-*** EWM
-#+begin_src emacs-lisp
-(setq ewm-input-config
-      '((touchpad :natural-scroll t :tap t :dwt t)
-        (mouse :accel-profile "flat")
-        (trackpoint :accel-speed 0.5)
-        (keyboard :repeat-delay 200 :repeat-rate 25
-                  :xkb-layouts "us"
-                  :xkb-options "ctrl:nocaps,grp:alt_shift_toggle")))
-(setq ewm-output-config
-      '(("eDP-1" :width 2560 :height 1440 :scale 1.8)))
-
-(defun fc/persp-select-by-index (index)
-  "Switch perspective based on the INDEX."
-  (let* ((target-persp (cond
-                        ((eq index 1) "main")
-                        ((eq index 2) "browser")
-                        ((eq index 3) "terminal")
-                        (t (format "PER-%d" index)))))
-    (persp-switch target-persp)))
-
-(use-package ewm
-  :ensure nil
-  :bind (:map ewm-mode-map
-              ("s-0" . ewm-launch-app)
-              ("s-w" . (lambda ()
-                         (interactive)
-                         ;; (start-process "ghostty" nil "nixGLIntel" "ghostty")
-                         (start-process "alacritty" nil "alacritty"))))
-  :config
-  ;; (add-to-list 'ewm-intercept-prefixes ?\C-c)   
-  ;; (add-to-list 'ewm-intercept-prefixes ?\M-&)   
-
-  (add-to-list 'ewm-intercept-prefixes "<AudioRaiseVolume>") 
-  (add-to-list 'ewm-intercept-prefixes "<AudioLowerVolume>")
-  (add-to-list 'ewm-intercept-prefixes "<AudioMute>")
-  (add-to-list 'ewm-intercept-prefixes "<AudioMicMute>")
-  (add-to-list 'ewm-intercept-prefixes "<MonBrightnessUp>")
-  (add-to-list 'ewm-intercept-prefixes "<MonBrightnessDown>")
-  (dotimes (i 9)
-    (let ((n (1+ i)))
-      (define-key ewm-mode-map
-                  (kbd (format "s-%d" n))
-                  (lambda ()
-                    (interactive)
-                    (fc/persp-select-by-index n))))))
-
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (start-process "noctalia" nil "noctalia-shell")))
-
-
-(tab-bar-mode -1)
-(setq tab-bar-show nil)
-
-(defmacro ewm--cmd (&rest args)
-  "Create an interactive command that runs ARGS as a subprocess."
-  `(lambda () (interactive) (start-process ,(car args) nil ,@args)))
-
-(define-key global-map (kbd "<AudioRaiseVolume>")  (ewm--cmd "wpctl" "set-volume" "-l" "1.0" "@DEFAULT_AUDIO_SINK@" "5%+"))
-(define-key global-map (kbd "<AudioLowerVolume>")  (ewm--cmd "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"))
-(define-key global-map (kbd "<AudioMute>")         (ewm--cmd "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"))
-(define-key global-map (kbd "<AudioMicMute>")      (ewm--cmd "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"))
-(define-key global-map (kbd "<MonBrightnessUp>")   (ewm--cmd "brightnessctl" "set" "5%+"))
-(define-key global-map (kbd "<MonBrightnessDown>") (ewm--cmd "brightnessctl" "set" "5%-"))
-
-
-;; TODO switch to glide-browser once https://github.com/NixOS/nixpkgs/pull/447604 is merged
-(use-package qutebrowser
-  :vc (                                 ;; use fork
-       :url "https://github.com/sarg/qutebrowser.el"
-       :rev "optional-exwm"))
-#+end_src
 * Guix
 ** The =art.scm= section for Lenovo AHP9 system
-#+begin_src scheme :tangle zfc/system/art.scm :noweb yes
+#+begin_src scheme :tangle mods/zfc/system/art.scm :noweb yes
 ;; -*- mode: scheme; -*-
 (define-module (zfc system art)
   #:use-module (gnu)
@@ -2376,32 +2205,32 @@ basic personal info config
   #:use-module (guix channels)
   #:use-module (nongnu packages linux)
   #:use-module (nongnu system linux-initrd)
-  #:use-module (guixcn services networking)
+  ;; #:use-module (guixcn services networking)
   #:use-module (zfc packages networking)
   #:use-module (zfc system package)
-  #:use-module (sops secrets)
-  #:use-module (sops services sops)
+  ;; #:use-module (sops secrets)
+  ;; #:use-module (sops services sops)
   #:use-module ((ice-9 popen) #:select (open-input-pipe close-pipe))
   #:use-module ((rnrs io ports) #:select (get-string-all))
-  #:use-module ((sops secrets) #:select (sanitize-sops-key))
+  ;; #:use-module ((sops secrets) #:select (sanitize-sops-key))
   #:use-module (zfc home base))
 ;; (use-service-modules desktop sddm xorg)
 
 (define %subs-services
   ;; my service to use substituters
   (modify-services %desktop-services
-		           (guix-service-type
-		            config => (guix-configuration
-			                   (inherit config)
-			                   (authorized-keys
-				                (append (list (local-file "./signing-key.pub")
-					                          (plain-file "guix-moe.pub"
-							                              "(public-key (ecc (curve Ed25519) (q #552F670D5005D7EB6ACF05284A1066E52156B51D75DE3EBD3030CD046675D543#)))"))
-					                    %default-authorized-guix-keys))
-			                   (substitute-urls '("https://mirror.sjtu.edu.cn/guix/"
-						                          "https://cache-cdn.guix.moe"
-						                          "https://substitutes.nonguix.org"
-						                          "https://ci.guix.gnu.org"))))))
+                   (guix-service-type
+                    config => (guix-configuration
+                               (inherit config)
+                               (authorized-keys
+                                (append (list (local-file "./signing-key.pub")
+                                              (plain-file "guix-moe.pub"
+                                                          "(public-key (ecc (curve Ed25519) (q #552F670D5005D7EB6ACF05284A1066E52156B51D75DE3EBD3030CD046675D543#)))"))
+                                        %default-authorized-guix-keys))
+                               (substitute-urls '("https://mirror.sjtu.edu.cn/guix/"
+                                                  "https://cache-cdn.guix.moe"
+                                                  "https://substitutes.nonguix.org"
+                                                  "https://ci.guix.gnu.org"))))))
 
 <<sys-def>>
 
@@ -2416,33 +2245,31 @@ basic personal info config
  ;; Choose US English keyboard layout.  The "altgr-intl"
  ;; variant provides dead keys for accented characters.
  (keyboard-layout (keyboard-layout "us"
-                  #:options '("ctrl:nocaps")))
+                                   #:options '("ctrl:nocaps")))
 
  ;; Use the UEFI variant of GRUB with the EFI System
  ;; Partition mounted on /boot/efi.
  (bootloader (bootloader-configuration
               (bootloader grub-efi-bootloader)
               (targets '("/boot/efi"))
-	          (keyboard-layout keyboard-layout)
-	          (extra-initrd "/boot/cryptroot.cpio")))
+	          (keyboard-layout keyboard-layout)))
 
  ;; Specify a mapped device for the encrypted root partition.
  ;; The UUID is that returned by 'cryptsetup luksUUID'.
  (mapped-devices
   (list (mapped-device
-         (source (uuid "5212f095-4ef7-4584-b9f1-93cb96ae6714"))
-         (target "cryptroot")
-	     (type luks-device-mapping)
-         (arguments '(#:key-file "/cryptroot.key")))))
+         (source (uuid "7a3e1a89-474c-4efb-8826-2470162e7a66"))
+         (target "root")
+	     (type luks-device-mapping))))
 
  (file-systems (append
                 (list (file-system
-                       (device (file-system-label "cryptroot"))
+                       (device (file-system-label "root"))
                        (mount-point "/")
                        (type "ext4")
                        (dependencies mapped-devices))
                       (file-system
-                       (device (uuid "7429-C291" 'fat))
+                       (device (uuid "558B-E023" 'fat))
                        (mount-point "/boot/efi")
                        (type "vfat")))
                 %base-file-systems))
@@ -2456,7 +2283,7 @@ basic personal info config
                (name "zfc")
                (comment "zhafacai")
                (group "users")
-               (password (crypt ";'" "$6$saltydisk"))
+               (password "$6$RHK3ZQYo7KixPw/f$Wz1cc8nIU.AlQ7UuFQ/mPYQGa4.jt0vzZ8UeHlpS0znTEM7qg3ael8RJbCczYMp.I8YqIP0x7Nrg9A6opT1TU0")
                (supplementary-groups '("wheel" "netdev"
 				                       "libvirt"
                                        "audio" "video")))
@@ -2468,7 +2295,6 @@ basic personal info config
 		            vim
 		            niri
 		            xdg-desktop-portal-gnome
-                    emacs-ewm
                     gvfs)
                    %base-packages))
 
@@ -2496,172 +2322,66 @@ basic personal info config
  ;; Allow resolution of '.local' host names with mDNS.
  (name-service-switch %mdns-host-lookup-nss))
 #+end_src
-*** The =art.scm= section about sops.
+*** COMMENT The =art.scm= section about sops.
 ~sys-services~
 here is =sops= secrets config for my dae config.
 #+begin_src scheme :noweb-ref sys-services
-(service sops-secrets-service-type
-         (sops-service-configuration
-          (gnupg-home "/var/lib/sops")
-          ;; (generate-key? #t)
-          (secrets
-           (list
-            (sops-secret
-             (key '("sec" "dae"))
-             (file (local-file "../../secrets/sub.yaml"))
-             (user "zfc")
-             (group "wheel")
-             (permissions #o400)
-             )))))
+  (service sops-secrets-service-type
+    (sops-service-configuration
+      (gnupg-home "/var/lib/sops")
+      ;; (generate-key? #t)
+      (secrets
+       (list
+        (sops-secret
+          (key '("sec" "dae"))
+          (file (local-file "../../secrets/sub.yaml"))
+          (user "zfc")
+          (group "wheel")
+          (permissions #o400)
+          )))))
 #+end_src
-*** The =art.scm= section about dae.
+*** COMMENT The =art.scm= section about dae.
 ~sys-def~
 #+begin_src scheme :noweb-ref sys-def
-(define* (get-sops-secret key #:key file (number? #f))
-  (let* ((cmd (format #f "GNUPGHOME=/var/lib/sops sops --decrypt --extract '~a' '~a'"
-                      (sops-list-key->sops-string-key key)
-                      file))
-         (port (open-input-pipe cmd))
-         (secret (get-string-all port)))
-    (close-pipe port)
-    (if number?
-        (string->number secret)
-        secret)))
+  (define* (get-sops-secret key #:key file (number? #f))
+    (let* ((cmd (format #f "GNUPGHOME=/var/lib/sops sops --decrypt --extract '~a' '~a'"
+                        (sops-list-key->sops-string-key key)
+                        file))
+           (port (open-input-pipe cmd))
+           (secret (get-string-all port)))
+      (close-pipe port)
+      (if number?
+          (string->number secret)
+          secret)))
 
-(define %dae-config-in-store
-  (mixed-text-file "config.dae"
-                   "include {\n  "
-                   "  base.dae"
-                   "\n}\n\n"
-		           "subscription {ssy: '"
-                   (get-sops-secret '("sec" "dae") #:file "./secrets/sub.yaml")
-                   "'}"))
+  (define %dae-config-in-store
+    (mixed-text-file "config.dae"
+      "include {\n  "
+      "  base.dae"
+      "\n}\n\n"
+  	"subscription {ssy: '"
+      (get-sops-secret '("sec" "dae") #:file "./secrets/sub.yaml")
+      "'}"))
 
 #+end_src
 ~sys-services~
 #+begin_src scheme :noweb-ref sys-services
-(service dae-service-type
-         (dae-service-configuration
-          (dae dae-bin)
-          (config-file "/etc/dae/config.dae")))
+  (service dae-service-type
+    (dae-service-configuration
+     (dae dae-bin)
+     (config-file "/etc/dae/config.dae")))
 
-(simple-service 'dae-config-permission-fix activation-service-type
-                #~(begin
-                    (use-modules (guix build utils))
-                    (mkdir-p "/etc/dae")
-                    (copy-file #$%dae-config-in-store "/etc/dae/config.dae")
-                    (copy-file #$(local-file "plain/config.dae") "/etc/dae/base.dae")
-                    (chmod "/etc/dae/base.dae" #o600)
-                    (chmod "/etc/dae/config.dae" #o600)))
-#+end_src
-** The =package.scm= section for system packages.
-#+begin_src scheme :tangle zfc/system/package.scm
-(define-module (zfc system package)
-  #:use-module (guix build-system cargo)
-  #:use-module (guix download)
-  #:use-module (guix gexp)
-  #:use-module (guix git-download)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages)
-  #:use-module (guix utils)
-  #:use-module (gnu packages)
-  #:use-module (gnu packages glib)
-  #:use-module (gnu packages linux)
-  #:use-module (gnu packages emacs)
-  #:use-module (gnu packages package-management)
-  #:use-module (gnu packages build-tools)
-
-  #:use-module (gnu packages wm)
-  #:use-module (gnu packages admin)
-  #:use-module (gnu packages gl)
-  #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages freedesktop)
-  #:use-module (gnu packages llvm)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages pkg-config))
-
-(define-syntax-rule (my-cargo-inputs name)
-  (cargo-inputs name #:module '(zfc system rust-crates)))
-
-(define-public emacs-ewm
-  (package
-    (name "emacs-ewm")
-    (properties '((commit . "2024b5f956d00fdd1e65ef8ae715b5c1243e2fe1")))
-    (version (git-version "0.1.0" "7" (assoc-ref properties 'commit)))
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://codeberg.org/ezemtsov/ewm")
-              (commit (assoc-ref properties 'commit))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "075y8vlcqw7jf15a453w8zcnjgf3m6k1hay93gh8zkilizhci1nv"))))
-    (build-system cargo-build-system)
-    (arguments
-     (list #:install-source? #f
-           #:modules '((guix build cargo-build-system)
-                       ((guix build emacs-build-system) #:prefix emacs:)
-                       (guix build emacs-utils)
-                       (guix build utils))
-           #:imported-modules `(,@%cargo-build-system-modules
-                                (guix build emacs-utils)
-                                (guix build emacs-build-system))
-           #:phases
-           #~(modify-phases %standard-phases
-               (add-after 'unpack 'build-lisp
-                 (lambda args
-                   (chdir "lisp")
-
-                   (substitute* "ewm.el"
-                     (("\\(getenv \"EWM_MODULE_PATH\"\\)")
-                      (string-append "\"" #$output "/lib/libewm_core.so\"")))
-
-                   (for-each
-                    (lambda (phase)
-                      (apply (cdr phase) args))
-                    (modify-phases emacs:%standard-phases
-                      (delete 'unpack)))
-                   
-                   (chdir "..")))
-
-               (add-after 'build-lisp 'fix-deps
-                 (lambda _
-                   (chdir "compositor")
-                   (delete-file "Cargo.lock")
-                   (substitute* "Cargo.toml"
-                     (("^rev =.*") "version = \"*\"\n")
-                     (("^git = .*") ""))))
-
-               (replace 'install
-                 (lambda _
-                   (install-file "target/release/libewm_core.so"
-                                 (string-append #$output "/lib")))))))
-    (native-inputs (list emacs-minimal pkg-config))
-    (inputs (cons*
-             dbus
-             libdisplay-info
-             libinput-minimal
-             libseat
-             libxkbcommon
-             mesa
-             pipewire
-             wayland
-             glib
-             libx11
-             libxcursor
-             libxrandr
-             libxi
-             libdrm
-             (my-cargo-inputs 'emacs-ewm)))
-    (home-page "https://codeberg.org/ezemtsov/ewm")
-    (synopsis "Emacs Wayland Manager")
-    (description "Emacs Wayland Manager - Wayland compositor")
-    (license license:gpl3+)))
-
+  (simple-service 'dae-config-permission-fix activation-service-type
+    #~(begin
+        (use-modules (guix build utils))
+        (mkdir-p "/etc/dae")
+        (copy-file #$%dae-config-in-store "/etc/dae/config.dae")
+        (copy-file #$(local-file "plain/config.dae") "/etc/dae/base.dae")
+        (chmod "/etc/dae/base.dae" #o600)
+        (chmod "/etc/dae/config.dae" #o600)))
 #+end_src
 ** The =base.scm= section for =guix home=
-#+begin_src scheme :tangle zfc/home/base.scm :noweb yes
+#+begin_src scheme :tangle mods/zfc/home/base.scm :noweb yes
 (define-module (zfc home base)
   #:use-module (gnu packages)
   #:use-module (gnu packages gnupg)
@@ -2680,8 +2400,8 @@ here is =sops= secrets config for my dae config.
   #:use-module (guix transformations)
   #:use-module (zfc home packages rime-ice)
   #:use-module (zfc packages emacs-xyz)
-  #:use-module (sops secrets)
-  #:use-module (sops home services sops)
+  ;; #:use-module (sops secrets)
+  ;; #:use-module (sops home services sops)
   #:export (home-base))
 
 (define home-base
@@ -2689,10 +2409,10 @@ here is =sops= secrets config for my dae config.
    (packages
     (append
      (list emacs-reader)
-	 (specifications->packages (list
-						        ;; emacs
-						        <<epkgs>>
-						        "emacs-pgtk"
+     (specifications->packages (list
+                                ;; emacs
+                                <<epkgs>>
+                                "emacs-pgtk"
                                 ;; dev
                                 "rust"
 
@@ -2769,143 +2489,146 @@ here is =sops= secrets config for my dae config.
 ~hm-services~
 #+begin_src scheme :noweb-ref hm-services
 (service home-files-service-type
-  `(
-    ;; 1. Link the heavy data directories
-    (".local/share/fcitx5/rime/en_dicts" ,(file-append rime-ice "/share/rime-data/en_dicts"))
-    (".local/share/fcitx5/rime/cn_dicts" ,(file-append rime-ice "/share/rime-data/cn_dicts"))
-    (".local/share/fcitx5/rime/opencc" ,(file-append rime-ice "/share/rime-data/opencc"))
-    (".local/share/fcitx5/rime/lua"    ,(file-append rime-ice "/share/rime-data/lua"))
+         `(
+           ;; 1. Link the heavy data directories
+           (".local/share/fcitx5/rime/en_dicts" ,(file-append rime-ice "/share/rime-data/en_dicts"))
+           (".local/share/fcitx5/rime/cn_dicts" ,(file-append rime-ice "/share/rime-data/cn_dicts"))
+           (".local/share/fcitx5/rime/opencc" ,(file-append rime-ice "/share/rime-data/opencc"))
+           (".local/share/fcitx5/rime/lua"    ,(file-append rime-ice "/share/rime-data/lua"))
 
-    ;; 2. Link the essential schema files for Xiaohe
-    (".local/share/fcitx5/rime/double_pinyin_flypy.schema.yaml" 
-     ,(file-append rime-ice "/share/rime-data/double_pinyin_flypy.schema.yaml"))
-    (".local/share/fcitx5/rime/rime_ice.schema.yaml" 
-     ,(file-append rime-ice "/share/rime-data/rime_ice.schema.yaml"))
-    (".local/share/fcitx5/rime/default.yaml" 
-     ,(file-append rime-ice "/share/rime-data/default.yaml"))
-    (".local/share/fcitx5/rime/rime_ice.dict.yaml" 
-     ,(file-append rime-ice "/share/rime-data/rime_ice.dict.yaml"))
-    (".local/share/fcitx5/rime/symbols_v.yaml" 
-     ,(file-append rime-ice "/share/rime-data/symbols_v.yaml"))
-    (".local/share/fcitx5/rime/symbols_caps_v.yaml" 
-     ,(file-append rime-ice "/share/rime-data/symbols_caps_v.yaml"))
-    (".local/share/fcitx5/rime/default.custom.yaml"
-     ,(local-file "packages/default.custom.yaml"))))
+           ;; 2. Link the essential schema files for Xiaohe
+           (".local/share/fcitx5/rime/double_pinyin_flypy.schema.yaml" 
+            ,(file-append rime-ice "/share/rime-data/double_pinyin_flypy.schema.yaml"))
+           (".local/share/fcitx5/rime/rime_ice.schema.yaml" 
+            ,(file-append rime-ice "/share/rime-data/rime_ice.schema.yaml"))
+           (".local/share/fcitx5/rime/default.yaml" 
+            ,(file-append rime-ice "/share/rime-data/default.yaml"))
+           (".local/share/fcitx5/rime/rime_ice.dict.yaml" 
+            ,(file-append rime-ice "/share/rime-data/rime_ice.dict.yaml"))
+           (".local/share/fcitx5/rime/symbols_v.yaml" 
+            ,(file-append rime-ice "/share/rime-data/symbols_v.yaml"))
+           (".local/share/fcitx5/rime/symbols_caps_v.yaml" 
+            ,(file-append rime-ice "/share/rime-data/symbols_caps_v.yaml"))
+           (".local/share/fcitx5/rime/default.custom.yaml"
+            ,(local-file "packages/default.custom.yaml"))))
 (service home-dbus-service-type)
+(service home-graphical-session-service-type
+         (home-graphical-session-configuration
+          (wayland? #t)
+          (x11? #t)))
 (service home-fcitx5-service-type
-  (home-fcitx5-configuration
-    (gtk-im-module? #f)
-    (qt-im-module? #t)
-    (themes
-     (list fcitx5-material-color-theme))
-    (input-method-editors
-     (list fcitx5-rime))))
+         (home-fcitx5-configuration
+          (wayland-frontend? #t)
+          (themes
+           (list fcitx5-material-color-theme))
+          (input-method-editors
+           (list fcitx5-rime))))
 #+end_src
 patch to use flypy
-#+begin_src yaml :tangle zfc/home/packages/default.custom.yaml
-patch:
+#+begin_src yaml :tangle mods/zfc/home/packages/default.custom.yaml
+  patch:
   __include: rime_ice_suggestion:/
   schema_list:
-    - schema: double_pinyin_flypy # 小鹤
+  - schema: double_pinyin_flypy # 小鹤
 #+end_src
 =rime-ice= module for guix home
-#+begin_src scheme :tangle zfc/home/packages/rime-ice.scm
-(define-module (zfc home packages rime-ice)
-  #:use-module (guix packages)
-  #:use-module (guix git-download)
-  #:use-module (guix build-system copy)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:export (rime-ice))
+#+begin_src scheme :tangle mods/zfc/home/packages/rime-ice.scm
+  (define-module (zfc home packages rime-ice)
+    #:use-module (guix packages)
+    #:use-module (guix git-download)
+    #:use-module (guix build-system copy)
+    #:use-module ((guix licenses) #:prefix license:)
+    #:export (rime-ice))
 
-(define rime-ice
-  (package
-   (name "rime-ice")
-   (version "master")
-   (source (origin
-	    (method git-fetch)
-	    (uri (git-reference
-		  (url "https://github.com/iDvel/rime-ice")
-		  (commit "23f0c39a0b443524e37dbff4f085236b32691291")))
-	    (sha256
-	     (base32 "0jfdw277z5cynb906i2m24iasgj3an7r1gsrbx3hy9gymm9yvbv3"))))
-   (build-system copy-build-system)
-   (arguments
-    '(#:install-plan '(("." "share/rime-data" #:exclude ("README.md" "LICENSE")))))
-   (home-page "https://github.com")
-   (synopsis "Rime 雾凇拼音")
-   (description "Rime 配置：雾凇拼音 | 长期维护的简体词库 ")
-   (license license:gpl3+)))
+  (define rime-ice
+    (package
+      (name "rime-ice")
+      (version "master")
+      (source (origin
+  	          (method git-fetch)
+  	          (uri (git-reference
+  		             (url "https://github.com/iDvel/rime-ice")
+  		             (commit "23f0c39a0b443524e37dbff4f085236b32691291")))
+  	          (sha256
+  	           (base32 "0jfdw277z5cynb906i2m24iasgj3an7r1gsrbx3hy9gymm9yvbv3"))))
+      (build-system copy-build-system)
+      (arguments
+       '(#:install-plan '(("." "share/rime-data" #:exclude ("README.md" "LICENSE")))))
+      (home-page "https://github.com")
+      (synopsis "Rime 雾凇拼音")
+      (description "Rime 配置：雾凇拼音 | 长期维护的简体词库 ")
+      (license license:gpl3+)))
 #+end_src
 *** The =base.scm= section about rustconfig
 ~hm-services~
 #+begin_src scheme :noweb-ref hm-services
-(simple-service 'cargo-config
-		home-files-service-type
-		`(( ".cargo/config.toml" ,(local-file "plain/cargo.toml"))))
+  (simple-service 'cargo-config
+  	home-files-service-type
+    `(( ".cargo/config.toml" ,(local-file "plain/cargo.toml"))))
 #+end_src
 crates mirror from [[https://rsproxy.cn/][rsproxy]]
-#+begin_src toml :tangle zfc/home/plain/cargo.toml
-[source.crates-io]
-replace-with = 'rsproxy-sparse'
-[source.rsproxy]
-registry = "https://rsproxy.cn/crates.io-index"
-[source.rsproxy-sparse]
-registry = "sparse+https://rsproxy.cn/index/"
-[registries.rsproxy]
-index = "https://rsproxy.cn/crates.io-index"
-[net]
-git-fetch-with-cli = true
+#+begin_src toml :tangle mods/zfc/home/plain/cargo.toml
+  [source.crates-io]
+  replace-with = 'rsproxy-sparse'
+  [source.rsproxy]
+  registry = "https://rsproxy.cn/crates.io-index"
+  [source.rsproxy-sparse]
+  registry = "sparse+https://rsproxy.cn/index/"
+  [registries.rsproxy]
+  index = "https://rsproxy.cn/crates.io-index"
+  [net]
+  git-fetch-with-cli = true
 #+end_src
 *** The =base.scm= section about gitconfig
 ~hm-services~
 #+begin_src scheme :noweb-ref hm-services
-(simple-service 'git-gpg-config
-                home-files-service-type
-                (list `(".gitconfig"
-                        ,(local-file "plain/gitconfig"))))
+  (simple-service 'git-gpg-config
+      home-files-service-type
+    (list `(".gitconfig"
+            ,(local-file "plain/gitconfig"))))
 #+end_src
 git config
-#+begin_src gitconfig :tangle zfc/home/plain/gitconfig
-[user]
-        name = zhafacai
-        email = zhafacai@gmail.com
-        signingkey = 5ABCBDEC900FD06A!
-[commit]
-        gpgsign = true
+#+begin_src gitconfig :tangle mods/zfc/home/plain/gitconfig
+  [user]
+  	name = zhafacai
+  	email = zhafacai@gmail.com
+  	signingkey = 5ABCBDEC900FD06A!
+  [commit]
+  	gpgsign = true
 #+end_src
 *** The =base.scm= section about notmuch
 ~hm-services~
 #+begin_src scheme :noweb-ref hm-services
-(simple-service 'notmuch-prenew-config
-                home-xdg-configuration-files-service-type
-                (list `("notmuch/default/hooks/pre-new"
-                        ,(local-file "plain/pre-new" #:recursive? #t))))
+  (simple-service 'notmuch-prenew-config
+      home-xdg-configuration-files-service-type
+    (list `("notmuch/default/hooks/pre-new"
+            ,(local-file "plain/pre-new" #:recursive? #t))))
 #+end_src
-#+begin_src bash :tangle zfc/home/plain/pre-new :tangle-mode (identity #o544)
-#!/bin/sh
-mbsync -a
+#+begin_src bash :tangle mods/zfc/home/plain/pre-new :tangle-mode (identity #o544)
+  #!/bin/sh
+  mbsync -a
 #+end_src
-*** The =base.scm= section about elfeed
+*** COMMENT The =base.scm= section about elfeed
 ~hm-services~
 #+begin_src scheme :noweb-ref hm-services
-;; XXX does not work
-;; (service home-sops-secrets-service-type
-;;          (home-sops-service-configuration
-;;           (secrets
-;;            (list
-;;             (sops-secret
-;;              (key '())
-;;              (output-type "binary")
-;;              (file (local-file "../../secrets/elfeed.org"))
-;;              (permissions #o400))))))
+  ;; XXX does not work
+  ;; (service home-sops-secrets-service-type
+  ;;          (home-sops-service-configuration
+  ;;           (secrets
+  ;;            (list
+  ;;             (sops-secret
+  ;;              (key '())
+  ;;              (output-type "binary")
+  ;;              (file (local-file "../../secrets/elfeed.org"))
+  ;;              (permissions #o400))))))
 
 
-(service home-sops-secrets-service-type
-         (home-sops-service-configuration
-          (secrets
-           (list
-            (sops-secret
-             (key '("elfeed"))
-             (file (local-file "../../secrets/long.yaml"))
-             (permissions #o400))))))
+  (service home-sops-secrets-service-type
+    (home-sops-service-configuration
+      (secrets
+       (list
+        (sops-secret
+          (key '("elfeed"))
+          (file (local-file "../../secrets/long.yaml"))
+          (permissions #o400))))))
 #+end_src
