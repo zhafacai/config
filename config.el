@@ -31,6 +31,7 @@
 
 (global-auto-revert-mode 1)
 (use-package isearch
+  :ensure nil
   :custom
   (isearch-lazy-count t))
 

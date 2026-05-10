@@ -22,11 +22,11 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://codeberg.org/divyaranjan/emacs-reader")
-             (commit "98c5046683")))
+              (url "https://codeberg.org/divyaranjan/emacs-reader")
+              (commit "9824fc91eb51bec0edb8c3634a74d73226d26525")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "19xibs9k1ivi8cnx390w3j9v0b5xqafcqfa7ws9nsqrqqdwik3r6"))))
+        (base32 "1dj23hgmvirsrb7cvmd14j8lhxybfd4jh4fz1xilf7r360vzr2zk"))))
     (build-system emacs-build-system)
     (arguments
      (list
@@ -35,12 +35,12 @@
       #~(modify-phases %standard-phases
           (add-after 'expand-load-path 'build-module
             (lambda* (#:key inputs #:allow-other-keys)
-              (invoke "make" "USE_PKGCONFIG=no}"))) ; We don't need pkg-config
+              (invoke "make" "USE_PKGCONFIG=no"))) ; We don't need pkg-config
           (add-after 'install 'install-module
             (lambda* (#:key outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
                      (target-dir (string-append out
-                                  "/share/emacs/site-lisp/" #$name "-" #$version)))
+                                                "/share/emacs/site-lisp/" #$name "-" #$version)))
                 (install-file "render-core.so" target-dir)))))))
 
     (native-inputs (list mupdf gcc))

@@ -2,7 +2,7 @@
        (name 'guix)
        (url "https://mirror.sjtu.edu.cn/git/guix.git")
        (branch "master")
-       (commit "a6ef548294a8a46ea761ae261118e3313d768a6e")
+       (commit "bb40939209aa35955766a5c2fb6315f3ecad5ac0")
        (introduction
         (make-channel-introduction
          "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -12,7 +12,7 @@
        (name 'nonguix)
        (url "https://gitlab.com/nonguix/nonguix")
        (branch "master")
-       (commit "62ea83535efec8809187c8110b5583b79d053686")
+       (commit "5f2630e69fbbe9e79c350a67545f0fef7e93e223")
        (introduction
         (make-channel-introduction
          "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
@@ -32,7 +32,7 @@
        (name 'rosenthal)
        (url "https://codeberg.org/hako/rosenthal.git")
        (branch "trunk")
-       (commit "9d95263fcf4d0158477ccbb51712b17f2b642eb5")
+       (commit "9e60a11917cbdca57e10c51e174dfa56379e74cc")
        (introduction
         (make-channel-introduction
          "7677db76330121a901604dfbad19077893865f35"
@@ -42,7 +42,7 @@
        (name 'sops-guix)
        (url "https://github.com/fishinthecalculator/sops-guix.git")
        (branch "main")
-       (commit "a3a890c82b5ff05cbe67636d5b8f7cf92a6f2f82")
+       (commit "c53e27e533836ea8595626ba6796dee5362f8c4a")
        (introduction
         (make-channel-introduction
          "0bbaf1fdd25266c7df790f65640aaa01e6d2dbc9"

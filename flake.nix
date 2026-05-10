@@ -3,15 +3,12 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixgl.url = "github:nix-community/nixGL";
     nixgl.inputs.nixpkgs.follows = "nixpkgs";
-    comfyui-nix.url = "github:utensils/comfyui-nix";
   };
   nixConfig = {
     extra-substituters = [
-      "https://comfyui.cachix.org"
       "https://nix-community.cachix.org"
     ];
     extra-trusted-public-keys = [
-      "comfyui.cachix.org-1:33mf9VzoIjzVbp0zwj+fT51HG0y31ZTK3nzYZAX0rec="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
     ];
   };
@@ -19,7 +16,6 @@
     {
       nixpkgs,
       nixgl,
-      comfyui-nix,
       ...
     }:
     let
@@ -56,11 +52,6 @@
           # nix
           nixd
           nixfmt
-
-          #ai
-          llama-cpp-rocm
-          open-webui
-          comfyui-nix.packages.${system}.rocm
 
           # cli
           opencode

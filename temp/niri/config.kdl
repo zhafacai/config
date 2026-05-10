@@ -221,7 +221,7 @@ layout {
 spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 // This may be a different path on different distributions, the above is for the arch linux mate-polkit package
 
-spawn-at-startup "dms" "run"
+spawn-at-startup "noctalia-shell"
 
 spawn-at-startup "fcitx5" "-d"
 
@@ -309,17 +309,21 @@ debug {
   honor-xdg-activation-with-invalid-serial
 }
 binds {
-    XF86AudioRaiseVolume  { spawn "dms" "ipc" "audio" "increment"; }
-    XF86AudioLowerVolume  { spawn "dms" "ipc" "audio" "decrement"; }
-    XF86AudioMute         { spawn "dms" "ipc" "audio" "mute"; }
-    XF86MonBrightnessUp   { spawn "dms" "ipc" "brightness" "increment"; }
-    XF86MonBrightnessDown { spawn "dms" "ipc" "brightness" "decrement"; }
+    XF86AudioRaiseVolume  { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "volume" "increase"; }
+    XF86AudioLowerVolume  { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "volume" "decrease"; }
+    XF86AudioMute         { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "volume" "muteOutput"; }
+    XF86MonBrightnessUp   { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "brightness" "increase"; }
+    XF86MonBrightnessDown { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "brightness" "decrease"; }
     XF86AudioNext allow-when-locked=true {
       spawn "playerctl" "next";
     }
     XF86AudioPrev allow-when-locked=true {
       spawn "playerctl" "previous";
     }
+
+    Mod+0 hotkey-overlay-title="App Launcher: Toggle" { spawn  "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
+    Mod+M hotkey-overlay-title="Control Center: Toggle" { spawn  "noctalia-shell" "ipc" "call" "control-center" "toggle"; }
+    Mod+BackSlash hotkey-overlay-title="Lock Screen" { spawn  "noctalia-shell" "ipc" "call" "lockScreen" "lock"; }
     // Keys consist of modifiers separated by + signs, followed by an XKB key name
     // in the end. To find an XKB name for a particular key, you may use a program
     // like wev.
@@ -335,8 +339,8 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
-    // Mod+W hotkey-overlay-title="Open a Terminal: ghostty" { spawn "ghostty" "--maximize"; }
-    Mod+W hotkey-overlay-title="Open a Terminal: ghostty" { spawn "ghostty"; }
+    Mod+W hotkey-overlay-title="Open a Terminal: ghostty" { spawn "nixGLIntel" "ghostty"; }
+    // Mod+W hotkey-overlay-title="Open a Terminal: alacritty" { spawn "alacritty"; }
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
     Mod+E hotkey-overlay-title="Open a Emacs" { spawn "emacsclient" "-nc"; }
@@ -574,11 +578,10 @@ overview {
   }
 }
 
-include "dms/colors.kdl"
-include "dms/layout.kdl"
-include "dms/alttab.kdl"
-include "dms/binds.kdl"
+// include "dms/colors.kdl"
+// include "dms/layout.kdl"
+// include "dms/alttab.kdl"
 
-include "dms/outputs.kdl"
+// include "dms/outputs.kdl"
 
-include "dms/cursor.kdl"
+// include "dms/cursor.kdl"
