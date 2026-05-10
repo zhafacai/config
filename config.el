@@ -90,9 +90,9 @@
   ;; Disable chat buffer auto-fill
   (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
 
-;; (use-package reader
-;;   :ensure nil
-;;   :hook (reader-mode . (lambda () (hl-line-mode 0))))
+(use-package reader
+  :ensure nil
+  :hook (reader-mode . (lambda () (hl-line-mode 0))))
 
 ;; (use-package rime
 ;;   :ensure nil
@@ -106,10 +106,8 @@
 ;;   ;; rime-share-data-dir (concat (shell-command-to-string "nix eval --raw nixpkgs#rime-data") "/share/rime-data")
 ;;   )
 
-(use-package guix
-  :ensure nil
-  :config
-  (fc/map 'normal "gi" #'guix))
+(use-package guix :ensure nil)
+(fc/map 'normal "gi" #'guix)
 
 (setq auth-sources '("~/.authinfo.gpg")
       user-full-name "zhafacai"

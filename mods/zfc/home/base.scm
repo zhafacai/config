@@ -32,7 +32,7 @@
                                 "emacs-telega"
                                 
                                 
-                                ;; "emacs-reader"
+                                "emacs-reader"
                                 
                                 "emacs-rime"
                                 
@@ -47,6 +47,7 @@
                                 "emacs-pgtk"
                                 ;; dev
                                 "rust"
+                                "blue"
 
 						        ;; fonts
 						        "font-google-noto-emoji"
@@ -76,17 +77,15 @@
                                 "krdc"
 						        "ripgrep"
 						        "fd"
-						        "openssh"
 						        "mpv"
 						        "alacritty"
 						        "fish"
 						        "gcc-toolchain"
 						        "xwayland-satellite"
-						        "gnome-tweaks"
 						        "git"
 						        "mihomo"
 						        "file"
-						        "vim"
+						        "neovim"
 						        "neofetch"
 						        "curl"
 						        "cryptsetup"))))
@@ -104,11 +103,6 @@
 		          (service home-pipewire-service-type)
                   (service home-gpg-agent-service-type
 			               (home-gpg-agent-configuration
-			                ;; (pinentry-program
-                            ;;              (file-append pinentry-gnome3 "/bin/pinentry-gnome3"))
-                            ;; TODO should use loopback
-			                (pinentry-program
-                             (file-append pinentry-emacs "/bin/pinentry-emacs"))
                             (extra-content "allow-loopback-pinentry")
 			                (ssh-support? #t)))
 

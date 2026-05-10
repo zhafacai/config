@@ -26,7 +26,6 @@
   #:use-module ((rnrs io ports) #:select (get-string-all))
   ;; #:use-module ((sops secrets) #:select (sanitize-sops-key))
   #:use-module (zfc home base))
-;; (use-service-modules desktop sddm xorg)
 
 (define %subs-services
   ;; my service to use substituters

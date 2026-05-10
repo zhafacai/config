@@ -209,14 +209,14 @@ I do not want custom variables in config file
 
 reader
 #+begin_src emacs-lisp
-  ;; (use-package reader
-  ;;   :ensure nil
-  ;;   :hook (reader-mode . (lambda () (hl-line-mode 0))))
+(use-package reader
+  :ensure nil
+  :hook (reader-mode . (lambda () (hl-line-mode 0))))
 #+end_src
 ~epkgs~
 #+begin_src scheme :noweb-ref epkgs
 
-  ;; "emacs-reader"
+  "emacs-reader"
 
 #+end_src
 
@@ -241,10 +241,8 @@ rime
 
 Guix
 #+begin_src emacs-lisp
-(use-package guix
-  :ensure nil
-  :config
-  (fc/map 'normal "gi" #'guix))
+(use-package guix :ensure nil)
+(fc/map 'normal "gi" #'guix)
 #+end_src
 ~epkgs~
 #+begin_src scheme :noweb-ref epkgs
@@ -2215,7 +2213,6 @@ nov
   #:use-module ((rnrs io ports) #:select (get-string-all))
   ;; #:use-module ((sops secrets) #:select (sanitize-sops-key))
   #:use-module (zfc home base))
-;; (use-service-modules desktop sddm xorg)
 
 (define %subs-services
   ;; my service to use substituters
@@ -2417,6 +2414,7 @@ here is =sops= secrets config for my dae config.
                                 "emacs-pgtk"
                                 ;; dev
                                 "rust"
+                                "blue"
 
 						        ;; fonts
 						        "font-google-noto-emoji"
@@ -2446,17 +2444,15 @@ here is =sops= secrets config for my dae config.
                                 "krdc"
 						        "ripgrep"
 						        "fd"
-						        "openssh"
 						        "mpv"
 						        "alacritty"
 						        "fish"
 						        "gcc-toolchain"
 						        "xwayland-satellite"
-						        "gnome-tweaks"
 						        "git"
 						        "mihomo"
 						        "file"
-						        "vim"
+						        "neovim"
 						        "neofetch"
 						        "curl"
 						        "cryptsetup"))))
@@ -2474,11 +2470,6 @@ here is =sops= secrets config for my dae config.
 		          (service home-pipewire-service-type)
                   (service home-gpg-agent-service-type
 			               (home-gpg-agent-configuration
-			                ;; (pinentry-program
-                            ;;              (file-append pinentry-gnome3 "/bin/pinentry-gnome3"))
-                            ;; TODO should use loopback
-			                (pinentry-program
-                             (file-append pinentry-emacs "/bin/pinentry-emacs"))
                             (extra-content "allow-loopback-pinentry")
 			                (ssh-support? #t)))
 
@@ -2528,10 +2519,10 @@ here is =sops= secrets config for my dae config.
 #+end_src
 patch to use flypy
 #+begin_src yaml :tangle mods/zfc/home/packages/default.custom.yaml
-  patch:
+patch:
   __include: rime_ice_suggestion:/
-  schema_list:
-  - schema: double_pinyin_flypy # 小鹤
+schema_list:
+  - schema: double_pinyin_flypy
 #+end_src
 =rime-ice= module for guix home
 #+begin_src scheme :tangle mods/zfc/home/packages/rime-ice.scm
