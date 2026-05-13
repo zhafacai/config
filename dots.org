@@ -160,9 +160,9 @@ tangle config file
 #+begin_src emacs-lisp
 ;; TODO: add this to dir-local.el
 (defun fc/org-auto-tangle-config ()
-  "Tangle only if the saved file is config.org"
+  "Tangle only if the saved file is dots.org"
   (when  (string-equal (buffer-file-name)
-                       (expand-file-name "~/config/config.org"))
+                       (expand-file-name "~/config/dots.org"))
     (let ((org-confirm-babel-evaluate nil))
       (org-babel-tangle))))
 
@@ -210,6 +210,7 @@ I do not want custom variables in config file
   "my local leader key.")
 
 (use-package general
+  :ensure (:wait t)
   :config
   (general-create-definer fc/map
     :prefix fc/leader-key))
@@ -237,6 +238,7 @@ I do not want custom variables in config file
 
 #+begin_src emacs-lisp
 (use-package evil
+  :ensure (:wait t)
   :custom
   (evil-want-keybinding nil)
   :init
@@ -732,6 +734,7 @@ tranparent background is beautiful... Right?
 **** Buffet
 #+begin_src emacs-lisp
 (use-package theme-buffet
+  :ensure (:wait t)
   :config
   (setq theme-buffet-menu 'end-user)
 
@@ -868,11 +871,11 @@ perspective
   :custom
   (persp-mode-prefix-key (kbd "C-c w")) 
   :config
+  (after! consult 
+    (consult-customize consult-source-buffer :hidden t :default nil)
+    (add-to-list 'consult-buffer-sources persp-consult-source))
   :init
   (persp-mode))
-(after! consult
-  (consult-customize consult-source-buffer :hidden t :default nil)
-  (add-to-list 'consult-buffer-sources persp-consult-source))
 #+end_src
 **** SmartParens
 #+begin_src emacs-lisp
@@ -1021,6 +1024,7 @@ perspective
 (global-set-key (kbd "TAB") #'my/tab)
 ;; A few more useful configurations...
 (use-package emacs
+  :ensure nil
   :custom
   ;; TAB cycle if there are only few candidates
   ;; (completion-cycle-threshold 3)
@@ -1501,6 +1505,13 @@ diff-hl
 **** Vertico
 #+begin_src emacs-lisp
 ;; Enable Vertico.
+;; (use-package compat
+;;   :ensure (:wait t)
+;;   :demand t)
+;; (elpaca (compat :source "gnu-elpa")
+;;   (require 'compat)
+;;   (use-package compat :demand t))
+
 (use-package vertico
   :custom
   ;; (vertico-scroll-margin 0) ;; Different scroll margin
@@ -1668,7 +1679,7 @@ org-mode
   ;;   :config
   ;;   (direnv-mode))
   (use-package ben
-    :ensure (:host github :repo "pastor/ben.el")
+    :ensure (:host codeberg :repo "pastor/ben.el")
     :bind
     ("C-c E" . ben-command-map)
     :config
@@ -1872,10 +1883,8 @@ nov
 #+end_src
 **** Pinentry
 #+begin_src emacs-lisp
-(use-package pinentry
-  :demand t
-  :config
-  (pinentry-start))
+(setq epg-pinentry-mode 'loopback) 
+(setq epa-pinentry-mode 'loopback) 
 #+end_src
 **** Elfeed
 #+begin_src emacs-lisp
@@ -2502,7 +2511,7 @@ here is =sops= secrets config for my dae config.
      (specifications->packages (list
                                 ;; emacs
                                 <<epkgs>>
-                                "emacs-pgtk"
+                                "emacs-next-pgtk"
                                 ;; dev
                                 "rust"
                                 "blue"
@@ -2552,17 +2561,19 @@ here is =sops= secrets config for my dae config.
 
    (services
     (append (list (service home-bash-service-type
-			               (home-bash-configuration
-			                (aliases '())
-			                (environment-variables '(("EDITOR" . "emacsclient")))
-			                (bashrc (list (local-file "plain/.bashrc" "bashrc")))
-			                (bash-profile (list (local-file
-						                         "plain/.bash_profile"
-						                         "bash_profile")))))
+                           (home-bash-configuration
+                            (aliases '())
+                            (environment-variables '(("EDITOR" . "emacsclient")))
+                            (bashrc (list (local-file "plain/.bashrc" "bashrc")))
+                            (bash-profile (list (local-file
+                                                 "plain/.bash_profile"
+                                                 "bash_profile")))))
 
-		          (service home-pipewire-service-type)
+                  (service home-pipewire-service-type)
                   (service home-gpg-agent-service-type
-			               (home-gpg-agent-configuration
+                           (home-gpg-agent-configuration
+                            (pinentry-program
+                             (file-append pinentry-emacs "/bin/pinentry-emacs"))
                             (extra-content "allow-loopback-pinentry")
 			                (ssh-support? #t)))
 

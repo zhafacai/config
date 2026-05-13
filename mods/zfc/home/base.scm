@@ -44,7 +44,7 @@
                                 "msmtp"
                                 "sdcv"
                                 "direnv"
-                                "emacs-pgtk"
+                                "emacs-next-pgtk"
                                 ;; dev
                                 "rust"
                                 "blue"
@@ -94,17 +94,19 @@
 
    (services
     (append (list (service home-bash-service-type
-			               (home-bash-configuration
-			                (aliases '())
-			                (environment-variables '(("EDITOR" . "emacsclient")))
-			                (bashrc (list (local-file "plain/.bashrc" "bashrc")))
-			                (bash-profile (list (local-file
-						                         "plain/.bash_profile"
-						                         "bash_profile")))))
+                           (home-bash-configuration
+                            (aliases '())
+                            (environment-variables '(("EDITOR" . "emacsclient")))
+                            (bashrc (list (local-file "plain/.bashrc" "bashrc")))
+                            (bash-profile (list (local-file
+                                                 "plain/.bash_profile"
+                                                 "bash_profile")))))
 
-		          (service home-pipewire-service-type)
+                  (service home-pipewire-service-type)
                   (service home-gpg-agent-service-type
-			               (home-gpg-agent-configuration
+                           (home-gpg-agent-configuration
+                            (pinentry-program
+                             (file-append pinentry-emacs "/bin/pinentry-emacs"))
                             (extra-content "allow-loopback-pinentry")
 			                (ssh-support? #t)))
 

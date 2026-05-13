@@ -9,9 +9,9 @@
 
 ;; TODO: add this to dir-local.el
 (defun fc/org-auto-tangle-config ()
-  "Tangle only if the saved file is config.org"
+  "Tangle only if the saved file is dots.org"
   (when  (string-equal (buffer-file-name)
-                       (expand-file-name "~/config/config.org"))
+                       (expand-file-name "~/config/dots.org"))
     (let ((org-confirm-babel-evaluate nil))
       (org-babel-tangle))))
 
@@ -49,6 +49,7 @@
   "my local leader key.")
 
 (use-package general
+  :ensure (:wait t)
   :config
   (general-create-definer fc/map
     :prefix fc/leader-key))
@@ -71,6 +72,7 @@
     form))
 
 (use-package evil
+  :ensure (:wait t)
   :custom
   (evil-want-keybinding nil)
   :init
@@ -464,6 +466,7 @@
   (pulsar-global-mode 1))
 
 (use-package theme-buffet
+  :ensure (:wait t)
   :config
   (setq theme-buffet-menu 'end-user)
 
@@ -573,11 +576,11 @@
   :custom
   (persp-mode-prefix-key (kbd "C-c w")) 
   :config
+  (after! consult 
+    (consult-customize consult-source-buffer :hidden t :default nil)
+    (add-to-list 'consult-buffer-sources persp-consult-source))
   :init
   (persp-mode))
-(after! consult
-  (consult-customize consult-source-buffer :hidden t :default nil)
-  (add-to-list 'consult-buffer-sources persp-consult-source))
 
 (use-package smartparens
   :hook (prog-mode text-mode markdown-mode)
@@ -705,6 +708,7 @@
 (global-set-key (kbd "TAB") #'my/tab)
 ;; A few more useful configurations...
 (use-package emacs
+  :ensure nil
   :custom
   ;; TAB cycle if there are only few candidates
   ;; (completion-cycle-threshold 3)
@@ -1150,6 +1154,13 @@
   (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
 
 ;; Enable Vertico.
+;; (use-package compat
+;;   :ensure (:wait t)
+;;   :demand t)
+;; (elpaca (compat :source "gnu-elpa")
+;;   (require 'compat)
+;;   (use-package compat :demand t))
+
 (use-package vertico
   :custom
   ;; (vertico-scroll-margin 0) ;; Different scroll margin
@@ -1272,7 +1283,7 @@
 ;;   :config
 ;;   (direnv-mode))
 (use-package ben
-  :ensure (:host github :repo "pastor/ben.el")
+  :ensure (:host codeberg :repo "pastor/ben.el")
   :bind
   ("C-c E" . ben-command-map)
   :config
@@ -1455,10 +1466,8 @@
 
 (general-define-key "C-c a s" #'agent-shell)
 
-(use-package pinentry
-  :demand t
-  :config
-  (pinentry-start))
+(setq epg-pinentry-mode 'loopback) 
+(setq epa-pinentry-mode 'loopback)
 
 (use-package elfeed
   :bind
