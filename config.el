@@ -1,9 +1,8 @@
 ;; -*- lexical-binding: t; -*-
-(setq package-archives '(("gnu" . "https://mirrors.ustc.edu.cn/elpa/gnu/")
-                         ("melpa" . "https://mirrors.ustc.edu.cn/elpa/melpa/")
-                         ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")))
+;; (setq package-archives '(("gnu" . "https://mirrors.ustc.edu.cn/elpa/gnu/")
+;;                          ("melpa" . "https://mirrors.ustc.edu.cn/elpa/melpa/")
+;;                          ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")))
 (setq use-package-always-ensure t)
-(package-initialize)
 (use-package gcmh
   :config
   (gcmh-mode 1))
@@ -49,10 +48,10 @@
 (defvar fc/localleader-key ","
   "my local leader key.")
 
-(use-package general)
-
-(general-create-definer fc/map
-  :prefix fc/leader-key)
+(use-package general
+  :config
+  (general-create-definer fc/map
+    :prefix fc/leader-key))
 
 (defmacro after! (features &rest body)
   (declare (indent 1) (debug t))
@@ -70,300 +69,6 @@
                     ,form)))
 
     form))
-
-(use-package tracking)
-
-(use-package telega
-  :ensure nil
-  :bind
-  ("C-c t" . telega)
-  :commands telega
-  :config
-  (setq telega-use-tracking-for '(or unmuted mention)
-        telega-completing-read-function #'completing-read
-        telega-msg-rainbow-title t
-        telega-chat-fill-column 75)
-
-  ;; Show notifications in the mode line
-  (add-hook 'telega-load-hook #'telega-mode-line-hook)
-
-  ;; Disable chat buffer auto-fill
-  (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
-
-(use-package reader
-  :ensure nil
-  :hook (reader-mode . (lambda () (hl-line-mode 0))))
-
-;; (use-package rime
-;;   :ensure nil
-;;   :custom
-;;   (default-input-method "rime")
-;;   :config
-;;   (setq
-;;    ;; rime-emacs-module-header-root (concat (shell-command-to-string "nix eval --raw nixpkgs#emacs-pgtk") "/include")
-;;    ;; rime-librime-root (shell-command-to-string "nix eval --raw nixpkgs#librime")
-;;    rime-user-data-dir "~/.local/share/fcitx5/rime/")
-;;   ;; rime-share-data-dir (concat (shell-command-to-string "nix eval --raw nixpkgs#rime-data") "/share/rime-data")
-;;   )
-
-(use-package guix :ensure nil)
-(fc/map 'normal "gi" #'guix)
-
-(setq auth-sources '("~/.authinfo.gpg")
-      user-full-name "zhafacai"
-      user-mail-address "zhafacai@gmail.com")
-
-(setq smtpmail-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-service 587
-      smtpmail-stream-type 'starttls
-      smtpmail-auth-credentials "~/.authinfo.gpg")
-
-(setq message-send-mail-function 'smtpmail-send-it)
-
-(use-package notmuch
-  :ensure nil
-  :bind
-  ("C-c e" . notmuch)
-  :config
-  (setq notmuch-identities '("zfc <zhafacai@gmail.com>"))
-  (setq notmuch-fcc-dirs
-        '(("zhafacai@gmail.com" . "gmail/Sent")))
-  (setq notmuch-show-logo nil
-        notmuch-column-control 1.0
-        notmuch-hello-auto-refresh t
-        notmuch-hello-recent-searches-max 20
-        notmuch-hello-thousands-separator ""
-        notmuch-hello-sections '(notmuch-hello-insert-saved-searches)
-        notmuch-show-all-tags-list t)
-
-  (setq notmuch-search-oldest-first nil)
-
-  (setq notmuch-saved-searches
-        `(( :name "📥 inbox"
-            :query "tag:inbox"
-            :sort-order newest-first
-            :key ,(kbd "i"))
-          ( :name "💬 all unread (inbox)"
-            :query "tag:unread and tag:inbox"
-            :sort-order newest-first
-            :key ,(kbd "u"))
-          ( :name "🔮 unread crypto"
-            :query "tag:unread and tag:crypto"
-            :sort-order newest-first
-            :key ,(kbd "c"))
-          ( :name "🌞 unread life"
-            :query "tag:unread and tag:life"
-            :sort-order newest-first
-            :key ,(kbd "l")))))
-
-
-(setq browse-url-browser-function 'browse-url-generic
-      browse-url-generic-program "librewolf")
-
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-(tooltip-mode -1)
-
-;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
-
-(setq help-at-pt-display-when-idle t) 
-(setq initial-scratch-message ";; What's the QUESTION today?\n\n")
-
-(defun fc/toggle-alpha-background ()
-  "toggle tranparency of background"
-  (interactive)
-  (let ((current (frame-parameter nil 'alpha-background)))
-    (set-frame-parameter nil 'alpha-background
-                         (if (or (null current) (>= current 98))
-                             90
-                           100))))
-(add-to-list 'default-frame-alist '(alpha-background . 90))
-
-(fc/map 'normal "ta" #'fc/toggle-alpha-background)
-
-(use-package page-break-lines)
-
-(use-package modus-themes
-  :init
-  (modus-themes-include-derivatives-mode 1)
-  :bind
-  (("<f5>" . modus-themes-rotate)
-   ("C-<f5>" . modus-themes-select)
-   ("M-<f5>" . modus-themes-load-random))
-  :config
-  ;; Your customizations here:
-  (setq modus-themes-to-toggle '(modus-operandi modus-vivendi)
-        modus-themes-to-rotate modus-themes-items
-        modus-themes-mixed-fonts t
-        modus-themes-variable-pitch-ui t
-        modus-themes-italic-constructs t
-        modus-themes-bold-constructs t
-        modus-themes-completions '((t . (bold)))
-        modus-themes-prompts '(bold)
-        modus-themes-headings
-        '(
-          ;; (agenda-structure . (variable-pitch light 2.2))
-          ;; (agenda-date . (variable-pitch regular 1.3))
-	  ;; (t . (regular 1.15))
-	  ))
-
-  (setq modus-themes-common-palette-overrides nil))
-
-(use-package ef-themes
-  :init
-  (ef-themes-take-over-modus-themes-mode 1))
-
-(set-face-attribute 'default nil
-                    :family "Iosevka SS02"
-                    :height 150)
-
-(set-face-attribute 'variable-pitch nil
-                    :family "Aporetic Serif")
-
-(set-face-attribute 'fixed-pitch nil
-                    :family "Aporetic Sans Mono")
-
-(set-face-attribute 'fixed-pitch-serif nil
-                    :family "Aporetic Serif Mono")
-
-(dolist (charset '(kana han cjk-misc symbol bopomofo))
-  (set-fontset-font t charset (font-spec :family "LXGW WenKai")))
-
-(use-package hl-todo
-  :hook (prog-mode . hl-todo-mode))
-(after! evil
-  (evil-global-set-key 'normal "]t" #'hl-todo-next)
-  (evil-global-set-key 'normal "[t" #'hl-todo-previous))
-
-(use-package doom-modeline
-  :config
-  (setq doom-modeline-check nil)
-  (setq doom-modeline-buffer-encoding nil)
-  (setq doom-modeline-always-show-macro-register t)
-  (setq doom-modeline-position-column-line-format '(""))
-
-  (defun fc/ewm-format-buffer-name (name)
-    (if (and (derived-mode-p 'ewm-surface-mode)
-             (string-match "\\*ewm:\\([^—]*\\)" name))
-        (let ((title (string-trim (match-string 1 name))))
-          (if (> (string-width title) 20)
-              (concat (truncate-string-to-width title 20 nil nil t) "...")
-            title))
-      name))
-
-  (defun fc/doom-modeline-update-buffer-file-name (orig &rest args)
-    (let ((res (apply orig args)))
-      ;; res is also stored in doom-modeline--buffer-file-name
-      (setq doom-modeline--buffer-file-name
-            (fc/ewm-format-buffer-name (buffer-name)))
-      doom-modeline--buffer-file-name))
-
-  (advice-add 'doom-modeline-update-buffer-file-name
-              :around #'fc/doom-modeline-update-buffer-file-name)
-  :init (doom-modeline-mode 1))
-
-(use-package pulsar
-  :config
-  (dolist (fn '(pulsar-pulse-line-red pulsar-recenter-top pulsar-reveal-entry))
-    (add-hook 'minibuffer-setup-hook fn))
-  (setq pulsar-delay 0.045
-        pulsar-iterations 4
-        pulsar-face 'pulsar-green
-        pulsar-region-face 'pulsar-yellow
-        pulsar-highlight-face 'pulsar-magenta)
-  (pulsar-global-mode 1))
-
-(use-package theme-buffet
-  :config
-  (setq theme-buffet-menu 'end-user)
-
-  (setq theme-buffet-end-user
-        '(
-          ;; NIGHT: High contrast, deep darks, vibrant accents
-          :night
-          (modus-vivendi ef-dark ef-winter ef-autumn ef-night ef-duo-dark ef-symbiosis
-                         doom-one doom-vibrant doom-dracula doom-palenight doom-tokyo-night)
-
-          ;; MORNING: Crisp, cold lights, high legibility
-          :morning
-          (modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light)
-
-          ;; AFTERNOON: Warm lights, tinted backgrounds, soft contrast
-          :afternoon
-          (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
-
-          ;; EVENING: Warm darks, lower contrast, cozy/earthy tones
-          :evening
-          (modus-vivendi-tinted ef-rosa ef-elea-dark ef-maris-dark ef-melissa-dark ef-trio-dark ef-dream
-                                doom-gruvbox doom-henna doom-nord doom-snazzy doom-oceanic-next)))
-
-  (theme-buffet-timer-mins 45))
-
-(theme-buffet-a-la-carte)
-(after! evil
-  (evil-define-key 'normal 'global (kbd "<leader>tt") #'theme-buffet-a-la-carte))
-
-(use-package doom-themes
-  :custom
-  ;; Global settings (defaults)
-  (doom-themes-enable-bold t)   ; if nil, bold is universally disabled
-  (doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  :config
-
-  ;; Enable flashing mode-line on errors
-  (doom-themes-visual-bell-config)
-  ;; Corrects (and improves) org-mode's native fontification.
- (doom-themes-org-config))
-
-(use-package rainbow-delimiters
-  :config
-  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-
-(defun fc/next-wallpaper ()
-  "Call next wallpaper."
-  (interactive)
-  (shell-command "noctalia-shell ipc call wallpaper random eDP-1"))
-
-(after! evil
-  (evil-global-set-key 'normal (kbd "<leader>tn") #'fc/next-wallpaper))
-
-(use-package nyan-mode
-  :after doom-modeline
-  :custom
-  (nyan-wavy-trail t)
-  (nyan-animate-nyancat t)
-  (nyan-bar-length 15)
-  :config
-  (nyan-mode))
-
-(use-package which-key
-  :custom
-  (which-key-idle-delay 0.5)
-  :init
-  (which-key-mode))
-
-(use-package lin
-  :config
-  (setopt lin-face 'lin-blue) ; check doc string for alternative styles
-  
-  (global-hl-line-mode 1)
-  (lin-global-mode 1)
-
-  ;; If you are using the GNOME desktop and want to synchronise the
-  ;; `lin-face' with GNOME's accent colour:
-  (lin-gnome-accent-color-mode 1))
-
-(setq ediff-split-window-function 'split-window-horizontally)
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
-(setq ediff-keep-variants nil)
-(setq ediff-make-buffers-readonly-at-startup nil)
-(setq ediff-merge-revisions-with-ancestor t)
-(setq ediff-show-clashes-only t)
-
-(use-package idle-highlight-mode
-  :config (setq idle-highlight-idle-time 0.2)
-  :hook (eglot--managed-mode . idle-highlight-mode))
 
 (use-package evil
   :custom
@@ -406,6 +111,7 @@
     (setq flash-char-jump-labels t))
 
   (evil-define-key 'normal 'global (kbd "C-s") #'flash-evil-jump)
+  (evil-define-key 'normal 'global (kbd "s") #'flash-evil-jump)
   (evil-define-key 'visual 'global (kbd "C-s") #'flash-evil-jump)
   (after! evil
     (evil-define-key 'normal 'global [down-mouse-3] 'gt-translate)
@@ -496,7 +202,7 @@
 (use-package exato)
 
 (use-package evil-quick-diff
-  :vc (:url "https://github.com/rgrinberg/evil-quick-diff")
+  :ensure (:host github :repo "rgrinberg/evil-quick-diff")
   :init
   ;; (setq evil-quick-diff-key (kbd "zx"))
   (evil-quick-diff-install))
@@ -517,6 +223,335 @@
   (global-anzu-mode +1))
 
 (use-package evil-anzu)
+
+(use-package tracking)
+
+(use-package telega
+  :ensure nil
+  :bind
+  ("C-c t" . telega)
+  :commands telega
+  :config
+  (setq telega-use-tracking-for '(or unmuted mention)
+        telega-completing-read-function #'completing-read
+        telega-msg-rainbow-title t
+        telega-chat-fill-column 75)
+
+  ;; Show notifications in the mode line
+  (add-hook 'telega-load-hook #'telega-mode-line-hook)
+
+  ;; Disable chat buffer auto-fill
+  (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
+
+(use-package reader
+  :ensure nil
+  :hook (reader-mode . (lambda () (hl-line-mode 0))))
+
+(use-package rime
+  :ensure nil
+  :custom
+  (default-input-method "rime")
+  :config
+  (setq rime-user-data-dir "~/.local/share/fcitx5/rime/"))
+
+(use-package guix
+  :ensure nil
+  :bind
+  (:map evil-normal-state-map
+        ("SPC g i" . guix)))
+
+(setq auth-sources '("~/.authinfo.gpg")
+      user-full-name "zhafacai"
+      user-mail-address "zhafacai@gmail.com")
+
+(setq smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-service 587
+      smtpmail-stream-type 'starttls)
+
+(setq message-send-mail-function 'smtpmail-send-it)
+
+(use-package notmuch
+  :ensure nil
+  :bind
+  ("C-c e" . notmuch)
+  :config
+  (setq notmuch-identities '("zfc <zhafacai@gmail.com>"))
+  (setq notmuch-fcc-dirs
+        '(("zhafacai@gmail.com" . "gmail/Sent")))
+  (setq notmuch-show-logo nil
+        notmuch-column-control 1.0
+        notmuch-hello-auto-refresh t
+        notmuch-hello-recent-searches-max 20
+        notmuch-hello-thousands-separator ""
+        notmuch-hello-sections '(notmuch-hello-insert-saved-searches)
+        notmuch-show-all-tags-list t)
+
+  (setq notmuch-search-oldest-first nil)
+
+  (setq notmuch-saved-searches
+        `(( :name "📥 inbox"
+            :query "tag:inbox"
+            :sort-order newest-first
+            :key ,(kbd "i"))
+          ( :name "💬 all unread (inbox)"
+            :query "tag:unread and tag:inbox"
+            :sort-order newest-first
+            :key ,(kbd "u"))
+          ( :name "🔮 unread crypto"
+            :query "tag:unread and tag:crypto"
+            :sort-order newest-first
+            :key ,(kbd "c"))
+          ( :name "🌞 unread life"
+            :query "tag:unread and tag:life"
+            :sort-order newest-first
+            :key ,(kbd "l")))))
+
+
+(setq browse-url-browser-function 'browse-url-generic
+      browse-url-generic-program "librewolf")
+
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(tooltip-mode -1)
+
+;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+(setq help-at-pt-display-when-idle t) 
+(setq initial-scratch-message ";; What's the QUESTION today?\n\n")
+
+(defun fc/toggle-alpha-background ()
+  "toggle tranparency of background"
+  (interactive)
+  (let ((current (frame-parameter nil 'alpha-background)))
+    (set-frame-parameter nil 'alpha-background
+                         (if (or (null current) (>= current 98))
+                             90
+                           100))))
+(add-to-list 'default-frame-alist '(alpha-background . 90))
+
+(fc/map 'normal "ta" #'fc/toggle-alpha-background)
+
+(use-package page-break-lines)
+
+(use-package modus-themes
+  :init
+  (modus-themes-include-derivatives-mode 1)
+  :bind
+  (("<f5>" . modus-themes-rotate)
+   ("C-<f5>" . modus-themes-select)
+   ("M-<f5>" . modus-themes-load-random))
+  :config
+  ;; Your customizations here:
+  (setq modus-themes-to-toggle '(modus-operandi modus-vivendi)
+        modus-themes-to-rotate modus-themes-items
+        modus-themes-mixed-fonts t
+        modus-themes-variable-pitch-ui t
+        modus-themes-italic-constructs t
+        modus-themes-bold-constructs t
+        modus-themes-completions '((t . (bold)))
+        modus-themes-prompts '(bold)
+        modus-themes-headings
+        '(
+          ;; (agenda-structure . (variable-pitch light 2.2))
+          ;; (agenda-date . (variable-pitch regular 1.3))
+	      ;; (t . (regular 1.15))
+	      ))
+
+  (setq modus-themes-common-palette-overrides nil))
+
+(use-package ef-themes
+  :init
+  (ef-themes-take-over-modus-themes-mode 1))
+;; (use-package writeroom-mode)
+(use-package olivetti)
+(use-package logos
+  :config
+
+
+  ;; If you want to use outlines instead of page breaks (the ^L):
+  (setq logos-outlines-are-pages t)
+
+  ;; This is the default value for the outlines:
+  (setq logos-outline-regexp-alist
+        `((emacs-lisp-mode . "^;;;+ ")
+          (org-mode . "^\\*+ +")
+          (markdown-mode . "^\\#+ +")))
+
+  ;; These apply when `logos-focus-mode' is enabled.  Their value is
+  ;; buffer-local.
+  (setq-default logos-hide-cursor nil
+                logos-hide-mode-line t
+                logos-hide-header-line t
+                logos-hide-buffer-boundaries t
+                logos-hide-fringe t
+                logos-variable-pitch nil
+                logos-buffer-read-only nil
+                logos-scroll-lock nil
+                logos-olivetti nil)
+
+
+  (let ((map global-map))
+    (define-key map [remap narrow-to-region] #'logos-narrow-dwim)
+    (define-key map [remap forward-page] #'logos-forward-page-dwim)
+    (define-key map [remap backward-page] #'logos-backward-page-dwim))
+
+
+  )
+(setq-default olivetti-body-width 0.5)
+(setq olivetti-minimum-body-width 80)
+(setq olivetti-recall-visual-line-mode-entry-state t)
+(fc/map 'normal "to" #'olivetti-mode)
+
+(set-face-attribute 'default nil
+                    :family "Iosevka SS02"
+                    :height 150)
+
+(set-face-attribute 'variable-pitch nil
+                    :family "Aporetic Serif")
+
+(set-face-attribute 'fixed-pitch nil
+                    :family "Aporetic Sans Mono")
+
+(set-face-attribute 'fixed-pitch-serif nil
+                    :family "Aporetic Serif Mono")
+
+(dolist (charset '(kana han cjk-misc symbol bopomofo))
+  (set-fontset-font t charset (font-spec :family "LXGW WenKai")))
+
+(use-package hl-todo
+  :hook (prog-mode . hl-todo-mode))
+(after! evil
+  (evil-global-set-key 'normal "]t" #'hl-todo-next)
+  (evil-global-set-key 'normal "[t" #'hl-todo-previous))
+
+(use-package doom-modeline
+  :config
+  (setq doom-modeline-check nil)
+  (setq doom-modeline-buffer-encoding nil)
+  (setq doom-modeline-always-show-macro-register t)
+  (setq doom-modeline-position-column-line-format '(""))
+
+  (defun fc/ewm-format-buffer-name (name)
+    (if (and (derived-mode-p 'ewm-surface-mode)
+             (string-match "\\*ewm:\\([^—]*\\)" name))
+        (let ((title (string-trim (match-string 1 name))))
+          (if (> (string-width title) 20)
+              (concat (truncate-string-to-width title 20 nil nil t) "...")
+            title))
+      name))
+
+  (defun fc/doom-modeline-update-buffer-file-name (orig &rest args)
+    (let ((res (apply orig args)))
+      ;; res is also stored in doom-modeline--buffer-file-name
+      (setq doom-modeline--buffer-file-name
+            (fc/ewm-format-buffer-name (buffer-name)))
+      doom-modeline--buffer-file-name))
+
+  (advice-add 'doom-modeline-update-buffer-file-name
+              :around #'fc/doom-modeline-update-buffer-file-name)
+  :init (doom-modeline-mode 1))
+
+(use-package pulsar
+  :config
+  (dolist (fn '(pulsar-pulse-line-red pulsar-recenter-top pulsar-reveal-entry))
+    (add-hook 'minibuffer-setup-hook fn))
+  (setq pulsar-delay 0.045
+        pulsar-iterations 4
+        pulsar-face 'pulsar-green
+        pulsar-region-face 'pulsar-yellow
+        pulsar-highlight-face 'pulsar-magenta)
+  (pulsar-global-mode 1))
+
+(use-package theme-buffet
+  :config
+  (setq theme-buffet-menu 'end-user)
+
+  (setq theme-buffet-end-user
+        '(
+          ;; NIGHT: High contrast, deep darks, vibrant accents
+          :night
+          (modus-vivendi ef-dark ef-winter ef-autumn ef-night ef-duo-dark ef-symbiosis
+                         doom-one doom-vibrant doom-dracula doom-palenight doom-tokyo-night)
+
+          ;; MORNING: Crisp, cold lights, high legibility
+          :morning
+          (modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light)
+
+          ;; AFTERNOON: Warm lights, tinted backgrounds, soft contrast
+          :afternoon
+          (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
+
+          ;; EVENING: Warm darks, lower contrast, cozy/earthy tones
+          :evening
+          (modus-vivendi-tinted ef-rosa ef-elea-dark ef-maris-dark ef-melissa-dark ef-trio-dark ef-dream
+                                doom-gruvbox doom-henna doom-nord doom-snazzy doom-oceanic-next)))
+
+  (theme-buffet-timer-mins 45))
+
+(theme-buffet-a-la-carte)
+(fc/map 'normal "tt" #'theme-buffet-a-la-carte)
+
+(use-package doom-themes
+  :custom
+  ;; Global settings (defaults)
+  (doom-themes-enable-bold t)   ; if nil, bold is universally disabled
+  (doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  :config
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+ (doom-themes-org-config))
+
+(use-package rainbow-delimiters
+  :config
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+
+(defun fc/next-wallpaper ()
+  "Call next wallpaper."
+  (interactive)
+  (shell-command "noctalia-shell ipc call wallpaper random eDP-1"))
+
+(after! evil
+  (evil-global-set-key 'normal (kbd "<leader>tn") #'fc/next-wallpaper))
+
+(use-package nyan-mode
+  :after doom-modeline
+  :custom
+  (nyan-wavy-trail t)
+  (nyan-animate-nyancat t)
+  (nyan-bar-length 15)
+  :config
+  (nyan-mode))
+
+(use-package which-key
+  :custom
+  (which-key-idle-delay 0.5)
+  :init
+  (which-key-mode))
+
+(use-package lin
+  :config
+  (setopt lin-face 'lin-blue) ; check doc string for alternative styles
+  
+  (global-hl-line-mode 1)
+  (lin-global-mode 1)
+
+  ;; If you are using the GNOME desktop and want to synchronise the
+  ;; `lin-face' with GNOME's accent colour:
+  (lin-gnome-accent-color-mode 1))
+
+(setq ediff-split-window-function 'split-window-horizontally)
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+(setq ediff-keep-variants nil)
+(setq ediff-make-buffers-readonly-at-startup nil)
+(setq ediff-merge-revisions-with-ancestor t)
+(setq ediff-show-clashes-only t)
+
+(use-package idle-highlight-mode
+  :config (setq idle-highlight-idle-time 0.2)
+  :hook (eglot--managed-mode . idle-highlight-mode))
 
 (use-package wgrep)
 
@@ -851,10 +886,9 @@
 (use-package treesit
   :ensure nil)
 
-
 (use-package treesit-auto
   :custom
-  (treesit-auto-install t)
+  (treesit-auto-install 'prompt)
   :config
   ;; (after! org
   ;;   (dolist (mode
@@ -868,8 +902,19 @@
   ;;     (add-to-list 'org-src-lang-modes mode)))
   
   (treesit-auto-add-to-auto-mode-alist 'all)
-  ;; (setq major-mode-remap-alist (treesit-auto--build-major-mode-remap-alist))
+
+  ;; FIXME cannot make this work
+  (add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
+                                          :lang 'qmljs
+                                          :ts-mode 'qml-ts-mode
+                                          :remap 'qml-mode
+                                          :url "https://github.com/yuja/tree-sitter-qmljs"
+                                          :ext "\\.qml\\'"))
+  (add-to-list 'treesit-auto-langs 'qmljs)
   (global-treesit-auto-mode))
+
+(use-package qml-ts-mode
+  :ensure (:host github :repo "xhcoding/qml-ts-mode"))
 
 (use-package evil-textobj-tree-sitter
   :config
@@ -1090,15 +1135,15 @@
 (use-package helpful)
 (evil-define-key 'insert 'global
   (kbd "C-c C-d") #'helpful-at-point)
-(evil-define-key 'normal 'global
-  (kbd "<leader>hi") #'info-emacs-manual
-  (kbd "<leader>hr") #'info-display-manual
-  (kbd "<leader>hf") #'helpful-callable
-  (kbd "<leader>hv") #'helpful-variable
-  (kbd "<leader>hk") #'helpful-key
-  (kbd "<leader>hm") #'describe-mode
-  (kbd "<leader>hp") #'describe-package
-  (kbd "<leader>hc") #'helpful-command)
+(fc/map 'normal 
+  "hi" #'info-emacs-manual
+  "hr" #'info-display-manual
+  "hf" #'helpful-callable
+  "hv" #'helpful-variable
+  "hk" #'helpful-key
+  "hm" #'describe-mode
+  "hp" #'describe-package
+  "hc" #'helpful-command)
 (use-package elisp-demos
   :after helpful
   :config
@@ -1227,7 +1272,7 @@
 ;;   :config
 ;;   (direnv-mode))
 (use-package ben
-  :vc (:url "https://codeberg.org/pastor/ben.el")
+  :ensure (:host github :repo "pastor/ben.el")
   :bind
   ("C-c E" . ben-command-map)
   :config
@@ -1362,19 +1407,19 @@
   (setq gptel-model 'qwen/qwen3.6-plus-preview:free))
 
 (use-package gptel-agent
-  :vc ( :url "https://github.com/karthink/gptel-agent"
-        :rev :newest)
+  :ensure ( :host github :repo "karthink/gptel-agent")
+        
   :config (gptel-agent-update))         
 
 (use-package ob-gptel
-  :vc (:url "https://github.com/jwiegley/ob-gptel")
+  :ensure (:host github :repo "jwiegley/ob-gptel")
   :config
   (add-to-list 'org-babel-load-languages '(gptel . t))
   (add-hook 'completion-at-point-functions
             'ob-gptel-capf nil t)) 
 
 (use-package gptel-prompts
-  :vc (:url "https://github.com/jwiegley/gptel-prompts")
+  :ensure (:host github :repo "jwiegley/gptel-prompts")
   :after (gptel)
   :demand t
   :custom
@@ -1507,7 +1552,7 @@
   (org-mode . org-appear-mode))
 
 (use-package org-modern-indent
-  :vc (:url "https://github.com/jdtsmith/org-modern-indent")
+  :ensure (:host github :repo "jdtsmith/org-modern-indent")
   :config
   (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
 
@@ -1703,8 +1748,12 @@
   :mode "\\.fnl\\'")
 
 (use-package kdl-mode)
+;; (use-package qml-ts-mode)
 
 ;; (use-package justl)
 (use-package just-ts-mode)
 
 (add-hook 'scheme-mode-hook (lambda () (evil-local-set-key 'normal "K" #'geiser-doc-look-up-manual)))
+
+
+(provide 'config)

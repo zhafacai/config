@@ -46,7 +46,7 @@
 
 
 (operating-system
- (kernel linux)
+ (kernel linux-7.0)
  (initrd microcode-initrd)
  (firmware (list linux-firmware))
  (host-name "art")

@@ -66,6 +66,8 @@
 						        
 						        ;; cli
                                 "brightnessctl"
+                                "bluez"
+                                "openssh"
                                 "fzf"
                                 "just"
 						        "starship"

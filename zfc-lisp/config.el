@@ -1,152 +1,3 @@
-#+TITLE: literate config
-#+AUTHOR: zhafacai
-#+EMAIL: zhafacai@gmail.com
-#+STARTUP: content
-#+PROPERTY: header-args:emacs-lisp :tangle yes
-
-* Intro
-This repo consists of guix and emacs configuration.
-My personal laptop is on guix which should be as FOSS as possible,
-while the server I prefer to use is nixos which has more recent and
-more packages.
-* Emacs
-** The =early-init.el= section
-#+begin_src emacs-lisp :tangle early-init.el
-(setq gc-cons-threshold most-positive-fixnum
-      use-short-answers t)
-
-(setq warning-minimum-level :error)
-(setq warning-suppress-types '((lexical-binding)))
-(setq package-enable-at-startup nil)
-#+end_src
-** The =init.el= section
-#+begin_src emacs-lisp :tangle init.el
-;;; -*- lexical-binding: t; -*-
-
-(defvar elpaca-installer-version 0.12)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-sources-directory (expand-file-name "sources/" elpaca-directory))
-(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                              :ref nil :depth 1 :inherit ignore
-                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-                              :build (:not elpaca-activate)))
-(let* ((repo  (expand-file-name "elpaca/" elpaca-sources-directory))
-       (build (expand-file-name "elpaca/" elpaca-builds-directory))
-       (order (cdr elpaca-order))
-       (default-directory repo))
-  (add-to-list 'load-path (if (file-exists-p build) build repo))
-  (unless (file-exists-p repo)
-    (make-directory repo t)
-    (when (<= emacs-major-version 28) (require 'subr-x))
-    (condition-case-unless-debug err
-        (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-                                                  ,@(when-let* ((depth (plist-get order :depth)))
-                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
-                                                  ,(plist-get order :repo) ,repo))))
-                  ((zerop (call-process "git" nil buffer t "checkout"
-                                        (or (plist-get order :ref) "--"))))
-                  (emacs (concat invocation-directory invocation-name))
-                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-                  ((require 'elpaca))
-                  ((elpaca-generate-autoloads "elpaca" repo)))
-            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-          (error "%s" (with-current-buffer buffer (buffer-string))))
-      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
-  (unless (require 'elpaca-autoloads nil t)
-    (require 'elpaca)
-    (elpaca-generate-autoloads "elpaca" repo)
-    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
-(add-hook 'after-init-hook #'elpaca-process-queues)
-(elpaca `(,@elpaca-order))
-
-(elpaca elpaca-use-package
-  ;; Enable use-package :ensure support for Elpaca.
-  (elpaca-use-package-mode))
-
-(use-package emacs
-  :ensure nil
-  :bind                                              ; NOTE: M-x describe-personal-bindings (for all use-packge binds)
-  (("M-o" . other-window)
-   ("C-x p l". project-list-buffers)
-   ("C-x C-z" . nil)
-   ([remap capitalize-word] . capitalize-dwim)       ; Make M-c work on regions
-   ([remap downcase-word] . downcase-dwim)           ; Make M-l work on regions
-   ([remap upcase-word] . upcase-dwim)               ; Make M-u work on regions
-   ([remap kill-buffer] . kill-current-buffer)       ; C-x k stops prompting for buffer to kill
-   ([remap delete-horizontal-space] . cycle-spacing) ; M-\. Called twice, cycle-spacing has same effect and its default binding (M-SPC) is problematic in macOS
-   )
-  :custom
-  (column-number-mode t)
-  (completion-ignore-case t)
-  (completions-detailed t)
-  (help-window-select t)
-  (history-length 300)
-  (inhibit-startup-message t)
-  (initial-scratch-message "")
-  (kill-do-not-save-duplicates t)
-  (create-lockfiles nil)   ; No lock files
-  (make-backup-files nil)  ; No backup files
-  (project-list-file (expand-file-name "cache/projects" user-emacs-directory))
-  (project-vc-extra-root-markers '("Cargo.toml" "package.json" "go.mod")) ; Excelent for mono repos with multiple langs, makes Eglot happy
-  (read-answer-short t)
-  (recentf-max-saved-items 300) ; default is 20
-  (recentf-max-menu-items 15)
-  ;; (recentf-exclude (list "^/\\(?:ssh\\|su\\|sudo\\)?:"))
-  (treesit-font-lock-level 4)
-  (use-dialog-box nil)
-  (use-file-dialog nil)
-  (use-short-answers t)
-  (xref-search-program 'ripgrep)        ; TODO: make it dinamic check if ripgrep is available before setting it and if it costs too much of the init time
-  (grep-command "rg -nS --no-heading ") ; TODO: make it dinamic check if ripgrep is available before setting it and if it costs too much of the init time
-  (grep-find-ignored-directories
-   '("SCCS" "RCS" "CVS" "MCVS" ".src" ".svn" ".jj" ".git" ".hg" ".bzr" "_MTN" "_darcs" "{arch}" "node_modules" "build" "dist"))
-  :init
-  (tooltip-mode nil)
-  (recentf-mode 1)
-  (repeat-mode 1)
-  (savehist-mode 1)
-  (save-place-mode 1))
-
-;; Conflicts with evil-open-below
-(put 'other-window 'repeat-map nil)
-;; Single VC backend inscreases booting speed
-(setq vc-handled-backends '(Git))
-(setq auth-source-debug t)
-
-(setq completion-ignore-case t)
-;; why do we need this?
-(setq native-comp-async-report-warnings-errors 'silent)
-
-(setq inhibit-startup-message t
-
-      ;; No backup files, please
-      make-backup-files nil
-
-      ;; Don't warn on large files
-      large-file-warning-threshold nil
-
-      ;; Follow symlinks to VC-controlled files without warning
-      vc-follow-symlinks t
-
-      ;; Silence compiler warnings as they can be pretty disruptive
-      native-comp-async-report-warnings-errors nil)
-(auto-save-visited-mode 1)     ;; Auto-save files at an interval
-;; Add the folder to the search path
-(add-to-list 'load-path (expand-file-name "zfc-lisp" user-emacs-directory))
-
-;; Load it using the feature name declared in (provide 'config)
-(require 'config)
-
-#+end_src
-** The =config.el= section
-:PROPERTIES:
-:header-args:emacs-lisp: :tangle zfc-lisp/config.el
-:END:
-*** Setup
-#+begin_src emacs-lisp
 ;; -*- lexical-binding: t; -*-
 (setq package-archives '(("gnu" . "https://mirrors.ustc.edu.cn/elpa/gnu/")
                          ("melpa" . "https://mirrors.ustc.edu.cn/elpa/melpa/")
@@ -155,9 +6,7 @@ more packages.
 (use-package gcmh
   :config
   (gcmh-mode 1))
-#+end_src
-tangle config file
-#+begin_src emacs-lisp
+
 ;; TODO: add this to dir-local.el
 (defun fc/org-auto-tangle-config ()
   "Tangle only if the saved file is config.org"
@@ -169,18 +18,14 @@ tangle config file
 (add-hook 'org-mode-hook
           (lambda ()
             (add-hook 'after-save-hook #'fc/org-auto-tangle-config nil 'local)))
-#+end_src
-$SHELL has to be POSIX one
-#+begin_src emacs-lisp
+
 ;; Instruct Emacs to use a posix shell under the hood...
 (setq shell-file-name (executable-find "bash"))
 
 ;; But use your normal shell in terminal emulators
 (setq-default vterm-shell (executable-find "fish"))
 (setq-default explicit-shell-file-name (executable-find "fish"))
-#+end_src
 
-#+begin_src emacs-lisp
 (recentf-mode)
 
 (global-auto-revert-mode 1)
@@ -193,16 +38,10 @@ $SHELL has to be POSIX one
 (setq-default indent-tabs-mode nil
               tab-width 4)
 
-#+end_src
-
-I do not want custom variables in config file
-#+begin_src emacs-lisp
 (setq custom-file (make-temp-file "emacs-custom-"))
 
 ;; (setq custom-safe-themes t)
-#+end_src
 
-#+begin_src emacs-lisp
 (defvar fc/leader-key "SPC"
   "my leader key.")
 
@@ -214,9 +53,6 @@ I do not want custom variables in config file
   (general-create-definer fc/map
     :prefix fc/leader-key))
 
-#+end_src
-
-#+begin_src emacs-lisp
 (defmacro after! (features &rest body)
   (declare (indent 1) (debug t))
 
@@ -233,9 +69,7 @@ I do not want custom variables in config file
                     ,form)))
 
     form))
-#+end_src
 
-#+begin_src emacs-lisp
 (use-package evil
   :custom
   (evil-want-keybinding nil)
@@ -288,8 +122,6 @@ I do not want custom variables in config file
   (require 'flash-isearch)
   (flash-isearch-mode 1))
 
-#+end_src
-#+begin_src emacs-lisp
 (use-package evil-surround
   :config
   (global-evil-surround-mode 1))
@@ -301,42 +133,31 @@ I do not want custom variables in config file
   :config
   (evil-define-key '(operator) evil-inner-text-objects-map "a" 'evil-inner-arg)
   (evil-define-key '(operator) evil-outer-text-objects-map "a" 'evil-outer-arg))
-#+end_src
-#+begin_src emacs-lisp
+
 (use-package evil-org
   :after org
   :hook (org-mode . (lambda () evil-org-mode))
   :config
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
-#+end_src
-escape
-#+begin_src emacs-lisp
+
 (use-package evil-escape
   :custom
   (evil-escape-key-sequence "jk")
   (evil-escape-excluded-major-modes '(magit-status-mode))
   :config
   (evil-escape-mode))
-#+end_src
-undo
-#+begin_src emacs-lisp
+
 (use-package undo-fu)
-#+end_src
-exchange
-#+begin_src emacs-lisp
+
 (use-package evil-exchange
   :config
   (evil-exchange-install))
-#+end_src
-multicursors
-#+begin_src emacs-lisp
+
 (use-package evil-multiedit
   :config
   (evil-multiedit-default-keybinds))
-#+end_src
-indent
-#+begin_src emacs-lisp
+
 (use-package evil-indent-plus
   :config
   (define-key evil-inner-text-objects-map "i" 'evil-indent-plus-i-indent)
@@ -345,15 +166,11 @@ indent
   (define-key evil-outer-text-objects-map "k" 'evil-indent-plus-a-indent-up)
   (define-key evil-inner-text-objects-map "j" 'evil-indent-plus-i-indent-up-down)
   (define-key evil-outer-text-objects-map "j" 'evil-indent-plus-a-indent-up-down))
-#+end_src
-align
-#+begin_src emacs-lisp
+
 (use-package evil-lion
   :config
   (evil-lion-mode))
-#+end_src
-comment
-#+begin_src emacs-lisp
+
 ;; (defun my/org-smart-comment (arg)
 ;;   "Comment headings with org-toggle-comment, otherwise use evilnc."
 ;;   (interactive "P")
@@ -376,27 +193,20 @@ comment
         (user-error "Not inside a comment"))))
   (evil-define-key '(normal visual) 'global "gc" #'evilnc-comment-operator)
   (define-key evil-operator-state-map "gc" 'evil-a-comment-block))
-#+end_src
-numbers
-#+begin_src emacs-lisp
+
 (use-package evil-numbers
   :config
   (define-key evil-normal-state-map (kbd "C-c =") 'evil-numbers/inc-at-pt)
   (define-key evil-normal-state-map (kbd "C-c -") 'evil-numbers/dec-at-pt))
-#+end_src
-exato
-#+begin_src emacs-lisp
+
 (use-package exato)
-#+end_src
-linediff
-#+begin_src emacs-lisp
+
 (use-package evil-quick-diff
   :ensure (:host github :repo "rgrinberg/evil-quick-diff")
   :init
   ;; (setq evil-quick-diff-key (kbd "zx"))
   (evil-quick-diff-install))
-#+end_src
-#+begin_src emacs-lisp
+
 (use-package evil-goggles
   :config
   (evil-goggles-mode)
@@ -413,79 +223,43 @@ linediff
   (global-anzu-mode +1))
 
 (use-package evil-anzu)
-#+end_src
-#+begin_src emacs-lisp
-  (use-package tracking)
 
-  (use-package telega
-    :ensure nil
-    :bind
-    ("C-c t" . telega)
-    :commands telega
-    :config
-    (setq telega-use-tracking-for '(or unmuted mention)
-          telega-completing-read-function #'completing-read
-          telega-msg-rainbow-title t
-          telega-chat-fill-column 75)
+(use-package tracking)
 
-    ;; Show notifications in the mode line
-    (add-hook 'telega-load-hook #'telega-mode-line-hook)
+(use-package telega
+  :ensure nil
+  :bind
+  ("C-c t" . telega)
+  :commands telega
+  :config
+  (setq telega-use-tracking-for '(or unmuted mention)
+        telega-completing-read-function #'completing-read
+        telega-msg-rainbow-title t
+        telega-chat-fill-column 75)
 
-    ;; Disable chat buffer auto-fill
-    (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
-#+end_src
+  ;; Show notifications in the mode line
+  (add-hook 'telega-load-hook #'telega-mode-line-hook)
 
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
+  ;; Disable chat buffer auto-fill
+  (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
 
-  "emacs-telega"
-
-#+end_src
-
-reader
-#+begin_src emacs-lisp
 (use-package reader
   :ensure nil
   :hook (reader-mode . (lambda () (hl-line-mode 0))))
-#+end_src
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
 
-  "emacs-reader"
-
-#+end_src
-
-rime
-#+begin_src emacs-lisp
 (use-package rime
   :ensure nil
   :custom
   (default-input-method "rime")
   :config
   (setq rime-user-data-dir "~/.local/share/fcitx5/rime/"))
-#+end_src
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
-"emacs-rime"
-#+end_src
 
-Guix
-#+begin_src emacs-lisp
 (use-package guix
   :ensure nil
   :bind
   (:map evil-normal-state-map
         ("SPC g i" . guix)))
-#+end_src
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
 
-"emacs-guix"
-
-#+end_src
-
-email
-#+begin_src emacs-lisp
 (setq auth-sources '("~/.authinfo.gpg")
       user-full-name "zhafacai"
       user-mail-address "zhafacai@gmail.com")
@@ -495,16 +269,7 @@ email
       smtpmail-stream-type 'starttls)
 
 (setq message-send-mail-function 'smtpmail-send-it)
-#+end_src
-=epkgs= for email
-#+begin_src scheme :noweb-ref epkgs
-"notmuch"
-"emacs-notmuch"
-"isync"
-"msmtp"
-#+end_src
 
-#+begin_src emacs-lisp
 (use-package notmuch
   :ensure nil
   :bind
@@ -545,28 +310,16 @@ email
 (setq browse-url-browser-function 'browse-url-generic
       browse-url-generic-program "librewolf")
 
-#+end_src
-*** UI
-**** Basic
-the mode that I do not use
-#+begin_src emacs-lisp
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (tooltip-mode -1)
-#+end_src
-make default frame maximized by default
-#+begin_src emacs-lisp
+
 ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
-#+end_src
-always help me please :)
-#+begin_src emacs-lisp
+
 (setq help-at-pt-display-when-idle t) 
 (setq initial-scratch-message ";; What's the QUESTION today?\n\n")
-#+end_src
-**** Alpha Backgroud
-tranparent background is beautiful... Right?
-#+begin_src emacs-lisp
+
 (defun fc/toggle-alpha-background ()
   "toggle tranparency of background"
   (interactive)
@@ -578,14 +331,9 @@ tranparent background is beautiful... Right?
 (add-to-list 'default-frame-alist '(alpha-background . 90))
 
 (fc/map 'normal "ta" #'fc/toggle-alpha-background)
-#+end_src
-**** Page break lines
-#+begin_src emacs-lisp
-(use-package page-break-lines)
-#+end_src
 
-**** Themes
-#+begin_src emacs-lisp
+(use-package page-break-lines)
+
 (use-package modus-themes
   :init
   (modus-themes-include-derivatives-mode 1)
@@ -654,10 +402,7 @@ tranparent background is beautiful... Right?
 (setq olivetti-minimum-body-width 80)
 (setq olivetti-recall-visual-line-mode-entry-state t)
 (fc/map 'normal "to" #'olivetti-mode)
-#+end_src
 
-**** Fonts
-#+begin_src emacs-lisp
 (set-face-attribute 'default nil
                     :family "Iosevka SS02"
                     :height 150)
@@ -670,24 +415,16 @@ tranparent background is beautiful... Right?
 
 (set-face-attribute 'fixed-pitch-serif nil
                     :family "Aporetic Serif Mono")
-#+end_src
 
-中文字体
-#+begin_src emacs-lisp
 (dolist (charset '(kana han cjk-misc symbol bopomofo))
   (set-fontset-font t charset (font-spec :family "LXGW WenKai")))
-#+end_src
-**** Todo
-#+begin_src emacs-lisp
+
 (use-package hl-todo
   :hook (prog-mode . hl-todo-mode))
 (after! evil
   (evil-global-set-key 'normal "]t" #'hl-todo-next)
   (evil-global-set-key 'normal "[t" #'hl-todo-previous))
-#+end_src
 
-**** Modeline
-#+begin_src emacs-lisp
 (use-package doom-modeline
   :config
   (setq doom-modeline-check nil)
@@ -714,10 +451,7 @@ tranparent background is beautiful... Right?
   (advice-add 'doom-modeline-update-buffer-file-name
               :around #'fc/doom-modeline-update-buffer-file-name)
   :init (doom-modeline-mode 1))
-#+end_src
 
-**** Pulsar
-#+begin_src emacs-lisp
 (use-package pulsar
   :config
   (dolist (fn '(pulsar-pulse-line-red pulsar-recenter-top pulsar-reveal-entry))
@@ -728,9 +462,7 @@ tranparent background is beautiful... Right?
         pulsar-region-face 'pulsar-yellow
         pulsar-highlight-face 'pulsar-magenta)
   (pulsar-global-mode 1))
-#+end_src
-**** Buffet
-#+begin_src emacs-lisp
+
 (use-package theme-buffet
   :config
   (setq theme-buffet-menu 'end-user)
@@ -759,8 +491,7 @@ tranparent background is beautiful... Right?
 
 (theme-buffet-a-la-carte)
 (fc/map 'normal "tt" #'theme-buffet-a-la-carte)
-#+end_src
-#+begin_src emacs-lisp
+
 (use-package doom-themes
   :custom
   ;; Global settings (defaults)
@@ -772,16 +503,11 @@ tranparent background is beautiful... Right?
   (doom-themes-visual-bell-config)
   ;; Corrects (and improves) org-mode's native fontification.
  (doom-themes-org-config))
-#+end_src
-**** Rainbow-delimiters
-#+begin_src emacs-lisp
+
 (use-package rainbow-delimiters
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-#+end_src
 
-**** Wallpaper
-#+begin_src emacs-lisp
 (defun fc/next-wallpaper ()
   "Call next wallpaper."
   (interactive)
@@ -789,9 +515,7 @@ tranparent background is beautiful... Right?
 
 (after! evil
   (evil-global-set-key 'normal (kbd "<leader>tn") #'fc/next-wallpaper))
-#+end_src
-**** Nyan
-#+begin_src emacs-lisp
+
 (use-package nyan-mode
   :after doom-modeline
   :custom
@@ -800,17 +524,13 @@ tranparent background is beautiful... Right?
   (nyan-bar-length 15)
   :config
   (nyan-mode))
-#+end_src
-**** Which-key
-#+begin_src emacs-lisp
+
 (use-package which-key
   :custom
   (which-key-idle-delay 0.5)
   :init
   (which-key-mode))
-#+end_src
-**** Lin
-#+begin_src emacs-lisp
+
 (use-package lin
   :config
   (setopt lin-face 'lin-blue) ; check doc string for alternative styles
@@ -821,9 +541,6 @@ tranparent background is beautiful... Right?
   ;; If you are using the GNOME desktop and want to synchronise the
   ;; `lin-face' with GNOME's accent colour:
   (lin-gnome-accent-color-mode 1))
-#+end_src
-**** Ediff
-#+begin_src emacs-lisp
 
 (setq ediff-split-window-function 'split-window-horizontally)
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
@@ -832,21 +549,12 @@ tranparent background is beautiful... Right?
 (setq ediff-merge-revisions-with-ancestor t)
 (setq ediff-show-clashes-only t)
 
-#+end_src
-**** cursorword
-#+begin_src emacs-lisp
 (use-package idle-highlight-mode
   :config (setq idle-highlight-idle-time 0.2)
   :hook (eglot--managed-mode . idle-highlight-mode))
-#+end_src
-*** Edit
-**** Wgrep
-#+begin_src emacs-lisp
+
 (use-package wgrep)
-#+end_src
-**** Project
-projectile
-#+begin_src emacs-lisp
+
 (use-package projectile
   :bind-keymap
   ("C-c p" . projectile-command-map)
@@ -858,9 +566,6 @@ projectile
   :config
   (projectile-mode +1))
 
-#+end_src
-perspective
-#+begin_src emacs-lisp
 (use-package perspective
   :demand t
   :bind
@@ -873,16 +578,12 @@ perspective
 (after! consult
   (consult-customize consult-source-buffer :hidden t :default nil)
   (add-to-list 'consult-buffer-sources persp-consult-source))
-#+end_src
-**** SmartParens
-#+begin_src emacs-lisp
+
 (use-package smartparens
   :hook (prog-mode text-mode markdown-mode)
   :config
   (require 'smartparens-config))
-#+end_src
-**** Dired
-#+begin_src emacs-lisp
+
 (use-package nerd-icons-dired
   :hook
   (dired-mode . nerd-icons-dired-mode))
@@ -945,29 +646,12 @@ perspective
 ;;    ("M-f" . dirvish-history-go-forward)
 ;;    ("M-b" . dirvish-history-go-backward)
 ;;    ("M-e" . dirvish-emerge-menu)))
-#+end_src
-***** COMMENT Ready-player
-#+begin_src emacs-lisp
-(use-package ready-player
-  :demand t
-  :custom
-  (ready-player-set-global-bindings nil)
-  (ready-player-my-media-collection-location "~/Music/")
-  :hook
-  (dired-mode . ready-player-dired-mode)
-  :config
-  (ready-player-mode 1))
-#+end_src
-**** Format
-#+begin_src emacs-lisp
+
 (use-package apheleia
   :config
   (add-to-list 'apheleia-mode-alist '(scheme-mode . lisp-indent))
   (apheleia-global-mode +1))
-#+end_src
-**** Completion
-***** Corfu
-#+begin_src emacs-lisp
+
 (use-package corfu
   ;; Optional customizations
   :custom
@@ -1040,9 +724,7 @@ perspective
 (use-package nerd-icons-corfu
   :config
   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
-#+end_src
-****** Cape
-#+begin_src emacs-lisp
+
 (use-package cape
   ;; Bind prefix keymap providing all Cape commands under a mnemonic key.
   ;; Press C-c p ? to for help.
@@ -1063,9 +745,7 @@ perspective
   ;; (add-hook 'completion-at-point-functions #'cape-history)
   ;; ...
   )
-#+end_src
-***** Tempel
-#+begin_src emacs-lisp
+
 (use-package tempel
   :bind (("M-+" . tempel-complete) ;; Alternative tempel-expand
          ("M-*" . tempel-insert))
@@ -1100,18 +780,13 @@ perspective
   )
 
 (use-package tempel-collection)
-#+end_src
-***** Yasnippet
-#+begin_src emacs-lisp
+
 (use-package yasnippet
   :config
   (yas-global-mode 1))
 
 (use-package yasnippet-snippets)
-#+end_src
-****  Lsp
-***** Eglot
-#+begin_src emacs-lisp
+
 (use-package eglot
   :ensure nil              ;; install from ELPA if missing (usually not needed in Emacs ≥29)
   :defer t                ;; load only when needed
@@ -1176,8 +851,7 @@ perspective
   :config
   (evil-define-key 'normal eglot-mode-map
     "gO" #'consult-eglot-symbols))
-#+end_src
-#+begin_src emacs-lisp
+
 (use-package eldoc
   :ensure nil
   :custom
@@ -1196,8 +870,6 @@ perspective
   :config
   (evil-define-key 'normal eglot-mode-map "K" #'eldoc-mouse-pop-doc-at-cursor))
 
-#+end_src
-#+begin_src emacs-lisp
 (use-package flymake
   :ensure nil
   :custom
@@ -1205,15 +877,12 @@ perspective
   :config
   (evil-global-set-key 'normal (kbd "]d") 'flymake-goto-next-error)
   (evil-global-set-key 'normal (kbd "[d") 'flymake-goto-prev-error))
-#+end_src
-#+begin_src emacs-lisp
+
 (use-package xref
   :ensure nil
   :bind (:map evil-motion-state-map
               ("gd" . xref-find-definitions)))
-#+end_src
-**** Treesitter
-#+begin_src emacs-lisp
+
 (use-package treesit
   :ensure nil)
 
@@ -1298,10 +967,6 @@ perspective
   (define-key evil-operator-state-map "L" 'evil-textobj-url)
   (define-key evil-visual-state-map "L" 'evil-textobj-url))
 
-
-#+end_src
-**** Magit
-#+begin_src emacs-lisp
 (use-package transient)
 (use-package magit
   :config
@@ -1313,9 +978,7 @@ perspective
   :defer t)
 
 (fc/map 'normal "gg" #'magit)
-#+end_src
-diff-hl
-#+begin_src emacs-lisp
+
 (defun fc/diff-hl-update-colors (&rest _)
   "Dynamically apply the current theme's standard diff colors to diff-hl faces.
    Sets both background and foreground to create a solid fringe block."
@@ -1341,33 +1004,23 @@ diff-hl
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 (evil-global-set-key 'normal (kbd "]h") #'diff-hl-next-hunk)
 (evil-global-set-key 'normal (kbd "[h") #'diff-hl-previous-hunk)
-#+end_src
-***** Browse
-#+begin_src emacs-lisp
+
 (use-package browse-at-remote
   :config
   (fc/map 'normal "gb" #'browse-at-remote))
-#+end_src
-***** Forge
-#+begin_src emacs-lisp
+
 (use-package forge
   :after magit
   :custom
   (forge-add-default-bindings nil))
-#+end_src
-***** Timemachine
-#+begin_src emacs-lisp
+
 (use-package git-timemachine
   :after transient
   :config
   (fc/map 'normal "gt" #'git-timemachine))
-#+end_src
-***** Git-modes
-#+begin_src emacs-lisp
+
 (use-package git-modes)
-#+end_src
-**** Consult
-#+begin_src emacs-lisp
+
 (defun fc/consult-books ()
   "Consult books in the ~/Documents/books/ folder."
   (interactive)
@@ -1478,9 +1131,7 @@ diff-hl
 (fc/map 'normal
   "f" #'consult-ripgrep
   "SPC" #'consult-fd)
-#+end_src
-**** Helpful
-#+begin_src emacs-lisp
+
 (use-package helpful)
 (evil-define-key 'insert 'global
   (kbd "C-c C-d") #'helpful-at-point)
@@ -1497,9 +1148,7 @@ diff-hl
   :after helpful
   :config
   (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
-#+end_src
-**** Vertico
-#+begin_src emacs-lisp
+
 ;; Enable Vertico.
 (use-package vertico
   :custom
@@ -1554,9 +1203,7 @@ diff-hl
   ;; the mode gets enabled right away. Note that this forces loading the
   ;; package.
   (marginalia-mode))
-#+end_src
-**** Embark
-#+begin_src emacs-lisp
+
 (use-package embark
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
@@ -1594,36 +1241,7 @@ diff-hl
 (use-package embark-consult
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
-#+end_src
-personal templates
-#+begin_src lisp-data :tangle ~/.config/emacs/templates
-fundamental-mode ;; Available everywhere
 
-(today (format-time-string "%Y-%m-%d")
-       :ann "Today's date"
-       :doc "Insert today's date")
-
-prog-mode
-
-(fixme (if (derived-mode-p 'emacs-lisp-mode) ";; " comment-start) "FIXME ")
-(todo (if (derived-mode-p 'emacs-lisp-mode) ";; " comment-start) "TODO ")
-(bug (if (derived-mode-p 'emacs-lisp-mode) ";; " comment-start) "BUG ")
-(hack (if (derived-mode-p 'emacs-lisp-mode) ";; " comment-start) "HACK ")
-
-org-mode
-
-(epkgs "~epkgs~" n "#+begin_src scheme :noweb-ref epkgs" n r n "#+end_src" :post (org-edit-src-code))
-(hmser "~hm-services~" n "#+begin_src scheme :noweb-ref hm-services" n r n "#+end_src" :post (org-edit-src-code))
-(sysser "~sys-services~" n "#+begin_src scheme :noweb-ref sys-services" n r n "#+end_src" :post (org-edit-src-code))
-
-;; Local Variables:
-;; mode: lisp-data
-;; outline-regexp: "[a-z]"
-;; End:
-#+end_src
-*** Tools
-**** Google Translate 
-#+begin_src emacs-lisp
 (use-package gt
   :commands (gt-translate)
   :config
@@ -1635,18 +1253,9 @@ org-mode
 
 (fc/map 'normal "l" 'gt-translate)
 
-#+end_src
-=epkgs=
-#+begin_src scheme :noweb-ref epkgs
-"sdcv"
-#+end_src
-**** Ghostel
-#+begin_src emacs-lisp
-  (use-package ghostel
-    :ensure t)
-#+end_src
-**** Casual
-#+begin_src emacs-lisp
+(use-package ghostel
+  :ensure t)
+
 (use-package casual
   ;; :config
   ;; (fc/map 'normal Info-mode-map
@@ -1654,35 +1263,24 @@ org-mode
   ;; (fc/map 'normal dired-mode-map
   ;;   "?" #'casual-dired-tmenu)
   )
-#+end_src
 
-**** Desktop
-#+begin_src emacs-lisp
 ;; (use-package bluetooth)
 ;; (use-package nm
 ;;   :vc (:url "https://github.com/Kodkollektivet/emacs-nm"))
-#+end_src
-**** Direnv
-#+begin_src emacs-lisp
-  ;; (use-package direnv
-  ;;   :config
-  ;;   (direnv-mode))
-  (use-package ben
-    :ensure (:host github :repo "pastor/ben.el")
-    :bind
-    ("C-c E" . ben-command-map)
-    :config
-    (setq ben-indicator `(,(substring-no-properties (nerd-icons-faicon "nf-fa-cubes"))
-                          "[" (:eval (ben--status)) "]"))
-    :init
-    (add-hook 'after-init-hook #'ben-global-mode 99))
-#+end_src
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
-"direnv"
-#+end_src
-**** EMMS 
-#+begin_src emacs-lisp
+
+;; (use-package direnv
+;;   :config
+;;   (direnv-mode))
+(use-package ben
+  :ensure (:host github :repo "pastor/ben.el")
+  :bind
+  ("C-c E" . ben-command-map)
+  :config
+  (setq ben-indicator `(,(substring-no-properties (nerd-icons-faicon "nf-fa-cubes"))
+                        "[" (:eval (ben--status)) "]"))
+  :init
+  (add-hook 'after-init-hook #'ben-global-mode 99))
+
 (use-package emms
   :after evil
   :commands emms
@@ -1726,18 +1324,11 @@ org-mode
   (evil-define-key 'normal emms-playlist-mode-map
     "s" #'emms-sort
     "q" #'emms-playlist-mode-bury-buffer))
-#+end_src
 
-**** PDF
-nov
-#+begin_src emacs-lisp
 (use-package nov
   :config
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
-#+end_src
 
-**** Dwim-shell-command
-#+begin_src emacs-lisp
 (use-package dwim-shell-command
   :custom
   (dwim-shell-commands-git-clone-dirs '("~/dev" "~/Downloads"))
@@ -1748,10 +1339,7 @@ nov
          ([remap dired-smart-shell-command] . dwim-shell-command))
   :config
   (require 'dwim-shell-commands))
-#+end_src
-**** AI
-***** Gptel
-#+begin_src emacs-lisp
+
 (use-package gptel
   :bind
   (("C-c a p" . gptel)
@@ -1842,9 +1430,6 @@ nov
   ;; (gptel-prompts-add-update-watchers)
   )
 
-#+end_src
-***** Agent-shell
-#+begin_src emacs-lisp
 (use-package agent-shell
   :custom
   ;; BUG https://github.com/niri-wm/niri/issues/2664
@@ -1869,16 +1454,12 @@ nov
 		        (evil-emacs-state)))))
 
 (general-define-key "C-c a s" #'agent-shell)
-#+end_src
-**** Pinentry
-#+begin_src emacs-lisp
+
 (use-package pinentry
   :demand t
   :config
   (pinentry-start))
-#+end_src
-**** Elfeed
-#+begin_src emacs-lisp
+
 (use-package elfeed
   :bind
   ("C-c f" . elfeed))
@@ -1887,9 +1468,7 @@ nov
   (rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed"))
   :config
   (elfeed-org))
-#+end_src
-**** Sops
-#+begin_src emacs-lisp
+
 (use-package sops
   ;; :ensure (:type git :host github :repo "djgoku/sops")
   :bind (("C-c C-c" . sops-save-file)
@@ -1901,18 +1480,13 @@ nov
 
 (use-package yaml-mode
   :mode ("\\.yaml\\'" . yaml-mode))
-#+end_src
-**** Blue
-#+begin_src emacs-lisp
+
 (use-package blue
   :init
   ;; Enable custom filters to handle different escape sequences in compilation
   ;; and comint buffers.
   (blue-prettify-compilation-mode 1))
-#+end_src
-*** Org
-**** Basic
-#+begin_src emacs-lisp
+
 (use-package org
   :ensure nil
   :bind
@@ -1963,35 +1537,7 @@ nov
 (use-package valign
   :hook
   (org-mode . valign-mode))
-#+end_src
-**** COMMENT Habit
-#+begin_src emacs-lisp
-(after! org
-  (add-to-list 'org-modules 'org-habit t)
-  (add-to-list 'org-modules 'ol-info t)
-  (setq org-habit-show-habits t
-        org-habit-show-all-today nil))
 
-(after! modus-themes
-  (defun fc/apply-org-habit-faces ()
-    "Apply org-habit faces using Modus/Ef palette."
-    (when custom-enabled-themes
-      (modus-themes-with-colors
-	(custom-set-faces
-         `(org-habit-clear-face
-           ((t (:background ,bg-dim :foreground ,green-warmer))))
-         `(org-habit-ready-face
-           ((t (:background ,bg-active :foreground ,blue))))
-         `(org-habit-alert-face
-           ((t (:background ,bg-yellow-subtle :foreground ,yellow))))
-         `(org-habit-overdue-face
-           ((t (:background ,bg-red-subtle :foreground ,red))))))))
-
-  (add-hook 'doom-load-theme-hook #'fc/apply-org-habit-faces))
-
-#+end_src
-**** Pretty
-#+begin_src emacs-lisp
 (use-package org-modern
   :custom
   (org-modern-hide-stars nil)
@@ -2009,44 +1555,13 @@ nov
   :ensure (:host github :repo "jdtsmith/org-modern-indent")
   :config
   (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
-#+end_src
-**** COMMENT Verb
-#+begin_src emacs-lisp
-(with-eval-after-load 'verb
-  (fc/map :keymaps org-mode-map
-    "s" #'verb-send-request-on-point-other-window   ; SPC m v s : Send request, show response in other window & switch
-    "S" #'verb-send-request-on-point-display        ; SPC m v S : Send request, show response in other window (no switch)
-    "f" #'verb-send-request-on-point                ; SPC m v f : Send request, replace in current window
-    "k" #'verb-kill-response-buffer-and-window      ; SPC m v k : Kill response buffer/window (when in response)
-    "K" #'verb-kill-all-response-buffers            ; SPC m v K : Kill all response buffers
-    "r" #'verb-re-send-request                      ; SPC m v r : Re-send the last request (from response buffer)
-    "w" #'verb-send-request-on-point-eww            ; SPC m v w : Re-send as GET using EWW (view in browser)
-    "R" #'verb-show-request                         ; SPC m v R : Show the original request spec (from response)
-    "h" #'verb-toggle-show-headers                 ; SPC m v h : Toggle response headers visibility
-    "v" #'verb-set-var                              ; SPC m v v : Set/re-set a variable (for templating)
-    "e" #'verb-export-request-on-point              ; SPC m v e : Export request (to curl, etc.)
-    )
-  ;; Make Verb response body minor mode override Evil globals (essential for q to work)
-  (evil-make-overriding-map verb-response-body-mode-map 'normal)
 
-  ;; Now bind q directly in normal state
-  (fc/map :keymaps 'verb-response-body-mode-map
-    "q" #'verb-kill-response-buffer-and-window
-    "r" #'verb-re-send-request
-    "R" #'verb-show-request
-    "s" #'verb-toggle-show-headers))
-#+end_src
-**** Contrib
-#+begin_src emacs-lisp
 (use-package org-contrib
   :init
   (setq org-eldoc-breadcrumb-separator " → ")
   :hook (org-mode . org-eldoc-load))
 (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
-#+end_src
-**** Denote
-***** Basic
-#+begin_src emacs-lisp
+
 (use-package denote
   :hook
   ((text-mode . denote-fontify-links-mode-maybe)
@@ -2078,10 +1593,7 @@ nov
   (setq denote-rename-confirmations '(rewrite-front-matter modify-file-name))
   (setq denote-date-prompt-use-org-read-date t)
   (denote-rename-buffer-mode 1))
-#+end_src
 
-***** Denote Org
-#+begin_src emacs-lisp
 (use-package denote-org
   :after denote
   :bind (:map org-mode-map
@@ -2095,10 +1607,7 @@ nov
               ("C-c n o b" . denote-org-dblock-insert-backlinks)
               ("C-c n o m" . denote-org-dblock-insert-missing-links)
               ("C-c n o a" . denote-org-dblock-insert-files-as-headings)))
-#+end_src
 
-***** Denote Journal
-#+begin_src emacs-lisp
 (use-package denote-journal
   :bind
   ("C-c n j" . denote-journal-new-or-existing-entry)
@@ -2113,10 +1622,7 @@ nov
   (setq denote-journal-keyword "journal")
   ;; Read the doc string of `denote-journal-title-format'.
   (setq denote-journal-title-format 'day-date-month-year))
-#+end_src
 
-***** Denote Sequence
-#+begin_src emacs-lisp
 (use-package denote-sequence
   :after denote
   :bind (("C-c n s s" . denote-sequence)
@@ -2125,19 +1631,13 @@ nov
          ("C-c n s d" . denote-sequence-dired)
          ("C-c n s r" . denote-sequence-reparent)
          ("C-c n s c" . denote-sequence-convert)))
-#+end_src
 
-***** Consult Denote
-#+begin_src emacs-lisp
 (use-package consult-denote
   :bind (("C-c n f" . consult-denote-find)
          ("C-c n g" . consult-denote-grep))
   :config
   (consult-denote-mode 1))
-#+end_src
 
-**** GTD
-#+begin_src emacs-lisp
 (use-package org-gtd
   :after (org transient)
   :demand t
@@ -2177,10 +1677,7 @@ nov
    ;; Quick actions on tasks in agenda views (optional but recommended)
    :map org-agenda-mode-map
    ("C-c ." . org-gtd-agenda-transient)))
-#+end_src
 
-**** Dwim
-#+begin_src emacs-lisp
 (defun fc/org-insert-link-dwim ()
   "Like `org-insert-link' but with personal dwim preferences."
   (interactive)
@@ -2209,18 +1706,13 @@ nov
 (with-eval-after-load 'org
   (evil-define-key 'normal org-mode-map
     (kbd "C-c C-l") #'fc/org-insert-link-dwim))
-#+end_src
-*** Lang
-#+begin_src emacs-lisp
+
 (use-package uiua-mode
   :mode "\\.ua\\'")
-#+end_src
-#+begin_src emacs-lisp
+
 (use-package sol-mode
   :mode "\\.sol\\'")
 
-#+end_src
-#+begin_src emacs-lisp
 ;; NOTE https://github.com/liblit/demangle-mode this one might be helpful
 (use-package disaster
   :commands (disaster)
@@ -2231,12 +1723,10 @@ nov
 ;;       :map (c++-mode-map c-mode-map)
 ;;       :desc "Disaster" "d" #'disaster))
 (use-package cmake-mode)
-#+end_src
-#+begin_src emacs-lisp
+
 (use-package uv-mode
   :hook (python-ts-mode . uv-mode-auto-activate-hook))
-#+end_src
-#+begin_src emacs-lisp
+
 (add-to-list 'major-mode-remap-alist
              '(rust-mode . rustic-mode))
 
@@ -2248,473 +1738,22 @@ nov
   :custom
   (rustic-lsp-client 'eglot)
   (rustic-format-on-save t))
-#+end_src
-#+begin_src emacs-lisp
+
 ;; (use-package lsp-tailwindcss
 ;;   :init
 ;;   (setq lsp-tailwindcss-add-on-mode t)
 ;;   :after lsp-mode)
-#+end_src
-#+begin_src emacs-lisp
+
 (use-package fennel-mode
   :mode "\\.fnl\\'")
-#+end_src
-#+begin_src emacs-lisp
+
 (use-package kdl-mode)
 ;; (use-package qml-ts-mode)
-#+end_src
-#+begin_src emacs-lisp
+
 ;; (use-package justl)
 (use-package just-ts-mode)
-#+end_src
-#+begin_src emacs-lisp
+
 (add-hook 'scheme-mode-hook (lambda () (evil-local-set-key 'normal "K" #'geiser-doc-look-up-manual)))
 
 
 (provide 'config)
-#+end_src
-* Guix
-** The =art.scm= section for Lenovo AHP9 system
-#+begin_src scheme :tangle mods/zfc/system/art.scm :noweb yes
-;; -*- mode: scheme; -*-
-(define-module (zfc system art)
-  #:use-module (gnu)
-  #:use-module (gnu system nss)
-  #:use-module (gnu packages wm)
-  #:use-module (gnu packages shells)
-  #:use-module (gnu packages gnome)
-  #:use-module (gnu packages vim)
-  #:use-module (gnu services desktop)
-  #:use-module (gnu services xorg)
-  #:use-module (gnu services nix)
-  #:use-module (gnu services virtualization)
-  #:use-module (gnu services guix)
-  #:use-module (gnu home)
-  #:use-module (gnu home services)
-  #:use-module (guix packages)
-  #:use-module (guix channels)
-  #:use-module (nongnu packages linux)
-  #:use-module (nongnu system linux-initrd)
-  ;; #:use-module (guixcn services networking)
-  #:use-module (zfc packages networking)
-  #:use-module (zfc system package)
-  ;; #:use-module (sops secrets)
-  ;; #:use-module (sops services sops)
-  #:use-module ((ice-9 popen) #:select (open-input-pipe close-pipe))
-  #:use-module ((rnrs io ports) #:select (get-string-all))
-  ;; #:use-module ((sops secrets) #:select (sanitize-sops-key))
-  #:use-module (zfc home base))
-
-(define %subs-services
-  ;; my service to use substituters
-  (modify-services %desktop-services
-                   (guix-service-type
-                    config => (guix-configuration
-                               (inherit config)
-                               (authorized-keys
-                                (append (list (local-file "./signing-key.pub")
-                                              (plain-file "guix-moe.pub"
-                                                          "(public-key (ecc (curve Ed25519) (q #552F670D5005D7EB6ACF05284A1066E52156B51D75DE3EBD3030CD046675D543#)))"))
-                                        %default-authorized-guix-keys))
-                               (substitute-urls '("https://mirror.sjtu.edu.cn/guix/"
-                                                  "https://cache-cdn.guix.moe"
-                                                  "https://substitutes.nonguix.org"
-                                                  "https://ci.guix.gnu.org"))))))
-
-<<sys-def>>
-
-(operating-system
- (kernel linux-7.0)
- (initrd microcode-initrd)
- (firmware (list linux-firmware))
- (host-name "art")
- (timezone "Asia/Shanghai")
- (locale "en_US.utf8")
-
- ;; Choose US English keyboard layout.  The "altgr-intl"
- ;; variant provides dead keys for accented characters.
- (keyboard-layout (keyboard-layout "us"
-                                   #:options '("ctrl:nocaps")))
-
- ;; Use the UEFI variant of GRUB with the EFI System
- ;; Partition mounted on /boot/efi.
- (bootloader (bootloader-configuration
-              (bootloader grub-efi-bootloader)
-              (targets '("/boot/efi"))
-	          (keyboard-layout keyboard-layout)))
-
- ;; Specify a mapped device for the encrypted root partition.
- ;; The UUID is that returned by 'cryptsetup luksUUID'.
- (mapped-devices
-  (list (mapped-device
-         (source (uuid "7a3e1a89-474c-4efb-8826-2470162e7a66"))
-         (target "root")
-	     (type luks-device-mapping))))
-
- (file-systems (append
-                (list (file-system
-                       (device (file-system-label "root"))
-                       (mount-point "/")
-                       (type "ext4")
-                       (dependencies mapped-devices))
-                      (file-system
-                       (device (uuid "558B-E023" 'fat))
-                       (mount-point "/boot/efi")
-                       (type "vfat")))
-                %base-file-systems))
-
- ;; Specify a swap file for the system, which resides on the
- ;; root file system.
- (swap-devices (list (swap-space
-                      (target "/swapfile"))))
-
- (users (cons (user-account
-               (name "zfc")
-               (comment "zhafacai")
-               (group "users")
-               (password "$6$RHK3ZQYo7KixPw/f$Wz1cc8nIU.AlQ7UuFQ/mPYQGa4.jt0vzZ8UeHlpS0znTEM7qg3ael8RJbCczYMp.I8YqIP0x7Nrg9A6opT1TU0")
-               (supplementary-groups '("wheel" "netdev"
-				                       "libvirt"
-                                       "audio" "video")))
-              %base-user-accounts))
-
-
- ;; This is where we specify system-wide packages.
- (packages (append (list
-		            vim
-		            niri
-		            xdg-desktop-portal-gnome
-                    gvfs)
-                   %base-packages))
-
- (services (append (list (service gnome-desktop-service-type)
-			             (service bluetooth-service-type)
-			             (service nix-service-type
-				                  (nix-configuration
-				                   (extra-config
-				                    '("experimental-features = nix-command flakes\n"
-				                      "trusted-users = zfc root\n"
-				                      "substituters = https://mirrors.ustc.edu.cn/nix-channels/store/ https://cache.nixos.org/\n"))))
-			             (service libvirt-service-type
-				                  (libvirt-configuration))
-			             (service virtlog-service-type
-				                  (virtlog-configuration))
-                         <<sys-services>>
-			             (service guix-home-service-type
-				                  `(("zfc" ,home-base)))
-			             polkit-wheel-service
-			             (set-xorg-configuration
-			              (xorg-configuration
-			               (keyboard-layout keyboard-layout))))
-		           %subs-services))
-
- ;; Allow resolution of '.local' host names with mDNS.
- (name-service-switch %mdns-host-lookup-nss))
-#+end_src
-*** COMMENT The =art.scm= section about sops.
-~sys-services~
-here is =sops= secrets config for my dae config.
-#+begin_src scheme :noweb-ref sys-services
-  (service sops-secrets-service-type
-    (sops-service-configuration
-      (gnupg-home "/var/lib/sops")
-      ;; (generate-key? #t)
-      (secrets
-       (list
-        (sops-secret
-          (key '("sec" "dae"))
-          (file (local-file "../../secrets/sub.yaml"))
-          (user "zfc")
-          (group "wheel")
-          (permissions #o400)
-          )))))
-#+end_src
-*** COMMENT The =art.scm= section about dae.
-~sys-def~
-#+begin_src scheme :noweb-ref sys-def
-  (define* (get-sops-secret key #:key file (number? #f))
-    (let* ((cmd (format #f "GNUPGHOME=/var/lib/sops sops --decrypt --extract '~a' '~a'"
-                        (sops-list-key->sops-string-key key)
-                        file))
-           (port (open-input-pipe cmd))
-           (secret (get-string-all port)))
-      (close-pipe port)
-      (if number?
-          (string->number secret)
-          secret)))
-
-  (define %dae-config-in-store
-    (mixed-text-file "config.dae"
-      "include {\n  "
-      "  base.dae"
-      "\n}\n\n"
-  	"subscription {ssy: '"
-      (get-sops-secret '("sec" "dae") #:file "./secrets/sub.yaml")
-      "'}"))
-
-#+end_src
-~sys-services~
-#+begin_src scheme :noweb-ref sys-services
-  (service dae-service-type
-    (dae-service-configuration
-     (dae dae-bin)
-     (config-file "/etc/dae/config.dae")))
-
-  (simple-service 'dae-config-permission-fix activation-service-type
-    #~(begin
-        (use-modules (guix build utils))
-        (mkdir-p "/etc/dae")
-        (copy-file #$%dae-config-in-store "/etc/dae/config.dae")
-        (copy-file #$(local-file "plain/config.dae") "/etc/dae/base.dae")
-        (chmod "/etc/dae/base.dae" #o600)
-        (chmod "/etc/dae/config.dae" #o600)))
-#+end_src
-** The =base.scm= section for =guix home=
-#+begin_src scheme :tangle mods/zfc/home/base.scm :noweb yes
-(define-module (zfc home base)
-  #:use-module (gnu packages)
-  #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages fcitx5)
-  #:use-module (gnu services)
-  #:use-module (gnu home)
-  #:use-module (gnu home services)
-  #:use-module (gnu home services shells)
-  #:use-module (gnu home services guix)
-  #:use-module (gnu home services gnupg)
-  #:use-module (gnu home services desktop)
-  #:use-module (gnu home services sound)
-  #:use-module (rosenthal services desktop)
-  #:use-module (rosenthal home services desktop)
-  #:use-module (guix gexp)
-  #:use-module (guix channels)
-  #:use-module (guix transformations)
-  #:use-module (zfc home packages rime-ice)
-  #:use-module (zfc packages emacs-xyz)
-  ;; #:use-module (sops secrets)
-  ;; #:use-module (sops home services sops)
-  #:export (home-base))
-
-(define home-base
-  (home-environment
-   (packages
-    (append
-     (list emacs-reader)
-     (specifications->packages (list
-                                ;; emacs
-                                <<epkgs>>
-                                "emacs-pgtk"
-                                ;; dev
-                                "rust"
-                                "blue"
-
-						        ;; fonts
-						        "font-google-noto-emoji"
-						        "font-aporetic"
-						        "font-iosevka-ss02"
-						        "font-nerd-symbols"
-						        "font-lxgw-wenkai"
-
-						        "librewolf"
-                                "qutebrowser"
-                                "qtwayland"
-						        "google-chrome-stable"
-						        "noctalia-shell"
-						        "virt-manager"
-                                "wl-clipboard"
-						        
-						        ;; cli
-                                "brightnessctl"
-                                "bluez"
-                                "openssh"
-                                "fzf"
-                                "just"
-						        "starship"
-						        "make"
-						        "unzip"
-						        "zoxide"
-						        "btop"
-						        "yt-dlp"
-                                "krdc"
-						        "ripgrep"
-						        "fd"
-						        "mpv"
-						        "alacritty"
-						        "fish"
-						        "gcc-toolchain"
-						        "xwayland-satellite"
-						        "git"
-						        "mihomo"
-						        "file"
-						        "neovim"
-						        "neofetch"
-						        "curl"
-						        "cryptsetup"))))
-
-   (services
-    (append (list (service home-bash-service-type
-			               (home-bash-configuration
-			                (aliases '())
-			                (environment-variables '(("EDITOR" . "emacsclient")))
-			                (bashrc (list (local-file "plain/.bashrc" "bashrc")))
-			                (bash-profile (list (local-file
-						                         "plain/.bash_profile"
-						                         "bash_profile")))))
-
-		          (service home-pipewire-service-type)
-                  (service home-gpg-agent-service-type
-			               (home-gpg-agent-configuration
-                            (extra-content "allow-loopback-pinentry")
-			                (ssh-support? #t)))
-
-		          <<hm-services>>
-
-		          )
-            %base-home-services))))
-#+end_src
-*** The =base.scm= section about fcitx5
-~hm-services~
-#+begin_src scheme :noweb-ref hm-services
-(service home-files-service-type
-         `(
-           ;; 1. Link the heavy data directories
-           (".local/share/fcitx5/rime/en_dicts" ,(file-append rime-ice "/share/rime-data/en_dicts"))
-           (".local/share/fcitx5/rime/cn_dicts" ,(file-append rime-ice "/share/rime-data/cn_dicts"))
-           (".local/share/fcitx5/rime/opencc" ,(file-append rime-ice "/share/rime-data/opencc"))
-           (".local/share/fcitx5/rime/lua"    ,(file-append rime-ice "/share/rime-data/lua"))
-
-           ;; 2. Link the essential schema files for Xiaohe
-           (".local/share/fcitx5/rime/double_pinyin_flypy.schema.yaml" 
-            ,(file-append rime-ice "/share/rime-data/double_pinyin_flypy.schema.yaml"))
-           (".local/share/fcitx5/rime/rime_ice.schema.yaml" 
-            ,(file-append rime-ice "/share/rime-data/rime_ice.schema.yaml"))
-           (".local/share/fcitx5/rime/default.yaml" 
-            ,(file-append rime-ice "/share/rime-data/default.yaml"))
-           (".local/share/fcitx5/rime/rime_ice.dict.yaml" 
-            ,(file-append rime-ice "/share/rime-data/rime_ice.dict.yaml"))
-           (".local/share/fcitx5/rime/symbols_v.yaml" 
-            ,(file-append rime-ice "/share/rime-data/symbols_v.yaml"))
-           (".local/share/fcitx5/rime/symbols_caps_v.yaml" 
-            ,(file-append rime-ice "/share/rime-data/symbols_caps_v.yaml"))
-           (".local/share/fcitx5/rime/default.custom.yaml"
-            ,(local-file "packages/default.custom.yaml"))))
-(service home-dbus-service-type)
-(service home-graphical-session-service-type
-         (home-graphical-session-configuration
-          (wayland? #t)
-          (x11? #t)))
-(service home-fcitx5-service-type
-         (home-fcitx5-configuration
-          (wayland-frontend? #t)
-          (themes
-           (list fcitx5-material-color-theme))
-          (input-method-editors
-           (list fcitx5-rime))))
-#+end_src
-patch to use flypy
-#+begin_src yaml :tangle mods/zfc/home/packages/default.custom.yaml
-  patch:
-    __include: rime_ice_suggestion:/
-    schema_list:
-      - schema: double_pinyin_flypy
-#+end_src
-=rime-ice= module for guix home
-#+begin_src scheme :tangle mods/zfc/home/packages/rime-ice.scm
-  (define-module (zfc home packages rime-ice)
-    #:use-module (guix packages)
-    #:use-module (guix git-download)
-    #:use-module (guix build-system copy)
-    #:use-module ((guix licenses) #:prefix license:)
-    #:export (rime-ice))
-
-  (define rime-ice
-    (package
-      (name "rime-ice")
-      (version "master")
-      (source (origin
-  	          (method git-fetch)
-  	          (uri (git-reference
-  		             (url "https://github.com/iDvel/rime-ice")
-  		             (commit "23f0c39a0b443524e37dbff4f085236b32691291")))
-  	          (sha256
-  	           (base32 "0jfdw277z5cynb906i2m24iasgj3an7r1gsrbx3hy9gymm9yvbv3"))))
-      (build-system copy-build-system)
-      (arguments
-       '(#:install-plan '(("." "share/rime-data" #:exclude ("README.md" "LICENSE")))))
-      (home-page "https://github.com")
-      (synopsis "Rime 雾凇拼音")
-      (description "Rime 配置：雾凇拼音 | 长期维护的简体词库 ")
-      (license license:gpl3+)))
-#+end_src
-*** The =base.scm= section about rustconfig
-~hm-services~
-#+begin_src scheme :noweb-ref hm-services
-  (simple-service 'cargo-config
-  	home-files-service-type
-    `(( ".cargo/config.toml" ,(local-file "plain/cargo.toml"))))
-#+end_src
-crates mirror from [[https://rsproxy.cn/][rsproxy]]
-#+begin_src toml :tangle mods/zfc/home/plain/cargo.toml
-  [source.crates-io]
-  replace-with = 'rsproxy-sparse'
-  [source.rsproxy]
-  registry = "https://rsproxy.cn/crates.io-index"
-  [source.rsproxy-sparse]
-  registry = "sparse+https://rsproxy.cn/index/"
-  [registries.rsproxy]
-  index = "https://rsproxy.cn/crates.io-index"
-  [net]
-  git-fetch-with-cli = true
-#+end_src
-*** The =base.scm= section about gitconfig
-~hm-services~
-#+begin_src scheme :noweb-ref hm-services
-  (simple-service 'git-gpg-config
-      home-files-service-type
-    (list `(".gitconfig"
-            ,(local-file "plain/gitconfig"))))
-#+end_src
-git config
-#+begin_src gitconfig :tangle mods/zfc/home/plain/gitconfig
-  [user]
-  	name = zhafacai
-  	email = zhafacai@gmail.com
-  	signingkey = 5ABCBDEC900FD06A!
-  [commit]
-  	gpgsign = true
-#+end_src
-*** The =base.scm= section about notmuch
-~hm-services~
-#+begin_src scheme :noweb-ref hm-services
-  (simple-service 'notmuch-prenew-config
-      home-xdg-configuration-files-service-type
-    (list `("notmuch/default/hooks/pre-new"
-            ,(local-file "plain/pre-new" #:recursive? #t))))
-#+end_src
-#+begin_src bash :tangle mods/zfc/home/plain/pre-new :tangle-mode (identity #o544)
-  #!/bin/sh
-  mbsync -a
-#+end_src
-*** COMMENT The =base.scm= section about elfeed
-~hm-services~
-#+begin_src scheme :noweb-ref hm-services
-  ;; XXX does not work
-  ;; (service home-sops-secrets-service-type
-  ;;          (home-sops-service-configuration
-  ;;           (secrets
-  ;;            (list
-  ;;             (sops-secret
-  ;;              (key '())
-  ;;              (output-type "binary")
-  ;;              (file (local-file "../../secrets/elfeed.org"))
-  ;;              (permissions #o400))))))
-
-
-  (service home-sops-secrets-service-type
-    (home-sops-service-configuration
-      (secrets
-       (list
-        (sops-secret
-          (key '("elfeed"))
-          (file (local-file "../../secrets/long.yaml"))
-          (permissions #o400))))))
-#+end_src
