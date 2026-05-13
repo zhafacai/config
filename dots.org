@@ -12,17 +12,49 @@ more packages.
 * Emacs
 ** The =early-init.el= section
 #+begin_src emacs-lisp :tangle early-init.el
+
+(setq custom-file (make-temp-file "emacs-custom-"))
+
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+
+(setq vc-handled-backends '(Git))
+
 (setq gc-cons-threshold most-positive-fixnum
       use-short-answers t)
 
+(setq frame-resize-pixelwise t
+      frame-inhibit-implied-resize t
+      frame-title-format
+      '(:eval
+        (let ((project (project-current)))
+          (if project
+              (concat "Emacs - [p] " (project-name project))
+              (concat "Emacs - " (buffer-name))))))
+
+
+(setq inhibit-compacting-font-caches t)
+
+
+;; Disables unused UI Elements
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(if (fboundp 'tooltip-mode) (tooltip-mode -1))
+(if (fboundp 'fringe-mode) (fringe-mode -1))
+
+;; Avoid raising the *Messages* buffer if anything is still without
+;; lexical bindings
 (setq warning-minimum-level :error)
-(setq warning-suppress-types '((lexical-binding)))
+;; (setq warning-suppress-types '((lexical-binding)))
+
 (setq package-enable-at-startup nil)
 #+end_src
 ** The =init.el= section
 #+begin_src emacs-lisp :tangle init.el
 ;;; -*- lexical-binding: t; -*-
 
+;; setup elpaca
 (defvar elpaca-installer-version 0.12)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
@@ -113,7 +145,6 @@ more packages.
 ;; Conflicts with evil-open-below
 (put 'other-window 'repeat-map nil)
 ;; Single VC backend inscreases booting speed
-(setq vc-handled-backends '(Git))
 (setq auth-source-debug t)
 
 (setq completion-ignore-case t)
@@ -148,9 +179,6 @@ more packages.
 *** Setup
 #+begin_src emacs-lisp
 ;; -*- lexical-binding: t; -*-
-(setq package-archives '(("gnu" . "https://mirrors.ustc.edu.cn/elpa/gnu/")
-                         ("melpa" . "https://mirrors.ustc.edu.cn/elpa/melpa/")
-                         ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")))
 (setq use-package-always-ensure t)
 (use-package gcmh
   :config
@@ -195,12 +223,6 @@ $SHELL has to be POSIX one
 
 #+end_src
 
-I do not want custom variables in config file
-#+begin_src emacs-lisp
-(setq custom-file (make-temp-file "emacs-custom-"))
-
-;; (setq custom-safe-themes t)
-#+end_src
 
 #+begin_src emacs-lisp
 (defvar fc/leader-key "SPC"
@@ -556,10 +578,6 @@ the mode that I do not use
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (tooltip-mode -1)
-#+end_src
-make default frame maximized by default
-#+begin_src emacs-lisp
-;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 #+end_src
 always help me please :)
 #+begin_src emacs-lisp
@@ -2532,6 +2550,8 @@ here is =sops= secrets config for my dae config.
 						        
 						        ;; cli
                                 "brightnessctl"
+                                "github-cli"
+                                "tree-sitter-cli"
                                 "bluez"
                                 "openssh"
                                 "fzf"
@@ -2561,7 +2581,8 @@ here is =sops= secrets config for my dae config.
    (services
     (append (list (service home-bash-service-type
                            (home-bash-configuration
-                            (aliases '())
+                            (aliases '(("em" . "emacsclient")
+                                       ("e" . "nvim")))
                             (environment-variables '(("EDITOR" . "emacsclient")))
                             (bashrc (list (local-file "plain/.bashrc" "bashrc")))
                             (bash-profile (list (local-file

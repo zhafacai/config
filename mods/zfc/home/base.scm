@@ -66,6 +66,8 @@
 						        
 						        ;; cli
                                 "brightnessctl"
+                                "github-cli"
+                                "tree-sitter-cli"
                                 "bluez"
                                 "openssh"
                                 "fzf"
@@ -95,7 +97,8 @@
    (services
     (append (list (service home-bash-service-type
                            (home-bash-configuration
-                            (aliases '())
+                            (aliases '(("em" . "emacsclient")
+                                       ("e" . "nvim")))
                             (environment-variables '(("EDITOR" . "emacsclient")))
                             (bashrc (list (local-file "plain/.bashrc" "bashrc")))
                             (bash-profile (list (local-file

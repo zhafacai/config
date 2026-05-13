@@ -1,7 +1,4 @@
 ;; -*- lexical-binding: t; -*-
-(setq package-archives '(("gnu" . "https://mirrors.ustc.edu.cn/elpa/gnu/")
-                         ("melpa" . "https://mirrors.ustc.edu.cn/elpa/melpa/")
-                         ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")))
 (setq use-package-always-ensure t)
 (use-package gcmh
   :config
@@ -37,10 +34,6 @@
 
 (setq-default indent-tabs-mode nil
               tab-width 4)
-
-(setq custom-file (make-temp-file "emacs-custom-"))
-
-;; (setq custom-safe-themes t)
 
 (defvar fc/leader-key "SPC"
   "my leader key.")
@@ -316,8 +309,6 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (tooltip-mode -1)
-
-;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 (setq help-at-pt-display-when-idle t) 
 (setq initial-scratch-message ";; What's the QUESTION today?\n\n")

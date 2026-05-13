@@ -1,5 +1,6 @@
 ;;; -*- lexical-binding: t; -*-
 
+;; setup elpaca
 (defvar elpaca-installer-version 0.12)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
@@ -90,7 +91,6 @@
 ;; Conflicts with evil-open-below
 (put 'other-window 'repeat-map nil)
 ;; Single VC backend inscreases booting speed
-(setq vc-handled-backends '(Git))
 (setq auth-source-debug t)
 
 (setq completion-ignore-case t)
