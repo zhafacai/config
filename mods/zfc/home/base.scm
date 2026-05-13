@@ -105,8 +105,6 @@
                   (service home-pipewire-service-type)
                   (service home-gpg-agent-service-type
                            (home-gpg-agent-configuration
-                            (pinentry-program
-                             (file-append pinentry-emacs "/bin/pinentry-emacs"))
                             (extra-content "allow-loopback-pinentry")
 			                (ssh-support? #t)))
 

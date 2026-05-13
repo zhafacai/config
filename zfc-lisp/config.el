@@ -1466,8 +1466,7 @@
 
 (general-define-key "C-c a s" #'agent-shell)
 
-(setq epg-pinentry-mode 'loopback) 
-(setq epa-pinentry-mode 'loopback)
+(setq epg-pinentry-mode 'loopback)
 
 (use-package elfeed
   :bind
