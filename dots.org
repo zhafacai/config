@@ -2527,10 +2527,7 @@ here is =sops= secrets config for my dae config.
                                                  "bash_profile")))))
 
                   (service home-pipewire-service-type)
-                  (service home-gpg-agent-service-type
-                           (home-gpg-agent-configuration
-                            (extra-content "allow-loopback-pinentry")
-			                (ssh-support? #t)))
+                  
 
 		          <<hm-services>>
 
@@ -2611,6 +2608,16 @@ patch to use flypy
       (description "Rime 配置：雾凇拼音 | 长期维护的简体词库")
       (license license:gpl3+)))
 #+end_src
+*** The =base.scm= section about gpg
+~hm-services~
+#+begin_src scheme :noweb-ref hm-services
+(service home-gpg-agent-service-type
+  (home-gpg-agent-configuration
+	(pinentry-program (file-append pinentry-gnome3 "/bin/pinentry-gnome3"))
+	(extra-content "allow-loopback-pinentry")
+	(ssh-support? #t)))
+#+end_src
+
 *** The =base.scm= section about rustconfig
 ~hm-services~
 #+begin_src scheme :noweb-ref hm-services

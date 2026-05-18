@@ -113,10 +113,7 @@
                                                  "bash_profile")))))
 
                   (service home-pipewire-service-type)
-                  (service home-gpg-agent-service-type
-                           (home-gpg-agent-configuration
-                            (extra-content "allow-loopback-pinentry")
-			                (ssh-support? #t)))
+                  
 
 		          (service home-files-service-type
 		                   `(
@@ -153,6 +150,11 @@
 		                     (list fcitx5-material-color-theme))
 		                    (input-method-editors
 		                     (list fcitx5-rime))))
+		          (service home-gpg-agent-service-type
+		            (home-gpg-agent-configuration
+		          	(pinentry-program (file-append pinentry-gnome3 "/bin/pinentry-gnome3"))
+		          	(extra-content "allow-loopback-pinentry")
+		          	(ssh-support? #t)))
 		          (simple-service 'cargo-config
 		          	home-files-service-type
 		            `(( ".cargo/config.toml" ,(local-file "plain/cargo.toml"))))
