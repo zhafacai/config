@@ -119,41 +119,15 @@
   (setq theme-buffet-menu 'end-user)
 
   (setq theme-buffet-end-user
-        '(
-          ;; NIGHT: High contrast, deep darks, vibrant accents
-          :night
-          (modus-vivendi ef-dark ef-winter ef-autumn ef-night ef-duo-dark ef-symbiosis
-                         doom-one doom-vibrant doom-dracula doom-palenight doom-tokyo-night)
+        '( :night     (modus-vivendi ef-dark ef-winter ef-autumn ef-night ef-duo-dark ef-symbiosis)
+           :morning   (modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light)
+           :afternoon (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
+           :evening   (modus-vivendi-tinted ef-rosa ef-elea-dark ef-maris-dark ef-melissa-dark ef-trio-dark ef-dream)))
 
-          ;; MORNING: Crisp, cold lights, high legibility
-          :morning
-          (modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light)
-
-          ;; AFTERNOON: Warm lights, tinted backgrounds, soft contrast
-          :afternoon
-          (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
-
-          ;; EVENING: Warm darks, lower contrast, cozy/earthy tones
-          :evening
-          (modus-vivendi-tinted ef-rosa ef-elea-dark ef-maris-dark ef-melissa-dark ef-trio-dark ef-dream
-                                doom-gruvbox doom-henna doom-nord doom-snazzy doom-oceanic-next)))
-
-  (theme-buffet-timer-mins 45))
+  (theme-buffet-timer-hours 1))
 
 (theme-buffet-a-la-carte)
 (fc/map 'normal "tt" #'theme-buffet-a-la-carte)
-
-(use-package doom-themes
-  :custom
-  ;; Global settings (defaults)
-  (doom-themes-enable-bold t)   ; if nil, bold is universally disabled
-  (doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  :config
-
-  ;; Enable flashing mode-line on errors
-  (doom-themes-visual-bell-config)
-  ;; Corrects (and improves) org-mode's native fontification.
- (doom-themes-org-config))
 
 (use-package rainbow-delimiters
   :config
