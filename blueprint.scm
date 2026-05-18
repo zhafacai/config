@@ -1,13 +1,14 @@
 (use-modules
+ (srfi srfi-2)
+ (blue computation)
  (blue subprocess)
  (blue types blueprint)
- (blue types command))
+ (blue types command)
+ (blue types configuration)
+ (blue types variable))
 
 (define ($ prog . args)
   (popen prog args))
-
-;; (define* ($update-guix #:key (channels "channels.lock"))
-;;   ($ "guix" "time-machine" "-C" channels "--" "shell" "-m" "manifest.scm"))
 
 (define-command (update-guix-command args)
   ((invoke "update-guix")
@@ -49,9 +50,25 @@
   "))
   ($ "nix" "profile" "upgrade" "config"))
 
+
+(define-command (edit-sops-command args)
+  ((invoke "edit-sops")
+   (category 'system)
+   (synopsis "Edit sops encrypted file")
+   (help "[FILE_PATH]
+  Edit sops encrypted file using EDITOR."))
+  
+  (and-let* (((not (null? args)))
+			 (file (car args))
+			 (file-path (format #f "secrets/~a.yaml" file)))
+    
+    ($ "sops" "edit" file-path)))
+
 (blueprint
  (commands
-  (list update-guix-command
-        update-nix-command
-        upgrade-guix-command
-        upgrade-nix-command)))
+  (list
+   edit-sops-command
+   update-nix-command
+   update-guix-command
+   upgrade-nix-command
+   upgrade-guix-command)))
