@@ -1,10 +1,10 @@
-;; What follows is a "manifest" equivalent to the command line you gave.
-;; You can store it in a file that you may then pass to any 'guix' command
-;; that accepts a '--manifest' (or '-m') option.
+(use-modules (bluebox packages blue)
+			 (gnu packages password-utils)
+			 (gnu packages vim)
+			 (gnu packages gnupg))
 
-(specifications->manifest
- (list
-  "blue"
-  "gnupg"
-;;  "sops"
-  "neovim"))
+(packages->manifest
+ (list blue
+	   gnupg
+	   sops
+	   neovim))
