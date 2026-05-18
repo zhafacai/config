@@ -102,7 +102,7 @@
 
  ;; This is where we specify system-wide packages.
  (packages (append (list
-		            vim
+		            neovim
 		            niri
 		            xdg-desktop-portal-gnome
                     gvfs)
@@ -110,23 +110,19 @@
 
  (services (append (list (service gnome-desktop-service-type)
 			             (service bluetooth-service-type)
-			             (service nix-service-type
-				                  (nix-configuration
-				                   (extra-config
-				                    '("experimental-features = nix-command flakes\n"
-				                      "trusted-users = zfc root\n"
-				                      "substituters = https://mirrors.ustc.edu.cn/nix-channels/store/ https://cache.nixos.org/\n"))))
 			             (service libvirt-service-type
 				                  (libvirt-configuration))
 			             (service virtlog-service-type
 				                  (virtlog-configuration))
-                         
+                         (service nix-service-type
+                           (nix-configuration
+                                         (extra-config
+                                          '("experimental-features = nix-command flakes\n"
+                                            "trusted-users = zfc root\n"
+                                            "substituters =  https://mirrors.ustc.edu.cn/nix-channels/store/ https://cache.nixos.org/\n"))))
 			             (service guix-home-service-type
 				                  `(("zfc" ,home-base)))
-			             polkit-wheel-service
-			             (set-xorg-configuration
-			              (xorg-configuration
-			               (keyboard-layout keyboard-layout))))
+			             polkit-wheel-service)
 		           %subs-services))
 
  ;; Allow resolution of '.local' host names with mDNS.

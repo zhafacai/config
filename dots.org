@@ -2264,7 +2264,7 @@ nov
 (provide 'zfc-ui)
 #+end_src
 * Guix
-** The =art.scm= section for Lenovo AHP9 system
+** The =art.scm= section for Lenovo AHP9 System
 #+begin_src scheme :tangle mods/zfc/system/art.scm :noweb yes
 ;; -*- mode: scheme; -*-
 (define-module (zfc system art)
@@ -2370,7 +2370,7 @@ nov
 
  ;; This is where we specify system-wide packages.
  (packages (append (list
-		            vim
+		            neovim
 		            niri
 		            xdg-desktop-portal-gnome
                     gvfs)
@@ -2378,12 +2378,6 @@ nov
 
  (services (append (list (service gnome-desktop-service-type)
 			             (service bluetooth-service-type)
-			             (service nix-service-type
-				                  (nix-configuration
-				                   (extra-config
-				                    '("experimental-features = nix-command flakes\n"
-				                      "trusted-users = zfc root\n"
-				                      "substituters = https://mirrors.ustc.edu.cn/nix-channels/store/ https://cache.nixos.org/\n"))))
 			             (service libvirt-service-type
 				                  (libvirt-configuration))
 			             (service virtlog-service-type
@@ -2391,10 +2385,7 @@ nov
                          <<sys-services>>
 			             (service guix-home-service-type
 				                  `(("zfc" ,home-base)))
-			             polkit-wheel-service
-			             (set-xorg-configuration
-			              (xorg-configuration
-			               (keyboard-layout keyboard-layout))))
+			             polkit-wheel-service)
 		           %subs-services))
 
  ;; Allow resolution of '.local' host names with mDNS.
@@ -2417,6 +2408,16 @@ here is =sops= secrets config for my dae config.
           (group "wheel")
           (permissions #o400)
           )))))
+#+end_src
+*** The =art.scm= section about nix
+~sys-services~
+#+begin_src scheme :noweb-ref sys-services
+(service nix-service-type
+  (nix-configuration
+                (extra-config
+                 '("experimental-features = nix-command flakes\n"
+                   "trusted-users = zfc root\n"
+                   "substituters =  https://mirrors.ustc.edu.cn/nix-channels/store/ https://cache.nixos.org/\n"))))
 #+end_src
 *** COMMENT The =art.scm= section about dae.
 ~sys-def~
@@ -2458,7 +2459,7 @@ here is =sops= secrets config for my dae config.
         (chmod "/etc/dae/base.dae" #o600)
         (chmod "/etc/dae/config.dae" #o600)))
 #+end_src
-** The =base.scm= section for =guix home=
+** The =base.scm= section for Guix Home
 #+begin_src scheme :tangle mods/zfc/home/base.scm :noweb yes
 (define-module (zfc home base)
   #:use-module (gnu packages)
