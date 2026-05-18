@@ -72,6 +72,7 @@
   (read-answer-short t)
   (recentf-max-saved-items 300) ; default is 20
   (recentf-max-menu-items 15)
+  (tab-width 4)
   ;; (recentf-exclude (list "^/\\(?:ssh\\|su\\|sudo\\)?:"))
   (treesit-font-lock-level 4)
   (use-dialog-box nil)
@@ -81,6 +82,12 @@
   (grep-command "rg -nS --no-heading ") ; TODO: make it dinamic check if ripgrep is available before setting it and if it costs too much of the init time
   (grep-find-ignored-directories
    '("SCCS" "RCS" "CVS" "MCVS" ".src" ".svn" ".jj" ".git" ".hg" ".bzr" "_MTN" "_darcs" "{arch}" "node_modules" "build" "dist"))
+
+  (large-file-warning-threshold nil)
+  ;; Follow symlinks to VC-controlled files without warning
+  (vc-follow-symlinks t)
+  ;; Silence compiler warnings as they can be pretty disruptive
+  (native-comp-async-report-warnings-errors nil)
   :init
   (tooltip-mode nil)
   (recentf-mode 1)
@@ -88,31 +95,26 @@
   (savehist-mode 1)
   (save-place-mode 1))
 
-;; Conflicts with evil-open-below
-(put 'other-window 'repeat-map nil)
-;; Single VC backend inscreases booting speed
-(setq auth-source-debug t)
+(use-package auth-source
+  :custom
+  (auth-source-debug t))
 
-(setq completion-ignore-case t)
-;; why do we need this?
-(setq native-comp-async-report-warnings-errors 'silent)
 
-(setq inhibit-startup-message t
+(use-package autorevert
+  :ensure nil
+  :config
+  (global-auto-revert-mode 1))
 
-      ;; No backup files, please
-      make-backup-files nil
+(use-package isearch
+  :ensure nil
+  :custom
+  (isearch-lazy-count t))
 
-      ;; Don't warn on large files
-      large-file-warning-threshold nil
-
-      ;; Follow symlinks to VC-controlled files without warning
-      vc-follow-symlinks t
-
-      ;; Silence compiler warnings as they can be pretty disruptive
-      native-comp-async-report-warnings-errors nil)
-(auto-save-visited-mode 1)     ;; Auto-save files at an interval
 ;; Add the folder to the search path
-(add-to-list 'load-path (expand-file-name "zfc-lisp" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(setq use-package-always-ensure t)
 
-;; Load it using the feature name declared in (provide 'config)
-(require 'config)
+(require 'zfc-macro)
+(require 'zfc-evil)
+(require 'zfc-config)
+(require 'zfc-ui)

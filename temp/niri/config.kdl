@@ -309,11 +309,11 @@ debug {
   honor-xdg-activation-with-invalid-serial
 }
 binds {
-    XF86AudioRaiseVolume  { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "volume" "increase"; }
-    XF86AudioLowerVolume  { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "volume" "decrease"; }
-    XF86AudioMute         { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "volume" "muteOutput"; }
-    XF86MonBrightnessUp   { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "brightness" "increase"; }
-    XF86MonBrightnessDown { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "brightness" "decrease"; }
+    XF86AudioRaiseVolume  { spawn "noctalia-shell" "ipc" "call" "volume" "increase"; }
+    XF86AudioLowerVolume  { spawn "noctalia-shell" "ipc" "call" "volume" "decrease"; }
+    XF86AudioMute         { spawn "noctalia-shell" "ipc" "call" "volume" "muteOutput"; }
+    XF86MonBrightnessUp   { spawn "noctalia-shell" "ipc" "call" "brightness" "increase"; }
+    XF86MonBrightnessDown { spawn "noctalia-shell" "ipc" "call" "brightness" "decrease"; }
     XF86AudioNext allow-when-locked=true {
       spawn "playerctl" "next";
     }
@@ -577,11 +577,3 @@ overview {
     off
   }
 }
-
-// include "dms/colors.kdl"
-// include "dms/layout.kdl"
-// include "dms/alttab.kdl"
-
-// include "dms/outputs.kdl"
-
-// include "dms/cursor.kdl"

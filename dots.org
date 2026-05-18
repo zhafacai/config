@@ -15,7 +15,7 @@ more packages.
 
 (setq custom-file (make-temp-file "emacs-custom-"))
 
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
+;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 
 (setq vc-handled-backends '(Git))
@@ -51,6 +51,7 @@ more packages.
 (setq package-enable-at-startup nil)
 #+end_src
 ** The =init.el= section
+*** The =init.el= section about setup elpaca
 #+begin_src emacs-lisp :tangle init.el
 ;;; -*- lexical-binding: t; -*-
 
@@ -97,7 +98,9 @@ more packages.
 (elpaca elpaca-use-package
   ;; Enable use-package :ensure support for Elpaca.
   (elpaca-use-package-mode))
-
+#+end_src
+*** The =init.el= section about internal pacakges
+#+begin_src emacs-lisp :tangle init.el
 (use-package emacs
   :ensure nil
   :bind                                              ; NOTE: M-x describe-personal-bindings (for all use-packge binds)
@@ -126,6 +129,7 @@ more packages.
   (read-answer-short t)
   (recentf-max-saved-items 300) ; default is 20
   (recentf-max-menu-items 15)
+  (tab-width 4)
   ;; (recentf-exclude (list "^/\\(?:ssh\\|su\\|sudo\\)?:"))
   (treesit-font-lock-level 4)
   (use-dialog-box nil)
@@ -135,6 +139,12 @@ more packages.
   (grep-command "rg -nS --no-heading ") ; TODO: make it dinamic check if ripgrep is available before setting it and if it costs too much of the init time
   (grep-find-ignored-directories
    '("SCCS" "RCS" "CVS" "MCVS" ".src" ".svn" ".jj" ".git" ".hg" ".bzr" "_MTN" "_darcs" "{arch}" "node_modules" "build" "dist"))
+
+  (large-file-warning-threshold nil)
+  ;; Follow symlinks to VC-controlled files without warning
+  (vc-follow-symlinks t)
+  ;; Silence compiler warnings as they can be pretty disruptive
+  (native-comp-async-report-warnings-errors nil)
   :init
   (tooltip-mode nil)
   (recentf-mode 1)
@@ -142,104 +152,39 @@ more packages.
   (savehist-mode 1)
   (save-place-mode 1))
 
-;; Conflicts with evil-open-below
-(put 'other-window 'repeat-map nil)
-;; Single VC backend inscreases booting speed
-(setq auth-source-debug t)
+(use-package auth-source
+  :custom
+  (auth-source-debug t))
 
-(setq completion-ignore-case t)
-;; why do we need this?
-(setq native-comp-async-report-warnings-errors 'silent)
 
-(setq inhibit-startup-message t
-
-      ;; No backup files, please
-      make-backup-files nil
-
-      ;; Don't warn on large files
-      large-file-warning-threshold nil
-
-      ;; Follow symlinks to VC-controlled files without warning
-      vc-follow-symlinks t
-
-      ;; Silence compiler warnings as they can be pretty disruptive
-      native-comp-async-report-warnings-errors nil)
-(auto-save-visited-mode 1)     ;; Auto-save files at an interval
-;; Add the folder to the search path
-(add-to-list 'load-path (expand-file-name "zfc-lisp" user-emacs-directory))
-
-;; Load it using the feature name declared in (provide 'config)
-(require 'config)
-
-#+end_src
-** The =config.el= section
-:PROPERTIES:
-:header-args:emacs-lisp: :tangle zfc-lisp/config.el
-:END:
-*** Setup
-#+begin_src emacs-lisp
-;; -*- lexical-binding: t; -*-
-(setq use-package-always-ensure t)
-(use-package gcmh
+(use-package autorevert
+  :ensure nil
   :config
-  (gcmh-mode 1))
-#+end_src
-tangle config file
-#+begin_src emacs-lisp
-;; TODO: add this to dir-local.el
-(defun fc/org-auto-tangle-config ()
-  "Tangle only if the saved file is dots.org"
-  (when  (string-equal (buffer-file-name)
-                       (expand-file-name "~/config/dots.org"))
-    (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle))))
+  (global-auto-revert-mode 1))
 
-(add-hook 'org-mode-hook
-          (lambda ()
-            (add-hook 'after-save-hook #'fc/org-auto-tangle-config nil 'local)))
-#+end_src
-$SHELL has to be POSIX one
-#+begin_src emacs-lisp
-;; Instruct Emacs to use a posix shell under the hood...
-(setq shell-file-name (executable-find "bash"))
-
-;; But use your normal shell in terminal emulators
-(setq-default vterm-shell (executable-find "fish"))
-(setq-default explicit-shell-file-name (executable-find "fish"))
-#+end_src
-
-#+begin_src emacs-lisp
-(recentf-mode)
-
-(global-auto-revert-mode 1)
 (use-package isearch
   :ensure nil
   :custom
   (isearch-lazy-count t))
-
-
-(setq-default indent-tabs-mode nil
-              tab-width 4)
-
 #+end_src
+load zfc packages
+#+begin_src emacs-lisp :tangle init.el
 
+;; Add the folder to the search path
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(setq use-package-always-ensure t)
 
-#+begin_src emacs-lisp
-(defvar fc/leader-key "SPC"
-  "my leader key.")
-
-(defvar fc/localleader-key ","
-  "my local leader key.")
-
-(use-package general
-  :ensure (:wait t)
-  :config
-  (general-create-definer fc/map
-    :prefix fc/leader-key))
-
+(require 'zfc-macro)
+(require 'zfc-evil)
+(require 'zfc-config)
+(require 'zfc-ui)
 #+end_src
-
+** The =zfc-macro.el= section
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle lisp/zfc-macro.el
+:END:
 #+begin_src emacs-lisp
+;; -*- lexical-binding: t; -*-
 (defmacro after! (features &rest body)
   (declare (indent 1) (debug t))
 
@@ -256,6 +201,30 @@ $SHELL has to be POSIX one
                     ,form)))
 
     form))
+
+
+(provide 'zfc-macro)
+#+end_src
+
+** The =zfc-evil.el= section
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle lisp/zfc-evil.el
+:END:
+set leader and general
+#+begin_src emacs-lisp
+;; -*- lexical-binding: t; -*-
+(defvar fc/leader-key "SPC"
+  "my leader key.")
+
+(defvar fc/localleader-key ","
+  "my local leader key.")
+
+(use-package general
+  :ensure (:wait t)
+  :config
+  (general-create-definer fc/map
+    :prefix fc/leader-key))
+
 #+end_src
 
 #+begin_src emacs-lisp
@@ -274,6 +243,10 @@ $SHELL has to be POSIX one
   :config
   (evil-set-leader '(normal visual) (kbd fc/leader-key))
   (evil-set-leader 'normal (kbd fc/localleader-key) t)
+
+  ;; Conflicts with evil-open-below
+  (put 'other-window 'repeat-map nil)
+
   (evil-mode 1))
 
 (general-define-key :keymaps 'normal "C-e" #'end-of-line)
@@ -437,26 +410,75 @@ linediff
   (global-anzu-mode +1))
 
 (use-package evil-anzu)
+
+(provide 'zfc-evil)
 #+end_src
+** The =zfc-config.el= section
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle lisp/zfc-config.el
+:END:
+*** Alpha Backgroud
+tranparent background is beautiful... Right?
 #+begin_src emacs-lisp
-  (use-package tracking)
+;; -*- lexical-binding: t; -*-
+(defun fc/toggle-alpha-background ()
+  "toggle tranparency of background"
+  (interactive)
+  (let ((current (frame-parameter nil 'alpha-background)))
+    (set-frame-parameter nil 'alpha-background
+                         (if (or (null current) (>= current 98))
+                             90
+                           100))))
+(add-to-list 'default-frame-alist '(alpha-background . 90))
 
-  (use-package telega
-    :ensure nil
-    :bind
-    ("C-c t" . telega)
-    :commands telega
-    :config
-    (setq telega-use-tracking-for '(or unmuted mention)
-          telega-completing-read-function #'completing-read
-          telega-msg-rainbow-title t
-          telega-chat-fill-column 75)
+(fc/map 'normal "ta" #'fc/toggle-alpha-background)
+#+end_src
+*** Wallpaper
+#+begin_src emacs-lisp
+(defun fc/next-wallpaper ()
+  "Call next wallpaper."
+  (interactive)
+  (shell-command "noctalia-shell ipc call wallpaper random"))
 
-    ;; Show notifications in the mode line
-    (add-hook 'telega-load-hook #'telega-mode-line-hook)
+(fc/map 'normal "tn" #'fc/next-wallpaper)
+#+end_src
+*** Setup
+#+begin_src emacs-lisp
+(use-package gcmh
+  :config
+  (gcmh-mode 1))
 
-    ;; Disable chat buffer auto-fill
-    (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
+(setq help-at-pt-display-when-idle t) 
+(setq initial-scratch-message ";; What's the QUESTION today?\n\n")
+#+end_src
+$SHELL has to be POSIX one
+#+begin_src emacs-lisp
+;; Instruct Emacs to use a posix shell under the hood...
+(setq shell-file-name (executable-find "bash"))
+
+;; But use your normal shell in terminal emulators
+(setq-default explicit-shell-file-name (executable-find "fish"))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package tracking)
+
+(use-package telega
+  :ensure nil
+  :bind
+  ("C-c t" . telega)
+  :commands telega
+  :config
+  (setq telega-use-tracking-for '(or unmuted mention)
+        telega-completing-read-function #'completing-read
+        telega-msg-rainbow-title t
+        telega-chat-fill-column 75)
+
+  ;; Show notifications in the mode line
+  (add-hook 'telega-load-hook #'telega-mode-line-hook)
+
+  ;; Disable chat buffer auto-fill
+  (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
 #+end_src
 
 ~epkgs~
@@ -472,10 +494,10 @@ reader
   :ensure nil
   :hook (reader-mode . (lambda () (hl-line-mode 0))))
 #+end_src
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
+~home-pkgs~
+#+begin_src scheme :noweb-ref home-pkgs
 
-  "emacs-reader"
+  emacs-reader
 
 #+end_src
 
@@ -569,50 +591,21 @@ email
 (setq browse-url-browser-function 'browse-url-generic
       browse-url-generic-program "librewolf")
 
+(provide 'zfc-config)
 #+end_src
-*** UI
-**** Basic
-the mode that I do not use
+** The =zfc-ui.el= section
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle lisp/zfc-ui.el
+:END:
 #+begin_src emacs-lisp
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-(tooltip-mode -1)
-#+end_src
-always help me please :)
-#+begin_src emacs-lisp
-(setq help-at-pt-display-when-idle t) 
-(setq initial-scratch-message ";; What's the QUESTION today?\n\n")
-#+end_src
-**** Alpha Backgroud
-tranparent background is beautiful... Right?
-#+begin_src emacs-lisp
-(defun fc/toggle-alpha-background ()
-  "toggle tranparency of background"
-  (interactive)
-  (let ((current (frame-parameter nil 'alpha-background)))
-    (set-frame-parameter nil 'alpha-background
-                         (if (or (null current) (>= current 98))
-                             90
-                           100))))
-(add-to-list 'default-frame-alist '(alpha-background . 90))
-
-(fc/map 'normal "ta" #'fc/toggle-alpha-background)
-#+end_src
-**** Page break lines
-#+begin_src emacs-lisp
+;; -*- lexical-binding: t; -*-
 (use-package page-break-lines)
 #+end_src
 
-**** Themes
 #+begin_src emacs-lisp
 (use-package modus-themes
   :init
   (modus-themes-include-derivatives-mode 1)
-  :bind
-  (("<f5>" . modus-themes-rotate)
-   ("C-<f5>" . modus-themes-select)
-   ("M-<f5>" . modus-themes-load-random))
   :config
   ;; Your customizations here:
   (setq modus-themes-to-toggle '(modus-operandi modus-vivendi)
@@ -635,12 +628,9 @@ tranparent background is beautiful... Right?
 (use-package ef-themes
   :init
   (ef-themes-take-over-modus-themes-mode 1))
-;; (use-package writeroom-mode)
-(use-package olivetti)
+
 (use-package logos
   :config
-
-
   ;; If you want to use outlines instead of page breaks (the ^L):
   (setq logos-outlines-are-pages t)
 
@@ -670,13 +660,20 @@ tranparent background is beautiful... Right?
 
 
   )
-(setq-default olivetti-body-width 0.5)
-(setq olivetti-minimum-body-width 80)
-(setq olivetti-recall-visual-line-mode-entry-state t)
-(fc/map 'normal "to" #'olivetti-mode)
+
+(use-package writeroom-mode
+  :config
+  (global-writeroom-mode 1))
+
+(use-package olivetti
+  :custom
+  (olivetti-minimum-body-width 80)
+  (olivetti-recall-visual-line-mode-entry-state t)
+  :config
+  (setq-default olivetti-body-width 0.5)
+  (fc/map 'normal "to" #'olivetti-mode))
 #+end_src
 
-**** Fonts
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
                     :family "Iosevka SS02"
@@ -697,7 +694,6 @@ tranparent background is beautiful... Right?
 (dolist (charset '(kana han cjk-misc symbol bopomofo))
   (set-fontset-font t charset (font-spec :family "LXGW WenKai")))
 #+end_src
-**** Todo
 #+begin_src emacs-lisp
 (use-package hl-todo
   :hook (prog-mode . hl-todo-mode))
@@ -706,7 +702,6 @@ tranparent background is beautiful... Right?
   (evil-global-set-key 'normal "[t" #'hl-todo-previous))
 #+end_src
 
-**** Modeline
 #+begin_src emacs-lisp
 (use-package doom-modeline
   :config
@@ -736,7 +731,6 @@ tranparent background is beautiful... Right?
   :init (doom-modeline-mode 1))
 #+end_src
 
-**** Pulsar
 #+begin_src emacs-lisp
 (use-package pulsar
   :config
@@ -749,7 +743,6 @@ tranparent background is beautiful... Right?
         pulsar-highlight-face 'pulsar-magenta)
   (pulsar-global-mode 1))
 #+end_src
-**** Buffet
 #+begin_src emacs-lisp
 (use-package theme-buffet
   :ensure (:wait t)
@@ -794,24 +787,12 @@ tranparent background is beautiful... Right?
   ;; Corrects (and improves) org-mode's native fontification.
  (doom-themes-org-config))
 #+end_src
-**** Rainbow-delimiters
 #+begin_src emacs-lisp
 (use-package rainbow-delimiters
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 #+end_src
 
-**** Wallpaper
-#+begin_src emacs-lisp
-(defun fc/next-wallpaper ()
-  "Call next wallpaper."
-  (interactive)
-  (shell-command "noctalia-shell ipc call wallpaper random eDP-1"))
-
-(after! evil
-  (evil-global-set-key 'normal (kbd "<leader>tn") #'fc/next-wallpaper))
-#+end_src
-**** Nyan
 #+begin_src emacs-lisp
 (use-package nyan-mode
   :after doom-modeline
@@ -822,7 +803,6 @@ tranparent background is beautiful... Right?
   :config
   (nyan-mode))
 #+end_src
-**** Which-key
 #+begin_src emacs-lisp
 (use-package which-key
   :custom
@@ -830,7 +810,6 @@ tranparent background is beautiful... Right?
   :init
   (which-key-mode))
 #+end_src
-**** Lin
 #+begin_src emacs-lisp
 (use-package lin
   :config
@@ -843,7 +822,6 @@ tranparent background is beautiful... Right?
   ;; `lin-face' with GNOME's accent colour:
   (lin-gnome-accent-color-mode 1))
 #+end_src
-**** Ediff
 #+begin_src emacs-lisp
 
 (setq ediff-split-window-function 'split-window-horizontally)
@@ -854,7 +832,6 @@ tranparent background is beautiful... Right?
 (setq ediff-show-clashes-only t)
 
 #+end_src
-**** cursorword
 #+begin_src emacs-lisp
 (use-package idle-highlight-mode
   :config (setq idle-highlight-idle-time 0.2)
@@ -863,6 +840,7 @@ tranparent background is beautiful... Right?
 *** Edit
 **** Wgrep
 #+begin_src emacs-lisp
+;; -*- lexical-binding: t; -*-
 (use-package wgrep)
 #+end_src
 **** Project
@@ -872,7 +850,8 @@ projectile
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :custom
-  (projectile-project-search-path '("~/Dev/"))
+  (projectile-project-search-path '("~/repo/"))
+  (projectile-auto-discover t)
   (projectile-ignored-project-function
    (lambda (project-root)
      (string-prefix-p "/tmp" project-root)))
@@ -1131,7 +1110,7 @@ perspective
 
 (use-package yasnippet-snippets)
 #+end_src
-****  Lsp
+**** Lsp
 ***** Eglot
 #+begin_src emacs-lisp
 (use-package eglot
@@ -1642,6 +1621,9 @@ prog-mode
 org-mode
 
 (epkgs "~epkgs~" n "#+begin_src scheme :noweb-ref epkgs" n r n "#+end_src" :post (org-edit-src-code))
+(hpkgs "~home-pkgs~" n "#+begin_src scheme :noweb-ref home-pkgs" n r n "#+end_src" :post (org-edit-src-code))
+(home-use "~home-use~" n "#+begin_src scheme :noweb-ref home-use" n "#:use-module " r n "#+end_src" :post (org-edit-src-code))
+(chl "~chl~" n "#+begin_src scheme :noweb-ref channels" n r n "#+end_src" :post (org-edit-src-code))
 (hmser "~hm-services~" n "#+begin_src scheme :noweb-ref hm-services" n r n "#+end_src" :post (org-edit-src-code))
 (sysser "~sys-services~" n "#+begin_src scheme :noweb-ref sys-services" n r n "#+end_src" :post (org-edit-src-code))
 
@@ -2297,7 +2279,7 @@ nov
 (add-hook 'scheme-mode-hook (lambda () (evil-local-set-key 'normal "K" #'geiser-doc-look-up-manual)))
 
 
-(provide 'config)
+(provide 'zfc-ui)
 #+end_src
 * Guix
 ** The =art.scm= section for Lenovo AHP9 system
@@ -2501,6 +2483,7 @@ here is =sops= secrets config for my dae config.
   #:use-module (gnu packages)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages fcitx5)
+  <<home-use>>
   #:use-module (gnu services)
   #:use-module (gnu home)
   #:use-module (gnu home services)
@@ -2524,14 +2507,15 @@ here is =sops= secrets config for my dae config.
   (home-environment
    (packages
     (append
-     (list emacs-reader)
+     (list
+	  <<home-pkgs>>
+	  )
      (specifications->packages (list
                                 ;; emacs
                                 <<epkgs>>
                                 "emacs-next-pgtk"
                                 ;; dev
                                 "rust"
-                                "blue"
 
 						        ;; fonts
 						        "font-google-noto-emoji"
@@ -2543,13 +2527,13 @@ here is =sops= secrets config for my dae config.
 						        "librewolf"
                                 "qutebrowser"
                                 "qtwayland"
-						        "google-chrome-stable"
-						        "noctalia-shell"
 						        "virt-manager"
                                 "wl-clipboard"
 						        
 						        ;; cli
                                 "brightnessctl"
+                                "telegram-desktop"
+                                "ddcutil"
                                 "github-cli"
                                 "tree-sitter-cli"
                                 "bluez"
@@ -2571,7 +2555,6 @@ here is =sops= secrets config for my dae config.
 						        "gcc-toolchain"
 						        "xwayland-satellite"
 						        "git"
-						        "mihomo"
 						        "file"
 						        "neovim"
 						        "neofetch"
@@ -2671,7 +2654,7 @@ patch to use flypy
        '(#:install-plan '(("." "share/rime-data" #:exclude ("README.md" "LICENSE")))))
       (home-page "https://github.com")
       (synopsis "Rime 雾凇拼音")
-      (description "Rime 配置：雾凇拼音 | 长期维护的简体词库 ")
+      (description "Rime 配置：雾凇拼音 | 长期维护的简体词库")
       (license license:gpl3+)))
 #+end_src
 *** The =base.scm= section about rustconfig
@@ -2746,4 +2729,116 @@ git config
           (key '("elfeed"))
           (file (local-file "../../secrets/long.yaml"))
           (permissions #o400))))))
+#+end_src
+** The =channels.scm= section
+*** The inbox =channels.scm=
+#+begin_src scheme :tangle channels.scm :noweb yes
+(list
+ <<channels>>
+      )
+#+end_src
+*** The mirror for =channels.scm=
+I just use sjtu mirror. 
+~chl~
+#+begin_src scheme :noweb-ref channels
+(channel
+ (name 'guix)
+ (url "https://mirror.sjtu.edu.cn/git/guix.git")
+ (branch "master")
+ (introduction
+  (make-channel-introduction
+   "9edb3f66fd807b096b48283debdcddccfea34bad"
+   (openpgp-fingerprint
+    "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
+#+end_src
+*** The nonguix for =channels.scm=
+~chl~
+#+begin_src scheme :noweb-ref channels
+(channel
+ (name 'nonguix)
+ (url "https://gitlab.com/nonguix/nonguix")
+ (branch "master")
+ (introduction
+  (make-channel-introduction
+   "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+   (openpgp-fingerprint
+	"2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+#+end_src
+~home-use~
+#+begin_src scheme :noweb-ref home-use
+#:use-module (nongnu packages chrome)
+#+end_src
+~home-pkgs~
+#+begin_src scheme :noweb-ref home-pkgs
+google-chrome-stable
+#+end_src
+*** The bluebox for =channels.scm=
+~chl~
+#+begin_src scheme :noweb-ref channels
+(channel
+ (name 'bluebox)
+ (branch "main")
+ (url "https://codeberg.org/lapislazuli/bluebox")
+ (introduction
+  (make-channel-introduction
+   "63350484aaacc362aea28fb14236019fced4050f"
+   (openpgp-fingerprint
+    "5132 3571 CEED 988F 52FC 467C 6F98 DBF3 EA7F 4B37"))))
+#+end_src
+~home-use~
+#+begin_src scheme :noweb-ref home-use
+#:use-module (bluebox packages blue)
+#+end_src
+~home-pkgs~
+#+begin_src scheme :noweb-ref home-pkgs
+blue
+#+end_src
+*** The rosenthal for =channels.scm=
+~chl~
+#+begin_src scheme :noweb-ref channels
+(channel
+ (name 'rosenthal)
+ (url "https://codeberg.org/hako/rosenthal.git")
+ (branch "trunk")
+ (introduction
+  (make-channel-introduction
+   "7677db76330121a901604dfbad19077893865f35"
+   (openpgp-fingerprint
+	"13E7 6CD6 E649 C28C 3385  4DF5 5E5A A665 6149 17F7"))))
+#+end_src
+~home-use~
+#+begin_src scheme :noweb-ref home-use
+#:use-module (rosenthal packages wm)
+#:use-module (rosenthal packages networking)
+#+end_src
+~home-pkgs~
+#+begin_src scheme :noweb-ref home-pkgs
+noctalia-shell
+mihomo
+#+end_src
+*** The sops for =channels.scm=
+~chl~
+#+begin_src scheme :noweb-ref channels
+(channel
+ (name 'sops-guix)
+ (url "https://github.com/fishinthecalculator/sops-guix.git")
+ (branch "main")
+ (introduction
+  (make-channel-introduction
+   "0bbaf1fdd25266c7df790f65640aaa01e6d2dbc9"
+   (openpgp-fingerprint
+    "8D10 60B9 6BB8 292E 829B  7249 AED4 1CC1 93B7 01E2"))))
+#+end_src
+*** The guixcn for =channels.scm=
+~chl~
+#+begin_src scheme :noweb-ref channels
+(channel
+ (name 'guixcn)
+ (url "https://codeberg.org/guixcn/guix-channel.git")
+ (branch "master")
+ (introduction
+  (make-channel-introduction
+   "993d200265630e9c408028a022f32f34acacdf29"
+   (openpgp-fingerprint
+	"7EBE A494 60CE 5E2C 0875  7FDB 3B5A A993 E1A2 DFF0"))))
 #+end_src

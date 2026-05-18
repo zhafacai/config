@@ -17,7 +17,9 @@
   Update guix channels.
   "))
   ($ "guix" "pull" "-C" "channels.scm")
-  ($ "guix" "describe" "-f" "channels" ">" "channels.lock"))
+  (with-output-to-file "channels.lock"
+	(lambda ()
+	  ($ "guix" "describe" "-f" "channels"))))
 
 (define-command (upgrade-guix-command args)
   ((invoke "upgrade-guix")
@@ -26,7 +28,7 @@
    (help "
   Upgrade guix system.
   "))
-  ($ "sudo" "guix" "time-machine" "-C" "channels.lock" "--"
+  ($ "sudo" "-E" "guix" "time-machine" "-C" "channels.lock" "--"
      "system" "reconfigure" "mods/zfc/system/art.scm" "-L" "mods"))
 
 (define-command (update-nix-command args)

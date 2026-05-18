@@ -2,6 +2,10 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages fcitx5)
+  #:use-module (nongnu packages chrome)
+  #:use-module (bluebox packages blue)
+  #:use-module (rosenthal packages wm)
+  #:use-module (rosenthal packages networking)
   #:use-module (gnu services)
   #:use-module (gnu home)
   #:use-module (gnu home services)
@@ -25,14 +29,19 @@
   (home-environment
    (packages
     (append
-     (list emacs-reader)
+     (list
+	  
+	  emacs-reader
+	  
+	  google-chrome-stable
+	  blue
+	  noctalia-shell
+	  mihomo
+	  )
      (specifications->packages (list
                                 ;; emacs
                                 
                                 "emacs-telega"
-                                
-                                
-                                "emacs-reader"
                                 
                                 "emacs-rime"
                                 
@@ -47,7 +56,6 @@
                                 "emacs-next-pgtk"
                                 ;; dev
                                 "rust"
-                                "blue"
 
 						        ;; fonts
 						        "font-google-noto-emoji"
@@ -59,13 +67,13 @@
 						        "librewolf"
                                 "qutebrowser"
                                 "qtwayland"
-						        "google-chrome-stable"
-						        "noctalia-shell"
 						        "virt-manager"
                                 "wl-clipboard"
 						        
 						        ;; cli
                                 "brightnessctl"
+                                "telegram-desktop"
+                                "ddcutil"
                                 "github-cli"
                                 "tree-sitter-cli"
                                 "bluez"
@@ -87,7 +95,6 @@
 						        "gcc-toolchain"
 						        "xwayland-satellite"
 						        "git"
-						        "mihomo"
 						        "file"
 						        "neovim"
 						        "neofetch"

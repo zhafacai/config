@@ -21,5 +21,5 @@
      '(#:install-plan '(("." "share/rime-data" #:exclude ("README.md" "LICENSE")))))
     (home-page "https://github.com")
     (synopsis "Rime 雾凇拼音")
-    (description "Rime 配置：雾凇拼音 | 长期维护的简体词库 ")
+    (description "Rime 配置：雾凇拼音 | 长期维护的简体词库")
     (license license:gpl3+)))

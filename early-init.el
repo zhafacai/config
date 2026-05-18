@@ -1,6 +1,6 @@
 (setq custom-file (make-temp-file "emacs-custom-"))
 
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
+;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 
 (setq vc-handled-backends '(Git))
