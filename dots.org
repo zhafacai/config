@@ -11,21 +11,19 @@ while the server I prefer to use is nixos which has more recent and
 more packages.
 * Emacs
 ** The =early-init.el= section
-load custom.el
-#+begin_src emacs-lisp :tangle early-init.el
-;; -*- lexical-binding: t; -*-
-#+end_src
-
-#+begin_src emacs-lisp :tangle early-init.el
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle early-init.el
+:END:
+#+begin_src emacs-lisp
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file nil t))
 #+end_src
 
-#+begin_src emacs-lisp :tangle early-init.el
+#+begin_src emacs-lisp
 ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-
+(add-to-list 'default-frame-alist '(alpha-background . 90))
 (setq vc-handled-backends '(Git))
 
 (setq gc-cons-threshold most-positive-fixnum
@@ -59,12 +57,15 @@ load custom.el
 (setq package-enable-at-startup nil)
 #+end_src
 ** The =init.el= section
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle init.el
+:END:
 *** The =init.el= section about setup elpaca
-#+begin_src emacs-lisp :tangle init.el
-;;; -*- lexical-binding: t; -*-
+#+begin_src emacs-lisp
+(set-default-toplevel-value 'lexical-binding t)
 #+end_src
 
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp
 ;; setup elpaca
 (defvar elpaca-installer-version 0.12)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
@@ -110,7 +111,8 @@ load custom.el
   (elpaca-use-package-mode))
 #+end_src
 *** The =init.el= section about internal pacakges
-#+begin_src emacs-lisp :tangle init.el
+**** The internal packages
+#+begin_src emacs-lisp
 (use-package emacs
   :ensure nil
   :bind                                              ; NOTE: M-x describe-personal-bindings (for all use-packge binds)
@@ -177,25 +179,26 @@ load custom.el
   :custom
   (isearch-lazy-count t))
 #+end_src
-load zfc packages
-#+begin_src emacs-lisp :tangle init.el
+**** The zfc packages
+#+begin_src emacs-lisp
 
 ;; Add the folder to the search path
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (setq use-package-always-ensure t)
 
 (require 'zfc-macro)
-(require 'zfc-evil)
-(require 'zfc-config)
 (require 'zfc-ui)
+(require 'zfc-base)
+(require 'zfc-evil)
+(require 'zfc-dev)
+(require 'zfc-org)
+(require 'zfc-tool)
+(require 'zfc-lang)
 #+end_src
 ** The =zfc-macro.el= section
 :PROPERTIES:
 :header-args:emacs-lisp: :tangle lisp/zfc-macro.el
 :END:
-#+begin_src emacs-lisp
-;; -*- lexical-binding: t; -*-
-#+end_src
 
 #+begin_src emacs-lisp
 (defmacro after! (features &rest body)
@@ -214,397 +217,16 @@ load zfc packages
                     ,form)))
 
     form))
-
-
+#+end_src
+*** The =zfc-macro.el= section for provide
+#+begin_src emacs-lisp
 (provide 'zfc-macro)
-#+end_src
-
-** The =zfc-evil.el= section
-:PROPERTIES:
-:header-args:emacs-lisp: :tangle lisp/zfc-evil.el
-:END:
-#+begin_src emacs-lisp
-;; -*- lexical-binding: t; -*-
-#+end_src
-*** The =zfc-evil.el= section about general and evil
-set leader and general
-#+begin_src emacs-lisp
-(defvar fc/leader-key "SPC"
-  "my leader key.")
-
-(defvar fc/localleader-key ","
-  "my local leader key.")
-
-(use-package general
-  :ensure (:wait t)
-  :config
-  (general-create-definer fc/map
-    :prefix fc/leader-key))
-
-(use-package evil
-  :ensure (:wait t)
-  :custom
-  (evil-want-keybinding nil)
-  :init
-  ;; (setq evil-disable-insert-state-bindings t)
-  (setq evil-respect-visual-line-mode t)
-  (setq evil-want-Y-yank-to-eol t)
-  ;; (setq evil-want-C-w-delete t)
-  ;; (setq evil-want-C-w-in-emacs-state t)
-  (setq evil-undo-system 'undo-fu)
-  (global-visual-line-mode 1)
-  :config
-  (evil-set-leader '(normal visual) (kbd fc/leader-key))
-  (evil-set-leader 'normal (kbd fc/localleader-key) t)
-
-  ;; Conflicts with evil-open-below
-  (put 'other-window 'repeat-map nil)
-
-  (general-define-key :keymaps 'normal "C-e" #'end-of-line)
-
-  (evil-mode 1))
-#+end_src
-setup evil
-*** The =zfc-evil.el= section about evil plugins
-evil collection for bunch of maps in different mode
-#+begin_src emacs-lisp
-(use-package evil-collection
-  :after evil
-  :custom
-  (evil-collection-key-blacklist '("SPC"))
-  :config
-  (delq 'lispy evil-collection-mode-list)
-  (evil-collection-init))
-
-(use-package evil-org
-  :after org
-  :hook (org-mode . (lambda () evil-org-mode))
-  :config
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys))
-#+end_src
-envy neovim flash.nvim
-#+begin_src emacs-lisp
-(use-package flash
-  :commands (flash-jump flash-jump-continue
-			            flash-treesitter)
-  :custom
-  (flash-multi-window t)
-  ;; (flash-autojump t)
-  (flash-rainbow t)
-  :init
-  ;; Evil integration (simple setup)
-  (after! evil
-    (require 'flash-evil)
-    (flash-evil-setup t)
-    (setq flash-char-jump-labels t))
-
-  (evil-define-key 'normal 'global (kbd "C-s") #'flash-evil-jump)
-  (evil-define-key 'normal 'global (kbd "s") #'flash-evil-jump)
-  (evil-define-key 'visual 'global (kbd "C-s") #'flash-evil-jump)
-
-  :config
-  ;; Search integration (labels during C-s, /, ?)
-  (require 'flash-isearch)
-  (flash-isearch-mode 1))
-#+end_src
-
-surround
-#+begin_src emacs-lisp
-(use-package evil-surround
-  :config
-  (global-evil-surround-mode 1))
-(use-package evil-embrace
-  :config
-  (evil-embrace-enable-evil-surround-integration))
-#+end_src
-
-escape
-#+begin_src emacs-lisp
-(use-package evil-escape
-  :custom
-  (evil-escape-key-sequence "jk")
-  (evil-escape-excluded-major-modes '(magit-status-mode))
-  :config
-  (evil-escape-mode))
-#+end_src
-undo
-#+begin_src emacs-lisp
-(use-package undo-fu)
-#+end_src
-exchange
-#+begin_src emacs-lisp
-(use-package evil-exchange
-  :config
-  (evil-exchange-install))
-#+end_src
-multicursors
-#+begin_src emacs-lisp
-(use-package evil-multiedit
-  :config
-  (evil-multiedit-default-keybinds))
-#+end_src
-indent
-#+begin_src emacs-lisp
-(use-package evil-indent-plus
-  :config
-  (define-key evil-inner-text-objects-map "i" 'evil-indent-plus-i-indent)
-  (define-key evil-outer-text-objects-map "i" 'evil-indent-plus-a-indent)
-  (define-key evil-inner-text-objects-map "k" 'evil-indent-plus-i-indent-up)
-  (define-key evil-outer-text-objects-map "k" 'evil-indent-plus-a-indent-up)
-  (define-key evil-inner-text-objects-map "j" 'evil-indent-plus-i-indent-up-down)
-  (define-key evil-outer-text-objects-map "j" 'evil-indent-plus-a-indent-up-down))
-#+end_src
-align
-#+begin_src emacs-lisp
-(use-package evil-lion
-  :config
-  (evil-lion-mode))
-#+end_src
-comment
-#+begin_src emacs-lisp
-(use-package evil-nerd-commenter
-  :config
-  (evil-define-key '(normal visual) 'global "gc" #'evilnc-comment-operator)
-  (evilnc-default-hotkeys))
-#+end_src
-numbers
-#+begin_src emacs-lisp
-(use-package evil-numbers
-  :config
-  (define-key evil-normal-state-map (kbd "C-c =") 'evil-numbers/inc-at-pt)
-  (define-key evil-normal-state-map (kbd "C-c -") 'evil-numbers/dec-at-pt))
-#+end_src
-exato
-#+begin_src emacs-lisp
-(use-package exato)
-#+end_src
-linediff
-#+begin_src emacs-lisp
-(use-package evil-quick-diff
-  :ensure (:host github :repo "rgrinberg/evil-quick-diff")
-  :init
-  ;; (setq evil-quick-diff-key (kbd "zx"))
-  (evil-quick-diff-install))
-#+end_src
-#+begin_src emacs-lisp
-(use-package evil-goggles
-  :config
-  (evil-goggles-mode)
-
-  ;; optionally use diff-mode's faces; as a result, deleted text
-  ;; will be highlighed with `diff-removed` face which is typically
-  ;; some red color (as defined by the color theme)
-  ;; other faces such as `diff-added` will be used for other actions
-  (evil-goggles-use-diff-faces))
-#+end_src
-
-match number in modeline
-#+begin_src emacs-lisp
-(use-package anzu
-  :config
-  (global-anzu-mode +1))
-
-(use-package evil-anzu)
-#+end_src
-provide module
-
-#+begin_src emacs-lisp
-(provide 'zfc-evil)
-#+end_src
-** The =zfc-config.el= section
-:PROPERTIES:
-:header-args:emacs-lisp: :tangle lisp/zfc-config.el
-:END:
-*** Alpha Backgroud
-tranparent background is beautiful... Right?
-#+begin_src emacs-lisp
-;; -*- lexical-binding: t; -*-
-#+end_src
-
-#+begin_src emacs-lisp
-
-(defun fc/toggle-alpha-background ()
-  "toggle tranparency of background"
-  (interactive)
-  (let ((current (frame-parameter nil 'alpha-background)))
-    (set-frame-parameter nil 'alpha-background
-                         (if (or (null current) (>= current 98))
-                             90
-                           100))))
-(add-to-list 'default-frame-alist '(alpha-background . 90))
-
-(fc/map 'normal "ta" #'fc/toggle-alpha-background)
-#+end_src
-*** Wallpaper
-#+begin_src emacs-lisp
-(defun fc/next-wallpaper ()
-  "Call next wallpaper."
-  (interactive)
-  (shell-command "noctalia-shell ipc call wallpaper random"))
-
-(fc/map 'normal "tn" #'fc/next-wallpaper)
-#+end_src
-*** Setup
-#+begin_src emacs-lisp
-(use-package gcmh
-  :config
-  (gcmh-mode 1))
-
-(setq help-at-pt-display-when-idle t) 
-(setq initial-scratch-message ";; What's the QUESTION today?\n\n")
-#+end_src
-$SHELL has to be POSIX one
-#+begin_src emacs-lisp
-;; Instruct Emacs to use a posix shell under the hood...
-(setq shell-file-name (executable-find "bash"))
-
-;; But use your normal shell in terminal emulators
-(setq-default explicit-shell-file-name (executable-find "fish"))
-#+end_src
-
-#+begin_src emacs-lisp
-(use-package tracking)
-
-(use-package telega
-  :ensure nil
-  :bind
-  ("C-c t" . telega)
-  :commands telega
-  :config
-  (setq telega-use-tracking-for '(or unmuted mention)
-        telega-completing-read-function #'completing-read
-        telega-msg-rainbow-title t
-        telega-chat-fill-column 75)
-
-  ;; Show notifications in the mode line
-  (add-hook 'telega-load-hook #'telega-mode-line-hook)
-
-  ;; Disable chat buffer auto-fill
-  (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
-#+end_src
-
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
-
-  "emacs-telega"
-
-#+end_src
-
-reader
-#+begin_src emacs-lisp
-(use-package reader
-  :ensure nil
-  :hook (reader-mode . (lambda () (hl-line-mode 0))))
-#+end_src
-~home-pkgs~
-#+begin_src scheme :noweb-ref home-pkgs
-
-  emacs-reader
-
-#+end_src
-
-rime
-#+begin_src emacs-lisp
-(use-package rime
-  :ensure nil
-  :custom
-  (default-input-method "rime")
-  :config
-  (setq rime-user-data-dir "~/.local/share/fcitx5/rime/"))
-#+end_src
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
-"emacs-rime"
-#+end_src
-
-Guix
-#+begin_src emacs-lisp
-(use-package guix
-  :ensure nil
-  :bind
-  (:map evil-normal-state-map
-        ("SPC g i" . guix)))
-#+end_src
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
-
-"emacs-guix"
-
-#+end_src
-
-email
-#+begin_src emacs-lisp
-(setq auth-sources '("~/.authinfo.gpg")
-      user-full-name "zhafacai"
-      user-mail-address "zhafacai@gmail.com")
-
-(setq smtpmail-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-service 587
-      smtpmail-stream-type 'starttls)
-
-(setq message-send-mail-function 'smtpmail-send-it)
-#+end_src
-=epkgs= for email
-#+begin_src scheme :noweb-ref epkgs
-"notmuch"
-"emacs-notmuch"
-"isync"
-"msmtp"
-#+end_src
-
-#+begin_src emacs-lisp
-(use-package notmuch
-  :ensure nil
-  :bind
-  ("C-c e" . notmuch)
-  :config
-  (setq notmuch-identities '("zfc <zhafacai@gmail.com>"))
-  (setq notmuch-fcc-dirs
-        '(("zhafacai@gmail.com" . "gmail/Sent")))
-  (setq notmuch-show-logo nil
-        notmuch-column-control 1.0
-        notmuch-hello-auto-refresh t
-        notmuch-hello-recent-searches-max 20
-        notmuch-hello-thousands-separator ""
-        notmuch-hello-sections '(notmuch-hello-insert-saved-searches)
-        notmuch-show-all-tags-list t)
-
-  (setq notmuch-search-oldest-first nil)
-
-  (setq notmuch-saved-searches
-        `(( :name "📥 inbox"
-            :query "tag:inbox"
-            :sort-order newest-first
-            :key ,(kbd "i"))
-          ( :name "💬 all unread (inbox)"
-            :query "tag:unread and tag:inbox"
-            :sort-order newest-first
-            :key ,(kbd "u"))
-          ( :name "🔮 unread crypto"
-            :query "tag:unread and tag:crypto"
-            :sort-order newest-first
-            :key ,(kbd "c"))
-          ( :name "🌞 unread life"
-            :query "tag:unread and tag:life"
-            :sort-order newest-first
-            :key ,(kbd "l")))))
-
-
-(setq browse-url-browser-function 'browse-url-generic
-      browse-url-generic-program "librewolf")
-
-(provide 'zfc-config)
 #+end_src
 ** The =zfc-ui.el= section
 :PROPERTIES:
 :header-args:emacs-lisp: :tangle lisp/zfc-ui.el
 :END:
-#+begin_src emacs-lisp
-;; -*- lexical-binding: t; -*-
-(use-package page-break-lines)
-#+end_src
-
+*** The =zfc-ui.el= section about themes
 #+begin_src emacs-lisp
 (use-package modus-themes
   :init
@@ -799,55 +421,38 @@ email
   :config (setq idle-highlight-idle-time 0.2)
   :hook (eglot--managed-mode . idle-highlight-mode))
 #+end_src
-*** Edit
-**** Wgrep
+*** The =zfc-ui.el= section for provide
 #+begin_src emacs-lisp
-;; -*- lexical-binding: t; -*-
+(provide 'zfc-ui)
+#+end_src
+** The =zfc-base.el= section
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle lisp/zfc-base.el
+:END:
+basic packages which extend core features in emacs
+*** The =zfc-base.el= section about extending builin features
+#+begin_src emacs-lisp
+(use-package gcmh
+  :config
+  (gcmh-mode 1))
+
+(setq help-at-pt-display-when-idle t) 
+(setq initial-scratch-message ";; What's the QUESTION today?\n\n")
+#+end_src
+$SHELL has to be POSIX one
+#+begin_src emacs-lisp
+;; Instruct Emacs to use a posix shell under the hood...
+(setq shell-file-name (executable-find "bash"))
+
+;; But use your normal shell in terminal emulators
+(setq-default explicit-shell-file-name (executable-find "fish"))
 #+end_src
 
 #+begin_src emacs-lisp
 
 (use-package wgrep)
 #+end_src
-**** Project
-projectile
-#+begin_src emacs-lisp
-(use-package projectile
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :custom
-  (projectile-project-search-path '("~/repo/"))
-  (projectile-auto-discover t)
-  (projectile-ignored-project-function
-   (lambda (project-root)
-     (string-prefix-p "/tmp" project-root)))
-  :config
-  (projectile-mode +1))
-
-#+end_src
-perspective
-#+begin_src emacs-lisp
-(use-package perspective
-  :demand t
-  :bind
-  ("C-x C-b" . persp-list-buffers)
-  :custom
-  (persp-mode-prefix-key (kbd "C-c w")) 
-  :config
-  (after! consult 
-    (consult-customize consult-source-buffer :hidden t :default nil)
-    (add-to-list 'consult-buffer-sources persp-consult-source))
-  :init
-  (persp-mode))
-#+end_src
-**** SmartParens
-#+begin_src emacs-lisp
-(use-package smartparens
-  :hook (prog-mode text-mode markdown-mode)
-  :config
-  (require 'smartparens-config))
-#+end_src
-**** Dired
+dired
 #+begin_src emacs-lisp
 (use-package nerd-icons-dired
   :hook
@@ -912,416 +517,44 @@ perspective
 ;;    ("M-b" . dirvish-history-go-backward)
 ;;    ("M-e" . dirvish-emerge-menu)))
 #+end_src
-**** Format
+projectile
 #+begin_src emacs-lisp
-(use-package apheleia
-  :config
-  (add-to-list 'apheleia-mode-alist '(scheme-mode . lisp-indent))
-  (apheleia-global-mode +1))
-#+end_src
-**** Completion
-***** Corfu
-#+begin_src emacs-lisp
-(use-package corfu
-  ;; Optional customizations
+(use-package projectile
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
   :custom
-  (corfu-popupinfo-delay '(0.5 . 0.1))
-  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
-  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
-  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
-  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
-  ;; (corfu-on-exact-match 'insert) ;; Configure handling of exact matches
+  (projectile-project-search-path '("~/repo/"))
+  (projectile-auto-discover t)
+  (projectile-ignored-project-function
+   (lambda (project-root)
+     (string-prefix-p "/tmp" project-root)))
+  :config
+  (projectile-mode +1))
 
-  ;; Enable Corfu only for certain modes. See also `global-corfu-modes'.
-  ;; :hook ((prog-mode . corfu-mode)
-  ;;        (shell-mode . corfu-mode)
-  ;;        (eshell-mode . corfu-mode))
+#+end_src
+perspective
+#+begin_src emacs-lisp
+(use-package perspective
+  :demand t
   :bind
-  (:map corfu-map
-        ("TAB" . corfu-insert)
-        ([remap indent-for-tab-command] . corfu-insert)
-        ([tab] . corfu-insert))
-
+  ("C-x C-b" . persp-list-buffers)
+  :custom
+  (persp-mode-prefix-key (kbd "C-c w")) 
+  :config
+  (after! consult 
+    (consult-customize consult-source-buffer :hidden t :default nil)
+    (add-to-list 'consult-buffer-sources persp-consult-source))
   :init
-
-  ;; Recommended: Enable Corfu globally.  Recommended since many modes provide
-  ;; Capfs and Dabbrev can be used globally (M-/).  See also the customization
-  ;; variable `global-corfu-modes' to exclude certain modes.
-  (global-corfu-mode)
-
-  ;; Enable optional extension modes:
-  ;; (corfu-history-mode)
-  (corfu-popupinfo-mode))
-(with-eval-after-load 'yasnippet
-  (keymap-unset yas-minor-mode-map "TAB")
-  (keymap-unset yas-minor-mode-map "<tab>"))
-(defun my/tab ()
-  (interactive)
-  (cond
-   ;; corfu popup
-   ((and (bound-and-true-p corfu-mode)
-         (boundp 'corfu--candidates)
-         corfu--candidates)
-    (corfu-insert))
-
-   ;; snippet
-   ((and (bound-and-true-p yas-minor-mode)
-         (yas-expand)))
-
-   ;; default
-   (t
-    (indent-for-tab-command))))
-(global-set-key (kbd "TAB") #'my/tab)
-;; A few more useful configurations...
-(use-package emacs
-  :ensure nil
-  :custom
-  ;; TAB cycle if there are only few candidates
-  ;; (completion-cycle-threshold 3)
-
-  ;; Enable indentation+completion using the TAB key.
-  ;; `completion-at-point' is often bound to M-TAB.
-  (tab-always-indent 'complete)
-
-  ;; Emacs 30 and newer: Disable Ispell completion function.
-  ;; Try `cape-dict' as an alternative.
-  (text-mode-ispell-word-completion nil)
-
-  ;; Hide commands in M-x which do not apply to the current mode.  Corfu
-  ;; commands are hidden, since they are not used via M-x. This setting is
-  ;; useful beyond Corfu.
-  (read-extended-command-predicate #'command-completion-default-include-p))
-(use-package nerd-icons-corfu
+  (persp-mode))
+#+end_src
+#+begin_src emacs-lisp
+(use-package smartparens
+  :hook (prog-mode text-mode markdown-mode)
   :config
-  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+  (require 'smartparens-config))
 #+end_src
-****** Cape
-#+begin_src emacs-lisp
-(use-package cape
-  ;; Bind prefix keymap providing all Cape commands under a mnemonic key.
-  ;; Press C-c p ? to for help.
-  :bind ("C-c c" . cape-prefix-map) ;; Alternative key: M-<tab>, M-p, M-+
-  ;; Alternatively bind Cape commands individually.
-  ;; :bind (("C-c p d" . cape-dabbrev)
-  ;;        ("C-c p h" . cape-history)
-  ;;        ("C-c p f" . cape-file)
-  ;;        ...)
-  :init
-  ;; Add to the global default value of `completion-at-point-functions' which is
-  ;; used by `completion-at-point'.  The order of the functions matters, the
-  ;; first function returning a result wins.  Note that the list of buffer-local
-  ;; completion functions takes precedence over the global list.
-  (add-hook 'completion-at-point-functions #'cape-dabbrev)
-  (add-hook 'completion-at-point-functions #'cape-file)
-  (add-hook 'completion-at-point-functions #'cape-elisp-block)
-  ;; (add-hook 'completion-at-point-functions #'cape-history)
-  ;; ...
-  )
-#+end_src
-***** Tempel
-#+begin_src emacs-lisp
-(use-package tempel
-  :bind (("M-+" . tempel-complete) ;; Alternative tempel-expand
-         ("M-*" . tempel-insert))
+consult
 
-  :init
-
-  ;; Setup completion at point
-  (defun tempel-setup-capf ()
-    ;; Add the Tempel Capf to `completion-at-point-functions'.  `tempel-expand'
-    ;; only triggers on exact matches. We add `tempel-expand' *before* the main
-    ;; programming mode Capf, such that it will be tried first.
-    (setq-local completion-at-point-functions
-                (cons #'tempel-expand completion-at-point-functions))
-
-    ;; Alternatively use `tempel-complete' if you want to see all matches.  Use
-    ;; a trigger prefix character in order to prevent Tempel from triggering
-    ;; unexpectly.
-    ;; (setq-local corfu-auto-trigger "/"
-    ;;             completion-at-point-functions
-    ;;             (cons (cape-capf-trigger #'tempel-complete ?/)
-    ;;                   completion-at-point-functions))
-    )
-
-  (add-hook 'conf-mode-hook 'tempel-setup-capf)
-  (add-hook 'prog-mode-hook 'tempel-setup-capf)
-  (add-hook 'text-mode-hook 'tempel-setup-capf)
-
-  ;; Optionally make the Tempel templates available to Abbrev,
-  ;; either locally or globally. `expand-abbrev' is bound to C-x '.
-  ;; (add-hook 'prog-mode-hook #'tempel-abbrev-mode)
-  ;; (global-tempel-abbrev-mode)
-  )
-
-(use-package tempel-collection)
-#+end_src
-***** Yasnippet
-#+begin_src emacs-lisp
-(use-package yasnippet
-  :config
-  (yas-global-mode 1))
-
-(use-package yasnippet-snippets)
-#+end_src
-**** Lsp
-***** Eglot
-#+begin_src emacs-lisp
-(use-package eglot
-  :ensure nil              ;; install from ELPA if missing (usually not needed in Emacs ≥29)
-  :defer t                ;; load only when needed
-
-  ;; 1. Automatically start Eglot in these major modes
-  ;;    (add more modes as you use more languages)
-  :hook
-  ((python-ts-mode       . eglot-ensure)   ;; python-ts-mode or python-mode
-   (rustic-mode           . eglot-ensure)
-   (typescript-ts-mode     . eglot-ensure)
-   (tsx-ts-mode     . eglot-ensure)
-   (nix-ts-mode     . eglot-ensure)
-   (js-ts-mode             . eglot-ensure)
-   (astro-ts-mode             . eglot-ensure)
-   (c-mode         . eglot-ensure)
-   (bash-ts-mode           . eglot-ensure))
-
-  ;; 2. Good defaults / tweaks
-  :custom
-  (eglot-autoshutdown         t)    ;; kill server when last buffer is closed
-  (eglot-send-changes-idle-time 0.5) ;; send changes faster (default is 0.5 anyway)
-
-  ;; (eglot-ignored-server-capabilities
-  ;;  '(:documentHighlightProvider      ;; disable if too slow/noisy
-  ;;    :foldingRangeProvider
-  ;;    ))            ;; many people disable inlay hints or use a dedicated package
-
-  ;; 3. Optional: better event logging (useful when debugging)
-  ;; :custom (eglot-events-buffer-size 2000000)  ;; bigger log buffer
-
-  :config
-  ;; (add-to-list 'eglot-server-programs
-  ;;              '(astro-ts-mode . ("astro-ls" "--stdio"
-  ;;                                 :initializationOptions
-  ;;                                 (:typescript (:tsdk "./node_modules/typescript/lib")))))
-
-  (add-to-list 'eglot-server-programs
-               '((python-mode python-ts-mode) . ("ty" "server")))
-
-  (add-to-list 'eglot-server-programs
-               '(((typescript-ts-mode :language-id "typescript")
-                  (tsx-ts-mode :language-id "typescriptreact")
-                  (typescript-mode :language-id "typescript")
-                  (js-mode :language-id "javascript")
-                  (js-ts-mode :language-id "javascript"))
-                 . ("tsgo" "--lsp" "--stdio")))
-
-  (add-to-list 'eglot-server-programs
-               '(tsx-ts-mode . ("tailwindcss-language-server" "--stdio")))
-  ;; (general-define-key
-  ;;  :states 'normal
-  ;;  :keymaps 'eglot-mode-map
-  ;;  "grn" 'eglot-rename
-  ;;  "gra" 'eglot-code-actions)
-  )
-
-
-
-
-(use-package consult-eglot
-  :after eglot
-  :config
-  (evil-define-key 'normal eglot-mode-map
-    "gO" #'consult-eglot-symbols))
-#+end_src
-#+begin_src emacs-lisp
-(use-package eldoc
-  :ensure nil
-  :custom
-  (eldoc-echo-area-use-multiline-p nil)      ; Only show one line in minibuffer
-  (eldoc-echo-area-prefer-doc-buffer t)      ; Put the long stuff in the *eldoc* buffer
-  )
-
-;; (use-package eldoc-box
-;;   :ensure nil
-;;   :vc (:url "https://github.com/casouri/eldoc-box")
-;;   :after eglot
-;;   :config
-;;   (evil-define-key 'normal eglot-mode-map "K" #'eldoc-box-help-at-point))
-
-(use-package eldoc-mouse
-  :config
-  (evil-define-key 'normal eglot-mode-map "K" #'eldoc-mouse-pop-doc-at-cursor))
-
-#+end_src
-#+begin_src emacs-lisp
-(use-package flymake
-  :ensure nil
-  :custom
-  (flymake-show-diagnostics-at-end-of-line t)
-  :config
-  (evil-global-set-key 'normal (kbd "]d") 'flymake-goto-next-error)
-  (evil-global-set-key 'normal (kbd "[d") 'flymake-goto-prev-error))
-#+end_src
-#+begin_src emacs-lisp
-(use-package xref
-  :ensure nil
-  :bind (:map evil-motion-state-map
-              ("gd" . xref-find-definitions)))
-#+end_src
-**** Treesitter
-#+begin_src emacs-lisp
-(use-package treesit
-  :ensure nil)
-
-(use-package treesit-auto
-  :custom
-  (treesit-auto-install 'prompt)
-  :config
-  ;; (after! org
-  ;;   (dolist (mode
-  ;;            '(("cmake"      . cmake-ts)
-  ;;              ("dockerfile" . dockerfile-ts)
-  ;;              ("go"         . go-ts)
-  ;;              ("lua"        . lua-ts)
-  ;;              ("rust"       . rust-ts)
-  ;;              ("typescript" . typescript-ts)
-  ;;              ("yaml"       . yaml-ts)))
-  ;;     (add-to-list 'org-src-lang-modes mode)))
-  
-  (treesit-auto-add-to-auto-mode-alist 'all)
-
-  ;; FIXME cannot make this work
-  (add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
-                                          :lang 'qmljs
-                                          :ts-mode 'qml-ts-mode
-                                          :remap 'qml-mode
-                                          :url "https://github.com/yuja/tree-sitter-qmljs"
-                                          :ext "\\.qml\\'"))
-  (add-to-list 'treesit-auto-langs 'qmljs)
-  (global-treesit-auto-mode))
-
-(use-package qml-ts-mode
-  :ensure (:host github :repo "xhcoding/qml-ts-mode"))
-
-(use-package evil-textobj-tree-sitter
-  :config
-  (evil-define-motion evil-motion-to-next-closing-quote (count)
-    "Move to the next closing quote ', \", or `."
-    :type exclusive
-    (let ((found (save-excursion (search-forward-regexp "['\"`]" nil t))))
-      (if found
-          (goto-char (1- found))
-        (error "No closing quote found"))))
-
-  (define-key evil-operator-state-map "Q" 'evil-motion-to-next-closing-quote)
-  (define-key evil-visual-state-map "Q" 'evil-motion-to-next-closing-quote)
-  (evil-define-motion evil-motion-to-next-closing-bracket (count)
-    "Move to the next closing bracket ), ], or }."
-    :type exclusive
-    (let ((found (save-excursion (search-forward-regexp "[]})]" nil t))))
-      (if found
-          (goto-char (1- found))
-        (error "No closing bracket found"))))
-
-  (define-key evil-operator-state-map "C" 'evil-motion-to-next-closing-bracket)
-  (define-key evil-visual-state-map "C" 'evil-motion-to-next-closing-bracket)
-
-  (evil-define-text-object evil-any-quote-inner (count &optional beg end type)
-    (let ((range (evil-select-quote ?\" beg end type count nil)))
-      (dolist (char '(?\' ?\`))
-        (let ((new (evil-select-quote char beg end type count nil)))
-          (when (and new (> (car new) (car (or range '(0)))) )
-            (setq range new))))
-      range))
-
-  (evil-define-text-object evil-any-quote-outer (count &optional beg end type)
-    (let ((range (evil-select-quote ?\" beg end type count t)))
-      (dolist (char '(?\' ?\`))
-        (let ((new (evil-select-quote char beg end type count t)))
-          (when (and new (> (car new) (car (or range '(0)))) )
-            (setq range new))))
-      range))
-
-  (define-key evil-inner-text-objects-map "q" 'evil-any-quote-inner)
-  (define-key evil-outer-text-objects-map "q" 'evil-any-quote-outer)
-
-  (evil-define-text-object evil-textobj-url (count &optional beg end type)
-    "Select inner URL using standard Emacs 'thing-at-point'."
-    (cl-destructuring-bind (start . end)
-        (bounds-of-thing-at-point 'url)
-      (evil-range start end)))
-
-  (define-key evil-operator-state-map "L" 'evil-textobj-url)
-  (define-key evil-visual-state-map "L" 'evil-textobj-url))
-
-
-#+end_src
-**** Magit
-#+begin_src emacs-lisp
-(use-package transient)
-(use-package magit
-  :config
-  (add-hook 'magit-process-find-password-functions 'magit-process-password-auth-source)
-  :custom
-  (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
-  :hook
-  (git-commit-mode . evil-insert-state)
-  :defer t)
-
-(fc/map 'normal "gg" #'magit)
-#+end_src
-diff-hl
-#+begin_src emacs-lisp
-(defun fc/diff-hl-update-colors (&rest _)
-  "Dynamically apply the current theme's standard diff colors to diff-hl faces.
-   Sets both background and foreground to create a solid fringe block."
-  (let ((added   (face-attribute 'diff-added :foreground nil 'default))
-        (changed (face-attribute 'diff-changed :foreground nil 'default))
-        (removed (face-attribute 'diff-removed :foreground nil 'default)))
-    (custom-set-faces
-     ;; Added lines: Inherit current theme's 'Added' color
-     `(diff-hl-insert ((t (:inherit diff-added :background ,added :foreground ,added))))
-     ;; Changed lines: Inherit current theme's 'Changed' color
-     `(diff-hl-change ((t (:inherit diff-changed :background ,changed :foreground ,changed))))
-     ;; Deleted lines: Inherit current theme's 'Removed' color
-     `(diff-hl-delete ((t (:inherit diff-removed :background ,removed :foreground ,removed)))))))
-
-(add-hook 'enable-theme-functions #'fc/diff-hl-update-colors)
-
-(fc/diff-hl-update-colors)
-
-(use-package diff-hl
-  :init
-  (global-diff-hl-mode)
-  :config
-  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
-(evil-global-set-key 'normal (kbd "]h") #'diff-hl-next-hunk)
-(evil-global-set-key 'normal (kbd "[h") #'diff-hl-previous-hunk)
-#+end_src
-***** Browse
-#+begin_src emacs-lisp
-(use-package browse-at-remote
-  :config
-  (fc/map 'normal "gb" #'browse-at-remote))
-#+end_src
-***** Forge
-#+begin_src emacs-lisp
-(use-package forge
-  :after magit
-  :custom
-  (forge-add-default-bindings nil))
-#+end_src
-***** Timemachine
-#+begin_src emacs-lisp
-(use-package git-timemachine
-  :after transient
-  :config
-  (fc/map 'normal "gt" #'git-timemachine))
-#+end_src
-***** Git-modes
-#+begin_src emacs-lisp
-(use-package git-modes)
-#+end_src
-**** Consult
 #+begin_src emacs-lisp
 (defun fc/consult-books ()
   "Consult books in the ~/Documents/books/ folder."
@@ -1434,7 +667,7 @@ diff-hl
   "f" #'consult-ripgrep
   "SPC" #'consult-fd)
 #+end_src
-**** Helpful
+helpful
 #+begin_src emacs-lisp
 (use-package helpful)
 (evil-define-key 'insert 'global
@@ -1453,7 +686,7 @@ diff-hl
   :config
   (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
 #+end_src
-**** Vertico
+vertico
 #+begin_src emacs-lisp
 ;; Enable Vertico.
 ;; (use-package compat
@@ -1517,7 +750,7 @@ diff-hl
   ;; package.
   (marginalia-mode))
 #+end_src
-**** Embark
+embark
 #+begin_src emacs-lisp
 (use-package embark
   :bind
@@ -1557,7 +790,365 @@ diff-hl
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 #+end_src
-personal templates
+*** The =zfc-base.el= section for provide
+#+begin_src emacs-lisp
+(provide 'zfc-base)
+#+end_src
+** The =zfc-evil.el= section
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle lisp/zfc-evil.el
+:END:
+*** The =zfc-evil.el= section about general and evil
+set leader and general
+#+begin_src emacs-lisp
+(defvar fc/leader-key "SPC"
+  "my leader key.")
+
+(defvar fc/localleader-key ","
+  "my local leader key.")
+
+(use-package general
+  :ensure (:wait t)
+  :config
+  (general-create-definer fc/map
+    :prefix fc/leader-key))
+
+(use-package evil
+  :ensure (:wait t)
+  :custom
+  (evil-want-keybinding nil)
+  :init
+  ;; (setq evil-disable-insert-state-bindings t)
+  (setq evil-respect-visual-line-mode t)
+  (setq evil-want-Y-yank-to-eol t)
+  ;; (setq evil-want-C-w-delete t)
+  ;; (setq evil-want-C-w-in-emacs-state t)
+  (setq evil-undo-system 'undo-fu)
+  (global-visual-line-mode 1)
+  :config
+  (evil-set-leader '(normal visual) (kbd fc/leader-key))
+  (evil-set-leader 'normal (kbd fc/localleader-key) t)
+
+  ;; Conflicts with evil-open-below
+  (put 'other-window 'repeat-map nil)
+
+  (general-define-key :keymaps 'normal "C-e" #'end-of-line)
+
+  (evil-mode 1))
+#+end_src
+setup evil
+*** The =zfc-evil.el= section about evil plugins
+evil collection for bunch of maps in different mode
+#+begin_src emacs-lisp
+(use-package evil-collection
+  :after evil
+  :custom
+  (evil-collection-key-blacklist '("SPC"))
+  :config
+  (delq 'lispy evil-collection-mode-list)
+  (evil-collection-init))
+
+(use-package evil-org
+  :after org
+  :hook (org-mode . (lambda () evil-org-mode))
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
+#+end_src
+envy neovim flash.nvim
+#+begin_src emacs-lisp
+(use-package flash
+  :commands (flash-jump flash-jump-continue
+			            flash-treesitter)
+  :custom
+  (flash-multi-window t)
+  ;; (flash-autojump t)
+  (flash-rainbow t)
+  :init
+  ;; Evil integration (simple setup)
+  (after! evil
+    (require 'flash-evil)
+    (flash-evil-setup t)
+    (setq flash-char-jump-labels t))
+
+  (evil-define-key 'normal 'global (kbd "C-s") #'flash-evil-jump)
+  (evil-define-key 'normal 'global (kbd "s") #'flash-evil-jump)
+  (evil-define-key 'visual 'global (kbd "C-s") #'flash-evil-jump)
+
+  :config
+  ;; Search integration (labels during C-s, /, ?)
+  (require 'flash-isearch)
+  (flash-isearch-mode 1))
+#+end_src
+
+surround
+#+begin_src emacs-lisp
+(use-package evil-surround
+  :config
+  (global-evil-surround-mode 1))
+(use-package evil-embrace
+  :config
+  (evil-embrace-enable-evil-surround-integration))
+#+end_src
+
+escape
+#+begin_src emacs-lisp
+(use-package evil-escape
+  :custom
+  (evil-escape-key-sequence "jk")
+  (evil-escape-excluded-major-modes '(magit-status-mode))
+  :config
+  (evil-escape-mode))
+#+end_src
+undo
+#+begin_src emacs-lisp
+(use-package undo-fu)
+#+end_src
+exchange
+#+begin_src emacs-lisp
+(use-package evil-exchange
+  :config
+  (evil-exchange-install))
+#+end_src
+multicursors
+#+begin_src emacs-lisp
+(use-package evil-multiedit
+  :config
+  (evil-multiedit-default-keybinds))
+#+end_src
+indent
+#+begin_src emacs-lisp
+(use-package evil-indent-plus
+  :config
+  (define-key evil-inner-text-objects-map "i" 'evil-indent-plus-i-indent)
+  (define-key evil-outer-text-objects-map "i" 'evil-indent-plus-a-indent)
+  (define-key evil-inner-text-objects-map "k" 'evil-indent-plus-i-indent-up)
+  (define-key evil-outer-text-objects-map "k" 'evil-indent-plus-a-indent-up)
+  (define-key evil-inner-text-objects-map "j" 'evil-indent-plus-i-indent-up-down)
+  (define-key evil-outer-text-objects-map "j" 'evil-indent-plus-a-indent-up-down))
+#+end_src
+align
+#+begin_src emacs-lisp
+(use-package evil-lion
+  :config
+  (evil-lion-mode))
+#+end_src
+comment
+#+begin_src emacs-lisp
+(use-package evil-nerd-commenter
+  :config
+  (evil-define-key '(normal visual) 'global "gc" #'evilnc-comment-operator)
+  (evilnc-default-hotkeys))
+#+end_src
+numbers
+#+begin_src emacs-lisp
+(use-package evil-numbers
+  :config
+  (define-key evil-normal-state-map (kbd "C-c =") 'evil-numbers/inc-at-pt)
+  (define-key evil-normal-state-map (kbd "C-c -") 'evil-numbers/dec-at-pt))
+#+end_src
+exato
+#+begin_src emacs-lisp
+(use-package exato)
+#+end_src
+linediff
+#+begin_src emacs-lisp
+(use-package evil-quick-diff
+  :ensure (:host github :repo "rgrinberg/evil-quick-diff")
+  :init
+  ;; (setq evil-quick-diff-key (kbd "zx"))
+  (evil-quick-diff-install))
+#+end_src
+#+begin_src emacs-lisp
+(use-package evil-goggles
+  :config
+  (evil-goggles-mode)
+
+  ;; optionally use diff-mode's faces; as a result, deleted text
+  ;; will be highlighed with `diff-removed` face which is typically
+  ;; some red color (as defined by the color theme)
+  ;; other faces such as `diff-added` will be used for other actions
+  (evil-goggles-use-diff-faces))
+#+end_src
+
+match number in modeline
+#+begin_src emacs-lisp
+(use-package anzu
+  :config
+  (global-anzu-mode +1))
+
+(use-package evil-anzu)
+#+end_src
+
+custom scripts with evil mappings
+
+#+begin_src emacs-lisp
+(defun fc/toggle-alpha-background ()
+  "toggle tranparency of background"
+  (interactive)
+  (let ((current (frame-parameter nil 'alpha-background)))
+    (set-frame-parameter nil 'alpha-background
+                         (if (or (null current) (>= current 98))
+                             90
+                           100))))
+
+(fc/map 'normal "ta" #'fc/toggle-alpha-background)
+
+(defun fc/next-wallpaper ()
+  "Call next wallpaper."
+  (interactive)
+  (shell-command "noctalia-shell ipc call wallpaper random"))
+
+(fc/map 'normal "tn" #'fc/next-wallpaper)
+#+end_src
+
+*** The =zfc-evil.el= section for provide
+#+begin_src emacs-lisp
+(provide 'zfc-evil)
+#+end_src
+** The =zfc-dev.el= section
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle lisp/zfc-dev.el
+:END:
+*** The =zfc-dev.el= section about completion
+**** Corfu
+#+begin_src emacs-lisp
+(use-package corfu
+  ;; Optional customizations
+  :custom
+  (corfu-popupinfo-delay '(0.5 . 0.1))
+  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
+  ;; (corfu-on-exact-match 'insert) ;; Configure handling of exact matches
+
+  ;; Enable Corfu only for certain modes. See also `global-corfu-modes'.
+  ;; :hook ((prog-mode . corfu-mode)
+  ;;        (shell-mode . corfu-mode)
+  ;;        (eshell-mode . corfu-mode))
+  :bind
+  (:map corfu-map
+        ("TAB" . corfu-insert)
+        ([remap indent-for-tab-command] . corfu-insert)
+        ([tab] . corfu-insert))
+
+  :init
+
+  ;; Recommended: Enable Corfu globally.  Recommended since many modes provide
+  ;; Capfs and Dabbrev can be used globally (M-/).  See also the customization
+  ;; variable `global-corfu-modes' to exclude certain modes.
+  (global-corfu-mode)
+
+  ;; Enable optional extension modes:
+  ;; (corfu-history-mode)
+  (corfu-popupinfo-mode))
+(with-eval-after-load 'yasnippet
+  (keymap-unset yas-minor-mode-map "TAB")
+  (keymap-unset yas-minor-mode-map "<tab>"))
+(defun my/tab ()
+  (interactive)
+  (cond
+   ;; corfu popup
+   ((and (bound-and-true-p corfu-mode)
+         (boundp 'corfu--candidates)
+         corfu--candidates)
+    (corfu-insert))
+
+   ;; snippet
+   ((and (bound-and-true-p yas-minor-mode)
+         (yas-expand)))
+
+   ;; default
+   (t
+    (indent-for-tab-command))))
+(global-set-key (kbd "TAB") #'my/tab)
+;; A few more useful configurations...
+(use-package emacs
+  :ensure nil
+  :custom
+  ;; TAB cycle if there are only few candidates
+  ;; (completion-cycle-threshold 3)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  (tab-always-indent 'complete)
+
+  ;; Emacs 30 and newer: Disable Ispell completion function.
+  ;; Try `cape-dict' as an alternative.
+  (text-mode-ispell-word-completion nil)
+
+  ;; Hide commands in M-x which do not apply to the current mode.  Corfu
+  ;; commands are hidden, since they are not used via M-x. This setting is
+  ;; useful beyond Corfu.
+  (read-extended-command-predicate #'command-completion-default-include-p))
+(use-package nerd-icons-corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+#+end_src
+***** Cape
+#+begin_src emacs-lisp
+(use-package cape
+  ;; Bind prefix keymap providing all Cape commands under a mnemonic key.
+  ;; Press C-c p ? to for help.
+  :bind ("C-c c" . cape-prefix-map) ;; Alternative key: M-<tab>, M-p, M-+
+  ;; Alternatively bind Cape commands individually.
+  ;; :bind (("C-c p d" . cape-dabbrev)
+  ;;        ("C-c p h" . cape-history)
+  ;;        ("C-c p f" . cape-file)
+  ;;        ...)
+  :init
+  ;; Add to the global default value of `completion-at-point-functions' which is
+  ;; used by `completion-at-point'.  The order of the functions matters, the
+  ;; first function returning a result wins.  Note that the list of buffer-local
+  ;; completion functions takes precedence over the global list.
+  (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-file)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block)
+  ;; (add-hook 'completion-at-point-functions #'cape-history)
+  ;; ...
+  )
+#+end_src
+**** Tempel
+#+begin_src emacs-lisp
+(use-package tempel
+  :bind (("M-+" . tempel-complete) ;; Alternative tempel-expand
+         ("M-*" . tempel-insert))
+
+  :init
+
+  ;; Setup completion at point
+  (defun tempel-setup-capf ()
+    ;; Add the Tempel Capf to `completion-at-point-functions'.  `tempel-expand'
+    ;; only triggers on exact matches. We add `tempel-expand' *before* the main
+    ;; programming mode Capf, such that it will be tried first.
+    (setq-local completion-at-point-functions
+                (cons #'tempel-expand completion-at-point-functions))
+
+    ;; Alternatively use `tempel-complete' if you want to see all matches.  Use
+    ;; a trigger prefix character in order to prevent Tempel from triggering
+    ;; unexpectly.
+    ;; (setq-local corfu-auto-trigger "/"
+    ;;             completion-at-point-functions
+    ;;             (cons (cape-capf-trigger #'tempel-complete ?/)
+    ;;                   completion-at-point-functions))
+    )
+
+  (add-hook 'conf-mode-hook 'tempel-setup-capf)
+  (add-hook 'prog-mode-hook 'tempel-setup-capf)
+  (add-hook 'text-mode-hook 'tempel-setup-capf)
+
+  ;; Optionally make the Tempel templates available to Abbrev,
+  ;; either locally or globally. `expand-abbrev' is bound to C-x '.
+  ;; (add-hook 'prog-mode-hook #'tempel-abbrev-mode)
+  ;; (global-tempel-abbrev-mode)
+  )
+
+(use-package tempel-collection)
+#+end_src
+
+templates
 #+begin_src lisp-data :tangle ~/.config/emacs/templates
 fundamental-mode ;; Available everywhere
 
@@ -1586,8 +1177,611 @@ org-mode
 ;; outline-regexp: "[a-z]"
 ;; End:
 #+end_src
-*** Tools
-**** Google Translate 
+
+**** Yasnippet
+#+begin_src emacs-lisp
+(use-package yasnippet
+  :config
+  (yas-global-mode 1))
+
+(use-package yasnippet-snippets)
+#+end_src
+*** The =zfc-dev.el= section about lsp
+auto format
+#+begin_src emacs-lisp
+(use-package apheleia
+  :config
+  (add-to-list 'apheleia-mode-alist '(scheme-mode . lisp-indent))
+  (apheleia-global-mode +1))
+#+end_src
+use built-in lsp client
+#+begin_src emacs-lisp
+(use-package eglot
+  :ensure nil              ;; install from ELPA if missing (usually not needed in Emacs ≥29)
+  :defer t                ;; load only when needed
+
+  ;; 1. Automatically start Eglot in these major modes
+  ;;    (add more modes as you use more languages)
+  :hook
+  ((python-ts-mode       . eglot-ensure)   ;; python-ts-mode or python-mode
+   (rustic-mode           . eglot-ensure)
+   (typescript-ts-mode     . eglot-ensure)
+   (tsx-ts-mode     . eglot-ensure)
+   (nix-ts-mode     . eglot-ensure)
+   (js-ts-mode             . eglot-ensure)
+   (astro-ts-mode             . eglot-ensure)
+   (c-mode         . eglot-ensure)
+   (bash-ts-mode           . eglot-ensure))
+
+  ;; 2. Good defaults / tweaks
+  :custom
+  (eglot-autoshutdown         t)    ;; kill server when last buffer is closed
+  (eglot-send-changes-idle-time 0.5) ;; send changes faster (default is 0.5 anyway)
+
+  ;; (eglot-ignored-server-capabilities
+  ;;  '(:documentHighlightProvider      ;; disable if too slow/noisy
+  ;;    :foldingRangeProvider
+  ;;    ))            ;; many people disable inlay hints or use a dedicated package
+
+  ;; 3. Optional: better event logging (useful when debugging)
+  ;; :custom (eglot-events-buffer-size 2000000)  ;; bigger log buffer
+
+  :config
+  ;; (add-to-list 'eglot-server-programs
+  ;;              '(astro-ts-mode . ("astro-ls" "--stdio"
+  ;;                                 :initializationOptions
+  ;;                                 (:typescript (:tsdk "./node_modules/typescript/lib")))))
+
+  (add-to-list 'eglot-server-programs
+               '((python-mode python-ts-mode) . ("ty" "server")))
+
+  (add-to-list 'eglot-server-programs
+               '(((typescript-ts-mode :language-id "typescript")
+                  (tsx-ts-mode :language-id "typescriptreact")
+                  (typescript-mode :language-id "typescript")
+                  (js-mode :language-id "javascript")
+                  (js-ts-mode :language-id "javascript"))
+                 . ("tsgo" "--lsp" "--stdio")))
+
+  (add-to-list 'eglot-server-programs
+               '(tsx-ts-mode . ("tailwindcss-language-server" "--stdio")))
+  ;; (general-define-key
+  ;;  :states 'normal
+  ;;  :keymaps 'eglot-mode-map
+  ;;  "grn" 'eglot-rename
+  ;;  "gra" 'eglot-code-actions)
+  )
+
+
+
+
+(use-package consult-eglot
+  :after eglot
+  :config
+  (evil-define-key 'normal eglot-mode-map
+    "gO" #'consult-eglot-symbols))
+#+end_src
+#+begin_src emacs-lisp
+(use-package eldoc
+  :ensure nil
+  :custom
+  (eldoc-echo-area-use-multiline-p nil)      ; Only show one line in minibuffer
+  (eldoc-echo-area-prefer-doc-buffer t)      ; Put the long stuff in the *eldoc* buffer
+  )
+
+;; (use-package eldoc-box
+;;   :ensure nil
+;;   :vc (:url "https://github.com/casouri/eldoc-box")
+;;   :after eglot
+;;   :config
+;;   (evil-define-key 'normal eglot-mode-map "K" #'eldoc-box-help-at-point))
+
+(use-package eldoc-mouse
+  :config
+  (evil-define-key 'normal eglot-mode-map "K" #'eldoc-mouse-pop-doc-at-cursor))
+
+#+end_src
+#+begin_src emacs-lisp
+(use-package flymake
+  :ensure nil
+  :custom
+  (flymake-show-diagnostics-at-end-of-line t)
+  :config
+  (evil-global-set-key 'normal (kbd "]d") 'flymake-goto-next-error)
+  (evil-global-set-key 'normal (kbd "[d") 'flymake-goto-prev-error))
+#+end_src
+#+begin_src emacs-lisp
+(use-package xref
+  :ensure nil
+  :bind (:map evil-motion-state-map
+              ("gd" . xref-find-definitions)))
+#+end_src
+*** The =zfc-dev.el= section about treesitter
+#+begin_src emacs-lisp
+(use-package treesit
+  :ensure nil)
+
+(use-package treesit-auto
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  ;; (after! org
+  ;;   (dolist (mode
+  ;;            '(("cmake"      . cmake-ts)
+  ;;              ("dockerfile" . dockerfile-ts)
+  ;;              ("go"         . go-ts)
+  ;;              ("lua"        . lua-ts)
+  ;;              ("rust"       . rust-ts)
+  ;;              ("typescript" . typescript-ts)
+  ;;              ("yaml"       . yaml-ts)))
+  ;;     (add-to-list 'org-src-lang-modes mode)))
+  
+  (treesit-auto-add-to-auto-mode-alist 'all)
+
+  ;; FIXME cannot make this work
+  (add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
+                                          :lang 'qmljs
+                                          :ts-mode 'qml-ts-mode
+                                          :remap 'qml-mode
+                                          :url "https://github.com/yuja/tree-sitter-qmljs"
+                                          :ext "\\.qml\\'"))
+  (add-to-list 'treesit-auto-langs 'qmljs)
+  (global-treesit-auto-mode))
+
+(use-package qml-ts-mode
+  :ensure (:host github :repo "xhcoding/qml-ts-mode"))
+
+(use-package evil-textobj-tree-sitter
+  :config
+  (evil-define-motion evil-motion-to-next-closing-quote (count)
+    "Move to the next closing quote ', \", or `."
+    :type exclusive
+    (let ((found (save-excursion (search-forward-regexp "['\"`]" nil t))))
+      (if found
+          (goto-char (1- found))
+        (error "No closing quote found"))))
+
+  (define-key evil-operator-state-map "Q" 'evil-motion-to-next-closing-quote)
+  (define-key evil-visual-state-map "Q" 'evil-motion-to-next-closing-quote)
+  (evil-define-motion evil-motion-to-next-closing-bracket (count)
+    "Move to the next closing bracket ), ], or }."
+    :type exclusive
+    (let ((found (save-excursion (search-forward-regexp "[]})]" nil t))))
+      (if found
+          (goto-char (1- found))
+        (error "No closing bracket found"))))
+
+  (define-key evil-operator-state-map "C" 'evil-motion-to-next-closing-bracket)
+  (define-key evil-visual-state-map "C" 'evil-motion-to-next-closing-bracket)
+
+  (evil-define-text-object evil-any-quote-inner (count &optional beg end type)
+    (let ((range (evil-select-quote ?\" beg end type count nil)))
+      (dolist (char '(?\' ?\`))
+        (let ((new (evil-select-quote char beg end type count nil)))
+          (when (and new (> (car new) (car (or range '(0)))) )
+            (setq range new))))
+      range))
+
+  (evil-define-text-object evil-any-quote-outer (count &optional beg end type)
+    (let ((range (evil-select-quote ?\" beg end type count t)))
+      (dolist (char '(?\' ?\`))
+        (let ((new (evil-select-quote char beg end type count t)))
+          (when (and new (> (car new) (car (or range '(0)))) )
+            (setq range new))))
+      range))
+
+  (define-key evil-inner-text-objects-map "q" 'evil-any-quote-inner)
+  (define-key evil-outer-text-objects-map "q" 'evil-any-quote-outer)
+
+  (evil-define-text-object evil-textobj-url (count &optional beg end type)
+    "Select inner URL using standard Emacs 'thing-at-point'."
+    (cl-destructuring-bind (start . end)
+        (bounds-of-thing-at-point 'url)
+      (evil-range start end)))
+
+  (define-key evil-operator-state-map "L" 'evil-textobj-url)
+  (define-key evil-visual-state-map "L" 'evil-textobj-url))
+
+
+#+end_src
+
+#+begin_src emacs-lisp
+(provide 'zfc-dev)
+#+end_src
+** The =zfc-org.el= section
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle lisp/zfc-tool.el
+:END:
+#+begin_src emacs-lisp
+(use-package org
+  :ensure nil
+  :bind
+  ("C-c l" . org-store-link)
+  ("C-c o" . org-open-at-point-global)
+  :custom
+  ;; org-default-notes-file (concat org-directory "notes.org")
+  ;; org-clock-in-switch-to-state "DOING"
+  ;; org-clock-out-when-done '("DONE" "CANCEL" "WAIT")
+  ;; org-agenda-files `(,org-default-notes-file)
+  ;; org-agenda-start-with-log-mode t
+  (org-M-RET-may-split-line '((default . nil)))
+  (org-insert-heading-respect-content t)
+  (org-log-done 'time)
+  (org-log-into-drawer t)
+  (org-tags-column -100)
+  (org-todo-keywords
+   '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@/!)" "|" "DONE(d!)" "CNCL(c@)")))
+  (org-todo-keyword-faces
+   '(("TODO"   . org-todo)
+     ("NEXT"   . +org-todo-active)
+     ("WAIT"   . +org-todo-onhold)
+     ("DONE"   . org-done)
+     ("CNCL" . +org-todo-cancel)))
+  (org-tag-alist
+   '(("@work" . ?w)
+     ("@life" . ?l)))
+  (org-agenda-window-setup 'only-window)
+  (org-directory (file-truename "~/share/notes/eorg/"))
+  (org-agenda-restore-windows-after-quit t)
+  (org-startup-with-inline-images t)
+  (org-startup-indented t)
+  (org-src-preserve-indentation nil)
+  (org-edit-src-content-indentation 0))
+;; :config
+;; (advice-add 'org-agenda-todo :after (lambda (&rest _) (org-save-all-org-buffers))))
+(use-package mixed-pitch
+  :hook
+  (org-mode . mixed-pitch-mode))
+
+(use-package org-tree-slide
+  :after evil
+  :config
+  (fc/map :keymaps 'org-tree-slide-mode-map
+    "j" #'org-tree-slide-move-next-tree
+    "k" #'org-tree-slide-move-previous-tree))
+
+(use-package valign
+  :hook
+  (org-mode . valign-mode))
+#+end_src
+#+begin_src emacs-lisp
+(use-package org-modern
+  :custom
+  (org-modern-hide-stars nil)
+  (org-modern-star '("◉" "○" "◈" "◇"))
+  (org-modern-block-name nil)
+  :hook
+  (org-mode . org-modern-mode)
+  (org-agenda-finalize . org-modern-agenda))
+
+(use-package org-appear
+  :hook
+  (org-mode . org-appear-mode))
+
+(use-package org-modern-indent
+  :ensure (:host github :repo "jdtsmith/org-modern-indent")
+  :config
+  (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
+#+end_src
+#+begin_src emacs-lisp
+(use-package org-contrib
+  :init
+  (setq org-eldoc-breadcrumb-separator " → ")
+  :hook (org-mode . org-eldoc-load))
+(setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+#+end_src
+*** Denote
+**** Basic
+#+begin_src emacs-lisp
+(use-package denote
+  :hook
+  ((text-mode . denote-fontify-links-mode-maybe)
+   (dired-mode . denote-dired-mode))
+  :bind
+  (("C-c n n" . denote)
+   ("C-c n d" . denote-dired)
+   ("C-c n l" . denote-link)
+   ("C-c n L" . denote-add-links)
+   ("C-c n b" . denote-backlinks)
+   ("C-c n q c" . denote-query-contents-link)
+   ("C-c n q f" . denote-query-filenames-link)
+   ("C-c n r" . denote-rename-file)
+   ("C-c n R" . denote-rename-file-using-front-matter)
+   :map dired-mode-map
+   ("C-c C-d C-i" . denote-dired-link-marked-notes)
+   ("C-c C-d C-r" . denote-dired-rename-files)
+   ("C-c C-d C-k" . denote-dired-rename-marked-files-with-keywords)
+   ("C-c C-d C-R" . denote-dired-rename-marked-files-using-front-matter))
+  :config
+  (setq denote-directory (concat org-directory "denote"))
+  (setq denote-save-buffers nil)
+  (setq denote-known-keywords '("emacs" "linux" "hack" "trade"))
+  (setq denote-infer-keywords t)
+  (setq denote-sort-keywords t)
+  (setq denote-prompts '(title keywords))
+  (setq denote-excluded-directories-regexp nil)
+  (setq denote-keywords-to-not-infer-regexp nil)
+  (setq denote-rename-confirmations '(rewrite-front-matter modify-file-name))
+  (setq denote-date-prompt-use-org-read-date t)
+  (denote-rename-buffer-mode 1))
+#+end_src
+
+**** Denote Org
+#+begin_src emacs-lisp
+(use-package denote-org
+  :after denote
+  :bind (:map org-mode-map
+              ("C-c n o e" . denote-org-extract-org-subtree)
+              ("C-c n o h" . denote-org-link-to-heading)
+              ("C-c n o H" . denote-org-backlinks-for-heading)
+              ("C-c n o f" . denote-org-convert-links-to-file-type)
+              ("C-c n o d" . denote-org-convert-links-to-denote-type)
+              ("C-c n o i" . denote-org-dblock-insert-files)
+              ("C-c n o l" . denote-org-dblock-insert-links)
+              ("C-c n o b" . denote-org-dblock-insert-backlinks)
+              ("C-c n o m" . denote-org-dblock-insert-missing-links)
+              ("C-c n o a" . denote-org-dblock-insert-files-as-headings)))
+#+end_src
+
+**** Denote Journal
+#+begin_src emacs-lisp
+(use-package denote-journal
+  :bind
+  ("C-c n j" . denote-journal-new-or-existing-entry)
+  :hook (calendar-mode . denote-journal-calendar-mode)
+  :config
+  ;; Use the "journal" subdirectory of the `denote-directory'.  Set this
+  ;; to nil to use the `denote-directory' instead.
+  (setq denote-journal-directory
+        (expand-file-name "journal" denote-directory))
+  ;; Default keyword for new journal entries. It can also be a list of
+  ;; strings.
+  (setq denote-journal-keyword "journal")
+  ;; Read the doc string of `denote-journal-title-format'.
+  (setq denote-journal-title-format 'day-date-month-year))
+#+end_src
+
+**** Denote Sequence
+#+begin_src emacs-lisp
+(use-package denote-sequence
+  :after denote
+  :bind (("C-c n s s" . denote-sequence)
+         ("C-c n s f" . denote-sequence-find)
+         ("C-c n s l" . denote-sequence-link)
+         ("C-c n s d" . denote-sequence-dired)
+         ("C-c n s r" . denote-sequence-reparent)
+         ("C-c n s c" . denote-sequence-convert)))
+#+end_src
+
+**** Consult Denote
+#+begin_src emacs-lisp
+(use-package consult-denote
+  :bind (("C-c n f" . consult-denote-find)
+         ("C-c n g" . consult-denote-grep))
+  :config
+  (consult-denote-mode 1))
+#+end_src
+
+*** GTD
+#+begin_src emacs-lisp
+(use-package org-gtd
+  :after (org transient)
+  :demand t
+  :init
+  ;; Suppress upgrade warnings (must be set before package loads)
+  (setq org-gtd-update-ack "4.0.0")
+  ;; Set GTD directory before package loads
+  (setq org-gtd-directory (concat org-directory "gtd"))
+
+  :custom
+  (org-gtd-keyword-mapping '((todo . "TODO")
+                             (next . "NEXT")
+                             (wait . "WAIT")
+                             (done . "DONE")
+                             (canceled . "CNCL")))
+  ;; Enable per-type refile prompting (recommended)
+  ;; Without this, all items auto-refile to first target without prompting
+  (org-gtd-refile-to-any-target nil)
+  (org-gtd-save-after-organize t)
+
+  :config
+  (org-edna-mode)
+  ;; Add org-gtd files to your agenda (in :config so org-gtd-directory is defined)
+  (setq org-agenda-files (list org-gtd-directory))
+  :bind
+  ;; Global keybindings (work anywhere in Emacs)
+  (("C-c d c" . org-gtd-capture)
+   ("C-c d e" . org-gtd-engage)
+   ("C-c d p" . org-gtd-process-inbox)
+   ("C-c d n" . org-gtd-show-all-next)
+   ("C-c d s" . org-gtd-reflect-stuck-projects)
+
+   ;; Keybinding for organizing items (only works in clarify buffers)
+   :map org-gtd-clarify-mode-map
+   ("C-c c" . org-gtd-organize)
+
+   ;; Quick actions on tasks in agenda views (optional but recommended)
+   :map org-agenda-mode-map
+   ("C-c ." . org-gtd-agenda-transient)))
+#+end_src
+
+#+begin_src emacs-lisp
+(defun fc/org-insert-link-dwim ()
+  "Like `org-insert-link' but with personal dwim preferences."
+  (interactive)
+  (let* ((point-in-link (org-in-regexp org-link-any-re 1))
+         (clipboard-url (when (string-match-p "^http" (current-kill 0))
+                          (current-kill 0)))
+         (region-content (when (region-active-p)
+                           (buffer-substring-no-properties (region-beginning)
+                                                           (region-end)))))
+    (cond ((and region-content clipboard-url (not point-in-link))
+           (delete-region (region-beginning) (region-end))
+           (insert (org-make-link-string clipboard-url region-content)))
+          ((and clipboard-url (not point-in-link))
+           (insert (org-make-link-string
+                    clipboard-url
+                    (read-string "title: "
+                                 (with-current-buffer (url-retrieve-synchronously clipboard-url)
+                                   (dom-text (car
+                                              (dom-by-tag (libxml-parse-html-region
+                                                           (point-min)
+                                                           (point-max))
+                                                          'title))))))))
+          (t
+           (call-interactively 'org-insert-link)))))
+
+(with-eval-after-load 'org
+  (evil-define-key 'normal org-mode-map
+    (kbd "C-c C-l") #'fc/org-insert-link-dwim))
+#+end_src
+
+*** The =zfc-org.el= section for provide
+#+begin_src emacs-lisp
+(provide 'zfc-org)
+#+end_src
+
+** The =zfc-tool.el= section
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle lisp/zfc-tool.el
+:END:
+telegram
+#+begin_src emacs-lisp
+(use-package tracking)
+
+(use-package telega
+  :ensure nil
+  :bind
+  ("C-c t" . telega)
+  :commands telega
+  :config
+  (setq telega-use-tracking-for '(or unmuted mention)
+        telega-completing-read-function #'completing-read
+        telega-msg-rainbow-title t
+        telega-chat-fill-column 75)
+
+  ;; Show notifications in the mode line
+  (add-hook 'telega-load-hook #'telega-mode-line-hook)
+
+  ;; Disable chat buffer auto-fill
+  (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
+#+end_src
+
+~epkgs~
+#+begin_src scheme :noweb-ref epkgs
+
+  "emacs-telega"
+
+#+end_src
+
+reader
+#+begin_src emacs-lisp
+(use-package reader
+  :ensure nil
+  :hook (reader-mode . (lambda () (hl-line-mode 0))))
+#+end_src
+~home-pkgs~
+#+begin_src scheme :noweb-ref home-pkgs
+
+  emacs-reader
+
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package transient)
+(use-package magit
+  :config
+  (add-hook 'magit-process-find-password-functions 'magit-process-password-auth-source)
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
+  :hook
+  (git-commit-mode . evil-insert-state)
+  :defer t)
+
+(fc/map 'normal "gg" #'magit)
+#+end_src
+diff-hl
+#+begin_src emacs-lisp
+(defun fc/diff-hl-update-colors (&rest _)
+  "Dynamically apply the current theme's standard diff colors to diff-hl faces.
+   Sets both background and foreground to create a solid fringe block."
+  (let ((added   (face-attribute 'diff-added :foreground nil 'default))
+        (changed (face-attribute 'diff-changed :foreground nil 'default))
+        (removed (face-attribute 'diff-removed :foreground nil 'default)))
+    (custom-set-faces
+     ;; Added lines: Inherit current theme's 'Added' color
+     `(diff-hl-insert ((t (:inherit diff-added :background ,added :foreground ,added))))
+     ;; Changed lines: Inherit current theme's 'Changed' color
+     `(diff-hl-change ((t (:inherit diff-changed :background ,changed :foreground ,changed))))
+     ;; Deleted lines: Inherit current theme's 'Removed' color
+     `(diff-hl-delete ((t (:inherit diff-removed :background ,removed :foreground ,removed)))))))
+
+(add-hook 'enable-theme-functions #'fc/diff-hl-update-colors)
+
+(fc/diff-hl-update-colors)
+
+(use-package diff-hl
+  :init
+  (global-diff-hl-mode)
+  :config
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
+(evil-global-set-key 'normal (kbd "]h") #'diff-hl-next-hunk)
+(evil-global-set-key 'normal (kbd "[h") #'diff-hl-previous-hunk)
+#+end_src
+***** Browse
+#+begin_src emacs-lisp
+(use-package browse-at-remote
+  :config
+  (fc/map 'normal "gb" #'browse-at-remote))
+#+end_src
+***** Forge
+#+begin_src emacs-lisp
+(use-package forge
+  :after magit
+  :custom
+  (forge-add-default-bindings nil))
+#+end_src
+***** Timemachine
+#+begin_src emacs-lisp
+(use-package git-timemachine
+  :after transient
+  :config
+  (fc/map 'normal "gt" #'git-timemachine))
+#+end_src
+***** Git-modes
+#+begin_src emacs-lisp
+(use-package git-modes)
+#+end_src
+rime
+#+begin_src emacs-lisp
+(use-package rime
+  :ensure nil
+  :custom
+  (default-input-method "rime")
+  :config
+  (setq rime-user-data-dir "~/.local/share/fcitx5/rime/"))
+#+end_src
+~epkgs~
+#+begin_src scheme :noweb-ref epkgs
+"emacs-rime"
+#+end_src
+
+guix
+#+begin_src emacs-lisp
+(use-package guix
+  :ensure nil
+  :bind
+  (:map evil-normal-state-map
+        ("SPC g i" . guix)))
+#+end_src
+~epkgs~
+#+begin_src scheme :noweb-ref epkgs
+
+"emacs-guix"
+
+#+end_src
+
+translater
 #+begin_src emacs-lisp
 (use-package gt
   :commands (gt-translate)
@@ -1607,29 +1801,14 @@ org-mode
 #+begin_src scheme :noweb-ref epkgs
 "sdcv"
 #+end_src
-**** Ghostel
+
+ghostel
 #+begin_src emacs-lisp
   (use-package ghostel
     :ensure t)
 #+end_src
-**** Casual
-#+begin_src emacs-lisp
-(use-package casual
-  ;; :config
-  ;; (fc/map 'normal Info-mode-map
-  ;;   "?" #'casual-info-tmenu)
-  ;; (fc/map 'normal dired-mode-map
-  ;;   "?" #'casual-dired-tmenu)
-  )
-#+end_src
 
-**** Desktop
-#+begin_src emacs-lisp
-;; (use-package bluetooth)
-;; (use-package nm
-;;   :vc (:url "https://github.com/Kodkollektivet/emacs-nm"))
-#+end_src
-**** Direnv
+direnv
 #+begin_src emacs-lisp
   ;; (use-package direnv
   ;;   :config
@@ -1648,7 +1827,8 @@ org-mode
 #+begin_src scheme :noweb-ref epkgs
 "direnv"
 #+end_src
-**** EMMS 
+
+emms
 #+begin_src emacs-lisp
 (use-package emms
   :after evil
@@ -1695,7 +1875,6 @@ org-mode
     "q" #'emms-playlist-mode-bury-buffer))
 #+end_src
 
-**** PDF
 nov
 #+begin_src emacs-lisp
 (use-package nov
@@ -1703,7 +1882,6 @@ nov
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
 #+end_src
 
-**** Dwim-shell-command
 #+begin_src emacs-lisp
 (use-package dwim-shell-command
   :custom
@@ -1716,8 +1894,7 @@ nov
   :config
   (require 'dwim-shell-commands))
 #+end_src
-**** AI
-***** Gptel
+gptel
 #+begin_src emacs-lisp
 (use-package gptel
   :bind
@@ -1810,7 +1987,7 @@ nov
   )
 
 #+end_src
-***** Agent-shell
+agent-shell
 #+begin_src emacs-lisp
 (use-package agent-shell
   :custom
@@ -1837,11 +2014,11 @@ nov
 
 (general-define-key "C-c a s" #'agent-shell)
 #+end_src
-**** Pinentry
+pinentry
 #+begin_src emacs-lisp
 (setq epg-pinentry-mode 'loopback) 
 #+end_src
-**** Elfeed
+elfeed
 #+begin_src emacs-lisp
 (use-package elfeed
   :bind
@@ -1852,7 +2029,7 @@ nov
   :config
   (elfeed-org))
 #+end_src
-**** Sops
+sops
 #+begin_src emacs-lisp
 (use-package sops
   ;; :ensure (:type git :host github :repo "djgoku/sops")
@@ -1866,7 +2043,7 @@ nov
 (use-package yaml-mode
   :mode ("\\.yaml\\'" . yaml-mode))
 #+end_src
-**** Blue
+ Blue
 #+begin_src emacs-lisp
 (use-package blue
   :init
@@ -1874,281 +2051,77 @@ nov
   ;; and comint buffers.
   (blue-prettify-compilation-mode 1))
 #+end_src
-*** Org
-**** Basic
+email
 #+begin_src emacs-lisp
-(use-package org
+(setq auth-sources '("~/.authinfo.gpg")
+      user-full-name "zhafacai"
+      user-mail-address "zhafacai@gmail.com")
+
+(setq smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-service 587
+      smtpmail-stream-type 'starttls)
+
+(setq message-send-mail-function 'smtpmail-send-it)
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package notmuch
   :ensure nil
   :bind
-  ("C-c l" . org-store-link)
-  ("C-c o" . org-open-at-point-global)
-  :custom
-  ;; org-default-notes-file (concat org-directory "notes.org")
-  ;; org-clock-in-switch-to-state "DOING"
-  ;; org-clock-out-when-done '("DONE" "CANCEL" "WAIT")
-  ;; org-agenda-files `(,org-default-notes-file)
-  ;; org-agenda-start-with-log-mode t
-  (org-M-RET-may-split-line '((default . nil)))
-  (org-insert-heading-respect-content t)
-  (org-log-done 'time)
-  (org-log-into-drawer t)
-  (org-tags-column -100)
-  (org-todo-keywords
-   '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@/!)" "|" "DONE(d!)" "CNCL(c@)")))
-  (org-todo-keyword-faces
-   '(("TODO"   . org-todo)
-     ("NEXT"   . +org-todo-active)
-     ("WAIT"   . +org-todo-onhold)
-     ("DONE"   . org-done)
-     ("CNCL" . +org-todo-cancel)))
-  (org-tag-alist
-   '(("@work" . ?w)
-     ("@life" . ?l)))
-  (org-agenda-window-setup 'only-window)
-  (org-directory (file-truename "~/share/notes/eorg/"))
-  (org-agenda-restore-windows-after-quit t)
-  (org-startup-with-inline-images t)
-  (org-startup-indented t)
-  (org-src-preserve-indentation nil)
-  (org-edit-src-content-indentation 0))
-;; :config
-;; (advice-add 'org-agenda-todo :after (lambda (&rest _) (org-save-all-org-buffers))))
-(use-package mixed-pitch
-  :hook
-  (org-mode . mixed-pitch-mode))
-
-(use-package org-tree-slide
-  :after evil
+  ("C-c e" . notmuch)
   :config
-  (fc/map :keymaps 'org-tree-slide-mode-map
-    "j" #'org-tree-slide-move-next-tree
-    "k" #'org-tree-slide-move-previous-tree))
+  (setq notmuch-identities '("zfc <zhafacai@gmail.com>"))
+  (setq notmuch-fcc-dirs
+        '(("zhafacai@gmail.com" . "gmail/Sent")))
+  (setq notmuch-show-logo nil
+        notmuch-column-control 1.0
+        notmuch-hello-auto-refresh t
+        notmuch-hello-recent-searches-max 20
+        notmuch-hello-thousands-separator ""
+        notmuch-hello-sections '(notmuch-hello-insert-saved-searches)
+        notmuch-show-all-tags-list t)
 
-(use-package valign
-  :hook
-  (org-mode . valign-mode))
+  (setq notmuch-search-oldest-first nil)
+
+  (setq notmuch-saved-searches
+        `(( :name "📥 inbox"
+            :query "tag:inbox"
+            :sort-order newest-first
+            :key ,(kbd "i"))
+          ( :name "💬 all unread (inbox)"
+            :query "tag:unread and tag:inbox"
+            :sort-order newest-first
+            :key ,(kbd "u"))
+          ( :name "🔮 unread crypto"
+            :query "tag:unread and tag:crypto"
+            :sort-order newest-first
+            :key ,(kbd "c"))
+          ( :name "🌞 unread life"
+            :query "tag:unread and tag:life"
+            :sort-order newest-first
+            :key ,(kbd "l")))))
+
+
+(setq browse-url-browser-function 'browse-url-generic
+      browse-url-generic-program "librewolf")
 #+end_src
-**** Pretty
+=epkgs= for email
+#+begin_src scheme :noweb-ref epkgs
+"notmuch"
+"emacs-notmuch"
+"isync"
+"msmtp"
+#+end_src
+
+*** The =zfc-tool.el= section for provide
 #+begin_src emacs-lisp
-(use-package org-modern
-  :custom
-  (org-modern-hide-stars nil)
-  (org-modern-star '("◉" "○" "◈" "◇"))
-  (org-modern-block-name nil)
-  :hook
-  (org-mode . org-modern-mode)
-  (org-agenda-finalize . org-modern-agenda))
-
-(use-package org-appear
-  :hook
-  (org-mode . org-appear-mode))
-
-(use-package org-modern-indent
-  :ensure (:host github :repo "jdtsmith/org-modern-indent")
-  :config
-  (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
+(provide 'zfc-tool)
 #+end_src
-**** COMMENT Verb
-#+begin_src emacs-lisp
-(with-eval-after-load 'verb
-  (fc/map :keymaps org-mode-map
-    "s" #'verb-send-request-on-point-other-window   ; SPC m v s : Send request, show response in other window & switch
-    "S" #'verb-send-request-on-point-display        ; SPC m v S : Send request, show response in other window (no switch)
-    "f" #'verb-send-request-on-point                ; SPC m v f : Send request, replace in current window
-    "k" #'verb-kill-response-buffer-and-window      ; SPC m v k : Kill response buffer/window (when in response)
-    "K" #'verb-kill-all-response-buffers            ; SPC m v K : Kill all response buffers
-    "r" #'verb-re-send-request                      ; SPC m v r : Re-send the last request (from response buffer)
-    "w" #'verb-send-request-on-point-eww            ; SPC m v w : Re-send as GET using EWW (view in browser)
-    "R" #'verb-show-request                         ; SPC m v R : Show the original request spec (from response)
-    "h" #'verb-toggle-show-headers                 ; SPC m v h : Toggle response headers visibility
-    "v" #'verb-set-var                              ; SPC m v v : Set/re-set a variable (for templating)
-    "e" #'verb-export-request-on-point              ; SPC m v e : Export request (to curl, etc.)
-    )
-  ;; Make Verb response body minor mode override Evil globals (essential for q to work)
-  (evil-make-overriding-map verb-response-body-mode-map 'normal)
+** The =zfc-lang.el= section
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle lisp/zfc-lang.el
+:END:
 
-  ;; Now bind q directly in normal state
-  (fc/map :keymaps 'verb-response-body-mode-map
-    "q" #'verb-kill-response-buffer-and-window
-    "r" #'verb-re-send-request
-    "R" #'verb-show-request
-    "s" #'verb-toggle-show-headers))
-#+end_src
-**** Contrib
-#+begin_src emacs-lisp
-(use-package org-contrib
-  :init
-  (setq org-eldoc-breadcrumb-separator " → ")
-  :hook (org-mode . org-eldoc-load))
-(setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
-#+end_src
-**** Denote
-***** Basic
-#+begin_src emacs-lisp
-(use-package denote
-  :hook
-  ((text-mode . denote-fontify-links-mode-maybe)
-   (dired-mode . denote-dired-mode))
-  :bind
-  (("C-c n n" . denote)
-   ("C-c n d" . denote-dired)
-   ("C-c n l" . denote-link)
-   ("C-c n L" . denote-add-links)
-   ("C-c n b" . denote-backlinks)
-   ("C-c n q c" . denote-query-contents-link)
-   ("C-c n q f" . denote-query-filenames-link)
-   ("C-c n r" . denote-rename-file)
-   ("C-c n R" . denote-rename-file-using-front-matter)
-   :map dired-mode-map
-   ("C-c C-d C-i" . denote-dired-link-marked-notes)
-   ("C-c C-d C-r" . denote-dired-rename-files)
-   ("C-c C-d C-k" . denote-dired-rename-marked-files-with-keywords)
-   ("C-c C-d C-R" . denote-dired-rename-marked-files-using-front-matter))
-  :config
-  (setq denote-directory (concat org-directory "denote"))
-  (setq denote-save-buffers nil)
-  (setq denote-known-keywords '("emacs" "linux" "hack" "trade"))
-  (setq denote-infer-keywords t)
-  (setq denote-sort-keywords t)
-  (setq denote-prompts '(title keywords))
-  (setq denote-excluded-directories-regexp nil)
-  (setq denote-keywords-to-not-infer-regexp nil)
-  (setq denote-rename-confirmations '(rewrite-front-matter modify-file-name))
-  (setq denote-date-prompt-use-org-read-date t)
-  (denote-rename-buffer-mode 1))
-#+end_src
-
-***** Denote Org
-#+begin_src emacs-lisp
-(use-package denote-org
-  :after denote
-  :bind (:map org-mode-map
-              ("C-c n o e" . denote-org-extract-org-subtree)
-              ("C-c n o h" . denote-org-link-to-heading)
-              ("C-c n o H" . denote-org-backlinks-for-heading)
-              ("C-c n o f" . denote-org-convert-links-to-file-type)
-              ("C-c n o d" . denote-org-convert-links-to-denote-type)
-              ("C-c n o i" . denote-org-dblock-insert-files)
-              ("C-c n o l" . denote-org-dblock-insert-links)
-              ("C-c n o b" . denote-org-dblock-insert-backlinks)
-              ("C-c n o m" . denote-org-dblock-insert-missing-links)
-              ("C-c n o a" . denote-org-dblock-insert-files-as-headings)))
-#+end_src
-
-***** Denote Journal
-#+begin_src emacs-lisp
-(use-package denote-journal
-  :bind
-  ("C-c n j" . denote-journal-new-or-existing-entry)
-  :hook (calendar-mode . denote-journal-calendar-mode)
-  :config
-  ;; Use the "journal" subdirectory of the `denote-directory'.  Set this
-  ;; to nil to use the `denote-directory' instead.
-  (setq denote-journal-directory
-        (expand-file-name "journal" denote-directory))
-  ;; Default keyword for new journal entries. It can also be a list of
-  ;; strings.
-  (setq denote-journal-keyword "journal")
-  ;; Read the doc string of `denote-journal-title-format'.
-  (setq denote-journal-title-format 'day-date-month-year))
-#+end_src
-
-***** Denote Sequence
-#+begin_src emacs-lisp
-(use-package denote-sequence
-  :after denote
-  :bind (("C-c n s s" . denote-sequence)
-         ("C-c n s f" . denote-sequence-find)
-         ("C-c n s l" . denote-sequence-link)
-         ("C-c n s d" . denote-sequence-dired)
-         ("C-c n s r" . denote-sequence-reparent)
-         ("C-c n s c" . denote-sequence-convert)))
-#+end_src
-
-***** Consult Denote
-#+begin_src emacs-lisp
-(use-package consult-denote
-  :bind (("C-c n f" . consult-denote-find)
-         ("C-c n g" . consult-denote-grep))
-  :config
-  (consult-denote-mode 1))
-#+end_src
-
-**** GTD
-#+begin_src emacs-lisp
-(use-package org-gtd
-  :after (org transient)
-  :demand t
-  :init
-  ;; Suppress upgrade warnings (must be set before package loads)
-  (setq org-gtd-update-ack "4.0.0")
-  ;; Set GTD directory before package loads
-  (setq org-gtd-directory (concat org-directory "gtd"))
-
-  :custom
-  (org-gtd-keyword-mapping '((todo . "TODO")
-                             (next . "NEXT")
-                             (wait . "WAIT")
-                             (done . "DONE")
-                             (canceled . "CNCL")))
-  ;; Enable per-type refile prompting (recommended)
-  ;; Without this, all items auto-refile to first target without prompting
-  (org-gtd-refile-to-any-target nil)
-  (org-gtd-save-after-organize t)
-
-  :config
-  (org-edna-mode)
-  ;; Add org-gtd files to your agenda (in :config so org-gtd-directory is defined)
-  (setq org-agenda-files (list org-gtd-directory))
-  :bind
-  ;; Global keybindings (work anywhere in Emacs)
-  (("C-c d c" . org-gtd-capture)
-   ("C-c d e" . org-gtd-engage)
-   ("C-c d p" . org-gtd-process-inbox)
-   ("C-c d n" . org-gtd-show-all-next)
-   ("C-c d s" . org-gtd-reflect-stuck-projects)
-
-   ;; Keybinding for organizing items (only works in clarify buffers)
-   :map org-gtd-clarify-mode-map
-   ("C-c c" . org-gtd-organize)
-
-   ;; Quick actions on tasks in agenda views (optional but recommended)
-   :map org-agenda-mode-map
-   ("C-c ." . org-gtd-agenda-transient)))
-#+end_src
-
-**** Dwim
-#+begin_src emacs-lisp
-(defun fc/org-insert-link-dwim ()
-  "Like `org-insert-link' but with personal dwim preferences."
-  (interactive)
-  (let* ((point-in-link (org-in-regexp org-link-any-re 1))
-         (clipboard-url (when (string-match-p "^http" (current-kill 0))
-                          (current-kill 0)))
-         (region-content (when (region-active-p)
-                           (buffer-substring-no-properties (region-beginning)
-                                                           (region-end)))))
-    (cond ((and region-content clipboard-url (not point-in-link))
-           (delete-region (region-beginning) (region-end))
-           (insert (org-make-link-string clipboard-url region-content)))
-          ((and clipboard-url (not point-in-link))
-           (insert (org-make-link-string
-                    clipboard-url
-                    (read-string "title: "
-                                 (with-current-buffer (url-retrieve-synchronously clipboard-url)
-                                   (dom-text (car
-                                              (dom-by-tag (libxml-parse-html-region
-                                                           (point-min)
-                                                           (point-max))
-                                                          'title))))))))
-          (t
-           (call-interactively 'org-insert-link)))))
-
-(with-eval-after-load 'org
-  (evil-define-key 'normal org-mode-map
-    (kbd "C-c C-l") #'fc/org-insert-link-dwim))
-#+end_src
-*** Lang
 #+begin_src emacs-lisp
 (use-package uiua-mode
   :mode "\\.ua\\'")
@@ -2207,9 +2180,11 @@ nov
 #+end_src
 #+begin_src emacs-lisp
 (add-hook 'scheme-mode-hook (lambda () (evil-local-set-key 'normal "K" #'geiser-doc-look-up-manual)))
+#+end_src
 
-
-(provide 'zfc-ui)
+*** The =zfc-lang.el= section for provide
+#+begin_src emacs-lisp
+(provide 'zfc-lang)
 #+end_src
 * Guix
 ** The =art.scm= section for Lenovo AHP9 System

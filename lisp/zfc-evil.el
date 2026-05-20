@@ -1,5 +1,3 @@
-;; -*- lexical-binding: t; -*-
-
 (defvar fc/leader-key "SPC"
   "my leader key.")
 
@@ -143,5 +141,23 @@
   (global-anzu-mode +1))
 
 (use-package evil-anzu)
+
+(defun fc/toggle-alpha-background ()
+  "toggle tranparency of background"
+  (interactive)
+  (let ((current (frame-parameter nil 'alpha-background)))
+    (set-frame-parameter nil 'alpha-background
+                         (if (or (null current) (>= current 98))
+                             90
+                           100))))
+
+(fc/map 'normal "ta" #'fc/toggle-alpha-background)
+
+(defun fc/next-wallpaper ()
+  "Call next wallpaper."
+  (interactive)
+  (shell-command "noctalia-shell ipc call wallpaper random"))
+
+(fc/map 'normal "tn" #'fc/next-wallpaper)
 
 (provide 'zfc-evil)

@@ -1,12 +1,10 @@
-;; -*- lexical-binding: t; -*-
-
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file nil t))
 
 ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-
+(add-to-list 'default-frame-alist '(alpha-background . 90))
 (setq vc-handled-backends '(Git))
 
 (setq gc-cons-threshold most-positive-fixnum

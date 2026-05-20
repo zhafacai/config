@@ -1,5 +1,3 @@
-;; -*- lexical-binding: t; -*-
-
 (defmacro after! (features &rest body)
   (declare (indent 1) (debug t))
 
@@ -16,6 +14,5 @@
                     ,form)))
 
     form))
-
 
 (provide 'zfc-macro)

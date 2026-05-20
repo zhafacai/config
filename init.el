@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t; -*-
+(set-default-toplevel-value 'lexical-binding t)
 
 ;; setup elpaca
 (defvar elpaca-installer-version 0.12)
@@ -115,6 +115,10 @@
 (setq use-package-always-ensure t)
 
 (require 'zfc-macro)
-(require 'zfc-evil)
-(require 'zfc-config)
 (require 'zfc-ui)
+(require 'zfc-base)
+(require 'zfc-evil)
+(require 'zfc-dev)
+(require 'zfc-org)
+(require 'zfc-tool)
+(require 'zfc-lang)

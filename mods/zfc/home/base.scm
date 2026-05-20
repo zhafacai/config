@@ -47,12 +47,12 @@
                                 
                                 "emacs-guix"
                                 
+                                "sdcv"
+                                "direnv"
                                 "notmuch"
                                 "emacs-notmuch"
                                 "isync"
                                 "msmtp"
-                                "sdcv"
-                                "direnv"
                                 "emacs-next-pgtk"
                                 ;; dev
                                 "rust"
