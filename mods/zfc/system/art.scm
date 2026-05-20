@@ -27,22 +27,6 @@
   ;; #:use-module ((sops secrets) #:select (sanitize-sops-key))
   #:use-module (zfc home base))
 
-(define %subs-services
-  ;; my service to use substituters
-  (modify-services %desktop-services
-                   (guix-service-type
-                    config => (guix-configuration
-                               (inherit config)
-                               (authorized-keys
-                                (append (list (local-file "./signing-key.pub")
-                                              (plain-file "guix-moe.pub"
-                                                          "(public-key (ecc (curve Ed25519) (q #552F670D5005D7EB6ACF05284A1066E52156B51D75DE3EBD3030CD046675D543#)))"))
-                                        %default-authorized-guix-keys))
-                               (substitute-urls '("https://mirror.sjtu.edu.cn/guix/"
-                                                  "https://cache-cdn.guix.moe"
-                                                  "https://substitutes.nonguix.org"
-                                                  "https://ci.guix.gnu.org"))))))
-
 
 
 (operating-system
@@ -124,7 +108,19 @@
 			             (service guix-home-service-type
 				                  `(("zfc" ,home-base)))
 			             polkit-wheel-service)
-		           %subs-services))
+(modify-services %desktop-services
+				 (guix-service-type
+				  config => (guix-configuration
+				             (inherit config)
+				             (authorized-keys
+				              (append (list (local-file "./signing-key.pub")
+				                            (local-file "./guix-moe.pub"))
+				                      %default-authorized-guix-keys))
+				             (substitute-urls '("https://mirror.sjtu.edu.cn/guix/"
+				                                "https://cache-cdn.guix.moe"
+				                                "https://substitutes.nonguix.org"
+				                                "https://ci.guix.gnu.org"))))
+				 )))
 
  ;; Allow resolution of '.local' host names with mDNS.
  (name-service-switch %mdns-host-lookup-nss))

@@ -61,6 +61,7 @@
   :custom
   (writeroom-maximize-window nil)
   (writeroom-fullscreen-effect nil)
+  ;; (writeroom-width 90)
   :hook
   (org-mode . writeroom-mode)
   (Info-mode . writeroom-mode))
