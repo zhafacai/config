@@ -323,6 +323,7 @@ binds {
 
     Mod+0 hotkey-overlay-title="App Launcher: Toggle" { spawn  "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
     Mod+M hotkey-overlay-title="Control Center: Toggle" { spawn  "noctalia-shell" "ipc" "call" "control-center" "toggle"; }
+    Mod+N hotkey-overlay-title="Next wallpaper" { spawn  "noctalia-shell" "ipc" "call" "wallpaper" "random"; }
     Mod+BackSlash hotkey-overlay-title="Lock Screen" { spawn  "noctalia-shell" "ipc" "call" "lockScreen" "lock"; }
     // Keys consist of modifiers separated by + signs, followed by an XKB key name
     // in the end. To find an XKB name for a particular key, you may use a program

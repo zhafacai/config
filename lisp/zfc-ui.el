@@ -70,8 +70,7 @@
   (olivetti-minimum-body-width 80)
   (olivetti-recall-visual-line-mode-entry-state t)
   :config
-  (setq-default olivetti-body-width 0.5)
-  (fc/map 'normal "to" #'olivetti-mode))
+  (setq-default olivetti-body-width 0.5))
 
 (set-face-attribute 'default nil
                     :family "Iosevka SS02"
@@ -129,7 +128,8 @@
   (theme-buffet-timer-hours 1))
 
 (theme-buffet-a-la-carte)
-(fc/map 'normal "tt" #'theme-buffet-a-la-carte)
+(after! evil
+  (fc/map 'normal "tt" #'theme-buffet-a-la-carte))
 
 (use-package rainbow-delimiters
   :config
@@ -160,13 +160,6 @@
   ;; If you are using the GNOME desktop and want to synchronise the
   ;; `lin-face' with GNOME's accent colour:
   (lin-gnome-accent-color-mode 1))
-
-(setq ediff-split-window-function 'split-window-horizontally)
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
-(setq ediff-keep-variants nil)
-(setq ediff-make-buffers-readonly-at-startup nil)
-(setq ediff-merge-revisions-with-ancestor t)
-(setq ediff-show-clashes-only t)
 
 (use-package idle-highlight-mode
   :config (setq idle-highlight-idle-time 0.2)

@@ -44,6 +44,4 @@
 ;; (use-package justl)
 (use-package just-ts-mode)
 
-(add-hook 'scheme-mode-hook (lambda () (evil-local-set-key 'normal "K" #'geiser-doc-look-up-manual)))
-
 (provide 'zfc-lang)

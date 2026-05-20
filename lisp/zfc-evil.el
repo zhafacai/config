@@ -151,13 +151,6 @@
                              90
                            100))))
 
-(fc/map 'normal "ta" #'fc/toggle-alpha-background)
-
-(defun fc/next-wallpaper ()
-  "Call next wallpaper."
-  (interactive)
-  (shell-command "noctalia-shell ipc call wallpaper random"))
-
-(fc/map 'normal "tn" #'fc/next-wallpaper)
+;; (fc/map 'normal "ta" #'fc/toggle-alpha-background)
 
 (provide 'zfc-evil)

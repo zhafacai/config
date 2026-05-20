@@ -61,10 +61,12 @@ more packages.
 :header-args:emacs-lisp: :tangle init.el
 :END:
 *** The =init.el= section about setup elpaca
+lexical scope by default
 #+begin_src emacs-lisp
 (set-default-toplevel-value 'lexical-binding t)
 #+end_src
 
+setup elpaca using git
 #+begin_src emacs-lisp
 ;; setup elpaca
 (defvar elpaca-installer-version 0.12)
@@ -110,76 +112,7 @@ more packages.
   ;; Enable use-package :ensure support for Elpaca.
   (elpaca-use-package-mode))
 #+end_src
-*** The =init.el= section about internal pacakges
-**** The internal packages
-#+begin_src emacs-lisp
-(use-package emacs
-  :ensure nil
-  :bind                                              ; NOTE: M-x describe-personal-bindings (for all use-packge binds)
-  (("M-o" . other-window)
-   ("C-x p l". project-list-buffers)
-   ("C-x C-z" . nil)
-   ([remap capitalize-word] . capitalize-dwim)       ; Make M-c work on regions
-   ([remap downcase-word] . downcase-dwim)           ; Make M-l work on regions
-   ([remap upcase-word] . upcase-dwim)               ; Make M-u work on regions
-   ([remap kill-buffer] . kill-current-buffer)       ; C-x k stops prompting for buffer to kill
-   ([remap delete-horizontal-space] . cycle-spacing) ; M-\. Called twice, cycle-spacing has same effect and its default binding (M-SPC) is problematic in macOS
-   )
-  :custom
-  (column-number-mode t)
-  (completion-ignore-case t)
-  (completions-detailed t)
-  (help-window-select t)
-  (history-length 300)
-  (inhibit-startup-message t)
-  (initial-scratch-message "")
-  (kill-do-not-save-duplicates t)
-  (create-lockfiles nil)   ; No lock files
-  (make-backup-files nil)  ; No backup files
-  (project-list-file (expand-file-name "cache/projects" user-emacs-directory))
-  (project-vc-extra-root-markers '("Cargo.toml" "package.json" "go.mod")) ; Excelent for mono repos with multiple langs, makes Eglot happy
-  (read-answer-short t)
-  (recentf-max-saved-items 300) ; default is 20
-  (recentf-max-menu-items 15)
-  (tab-width 4)
-  ;; (recentf-exclude (list "^/\\(?:ssh\\|su\\|sudo\\)?:"))
-  (treesit-font-lock-level 4)
-  (use-dialog-box nil)
-  (use-file-dialog nil)
-  (use-short-answers t)
-  (xref-search-program 'ripgrep)        ; TODO: make it dinamic check if ripgrep is available before setting it and if it costs too much of the init time
-  (grep-command "rg -nS --no-heading ") ; TODO: make it dinamic check if ripgrep is available before setting it and if it costs too much of the init time
-  (grep-find-ignored-directories
-   '("SCCS" "RCS" "CVS" "MCVS" ".src" ".svn" ".jj" ".git" ".hg" ".bzr" "_MTN" "_darcs" "{arch}" "node_modules" "build" "dist"))
-
-  (large-file-warning-threshold nil)
-  ;; Follow symlinks to VC-controlled files without warning
-  (vc-follow-symlinks t)
-  ;; Silence compiler warnings as they can be pretty disruptive
-  (native-comp-async-report-warnings-errors nil)
-  :init
-  (tooltip-mode nil)
-  (recentf-mode 1)
-  (repeat-mode 1)
-  (savehist-mode 1)
-  (save-place-mode 1))
-
-(use-package auth-source
-  :custom
-  (auth-source-debug t))
-
-
-(use-package autorevert
-  :ensure nil
-  :config
-  (global-auto-revert-mode 1))
-
-(use-package isearch
-  :ensure nil
-  :custom
-  (isearch-lazy-count t))
-#+end_src
-**** The zfc packages
+*** The =init.el= section about loading zfc pacakges
 #+begin_src emacs-lisp
 
 ;; Add the folder to the search path
@@ -187,8 +120,8 @@ more packages.
 (setq use-package-always-ensure t)
 
 (require 'zfc-macro)
-(require 'zfc-evil)
 (require 'zfc-ui)
+(require 'zfc-evil)
 (require 'zfc-base)
 (require 'zfc-dev)
 (require 'zfc-org)
@@ -218,9 +151,204 @@ more packages.
 
     form))
 #+end_src
-*** The =zfc-macro.el= section for provide
+*** The =zfc-macro.el= section for calling provide
 #+begin_src emacs-lisp
 (provide 'zfc-macro)
+#+end_src
+** The =zfc-ui.el= section
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle lisp/zfc-ui.el
+:END:
+*** The =zfc-ui.el= section about themes
+#+begin_src emacs-lisp
+(use-package modus-themes
+  :init
+  (modus-themes-include-derivatives-mode 1)
+  :config
+  ;; Your customizations here:
+  (setq modus-themes-to-toggle '(modus-operandi modus-vivendi)
+        modus-themes-to-rotate modus-themes-items
+        modus-themes-mixed-fonts t
+        modus-themes-variable-pitch-ui t
+        modus-themes-italic-constructs t
+        modus-themes-bold-constructs t
+        modus-themes-completions '((t . (bold)))
+        modus-themes-prompts '(bold)
+        modus-themes-headings
+        '(
+          ;; (agenda-structure . (variable-pitch light 2.2))
+          ;; (agenda-date . (variable-pitch regular 1.3))
+	      ;; (t . (regular 1.15))
+	      ))
+
+  (setq modus-themes-common-palette-overrides nil))
+
+(use-package ef-themes
+  :init
+  (ef-themes-take-over-modus-themes-mode 1))
+
+(use-package logos
+  :config
+  ;; If you want to use outlines instead of page breaks (the ^L):
+  (setq logos-outlines-are-pages t)
+
+  ;; This is the default value for the outlines:
+  (setq logos-outline-regexp-alist
+        `((emacs-lisp-mode . "^;;;+ ")
+          (org-mode . "^\\*+ +")
+          (markdown-mode . "^\\#+ +")))
+
+  ;; These apply when `logos-focus-mode' is enabled.  Their value is
+  ;; buffer-local.
+  (setq-default logos-hide-cursor nil
+                logos-hide-mode-line t
+                logos-hide-header-line t
+                logos-hide-buffer-boundaries t
+                logos-hide-fringe t
+                logos-variable-pitch nil
+                logos-buffer-read-only nil
+                logos-scroll-lock nil
+                logos-olivetti nil)
+
+
+  (let ((map global-map))
+    (define-key map [remap narrow-to-region] #'logos-narrow-dwim)
+    (define-key map [remap forward-page] #'logos-forward-page-dwim)
+    (define-key map [remap backward-page] #'logos-backward-page-dwim))
+
+
+  )
+
+
+(use-package writeroom-mode
+  :custom
+  (writeroom-maximize-window nil)
+  (writeroom-fullscreen-effect nil)
+  :hook
+  (org-mode . writeroom-mode)
+  (Info-mode . writeroom-mode))
+
+(use-package olivetti
+  :custom
+  (olivetti-minimum-body-width 80)
+  (olivetti-recall-visual-line-mode-entry-state t)
+  :config
+  (setq-default olivetti-body-width 0.5))
+#+end_src
+
+default fonts
+#+begin_src emacs-lisp
+(set-face-attribute 'default nil
+                    :family "Iosevka SS02"
+                    :height 150)
+
+(set-face-attribute 'variable-pitch nil
+                    :family "Aporetic Serif")
+
+(set-face-attribute 'fixed-pitch nil
+                    :family "Aporetic Sans Mono")
+
+(set-face-attribute 'fixed-pitch-serif nil
+                    :family "Aporetic Serif Mono")
+#+end_src
+
+中文字体
+#+begin_src emacs-lisp
+(dolist (charset '(kana han cjk-misc symbol bopomofo))
+  (set-fontset-font t charset (font-spec :family "LXGW WenKai")))
+#+end_src
+#+begin_src emacs-lisp
+(use-package hl-todo
+  :hook (prog-mode . hl-todo-mode))
+(after! evil
+  (evil-global-set-key 'normal "]t" #'hl-todo-next)
+  (evil-global-set-key 'normal "[t" #'hl-todo-previous))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package doom-modeline
+  :config
+  (setq doom-modeline-check nil)
+  (setq doom-modeline-buffer-encoding nil)
+  (setq doom-modeline-always-show-macro-register t)
+  (setq doom-modeline-position-column-line-format '(""))
+
+  :init (doom-modeline-mode 1))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package pulsar
+  :config
+  (dolist (fn '(pulsar-pulse-line-red pulsar-recenter-top pulsar-reveal-entry))
+    (add-hook 'minibuffer-setup-hook fn))
+  (setq pulsar-delay 0.045
+        pulsar-iterations 4
+        pulsar-face 'pulsar-green
+        pulsar-region-face 'pulsar-yellow
+        pulsar-highlight-face 'pulsar-magenta)
+  (pulsar-global-mode 1))
+#+end_src
+#+begin_src emacs-lisp
+(use-package theme-buffet
+  :ensure (:wait t)
+  :config
+  (setq theme-buffet-menu 'end-user)
+
+  (setq theme-buffet-end-user
+        '( :night     (modus-vivendi ef-dark ef-winter ef-autumn ef-night ef-duo-dark ef-symbiosis)
+           :morning   (modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light)
+           :afternoon (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
+           :evening   (modus-vivendi-tinted ef-rosa ef-elea-dark ef-maris-dark ef-melissa-dark ef-trio-dark ef-dream)))
+
+  (theme-buffet-timer-hours 1))
+
+(theme-buffet-a-la-carte)
+(after! evil
+  (fc/map 'normal "tt" #'theme-buffet-a-la-carte))
+#+end_src
+#+begin_src emacs-lisp
+(use-package rainbow-delimiters
+  :config
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package nyan-mode
+  :after doom-modeline
+  :custom
+  (nyan-wavy-trail t)
+  (nyan-animate-nyancat t)
+  (nyan-bar-length 15)
+  :config
+  (nyan-mode))
+#+end_src
+#+begin_src emacs-lisp
+(use-package which-key
+  :custom
+  (which-key-idle-delay 0.5)
+  :init
+  (which-key-mode))
+#+end_src
+#+begin_src emacs-lisp
+(use-package lin
+  :config
+  (setopt lin-face 'lin-blue) ; check doc string for alternative styles
+  
+  (global-hl-line-mode 1)
+  (lin-global-mode 1)
+
+  ;; If you are using the GNOME desktop and want to synchronise the
+  ;; `lin-face' with GNOME's accent colour:
+  (lin-gnome-accent-color-mode 1))
+#+end_src
+#+begin_src emacs-lisp
+(use-package idle-highlight-mode
+  :config (setq idle-highlight-idle-time 0.2)
+  :hook (eglot--managed-mode . idle-highlight-mode))
+#+end_src
+*** The =zfc-ui.el= section for calling provide
+#+begin_src emacs-lisp
+(provide 'zfc-ui)
 #+end_src
 ** The =zfc-evil.el= section
 :PROPERTIES:
@@ -408,7 +536,7 @@ match number in modeline
 (use-package evil-anzu)
 #+end_src
 
-custom scripts with evil mappings
+toggle alpha background
 
 #+begin_src emacs-lisp
 (defun fc/toggle-alpha-background ()
@@ -420,229 +548,106 @@ custom scripts with evil mappings
                              90
                            100))))
 
-(fc/map 'normal "ta" #'fc/toggle-alpha-background)
+;; (fc/map 'normal "ta" #'fc/toggle-alpha-background)
 
-(defun fc/next-wallpaper ()
-  "Call next wallpaper."
-  (interactive)
-  (shell-command "noctalia-shell ipc call wallpaper random"))
-
-(fc/map 'normal "tn" #'fc/next-wallpaper)
 #+end_src
 
-*** The =zfc-evil.el= section for provide
+*** The =zfc-evil.el= section for calling provide
 #+begin_src emacs-lisp
 (provide 'zfc-evil)
-#+end_src
-** The =zfc-ui.el= section
-:PROPERTIES:
-:header-args:emacs-lisp: :tangle lisp/zfc-ui.el
-:END:
-*** The =zfc-ui.el= section about themes
-#+begin_src emacs-lisp
-(use-package modus-themes
-  :init
-  (modus-themes-include-derivatives-mode 1)
-  :config
-  ;; Your customizations here:
-  (setq modus-themes-to-toggle '(modus-operandi modus-vivendi)
-        modus-themes-to-rotate modus-themes-items
-        modus-themes-mixed-fonts t
-        modus-themes-variable-pitch-ui t
-        modus-themes-italic-constructs t
-        modus-themes-bold-constructs t
-        modus-themes-completions '((t . (bold)))
-        modus-themes-prompts '(bold)
-        modus-themes-headings
-        '(
-          ;; (agenda-structure . (variable-pitch light 2.2))
-          ;; (agenda-date . (variable-pitch regular 1.3))
-	      ;; (t . (regular 1.15))
-	      ))
-
-  (setq modus-themes-common-palette-overrides nil))
-
-(use-package ef-themes
-  :init
-  (ef-themes-take-over-modus-themes-mode 1))
-
-(use-package logos
-  :config
-  ;; If you want to use outlines instead of page breaks (the ^L):
-  (setq logos-outlines-are-pages t)
-
-  ;; This is the default value for the outlines:
-  (setq logos-outline-regexp-alist
-        `((emacs-lisp-mode . "^;;;+ ")
-          (org-mode . "^\\*+ +")
-          (markdown-mode . "^\\#+ +")))
-
-  ;; These apply when `logos-focus-mode' is enabled.  Their value is
-  ;; buffer-local.
-  (setq-default logos-hide-cursor nil
-                logos-hide-mode-line t
-                logos-hide-header-line t
-                logos-hide-buffer-boundaries t
-                logos-hide-fringe t
-                logos-variable-pitch nil
-                logos-buffer-read-only nil
-                logos-scroll-lock nil
-                logos-olivetti nil)
-
-
-  (let ((map global-map))
-    (define-key map [remap narrow-to-region] #'logos-narrow-dwim)
-    (define-key map [remap forward-page] #'logos-forward-page-dwim)
-    (define-key map [remap backward-page] #'logos-backward-page-dwim))
-
-
-  )
-
-
-(use-package writeroom-mode
-  :custom
-  (writeroom-maximize-window nil)
-  (writeroom-fullscreen-effect nil)
-  :hook
-  (org-mode . writeroom-mode)
-  (Info-mode . writeroom-mode))
-
-(use-package olivetti
-  :custom
-  (olivetti-minimum-body-width 80)
-  (olivetti-recall-visual-line-mode-entry-state t)
-  :config
-  (setq-default olivetti-body-width 0.5)
-  (fc/map 'normal "to" #'olivetti-mode))
-#+end_src
-
-#+begin_src emacs-lisp
-(set-face-attribute 'default nil
-                    :family "Iosevka SS02"
-                    :height 150)
-
-(set-face-attribute 'variable-pitch nil
-                    :family "Aporetic Serif")
-
-(set-face-attribute 'fixed-pitch nil
-                    :family "Aporetic Sans Mono")
-
-(set-face-attribute 'fixed-pitch-serif nil
-                    :family "Aporetic Serif Mono")
-#+end_src
-
-中文字体
-#+begin_src emacs-lisp
-(dolist (charset '(kana han cjk-misc symbol bopomofo))
-  (set-fontset-font t charset (font-spec :family "LXGW WenKai")))
-#+end_src
-#+begin_src emacs-lisp
-(use-package hl-todo
-  :hook (prog-mode . hl-todo-mode))
-(after! evil
-  (evil-global-set-key 'normal "]t" #'hl-todo-next)
-  (evil-global-set-key 'normal "[t" #'hl-todo-previous))
-#+end_src
-
-#+begin_src emacs-lisp
-(use-package doom-modeline
-  :config
-  (setq doom-modeline-check nil)
-  (setq doom-modeline-buffer-encoding nil)
-  (setq doom-modeline-always-show-macro-register t)
-  (setq doom-modeline-position-column-line-format '(""))
-
-  :init (doom-modeline-mode 1))
-#+end_src
-
-#+begin_src emacs-lisp
-(use-package pulsar
-  :config
-  (dolist (fn '(pulsar-pulse-line-red pulsar-recenter-top pulsar-reveal-entry))
-    (add-hook 'minibuffer-setup-hook fn))
-  (setq pulsar-delay 0.045
-        pulsar-iterations 4
-        pulsar-face 'pulsar-green
-        pulsar-region-face 'pulsar-yellow
-        pulsar-highlight-face 'pulsar-magenta)
-  (pulsar-global-mode 1))
-#+end_src
-#+begin_src emacs-lisp
-(use-package theme-buffet
-  :ensure (:wait t)
-  :config
-  (setq theme-buffet-menu 'end-user)
-
-  (setq theme-buffet-end-user
-        '( :night     (modus-vivendi ef-dark ef-winter ef-autumn ef-night ef-duo-dark ef-symbiosis)
-           :morning   (modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light)
-           :afternoon (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
-           :evening   (modus-vivendi-tinted ef-rosa ef-elea-dark ef-maris-dark ef-melissa-dark ef-trio-dark ef-dream)))
-
-  (theme-buffet-timer-hours 1))
-
-(theme-buffet-a-la-carte)
-(fc/map 'normal "tt" #'theme-buffet-a-la-carte)
-#+end_src
-#+begin_src emacs-lisp
-(use-package rainbow-delimiters
-  :config
-  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-#+end_src
-
-#+begin_src emacs-lisp
-(use-package nyan-mode
-  :after doom-modeline
-  :custom
-  (nyan-wavy-trail t)
-  (nyan-animate-nyancat t)
-  (nyan-bar-length 15)
-  :config
-  (nyan-mode))
-#+end_src
-#+begin_src emacs-lisp
-(use-package which-key
-  :custom
-  (which-key-idle-delay 0.5)
-  :init
-  (which-key-mode))
-#+end_src
-#+begin_src emacs-lisp
-(use-package lin
-  :config
-  (setopt lin-face 'lin-blue) ; check doc string for alternative styles
-  
-  (global-hl-line-mode 1)
-  (lin-global-mode 1)
-
-  ;; If you are using the GNOME desktop and want to synchronise the
-  ;; `lin-face' with GNOME's accent colour:
-  (lin-gnome-accent-color-mode 1))
-#+end_src
-#+begin_src emacs-lisp
-
-(setq ediff-split-window-function 'split-window-horizontally)
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
-(setq ediff-keep-variants nil)
-(setq ediff-make-buffers-readonly-at-startup nil)
-(setq ediff-merge-revisions-with-ancestor t)
-(setq ediff-show-clashes-only t)
-
-#+end_src
-#+begin_src emacs-lisp
-(use-package idle-highlight-mode
-  :config (setq idle-highlight-idle-time 0.2)
-  :hook (eglot--managed-mode . idle-highlight-mode))
-#+end_src
-*** The =zfc-ui.el= section for provide
-#+begin_src emacs-lisp
-(provide 'zfc-ui)
 #+end_src
 ** The =zfc-base.el= section
 :PROPERTIES:
 :header-args:emacs-lisp: :tangle lisp/zfc-base.el
 :END:
 basic packages which extend core features in emacs
+*** The =zfc-base.el= section about internal packages
+#+begin_src emacs-lisp
+(use-package emacs
+  :ensure nil
+  :bind                                              ; NOTE: M-x describe-personal-bindings (for all use-packge binds)
+  (("M-o" . other-window)
+   ("C-x p l". project-list-buffers)
+   ("C-x C-z" . nil)
+   ([remap capitalize-word] . capitalize-dwim)       ; Make M-c work on regions
+   ([remap downcase-word] . downcase-dwim)           ; Make M-l work on regions
+   ([remap upcase-word] . upcase-dwim)               ; Make M-u work on regions
+   ([remap kill-buffer] . kill-current-buffer)       ; C-x k stops prompting for buffer to kill
+   ([remap delete-horizontal-space] . cycle-spacing) ; M-\. Called twice, cycle-spacing has same effect and its default binding (M-SPC) is problematic in macOS
+   )
+  :custom
+  (column-number-mode t)
+  (completion-ignore-case t)
+  (completions-detailed t)
+  (help-window-select t)
+  (history-length 300)
+  (inhibit-startup-message t)
+  (initial-scratch-message "")
+  (kill-do-not-save-duplicates t)
+  (create-lockfiles nil)   ; No lock files
+  (make-backup-files nil)  ; No backup files
+  (project-list-file (expand-file-name "cache/projects" user-emacs-directory))
+  (project-vc-extra-root-markers '("Cargo.toml" "package.json" "go.mod")) ; Excelent for mono repos with multiple langs, makes Eglot happy
+  (read-answer-short t)
+  (recentf-max-saved-items 300) ; default is 20
+  (recentf-max-menu-items 15)
+  (tab-width 4)
+  ;; (recentf-exclude (list "^/\\(?:ssh\\|su\\|sudo\\)?:"))
+  (treesit-font-lock-level 4)
+  (use-dialog-box nil)
+  (use-file-dialog nil)
+  (use-short-answers t)
+  (xref-search-program 'ripgrep)        ; TODO: make it dinamic check if ripgrep is available before setting it and if it costs too much of the init time
+  (grep-command "rg -nS --no-heading ") ; TODO: make it dinamic check if ripgrep is available before setting it and if it costs too much of the init time
+  (grep-find-ignored-directories
+   '("SCCS" "RCS" "CVS" "MCVS" ".src" ".svn" ".jj" ".git" ".hg" ".bzr" "_MTN" "_darcs" "{arch}" "node_modules" "build" "dist"))
+
+  (large-file-warning-threshold nil)
+  ;; Follow symlinks to VC-controlled files without warning
+  (vc-follow-symlinks t)
+  ;; Silence compiler warnings as they can be pretty disruptive
+  (native-comp-async-report-warnings-errors nil)
+  :init
+  (tooltip-mode nil)
+  (recentf-mode 1)
+  (repeat-mode 1)
+  (savehist-mode 1)
+  (save-place-mode 1))
+
+(use-package auth-source
+  :ensure nil
+  :custom
+  (auth-source-debug t))
+
+
+(use-package autorevert
+  :ensure nil
+  :config
+  (global-auto-revert-mode 1))
+
+(use-package isearch
+  :ensure nil
+  :custom
+  (isearch-lazy-count t))
+
+
+(use-package ediff
+  :ensure nil
+  :custom
+  (ediff-split-window-function 'split-window-horizontally)
+  (ediff-window-setup-function 'ediff-setup-windows-plain)
+  (ediff-keep-variants nil)
+  (ediff-make-buffers-readonly-at-startup nil)
+  (ediff-merge-revisions-with-ancestor t)
+  (ediff-show-clashes-only t))
+
+(use-package server
+  :ensure nil
+  :config
+  (unless (or (server-running-p) (daemonp))
+    (server-start)))
+
+#+end_src
 *** The =zfc-base.el= section about extending builin features
 #+begin_src emacs-lisp
 (use-package gcmh
@@ -767,7 +772,6 @@ perspective
   (require 'smartparens-config))
 #+end_src
 consult
-
 #+begin_src emacs-lisp
 (defun fc/consult-books ()
   "Consult books in the ~/Documents/books/ folder."
@@ -1003,7 +1007,7 @@ embark
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 #+end_src
-*** The =zfc-base.el= section for provide
+*** The =zfc-base.el= section for calling provide
 #+begin_src emacs-lisp
 (provide 'zfc-base)
 #+end_src
@@ -1012,7 +1016,6 @@ embark
 :header-args:emacs-lisp: :tangle lisp/zfc-dev.el
 :END:
 *** The =zfc-dev.el= section about completion
-**** Corfu
 #+begin_src emacs-lisp
 (use-package corfu
   ;; Optional customizations
@@ -1088,7 +1091,6 @@ embark
   :config
   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 #+end_src
-***** Cape
 #+begin_src emacs-lisp
 (use-package cape
   ;; Bind prefix keymap providing all Cape commands under a mnemonic key.
@@ -1111,7 +1113,6 @@ embark
   ;; ...
   )
 #+end_src
-**** Tempel
 #+begin_src emacs-lisp
 (use-package tempel
   :bind (("M-+" . tempel-complete) ;; Alternative tempel-expand
@@ -1179,7 +1180,6 @@ org-mode
 ;; End:
 #+end_src
 
-**** Yasnippet
 #+begin_src emacs-lisp
 (use-package yasnippet
   :config
@@ -1386,13 +1386,15 @@ use built-in lsp client
 
 #+end_src
 
+*** The =zfc-dev.el= section for calling provide
 #+begin_src emacs-lisp
 (provide 'zfc-dev)
 #+end_src
 ** The =zfc-org.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle lisp/zfc-tool.el
+:header-args:emacs-lisp: :tangle lisp/zfc-org.el
 :END:
+*** The =zfc-org.el= section about basic org
 #+begin_src emacs-lisp
 (use-package org
   :ensure nil
@@ -1471,8 +1473,39 @@ use built-in lsp client
   :hook (org-mode . org-eldoc-load))
 (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
 #+end_src
-*** Denote
-**** Basic
+
+
+#+begin_src emacs-lisp
+(defun fc/org-insert-link-dwim ()
+  "Like `org-insert-link' but with personal dwim preferences."
+  (interactive)
+  (let* ((point-in-link (org-in-regexp org-link-any-re 1))
+         (clipboard-url (when (string-match-p "^http" (current-kill 0))
+                          (current-kill 0)))
+         (region-content (when (region-active-p)
+                           (buffer-substring-no-properties (region-beginning)
+                                                           (region-end)))))
+    (cond ((and region-content clipboard-url (not point-in-link))
+           (delete-region (region-beginning) (region-end))
+           (insert (org-make-link-string clipboard-url region-content)))
+          ((and clipboard-url (not point-in-link))
+           (insert (org-make-link-string
+                    clipboard-url
+                    (read-string "title: "
+                                 (with-current-buffer (url-retrieve-synchronously clipboard-url)
+                                   (dom-text (car
+                                              (dom-by-tag (libxml-parse-html-region
+                                                           (point-min)
+                                                           (point-max))
+                                                          'title))))))))
+          (t
+           (call-interactively 'org-insert-link)))))
+
+(evil-define-key 'normal org-mode-map
+  (kbd "C-c C-l") #'fc/org-insert-link-dwim)
+#+end_src
+
+*** The =zfc-org.el= section about denote
 #+begin_src emacs-lisp
 (use-package denote
   :hook
@@ -1507,7 +1540,7 @@ use built-in lsp client
   (denote-rename-buffer-mode 1))
 #+end_src
 
-**** Denote Org
+ Denote Org
 #+begin_src emacs-lisp
 (use-package denote-org
   :after denote
@@ -1524,7 +1557,7 @@ use built-in lsp client
               ("C-c n o a" . denote-org-dblock-insert-files-as-headings)))
 #+end_src
 
-**** Denote Journal
+ Denote Journal
 #+begin_src emacs-lisp
 (use-package denote-journal
   :bind
@@ -1542,7 +1575,7 @@ use built-in lsp client
   (setq denote-journal-title-format 'day-date-month-year))
 #+end_src
 
-**** Denote Sequence
+ Denote Sequence
 #+begin_src emacs-lisp
 (use-package denote-sequence
   :after denote
@@ -1554,7 +1587,7 @@ use built-in lsp client
          ("C-c n s c" . denote-sequence-convert)))
 #+end_src
 
-**** Consult Denote
+ Consult Denote
 #+begin_src emacs-lisp
 (use-package consult-denote
   :bind (("C-c n f" . consult-denote-find)
@@ -1563,7 +1596,7 @@ use built-in lsp client
   (consult-denote-mode 1))
 #+end_src
 
-*** GTD
+*** The =zfc-org.el= section about gtd
 #+begin_src emacs-lisp
 (use-package org-gtd
   :after (org transient)
@@ -1605,39 +1638,7 @@ use built-in lsp client
    :map org-agenda-mode-map
    ("C-c ." . org-gtd-agenda-transient)))
 #+end_src
-
-#+begin_src emacs-lisp
-(defun fc/org-insert-link-dwim ()
-  "Like `org-insert-link' but with personal dwim preferences."
-  (interactive)
-  (let* ((point-in-link (org-in-regexp org-link-any-re 1))
-         (clipboard-url (when (string-match-p "^http" (current-kill 0))
-                          (current-kill 0)))
-         (region-content (when (region-active-p)
-                           (buffer-substring-no-properties (region-beginning)
-                                                           (region-end)))))
-    (cond ((and region-content clipboard-url (not point-in-link))
-           (delete-region (region-beginning) (region-end))
-           (insert (org-make-link-string clipboard-url region-content)))
-          ((and clipboard-url (not point-in-link))
-           (insert (org-make-link-string
-                    clipboard-url
-                    (read-string "title: "
-                                 (with-current-buffer (url-retrieve-synchronously clipboard-url)
-                                   (dom-text (car
-                                              (dom-by-tag (libxml-parse-html-region
-                                                           (point-min)
-                                                           (point-max))
-                                                          'title))))))))
-          (t
-           (call-interactively 'org-insert-link)))))
-
-(with-eval-after-load 'org
-  (evil-define-key 'normal org-mode-map
-    (kbd "C-c C-l") #'fc/org-insert-link-dwim))
-#+end_src
-
-*** The =zfc-org.el= section for provide
+*** The =zfc-org.el= section for calling provide
 #+begin_src emacs-lisp
 (provide 'zfc-org)
 #+end_src
@@ -1646,6 +1647,7 @@ use built-in lsp client
 :PROPERTIES:
 :header-args:emacs-lisp: :tangle lisp/zfc-tool.el
 :END:
+*** The =zfc-tool.el= section about social media
 telegram
 #+begin_src emacs-lisp
 (use-package tracking)
@@ -1675,6 +1677,7 @@ telegram
 
 #+end_src
 
+*** The =zfc-tool.el= section about documents
 reader
 #+begin_src emacs-lisp
 (use-package reader
@@ -1688,8 +1691,26 @@ reader
 
 #+end_src
 
+nov
 #+begin_src emacs-lisp
-(use-package transient)
+(use-package nov
+  :config
+  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
+#+end_src
+
+elfeed
+#+begin_src emacs-lisp
+(use-package elfeed
+  :bind
+  ("C-c f" . elfeed))
+(use-package elfeed-org
+  :custom
+  (rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed"))
+  :config
+  (elfeed-org))
+#+end_src
+*** The =zfc-tool.el= section about git
+#+begin_src emacs-lisp
 (use-package magit
   :config
   (add-hook 'magit-process-find-password-functions 'magit-process-password-auth-source)
@@ -1729,30 +1750,27 @@ diff-hl
 (evil-global-set-key 'normal (kbd "]h") #'diff-hl-next-hunk)
 (evil-global-set-key 'normal (kbd "[h") #'diff-hl-previous-hunk)
 #+end_src
-***** Browse
 #+begin_src emacs-lisp
 (use-package browse-at-remote
   :config
   (fc/map 'normal "gb" #'browse-at-remote))
 #+end_src
-***** Forge
 #+begin_src emacs-lisp
 (use-package forge
   :after magit
   :custom
   (forge-add-default-bindings nil))
 #+end_src
-***** Timemachine
 #+begin_src emacs-lisp
 (use-package git-timemachine
   :after transient
   :config
   (fc/map 'normal "gt" #'git-timemachine))
 #+end_src
-***** Git-modes
 #+begin_src emacs-lisp
 (use-package git-modes)
 #+end_src
+*** The =zfc-tool.el= section about IME
 rime
 #+begin_src emacs-lisp
 (use-package rime
@@ -1767,6 +1785,7 @@ rime
 "emacs-rime"
 #+end_src
 
+*** The =zfc-tool.el= section about dev tools
 guix
 #+begin_src emacs-lisp
 (use-package guix
@@ -1774,6 +1793,8 @@ guix
   :bind
   (:map evil-normal-state-map
         ("SPC g i" . guix)))
+
+(add-hook 'scheme-mode-hook (lambda () (evil-local-set-key 'normal "K" #'geiser-doc-look-up-manual)))
 #+end_src
 ~epkgs~
 #+begin_src scheme :noweb-ref epkgs
@@ -1787,20 +1808,43 @@ translater
 (use-package gt
   :commands (gt-translate)
   :config
-  (evil-define-key 'normal 'global [down-mouse-3] 'gt-translate)
-  (fc/map 'normal "l" 'gt-translate)
   (setq gt-langs '(en zh))
   (setq gt-default-translator
         (gt-translator :engines (gt-stardict-engine
                                  :dir "~/.stardict/dic"
                                  :exact nil))))
 
+(evil-define-key 'normal 'global [down-mouse-3] 'gt-translate)
+(fc/map 'normal "l" 'gt-translate)
 
 
 #+end_src
 =epkgs=
 #+begin_src scheme :noweb-ref epkgs
 "sdcv"
+#+end_src
+
+sops
+#+begin_src emacs-lisp
+(use-package sops
+  ;; :ensure (:type git :host github :repo "djgoku/sops")
+  :bind (("C-c C-c" . sops-save-file)
+         ("C-c C-k" . sops-cancel)
+         ("C-c C-e" . sops-edit-file))
+  :init
+  ;; (setq sops-before-encrypt-decrypt-hook 'sops-setup-env)
+  (global-sops-mode 1))
+
+(use-package yaml-mode
+  :mode ("\\.yaml\\'" . yaml-mode))
+#+end_src
+ Blue
+#+begin_src emacs-lisp
+(use-package blue
+  :init
+  ;; Enable custom filters to handle different escape sequences in compilation
+  ;; and comint buffers.
+  (blue-prettify-compilation-mode 1))
 #+end_src
 
 ghostel
@@ -1829,6 +1873,7 @@ direnv
 "direnv"
 #+end_src
 
+*** The =zfc-tool.el= section about emms
 emms
 #+begin_src emacs-lisp
 (use-package emms
@@ -1876,13 +1921,9 @@ emms
     "q" #'emms-playlist-mode-bury-buffer))
 #+end_src
 
-nov
-#+begin_src emacs-lisp
-(use-package nov
-  :config
-  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
-#+end_src
 
+*** The =zfc-tool.el= section about ai
+dwim
 #+begin_src emacs-lisp
 (use-package dwim-shell-command
   :custom
@@ -2015,42 +2056,10 @@ agent-shell
 
 (general-define-key "C-c a s" #'agent-shell)
 #+end_src
+*** The =zfc-tool.el= section about email
 pinentry
 #+begin_src emacs-lisp
 (setq epg-pinentry-mode 'loopback) 
-#+end_src
-elfeed
-#+begin_src emacs-lisp
-(use-package elfeed
-  :bind
-  ("C-c f" . elfeed))
-(use-package elfeed-org
-  :custom
-  (rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed"))
-  :config
-  (elfeed-org))
-#+end_src
-sops
-#+begin_src emacs-lisp
-(use-package sops
-  ;; :ensure (:type git :host github :repo "djgoku/sops")
-  :bind (("C-c C-c" . sops-save-file)
-         ("C-c C-k" . sops-cancel)
-         ("C-c C-e" . sops-edit-file))
-  :init
-  ;; (setq sops-before-encrypt-decrypt-hook 'sops-setup-env)
-  (global-sops-mode 1))
-
-(use-package yaml-mode
-  :mode ("\\.yaml\\'" . yaml-mode))
-#+end_src
- Blue
-#+begin_src emacs-lisp
-(use-package blue
-  :init
-  ;; Enable custom filters to handle different escape sequences in compilation
-  ;; and comint buffers.
-  (blue-prettify-compilation-mode 1))
 #+end_src
 email
 #+begin_src emacs-lisp
@@ -2114,7 +2123,7 @@ email
 "msmtp"
 #+end_src
 
-*** The =zfc-tool.el= section for provide
+*** The =zfc-tool.el= section for calling provide
 #+begin_src emacs-lisp
 (provide 'zfc-tool)
 #+end_src
@@ -2179,11 +2188,8 @@ email
 ;; (use-package justl)
 (use-package just-ts-mode)
 #+end_src
-#+begin_src emacs-lisp
-(add-hook 'scheme-mode-hook (lambda () (evil-local-set-key 'normal "K" #'geiser-doc-look-up-manual)))
-#+end_src
 
-*** The =zfc-lang.el= section for provide
+*** The =zfc-lang.el= section for calling provide
 #+begin_src emacs-lisp
 (provide 'zfc-lang)
 #+end_src
