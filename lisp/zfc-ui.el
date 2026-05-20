@@ -56,6 +56,7 @@
 
   )
 
+
 (use-package writeroom-mode
   :custom
   (writeroom-maximize-window nil)
