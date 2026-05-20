@@ -877,13 +877,13 @@
 (use-package gt
   :commands (gt-translate)
   :config
+  (evil-define-key 'normal 'global [down-mouse-3] 'gt-translate)
+  (fc/map 'normal "l" 'gt-translate)
   (setq gt-langs '(en zh))
   (setq gt-default-translator
         (gt-translator :engines (gt-stardict-engine
                                  :dir "~/.stardict/dic"
                                  :exact nil))))
-
-(fc/map 'normal "l" 'gt-translate)
 
 (use-package ghostel
   :ensure t)

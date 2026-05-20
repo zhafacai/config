@@ -31,9 +31,9 @@
   ;; Conflicts with evil-open-below
   (put 'other-window 'repeat-map nil)
 
-  (evil-mode 1))
+  (general-define-key :keymaps 'normal "C-e" #'end-of-line)
 
-(general-define-key :keymaps 'normal "C-e" #'end-of-line)
+  (evil-mode 1))
 
 (use-package evil-collection
   :after evil
@@ -42,6 +42,13 @@
   :config
   (delq 'lispy evil-collection-mode-list)
   (evil-collection-init))
+
+(use-package evil-org
+  :after org
+  :hook (org-mode . (lambda () evil-org-mode))
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
 
 (use-package flash
   :commands (flash-jump flash-jump-continue
@@ -60,9 +67,6 @@
   (evil-define-key 'normal 'global (kbd "C-s") #'flash-evil-jump)
   (evil-define-key 'normal 'global (kbd "s") #'flash-evil-jump)
   (evil-define-key 'visual 'global (kbd "C-s") #'flash-evil-jump)
-  (after! evil
-    (evil-define-key 'normal 'global [down-mouse-3] 'gt-translate)
-    (evil-global-set-key 'normal (kbd "g s") #'avy-goto-line))
 
   :config
   ;; Search integration (labels during C-s, /, ?)
@@ -75,18 +79,6 @@
 (use-package evil-embrace
   :config
   (evil-embrace-enable-evil-surround-integration))
-(use-package evil-args
-  :after evil
-  :config
-  (evil-define-key '(operator) evil-inner-text-objects-map "a" 'evil-inner-arg)
-  (evil-define-key '(operator) evil-outer-text-objects-map "a" 'evil-outer-arg))
-
-(use-package evil-org
-  :after org
-  :hook (org-mode . (lambda () evil-org-mode))
-  :config
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys))
 
 (use-package evil-escape
   :custom
@@ -118,28 +110,10 @@
   :config
   (evil-lion-mode))
 
-;; (defun my/org-smart-comment (arg)
-;;   "Comment headings with org-toggle-comment, otherwise use evilnc."
-;;   (interactive "P")
-;;   (if (org-at-heading-p)
-;;       (org-toggle-comment)
-;;     (evilnc-comment-or-uncomment-lines arg)))
-
-
 (use-package evil-nerd-commenter
   :config
-  ;; (with-eval-after-load 'org
-  ;;   ;; This remaps any key bound to the commenter to our smart function
-  ;;   (define-key org-mode-map [remap evilnc-comment-or-uncomment-lines] #'my/org-smart-comment)
-  ;;   ;; (define-key org-mode-map [remap evilnc-comment-operator] #'my/org-smart-comment)
-  ;;   )
-  (evil-define-text-object evil-a-comment-block (count &optional beg end type)
-    (let ((bounds (evilnc-get-comment-bounds)))
-      (if bounds
-          (evil-range (car bounds) (cdr bounds))
-        (user-error "Not inside a comment"))))
   (evil-define-key '(normal visual) 'global "gc" #'evilnc-comment-operator)
-  (define-key evil-operator-state-map "gc" 'evil-a-comment-block))
+  (evilnc-default-hotkeys))
 
 (use-package evil-numbers
   :config
@@ -163,7 +137,6 @@
   ;; some red color (as defined by the color theme)
   ;; other faces such as `diff-added` will be used for other actions
   (evil-goggles-use-diff-faces))
-
 
 (use-package anzu
   :config
