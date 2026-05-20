@@ -1,4 +1,5 @@
 ;; -*- lexical-binding: t; -*-
+
 (defun fc/toggle-alpha-background ()
   "toggle tranparency of background"
   (interactive)

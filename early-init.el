@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t; -*-
+
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file nil t))
@@ -16,8 +18,8 @@
       '(:eval
         (let ((project (project-current)))
           (if project
-              (concat "Emacs - [p] " (project-name project))
-              (concat "Emacs - " (buffer-name))))))
+              (concat "[p] " (project-name project))
+            (buffer-name)))))
 
 
 (setq inhibit-compacting-font-caches t)

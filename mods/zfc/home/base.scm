@@ -2,6 +2,8 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages fcitx5)
+  #:use-module (sops secrets)
+  #:use-module (sops home services sops)
   #:use-module (nongnu packages chrome)
   #:use-module (bluebox packages blue)
   #:use-module (rosenthal packages wm)
@@ -21,8 +23,6 @@
   #:use-module (guix transformations)
   #:use-module (zfc home packages rime-ice)
   #:use-module (zfc packages emacs-xyz)
-  ;; #:use-module (sops secrets)
-  ;; #:use-module (sops home services sops)
   #:export (home-base))
 
 (define home-base
@@ -85,6 +85,7 @@
 						        "unzip"
 						        "zoxide"
 						        "btop"
+								"sops"
 						        "yt-dlp"
                                 "krdc"
 						        "ripgrep"
@@ -102,19 +103,8 @@
 						        "cryptsetup"))))
 
    (services
-    (append (list (service home-bash-service-type
-                           (home-bash-configuration
-                            (aliases '(("em" . "emacsclient")
-                                       ("e" . "nvim")))
-                            (environment-variables '(("EDITOR" . "emacsclient")))
-                            (bashrc (list (local-file "plain/.bashrc" "bashrc")))
-                            (bash-profile (list (local-file
-                                                 "plain/.bash_profile"
-                                                 "bash_profile")))))
-
+    (append (list 
                   (service home-pipewire-service-type)
-                  
-
 		          (service home-files-service-type
 		                   `(
 		                     ;; 1. Link the heavy data directories
@@ -155,6 +145,15 @@
 		          	(pinentry-program (file-append pinentry-gnome3 "/bin/pinentry-gnome3"))
 		          	(extra-content "allow-loopback-pinentry")
 		          	(ssh-support? #t)))
+		          (service home-bash-service-type
+		            (home-bash-configuration
+		          	(aliases '(("em" . "emacsclient")
+		          			   ("e" . "nvim")))
+		          	(environment-variables '(("EDITOR" . "emacsclient")))
+		          	(bashrc (list (local-file "plain/.bashrc" "bashrc")))
+		          	(bash-profile (list (local-file
+		          						 "plain/.bash_profile"
+		          						 "bash_profile")))))
 		          (simple-service 'cargo-config
 		          	home-files-service-type
 		            `(( ".cargo/config.toml" ,(local-file "plain/cargo.toml"))))
@@ -166,6 +165,25 @@
 		              home-xdg-configuration-files-service-type
 		            (list `("notmuch/default/hooks/pre-new"
 		                    ,(local-file "plain/pre-new" #:recursive? #t))))
-
+		          ;; XXX does not work
+		          (service home-sops-secrets-service-type
+		                   (home-sops-service-configuration
+		                    (secrets
+		                     (list
+		                      (sops-secret
+		                       (key '("data"))
+		                       (output-type "binary")
+		                       (file (local-file "../../../secrets/elfeed.org"))
+		                       (permissions #o400))))))
+		          
+		          
+		          ;; (service home-sops-secrets-service-type
+		          ;;   (home-sops-service-configuration
+		          ;;     (secrets
+		          ;;      (list
+		          ;;       (sops-secret
+		          ;;         (key '("elfeed"))
+		          ;;         (file (local-file "../../secrets/long.yaml"))
+		          ;;         (permissions #o400))))))
 		          )
             %base-home-services))))

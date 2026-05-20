@@ -11,11 +11,18 @@ while the server I prefer to use is nixos which has more recent and
 more packages.
 * Emacs
 ** The =early-init.el= section
+load custom.el
+#+begin_src emacs-lisp :tangle early-init.el
+;; -*- lexical-binding: t; -*-
+#+end_src
+
 #+begin_src emacs-lisp :tangle early-init.el
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file nil t))
+#+end_src
 
+#+begin_src emacs-lisp :tangle early-init.el
 ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 
@@ -30,8 +37,8 @@ more packages.
       '(:eval
         (let ((project (project-current)))
           (if project
-              (concat "Emacs - [p] " (project-name project))
-              (concat "Emacs - " (buffer-name))))))
+              (concat "[p] " (project-name project))
+            (buffer-name)))))
 
 
 (setq inhibit-compacting-font-caches t)
@@ -55,7 +62,9 @@ more packages.
 *** The =init.el= section about setup elpaca
 #+begin_src emacs-lisp :tangle init.el
 ;;; -*- lexical-binding: t; -*-
+#+end_src
 
+#+begin_src emacs-lisp :tangle init.el
 ;; setup elpaca
 (defvar elpaca-installer-version 0.12)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
@@ -186,6 +195,9 @@ load zfc packages
 :END:
 #+begin_src emacs-lisp
 ;; -*- lexical-binding: t; -*-
+#+end_src
+
+#+begin_src emacs-lisp
 (defmacro after! (features &rest body)
   (declare (indent 1) (debug t))
 
@@ -211,9 +223,12 @@ load zfc packages
 :PROPERTIES:
 :header-args:emacs-lisp: :tangle lisp/zfc-evil.el
 :END:
-set leader and general
 #+begin_src emacs-lisp
 ;; -*- lexical-binding: t; -*-
+#+end_src
+
+set leader and general
+#+begin_src emacs-lisp
 (defvar fc/leader-key "SPC"
   "my leader key.")
 
@@ -225,7 +240,6 @@ set leader and general
   :config
   (general-create-definer fc/map
     :prefix fc/leader-key))
-
 #+end_src
 
 #+begin_src emacs-lisp
@@ -422,6 +436,10 @@ linediff
 tranparent background is beautiful... Right?
 #+begin_src emacs-lisp
 ;; -*- lexical-binding: t; -*-
+#+end_src
+
+#+begin_src emacs-lisp
+
 (defun fc/toggle-alpha-background ()
   "toggle tranparency of background"
   (interactive)
@@ -663,8 +681,12 @@ email
   )
 
 (use-package writeroom-mode
-  :config
-  (global-writeroom-mode 1))
+  :custom
+  (writeroom-maximize-window nil)
+  (writeroom-fullscreen-effect nil)
+  :hook
+  (org-mode . writeroom-mode)
+  (Info-mode . writeroom-mode))
 
 (use-package olivetti
   :custom
@@ -797,6 +819,10 @@ email
 **** Wgrep
 #+begin_src emacs-lisp
 ;; -*- lexical-binding: t; -*-
+#+end_src
+
+#+begin_src emacs-lisp
+
 (use-package wgrep)
 #+end_src
 **** Project
@@ -901,18 +927,6 @@ perspective
 ;;    ("M-f" . dirvish-history-go-forward)
 ;;    ("M-b" . dirvish-history-go-backward)
 ;;    ("M-e" . dirvish-emerge-menu)))
-#+end_src
-***** COMMENT Ready-player
-#+begin_src emacs-lisp
-(use-package ready-player
-  :demand t
-  :custom
-  (ready-player-set-global-bindings nil)
-  (ready-player-my-media-collection-location "~/Music/")
-  :hook
-  (dired-mode . ready-player-dired-mode)
-  :config
-  (ready-player-mode 1))
 #+end_src
 **** Format
 #+begin_src emacs-lisp
@@ -1577,8 +1591,8 @@ prog-mode
 org-mode
 
 (epkgs "~epkgs~" n "#+begin_src scheme :noweb-ref epkgs" n r n "#+end_src" :post (org-edit-src-code))
-(hpkgs "~home-pkgs~" n "#+begin_src scheme :noweb-ref home-pkgs" n r n "#+end_src" :post (org-edit-src-code))
-(home-use "~home-use~" n "#+begin_src scheme :noweb-ref home-use" n "#:use-module " r n "#+end_src" :post (org-edit-src-code))
+(hmpkgs "~home-pkgs~" n "#+begin_src scheme :noweb-ref home-pkgs" n r n "#+end_src" :post (org-edit-src-code))
+(hmuse "~home-use~" n "#+begin_src scheme :noweb-ref home-use" n "#:use-module " r n "#+end_src" :post (org-edit-src-code))
 (chl "~chl~" n "#+begin_src scheme :noweb-ref channels" n r n "#+end_src" :post (org-edit-src-code))
 (hmser "~hm-services~" n "#+begin_src scheme :noweb-ref hm-services" n r n "#+end_src" :post (org-edit-src-code))
 (sysser "~sys-services~" n "#+begin_src scheme :noweb-ref sys-services" n r n "#+end_src" :post (org-edit-src-code))
@@ -1848,7 +1862,7 @@ nov
   ("C-c f" . elfeed))
 (use-package elfeed-org
   :custom
-  (rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed"))
+  (rmh-elfeed-org-files '("/run/user/1000/secrets/data"))
   :config
   (elfeed-org))
 #+end_src
@@ -2237,6 +2251,7 @@ nov
 #+end_src
 * Guix
 ** The =art.scm= section for Lenovo AHP9 System
+*** The inbox =art.scm=
 #+begin_src scheme :tangle mods/zfc/system/art.scm :noweb yes
 ;; -*- mode: scheme; -*-
 (define-module (zfc system art)
@@ -2259,6 +2274,7 @@ nov
   #:use-module (nongnu system linux-initrd)
   ;; #:use-module (guixcn services networking)
   #:use-module (zfc packages networking)
+  #:use-module (rosenthal services child-error)
   ;; #:use-module (sops secrets)
   ;; #:use-module (sops services sops)
   #:use-module ((ice-9 popen) #:select (open-input-pipe close-pipe))
@@ -2367,19 +2383,18 @@ nov
 ~sys-services~
 here is =sops= secrets config for my dae config.
 #+begin_src scheme :noweb-ref sys-services
-  (service sops-secrets-service-type
-    (sops-service-configuration
-      (gnupg-home "/var/lib/sops")
-      ;; (generate-key? #t)
-      (secrets
-       (list
-        (sops-secret
-          (key '("sec" "dae"))
-          (file (local-file "../../secrets/sub.yaml"))
-          (user "zfc")
-          (group "wheel")
-          (permissions #o400)
-          )))))
+(service sops-secrets-service-type
+  (sops-service-configuration
+    (gnupg-home "/var/lib/sops")
+    ;; (generate-key? #t)
+    (secrets
+     (list
+      (sops-secret
+        (key '("sec" "dae"))
+        (file (local-file "../../secrets/sub.yaml"))
+        (user "zfc")
+        (group "wheel")
+        (permissions #o400))))))
 #+end_src
 *** The =art.scm= section about nix
 ~sys-services~
@@ -2431,7 +2446,16 @@ here is =sops= secrets config for my dae config.
         (chmod "/etc/dae/base.dae" #o600)
         (chmod "/etc/dae/config.dae" #o600)))
 #+end_src
+*** COMMENT The =art.scm= section about clash
+~sys-services~
+#+begin_src scheme :noweb-ref sys-services
+(service clash-service-type
+  (clash-configuration
+    (config ())
+        ))
+#+end_src
 ** The =base.scm= section for Guix Home
+*** The inbox =base.scm=
 #+begin_src scheme :tangle mods/zfc/home/base.scm :noweb yes
 (define-module (zfc home base)
   #:use-module (gnu packages)
@@ -2453,8 +2477,6 @@ here is =sops= secrets config for my dae config.
   #:use-module (guix transformations)
   #:use-module (zfc home packages rime-ice)
   #:use-module (zfc packages emacs-xyz)
-  ;; #:use-module (sops secrets)
-  ;; #:use-module (sops home services sops)
   #:export (home-base))
 
 (define home-base
@@ -2499,6 +2521,7 @@ here is =sops= secrets config for my dae config.
 						        "unzip"
 						        "zoxide"
 						        "btop"
+								"sops"
 						        "yt-dlp"
                                 "krdc"
 						        "ripgrep"
@@ -2516,21 +2539,9 @@ here is =sops= secrets config for my dae config.
 						        "cryptsetup"))))
 
    (services
-    (append (list (service home-bash-service-type
-                           (home-bash-configuration
-                            (aliases '(("em" . "emacsclient")
-                                       ("e" . "nvim")))
-                            (environment-variables '(("EDITOR" . "emacsclient")))
-                            (bashrc (list (local-file "plain/.bashrc" "bashrc")))
-                            (bash-profile (list (local-file
-                                                 "plain/.bash_profile"
-                                                 "bash_profile")))))
-
+    (append (list 
                   (service home-pipewire-service-type)
-                  
-
 		          <<hm-services>>
-
 		          )
             %base-home-services))))
 #+end_src
@@ -2617,7 +2628,19 @@ patch to use flypy
 	(extra-content "allow-loopback-pinentry")
 	(ssh-support? #t)))
 #+end_src
-
+*** The =base.scm= section about bash
+~hm-services~
+#+begin_src scheme :noweb-ref hm-services
+(service home-bash-service-type
+  (home-bash-configuration
+	(aliases '(("em" . "emacsclient")
+			   ("e" . "nvim")))
+	(environment-variables '(("EDITOR" . "emacsclient")))
+	(bashrc (list (local-file "plain/.bashrc" "bashrc")))
+	(bash-profile (list (local-file
+						 "plain/.bash_profile"
+						 "bash_profile")))))
+#+end_src
 *** The =base.scm= section about rustconfig
 ~hm-services~
 #+begin_src scheme :noweb-ref hm-services
@@ -2667,29 +2690,34 @@ git config
   #!/bin/sh
   mbsync -a
 #+end_src
-*** COMMENT The =base.scm= section about elfeed
+*** The =base.scm= section about elfeed
+~home-use~
+#+begin_src scheme :noweb-ref home-use
+#:use-module (sops secrets)
+#:use-module (sops home services sops)
+#+end_src
 ~hm-services~
 #+begin_src scheme :noweb-ref hm-services
-  ;; XXX does not work
-  ;; (service home-sops-secrets-service-type
-  ;;          (home-sops-service-configuration
-  ;;           (secrets
-  ;;            (list
-  ;;             (sops-secret
-  ;;              (key '())
-  ;;              (output-type "binary")
-  ;;              (file (local-file "../../secrets/elfeed.org"))
-  ;;              (permissions #o400))))))
+;; XXX does not work
+(service home-sops-secrets-service-type
+         (home-sops-service-configuration
+          (secrets
+           (list
+            (sops-secret
+             (key '("data"))
+             (output-type "binary")
+             (file (local-file "../../../secrets/elfeed.org"))
+             (permissions #o400))))))
 
 
-  (service home-sops-secrets-service-type
-    (home-sops-service-configuration
-      (secrets
-       (list
-        (sops-secret
-          (key '("elfeed"))
-          (file (local-file "../../secrets/long.yaml"))
-          (permissions #o400))))))
+;; (service home-sops-secrets-service-type
+;;   (home-sops-service-configuration
+;;     (secrets
+;;      (list
+;;       (sops-secret
+;;         (key '("elfeed"))
+;;         (file (local-file "../../secrets/long.yaml"))
+;;         (permissions #o400))))))
 #+end_src
 ** The =channels.scm= section
 *** The inbox =channels.scm=

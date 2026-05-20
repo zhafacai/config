@@ -1,4 +1,5 @@
 ;; -*- lexical-binding: t; -*-
+
 (defvar fc/leader-key "SPC"
   "my leader key.")
 

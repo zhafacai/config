@@ -60,8 +60,12 @@
   )
 
 (use-package writeroom-mode
-  :config
-  (global-writeroom-mode 1))
+  :custom
+  (writeroom-maximize-window nil)
+  (writeroom-fullscreen-effect nil)
+  :hook
+  (org-mode . writeroom-mode)
+  (Info-mode . writeroom-mode))
 
 (use-package olivetti
   :custom
@@ -171,6 +175,7 @@
   :hook (eglot--managed-mode . idle-highlight-mode))
 
 ;; -*- lexical-binding: t; -*-
+
 (use-package wgrep)
 
 (use-package projectile
@@ -1089,7 +1094,7 @@
   ("C-c f" . elfeed))
 (use-package elfeed-org
   :custom
-  (rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed"))
+  (rmh-elfeed-org-files '("/run/user/1000/secrets/data"))
   :config
   (elfeed-org))
 

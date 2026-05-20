@@ -19,6 +19,7 @@
   #:use-module (nongnu system linux-initrd)
   ;; #:use-module (guixcn services networking)
   #:use-module (zfc packages networking)
+  #:use-module (rosenthal services child-error)
   ;; #:use-module (sops secrets)
   ;; #:use-module (sops services sops)
   #:use-module ((ice-9 popen) #:select (open-input-pipe close-pipe))
