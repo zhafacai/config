@@ -1862,7 +1862,7 @@ nov
   ("C-c f" . elfeed))
 (use-package elfeed-org
   :custom
-  (rmh-elfeed-org-files '("/run/user/1000/secrets/data"))
+  (rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed"))
   :config
   (elfeed-org))
 #+end_src
@@ -2698,26 +2698,25 @@ git config
 #+end_src
 ~hm-services~
 #+begin_src scheme :noweb-ref hm-services
-;; XXX does not work
-(service home-sops-secrets-service-type
-         (home-sops-service-configuration
-          (secrets
-           (list
-            (sops-secret
-             (key '("data"))
-             (output-type "binary")
-             (file (local-file "../../../secrets/elfeed.org"))
-             (permissions #o400))))))
-
-
 ;; (service home-sops-secrets-service-type
-;;   (home-sops-service-configuration
-;;     (secrets
-;;      (list
-;;       (sops-secret
-;;         (key '("elfeed"))
-;;         (file (local-file "../../secrets/long.yaml"))
-;;         (permissions #o400))))))
+;;          (home-sops-service-configuration
+;;           (secrets
+;;            (list
+;;             (sops-secret
+;;              (key '("data"))
+;;              (output-type "binary")
+;;              (file (local-file "../../../secrets/elfeed.org"))
+;;              (permissions #o400))))))
+
+
+(service home-sops-secrets-service-type
+  (home-sops-service-configuration
+    (secrets
+     (list
+      (sops-secret
+        (key '("elfeed"))
+        (file (local-file "../../../secrets/text.yaml"))
+        (permissions #o400))))))
 #+end_src
 ** The =channels.scm= section
 *** The inbox =channels.scm=

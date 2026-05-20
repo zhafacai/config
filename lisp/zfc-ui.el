@@ -1094,7 +1094,7 @@
   ("C-c f" . elfeed))
 (use-package elfeed-org
   :custom
-  (rmh-elfeed-org-files '("/run/user/1000/secrets/data"))
+  (rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed"))
   :config
   (elfeed-org))
 

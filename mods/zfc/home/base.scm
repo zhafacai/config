@@ -165,25 +165,24 @@
 		              home-xdg-configuration-files-service-type
 		            (list `("notmuch/default/hooks/pre-new"
 		                    ,(local-file "plain/pre-new" #:recursive? #t))))
-		          ;; XXX does not work
-		          (service home-sops-secrets-service-type
-		                   (home-sops-service-configuration
-		                    (secrets
-		                     (list
-		                      (sops-secret
-		                       (key '("data"))
-		                       (output-type "binary")
-		                       (file (local-file "../../../secrets/elfeed.org"))
-		                       (permissions #o400))))))
-		          
-		          
 		          ;; (service home-sops-secrets-service-type
-		          ;;   (home-sops-service-configuration
-		          ;;     (secrets
-		          ;;      (list
-		          ;;       (sops-secret
-		          ;;         (key '("elfeed"))
-		          ;;         (file (local-file "../../secrets/long.yaml"))
-		          ;;         (permissions #o400))))))
+		          ;;          (home-sops-service-configuration
+		          ;;           (secrets
+		          ;;            (list
+		          ;;             (sops-secret
+		          ;;              (key '("data"))
+		          ;;              (output-type "binary")
+		          ;;              (file (local-file "../../../secrets/elfeed.org"))
+		          ;;              (permissions #o400))))))
+		          
+		          
+		          (service home-sops-secrets-service-type
+		            (home-sops-service-configuration
+		              (secrets
+		               (list
+		                (sops-secret
+		                  (key '("elfeed"))
+		                  (file (local-file "../../../secrets/text.yaml"))
+		                  (permissions #o400))))))
 		          )
             %base-home-services))))
