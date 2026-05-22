@@ -40,6 +40,7 @@
 (use-package evil-collection
   :after evil
   :custom
+  (evil-collection-want-find-usages-bindings nil)
   (evil-collection-key-blacklist '("SPC"))
   :config
   (delq 'lispy evil-collection-mode-list)

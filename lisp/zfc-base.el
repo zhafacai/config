@@ -398,7 +398,6 @@
   ;; than one line, causing the modeline to move up and down:
 
   ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
-  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
 
   ;; Add Embark to the mouse context menu. Also enable `context-menu-mode'.
   ;; (context-menu-mode 1)

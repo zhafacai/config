@@ -140,13 +140,10 @@
   (apheleia-global-mode +1))
 
 (use-package eglot
-  :ensure nil              ;; install from ELPA if missing (usually not needed in Emacs ≥29)
-  :defer t                ;; load only when needed
-
-  ;; 1. Automatically start Eglot in these major modes
-  ;;    (add more modes as you use more languages)
+  :ensure nil
+  :defer t
   :hook
-  ((python-ts-mode       . eglot-ensure)   ;; python-ts-mode or python-mode
+  ((python-ts-mode       . eglot-ensure)
    (rustic-mode           . eglot-ensure)
    (typescript-ts-mode     . eglot-ensure)
    (tsx-ts-mode     . eglot-ensure)
@@ -156,9 +153,8 @@
    (c-mode         . eglot-ensure)
    (bash-ts-mode           . eglot-ensure))
 
-  ;; 2. Good defaults / tweaks
   :custom
-  (eglot-autoshutdown         t)    ;; kill server when last buffer is closed
+  (eglot-autoshutdown         t)
   (eglot-send-changes-idle-time 0.5) ;; send changes faster (default is 0.5 anyway)
 
   ;; (eglot-ignored-server-capabilities
@@ -170,11 +166,6 @@
   ;; :custom (eglot-events-buffer-size 2000000)  ;; bigger log buffer
 
   :config
-  ;; (add-to-list 'eglot-server-programs
-  ;;              '(astro-ts-mode . ("astro-ls" "--stdio"
-  ;;                                 :initializationOptions
-  ;;                                 (:typescript (:tsdk "./node_modules/typescript/lib")))))
-
   (add-to-list 'eglot-server-programs
                '((python-mode python-ts-mode) . ("ty" "server")))
 
@@ -188,15 +179,12 @@
 
   (add-to-list 'eglot-server-programs
                '(tsx-ts-mode . ("tailwindcss-language-server" "--stdio")))
-  ;; (general-define-key
-  ;;  :states 'normal
-  ;;  :keymaps 'eglot-mode-map
-  ;;  "grn" 'eglot-rename
-  ;;  "gra" 'eglot-code-actions)
-  )
 
-
-
+  (general-define-key
+   :states 'normal
+   :keymaps 'eglot-mode-map
+   "grn" 'eglot-rename
+   "gra" 'eglot-code-actions))
 
 (use-package consult-eglot
   :after eglot
@@ -207,28 +195,32 @@
 (use-package eldoc
   :ensure nil
   :custom
-  (eldoc-echo-area-use-multiline-p nil)      ; Only show one line in minibuffer
-  (eldoc-echo-area-prefer-doc-buffer t)      ; Put the long stuff in the *eldoc* buffer
-  )
+  (eldoc-echo-area-use-multiline-p nil)
+  ;; (eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+  (eldoc-echo-area-prefer-doc-buffer nil))
 
-;; (use-package eldoc-box
-;;   :ensure nil
-;;   :vc (:url "https://github.com/casouri/eldoc-box")
-;;   :after eglot
-;;   :config
-;;   (evil-define-key 'normal eglot-mode-map "K" #'eldoc-box-help-at-point))
-
-(use-package eldoc-mouse
+(use-package eldoc-box
+  :hook
+  (eglot-managed-mode . eldoc-box-hover-mode)
   :config
-  (evil-define-key 'normal eglot-mode-map "K" #'eldoc-mouse-pop-doc-at-cursor))
+  (evil-define-key 'normal eglot-mode-map "K" #'eldoc-box-help-at-point))
+
+;; (use-package eldoc-mouse
+;;   :config
+;;   (evil-define-key 'normal eglot-mode-map "K" #'eldoc-mouse-pop-doc-at-cursor))
 
 (use-package flymake
   :ensure nil
+  :hook
+  (prog-mode . flymake-mode)
   :custom
-  (flymake-show-diagnostics-at-end-of-line t)
+  (flymake-show-diagnostics-at-end-of-line 'fancy)
   :config
   (evil-global-set-key 'normal (kbd "]d") 'flymake-goto-next-error)
-  (evil-global-set-key 'normal (kbd "[d") 'flymake-goto-prev-error))
+  (evil-global-set-key 'normal (kbd "[d") 'flymake-goto-prev-error)
+  (fc/map 'normal
+    "xx" #'flymake-show-buffer-diagnostics
+    "xp" #'flymake-show-buffer-diagnostics))
 
 (use-package xref
   :ensure nil

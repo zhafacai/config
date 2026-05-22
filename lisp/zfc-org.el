@@ -71,7 +71,6 @@
   :init
   (setq org-eldoc-breadcrumb-separator " → ")
   :hook (org-mode . org-eldoc-load))
-(setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
 
 (defun fc/org-insert-link-dwim ()
   "Like `org-insert-link' but with personal dwim preferences."

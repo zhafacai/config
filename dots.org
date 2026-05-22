@@ -413,6 +413,7 @@ evil collection for bunch of maps in different mode
 (use-package evil-collection
   :after evil
   :custom
+  (evil-collection-want-find-usages-bindings nil)
   (evil-collection-key-blacklist '("SPC"))
   :config
   (delq 'lispy evil-collection-mode-list)
@@ -1001,7 +1002,6 @@ embark
   ;; than one line, causing the modeline to move up and down:
 
   ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
-  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
 
   ;; Add Embark to the mouse context menu. Also enable `context-menu-mode'.
   ;; (context-menu-mode 1)
@@ -1212,13 +1212,10 @@ auto format
 use built-in lsp client
 #+begin_src emacs-lisp
 (use-package eglot
-  :ensure nil              ;; install from ELPA if missing (usually not needed in Emacs ≥29)
-  :defer t                ;; load only when needed
-
-  ;; 1. Automatically start Eglot in these major modes
-  ;;    (add more modes as you use more languages)
+  :ensure nil
+  :defer t
   :hook
-  ((python-ts-mode       . eglot-ensure)   ;; python-ts-mode or python-mode
+  ((python-ts-mode       . eglot-ensure)
    (rustic-mode           . eglot-ensure)
    (typescript-ts-mode     . eglot-ensure)
    (tsx-ts-mode     . eglot-ensure)
@@ -1228,9 +1225,8 @@ use built-in lsp client
    (c-mode         . eglot-ensure)
    (bash-ts-mode           . eglot-ensure))
 
-  ;; 2. Good defaults / tweaks
   :custom
-  (eglot-autoshutdown         t)    ;; kill server when last buffer is closed
+  (eglot-autoshutdown         t)
   (eglot-send-changes-idle-time 0.5) ;; send changes faster (default is 0.5 anyway)
 
   ;; (eglot-ignored-server-capabilities
@@ -1242,11 +1238,6 @@ use built-in lsp client
   ;; :custom (eglot-events-buffer-size 2000000)  ;; bigger log buffer
 
   :config
-  ;; (add-to-list 'eglot-server-programs
-  ;;              '(astro-ts-mode . ("astro-ls" "--stdio"
-  ;;                                 :initializationOptions
-  ;;                                 (:typescript (:tsdk "./node_modules/typescript/lib")))))
-
   (add-to-list 'eglot-server-programs
                '((python-mode python-ts-mode) . ("ty" "server")))
 
@@ -1260,15 +1251,12 @@ use built-in lsp client
 
   (add-to-list 'eglot-server-programs
                '(tsx-ts-mode . ("tailwindcss-language-server" "--stdio")))
-  ;; (general-define-key
-  ;;  :states 'normal
-  ;;  :keymaps 'eglot-mode-map
-  ;;  "grn" 'eglot-rename
-  ;;  "gra" 'eglot-code-actions)
-  )
 
-
-
+  (general-define-key
+   :states 'normal
+   :keymaps 'eglot-mode-map
+   "grn" 'eglot-rename
+   "gra" 'eglot-code-actions))
 
 (use-package consult-eglot
   :after eglot
@@ -1280,30 +1268,34 @@ use built-in lsp client
 (use-package eldoc
   :ensure nil
   :custom
-  (eldoc-echo-area-use-multiline-p nil)      ; Only show one line in minibuffer
-  (eldoc-echo-area-prefer-doc-buffer t)      ; Put the long stuff in the *eldoc* buffer
-  )
+  (eldoc-echo-area-use-multiline-p nil)
+  ;; (eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+  (eldoc-echo-area-prefer-doc-buffer nil))
 
-;; (use-package eldoc-box
-;;   :ensure nil
-;;   :vc (:url "https://github.com/casouri/eldoc-box")
-;;   :after eglot
-;;   :config
-;;   (evil-define-key 'normal eglot-mode-map "K" #'eldoc-box-help-at-point))
-
-(use-package eldoc-mouse
+(use-package eldoc-box
+  :hook
+  (eglot-managed-mode . eldoc-box-hover-mode)
   :config
-  (evil-define-key 'normal eglot-mode-map "K" #'eldoc-mouse-pop-doc-at-cursor))
+  (evil-define-key 'normal eglot-mode-map "K" #'eldoc-box-help-at-point))
+
+;; (use-package eldoc-mouse
+;;   :config
+;;   (evil-define-key 'normal eglot-mode-map "K" #'eldoc-mouse-pop-doc-at-cursor))
 
 #+end_src
 #+begin_src emacs-lisp
 (use-package flymake
   :ensure nil
+  :hook
+  (prog-mode . flymake-mode)
   :custom
-  (flymake-show-diagnostics-at-end-of-line t)
+  (flymake-show-diagnostics-at-end-of-line 'fancy)
   :config
   (evil-global-set-key 'normal (kbd "]d") 'flymake-goto-next-error)
-  (evil-global-set-key 'normal (kbd "[d") 'flymake-goto-prev-error))
+  (evil-global-set-key 'normal (kbd "[d") 'flymake-goto-prev-error)
+  (fc/map 'normal
+    "xx" #'flymake-show-buffer-diagnostics
+    "xp" #'flymake-show-buffer-diagnostics))
 #+end_src
 #+begin_src emacs-lisp
 (use-package xref
@@ -1485,7 +1477,6 @@ use built-in lsp client
   :init
   (setq org-eldoc-breadcrumb-separator " → ")
   :hook (org-mode . org-eldoc-load))
-(setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
 #+end_src
 
 
