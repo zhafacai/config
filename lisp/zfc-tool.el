@@ -45,23 +45,39 @@
 
 (fc/map 'normal "gg" #'magit)
 
-(defun fc/diff-hl-update-colors (&rest _)
-  "Dynamically apply the current theme's standard diff colors to diff-hl faces.
-   Sets both background and foreground to create a solid fringe block."
-  (let ((added   (face-attribute 'diff-added :foreground nil 'default))
-        (changed (face-attribute 'diff-changed :foreground nil 'default))
-        (removed (face-attribute 'diff-removed :foreground nil 'default)))
+(use-package blamer
+  :bind (("C-c i" . blamer-show-posframe-commit-info))
+  :defer 20
+  :custom
+  (blamer-idle-time 0.3)
+  (blamer-min-offset 70)
+  :config
+  (modus-themes-with-colors
     (custom-set-faces
-     ;; Added lines: Inherit current theme's 'Added' color
-     `(diff-hl-insert ((t (:inherit diff-added :background ,added :foreground ,added))))
-     ;; Changed lines: Inherit current theme's 'Changed' color
-     `(diff-hl-change ((t (:inherit diff-changed :background ,changed :foreground ,changed))))
-     ;; Deleted lines: Inherit current theme's 'Removed' color
-     `(diff-hl-delete ((t (:inherit diff-removed :background ,removed :foreground ,removed)))))))
+     `(blamer-face ((,c :foreground ,magenta   ; 或其他你喜欢的 semantic color
+                        :background nil
+                        :height 140
+                        :italic t)))))
 
-(add-hook 'enable-theme-functions #'fc/diff-hl-update-colors)
+  (global-blamer-mode 1))
 
-(fc/diff-hl-update-colors)
+;; (defun fc/diff-hl-update-colors (&rest _)
+;;   "Dynamically apply the current theme's standard diff colors to diff-hl faces.
+;;    Sets both background and foreground to create a solid fringe block."
+;;   (let ((added   (face-attribute 'diff-added :foreground nil 'default))
+;;         (changed (face-attribute 'diff-changed :foreground nil 'default))
+;;         (removed (face-attribute 'diff-removed :foreground nil 'default)))
+;;     (custom-set-faces
+;;      ;; Added lines: Inherit current theme's 'Added' color
+;;      `(diff-hl-insert ((t (:inherit diff-added :background ,added :foreground ,added))))
+;;      ;; Changed lines: Inherit current theme's 'Changed' color
+;;      `(diff-hl-change ((t (:inherit diff-changed :background ,changed :foreground ,changed))))
+;;      ;; Deleted lines: Inherit current theme's 'Removed' color
+;;      `(diff-hl-delete ((t (:inherit diff-removed :background ,removed :foreground ,removed)))))))
+
+;; (add-hook 'enable-theme-functions #'fc/diff-hl-update-colors)
+
+;; (fc/diff-hl-update-colors)
 
 (use-package diff-hl
   :init
@@ -100,6 +116,7 @@
   (:map evil-normal-state-map
         ("SPC g i" . guix)))
 
+
 (add-hook 'scheme-mode-hook (lambda () (evil-local-set-key 'normal "K" #'geiser-doc-look-up-manual)))
 
 (use-package gt
@@ -111,8 +128,8 @@
                                  :dir "~/.stardict/dic"
                                  :exact nil))))
 
-(evil-define-key 'normal 'global [down-mouse-3] 'gt-translate)
-(fc/map 'normal "l" 'gt-translate)
+(evil-define-key 'normal 'global [down-mouse-3] #'gt-translate)
+(fc/map 'normal "l" #'gt-translate)
 
 (use-package sops
   ;; :ensure (:type git :host github :repo "djgoku/sops")

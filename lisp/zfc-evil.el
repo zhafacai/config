@@ -33,6 +33,10 @@
 
   (evil-mode 1))
 
+;; TODO find a way to use it in zfc-ui
+;; (fc/map 'normal "tt" #'theme-buffet-a-la-carte)
+;; (fc/map 'normal "to" #'theme-buffet-order-other-period)
+
 (use-package evil-collection
   :after evil
   :custom
@@ -151,6 +155,6 @@
                              90
                            100))))
 
-;; (fc/map 'normal "ta" #'fc/toggle-alpha-background)
+(fc/map 'normal "ta" #'fc/toggle-alpha-background)
 
 (provide 'zfc-evil)

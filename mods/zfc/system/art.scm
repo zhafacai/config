@@ -30,7 +30,8 @@
 
 
 (operating-system
- (kernel linux-6.6)
+ ;; (kernel linux-6.6)
+ (kernel linux-7.0)
  (initrd microcode-initrd)
  (firmware (list linux-firmware))
  (host-name "art")
@@ -47,7 +48,10 @@
  (bootloader (bootloader-configuration
               (bootloader grub-efi-bootloader)
               (targets '("/boot/efi"))
-	          (keyboard-layout keyboard-layout)))
+              (keyboard-layout keyboard-layout)
+              (theme (grub-theme
+                      (inherit (grub-theme))
+                      (gfxmode '("1024x768x32" "auto"))))))
 
  ;; Specify a mapped device for the encrypted root partition.
  ;; The UUID is that returned by 'cryptsetup luksUUID'.
@@ -108,19 +112,19 @@
 			             (service guix-home-service-type
 				                  `(("zfc" ,home-base)))
 			             polkit-wheel-service)
-(modify-services %desktop-services
-				 (guix-service-type
-				  config => (guix-configuration
-				             (inherit config)
-				             (authorized-keys
-				              (append (list (local-file "./signing-key.pub")
-				                            (local-file "./guix-moe.pub"))
-				                      %default-authorized-guix-keys))
-				             (substitute-urls '("https://mirror.sjtu.edu.cn/guix/"
-				                                "https://cache-cdn.guix.moe"
-				                                "https://substitutes.nonguix.org"
-				                                "https://ci.guix.gnu.org"))))
-				 )))
+				   (modify-services %desktop-services
+									(guix-service-type
+									 config => (guix-configuration
+									            (inherit config)
+									            (authorized-keys
+									             (append (list (local-file "./signing-key.pub")
+									                           (local-file "./guix-moe.pub"))
+									                     %default-authorized-guix-keys))
+									            (substitute-urls '("https://mirror.sjtu.edu.cn/guix/"
+									                               "https://cache-cdn.guix.moe"
+									                               "https://substitutes.nonguix.org"
+									                               "https://ci.guix.gnu.org"))))
+									)))
 
  ;; Allow resolution of '.local' host names with mDNS.
  (name-service-switch %mdns-host-lookup-nss))

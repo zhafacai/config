@@ -18,7 +18,8 @@
 	      ;; (t . (regular 1.15))
 	      ))
 
-  (setq modus-themes-common-palette-overrides nil))
+  (setq modus-themes-common-palette-overrides nil)
+  (modus-themes-load-random 'dark))
 
 (use-package ef-themes
   :init
@@ -64,6 +65,7 @@
   ;; (writeroom-width 90)
   :hook
   (org-mode . writeroom-mode)
+  (nov-mode . writeroom-mode)
   (Info-mode . writeroom-mode))
 
 (use-package olivetti
@@ -117,6 +119,7 @@
 
 (use-package theme-buffet
   :ensure (:wait t)
+  :after evil
   :config
   (setq theme-buffet-menu 'end-user)
 
@@ -126,11 +129,16 @@
            :afternoon (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
            :evening   (modus-vivendi-tinted ef-rosa ef-elea-dark ef-maris-dark ef-melissa-dark ef-trio-dark ef-dream)))
 
+  
   (theme-buffet-timer-hours 1))
 
-(theme-buffet-a-la-carte)
-(after! evil
-  (fc/map 'normal "tt" #'theme-buffet-a-la-carte))
+(with-eval-after-load 'evil
+  (with-eval-after-load 'theme-buffet
+	;; TODO this is ugly
+    (run-with-idle-timer 0.5 nil
+      (lambda ()
+        (evil-global-set-key 'normal (kbd "SPC t t") #'theme-buffet-a-la-carte)
+        (evil-global-set-key 'normal (kbd "SPC t o") #'theme-buffet-order-other-period)))))
 
 (use-package rainbow-delimiters
   :config

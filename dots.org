@@ -181,7 +181,8 @@ setup elpaca using git
 	      ;; (t . (regular 1.15))
 	      ))
 
-  (setq modus-themes-common-palette-overrides nil))
+  (setq modus-themes-common-palette-overrides nil)
+  (modus-themes-load-random 'dark))
 
 (use-package ef-themes
   :init
@@ -227,6 +228,7 @@ setup elpaca using git
   ;; (writeroom-width 90)
   :hook
   (org-mode . writeroom-mode)
+  (nov-mode . writeroom-mode)
   (Info-mode . writeroom-mode))
 
 (use-package olivetti
@@ -292,6 +294,7 @@ default fonts
 #+begin_src emacs-lisp
 (use-package theme-buffet
   :ensure (:wait t)
+  :after evil
   :config
   (setq theme-buffet-menu 'end-user)
 
@@ -301,11 +304,16 @@ default fonts
            :afternoon (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
            :evening   (modus-vivendi-tinted ef-rosa ef-elea-dark ef-maris-dark ef-melissa-dark ef-trio-dark ef-dream)))
 
+  
   (theme-buffet-timer-hours 1))
 
-(theme-buffet-a-la-carte)
-(after! evil
-  (fc/map 'normal "tt" #'theme-buffet-a-la-carte))
+(with-eval-after-load 'evil
+  (with-eval-after-load 'theme-buffet
+	;; TODO this is ugly
+    (run-with-idle-timer 0.5 nil
+      (lambda ()
+        (evil-global-set-key 'normal (kbd "SPC t t") #'theme-buffet-a-la-carte)
+        (evil-global-set-key 'normal (kbd "SPC t o") #'theme-buffet-order-other-period)))))
 #+end_src
 #+begin_src emacs-lisp
 (use-package rainbow-delimiters
@@ -397,6 +405,11 @@ setup evil
 *** The =zfc-evil.el= section about evil plugins
 evil collection for bunch of maps in different mode
 #+begin_src emacs-lisp
+
+;; TODO find a way to use it in zfc-ui
+;; (fc/map 'normal "tt" #'theme-buffet-a-la-carte)
+;; (fc/map 'normal "to" #'theme-buffet-order-other-period)
+
 (use-package evil-collection
   :after evil
   :custom
@@ -549,7 +562,7 @@ toggle alpha background
                              90
                            100))))
 
-;; (fc/map 'normal "ta" #'fc/toggle-alpha-background)
+(fc/map 'normal "ta" #'fc/toggle-alpha-background)
 
 #+end_src
 
@@ -649,7 +662,7 @@ basic packages which extend core features in emacs
     (server-start)))
 
 #+end_src
-*** The =zfc-base.el= section about extending builin features
+*** The =zfc-base.el= section about extending builtin features
 #+begin_src emacs-lisp
 (use-package gcmh
   :config
@@ -1722,26 +1735,42 @@ elfeed
   :defer t)
 
 (fc/map 'normal "gg" #'magit)
+
+(use-package blamer
+  :bind (("C-c i" . blamer-show-posframe-commit-info))
+  :defer 20
+  :custom
+  (blamer-idle-time 0.3)
+  (blamer-min-offset 70)
+  :config
+  (modus-themes-with-colors
+    (custom-set-faces
+     `(blamer-face ((,c :foreground ,magenta   ; 或其他你喜欢的 semantic color
+                        :background nil
+                        :height 140
+                        :italic t)))))
+
+  (global-blamer-mode 1))
 #+end_src
 diff-hl
 #+begin_src emacs-lisp
-(defun fc/diff-hl-update-colors (&rest _)
-  "Dynamically apply the current theme's standard diff colors to diff-hl faces.
-   Sets both background and foreground to create a solid fringe block."
-  (let ((added   (face-attribute 'diff-added :foreground nil 'default))
-        (changed (face-attribute 'diff-changed :foreground nil 'default))
-        (removed (face-attribute 'diff-removed :foreground nil 'default)))
-    (custom-set-faces
-     ;; Added lines: Inherit current theme's 'Added' color
-     `(diff-hl-insert ((t (:inherit diff-added :background ,added :foreground ,added))))
-     ;; Changed lines: Inherit current theme's 'Changed' color
-     `(diff-hl-change ((t (:inherit diff-changed :background ,changed :foreground ,changed))))
-     ;; Deleted lines: Inherit current theme's 'Removed' color
-     `(diff-hl-delete ((t (:inherit diff-removed :background ,removed :foreground ,removed)))))))
+;; (defun fc/diff-hl-update-colors (&rest _)
+;;   "Dynamically apply the current theme's standard diff colors to diff-hl faces.
+;;    Sets both background and foreground to create a solid fringe block."
+;;   (let ((added   (face-attribute 'diff-added :foreground nil 'default))
+;;         (changed (face-attribute 'diff-changed :foreground nil 'default))
+;;         (removed (face-attribute 'diff-removed :foreground nil 'default)))
+;;     (custom-set-faces
+;;      ;; Added lines: Inherit current theme's 'Added' color
+;;      `(diff-hl-insert ((t (:inherit diff-added :background ,added :foreground ,added))))
+;;      ;; Changed lines: Inherit current theme's 'Changed' color
+;;      `(diff-hl-change ((t (:inherit diff-changed :background ,changed :foreground ,changed))))
+;;      ;; Deleted lines: Inherit current theme's 'Removed' color
+;;      `(diff-hl-delete ((t (:inherit diff-removed :background ,removed :foreground ,removed)))))))
 
-(add-hook 'enable-theme-functions #'fc/diff-hl-update-colors)
+;; (add-hook 'enable-theme-functions #'fc/diff-hl-update-colors)
 
-(fc/diff-hl-update-colors)
+;; (fc/diff-hl-update-colors)
 
 (use-package diff-hl
   :init
@@ -1795,6 +1824,7 @@ guix
   (:map evil-normal-state-map
         ("SPC g i" . guix)))
 
+
 (add-hook 'scheme-mode-hook (lambda () (evil-local-set-key 'normal "K" #'geiser-doc-look-up-manual)))
 #+end_src
 ~epkgs~
@@ -1815,8 +1845,8 @@ translater
                                  :dir "~/.stardict/dic"
                                  :exact nil))))
 
-(evil-define-key 'normal 'global [down-mouse-3] 'gt-translate)
-(fc/map 'normal "l" 'gt-translate)
+(evil-define-key 'normal 'global [down-mouse-3] #'gt-translate)
+(fc/map 'normal "l" #'gt-translate)
 
 
 #+end_src
@@ -1921,7 +1951,6 @@ emms
     "s" #'emms-sort
     "q" #'emms-playlist-mode-bury-buffer))
 #+end_src
-
 
 *** The =zfc-tool.el= section about ai
 dwim
@@ -2230,7 +2259,8 @@ email
 <<sys-def>>
 
 (operating-system
- (kernel linux-6.6)
+ ;; (kernel linux-6.6)
+ (kernel linux-7.0)
  (initrd microcode-initrd)
  (firmware (list linux-firmware))
  (host-name "art")
@@ -2247,7 +2277,10 @@ email
  (bootloader (bootloader-configuration
               (bootloader grub-efi-bootloader)
               (targets '("/boot/efi"))
-	          (keyboard-layout keyboard-layout)))
+              (keyboard-layout keyboard-layout)
+              (theme (grub-theme
+                      (inherit (grub-theme))
+                      (gfxmode '("1024x768x32" "auto"))))))
 
  ;; Specify a mapped device for the encrypted root partition.
  ;; The UUID is that returned by 'cryptsetup luksUUID'.
@@ -2303,9 +2336,9 @@ email
 			             (service guix-home-service-type
 				                  `(("zfc" ,home-base)))
 			             polkit-wheel-service)
-(modify-services %desktop-services
-				 <<modify-service>>
-				 )))
+				   (modify-services %desktop-services
+									<<modify-service>>
+									)))
 
  ;; Allow resolution of '.local' host names with mDNS.
  (name-service-switch %mdns-host-lookup-nss))
@@ -2762,7 +2795,7 @@ mihomo
    (openpgp-fingerprint
     "8D10 60B9 6BB8 292E 829B  7249 AED4 1CC1 93B7 01E2"))))
 #+end_src
-*** The guixcn for =channels.scm=
+*** COMMENT The guixcn for =channels.scm=
 ~chl~
 #+begin_src scheme :noweb-ref channels
 (channel

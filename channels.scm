@@ -44,13 +44,4 @@
     "0bbaf1fdd25266c7df790f65640aaa01e6d2dbc9"
     (openpgp-fingerprint
      "8D10 60B9 6BB8 292E 829B  7249 AED4 1CC1 93B7 01E2"))))
- (channel
-  (name 'guixcn)
-  (url "https://codeberg.org/guixcn/guix-channel.git")
-  (branch "master")
-  (introduction
-   (make-channel-introduction
-    "993d200265630e9c408028a022f32f34acacdf29"
-    (openpgp-fingerprint
- 	"7EBE A494 60CE 5E2C 0875  7FDB 3B5A A993 E1A2 DFF0"))))
       )
