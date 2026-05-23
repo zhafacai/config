@@ -92,7 +92,6 @@
 						         "fd"
 						         "mpv"
 						         "alacritty"
-						         "fish"
 						         "gcc-toolchain"
 						         "xwayland-satellite"
 						         "git"
@@ -148,15 +147,19 @@
 		      	(pinentry-program (file-append pinentry-gnome3 "/bin/pinentry-gnome3"))
 		      	(extra-content "allow-loopback-pinentry")
 		      	(ssh-support? #t)))
+		      (simple-service 'base-env-vars-service
+		                      home-environment-variables-service-type
+		                      `(("EDITOR" . "emacsclient")))
 		      (service home-bash-service-type
-		        (home-bash-configuration
-		      	(aliases '(("em" . "emacsclient")
-		      			   ("e" . "nvim")))
-		      	(environment-variables '(("EDITOR" . "emacsclient")))
-		      	(bashrc (list (local-file "plain/.bashrc" "bashrc")))
-		      	(bash-profile (list (local-file
-		      						 "plain/.bash_profile"
-		      						 "bash_profile")))))
+		      		 (home-bash-configuration
+		      		   (aliases '(("em" . "emacsclient")
+		      					  ("e" . "nvim")))
+		      		   (environment-variables '())
+		      		   (bashrc (list (local-file "plain/.bashrc" "bashrc")))
+		      		   (bash-profile (list (local-file
+		      								"plain/.bash_profile"
+		      								"bash_profile")))))
+		      (service home-fish-service-type)
 		      (simple-service 'cargo-config
 		      	home-files-service-type
 		        `(( ".cargo/config.toml" ,(local-file "plain/cargo.toml"))))

@@ -2491,7 +2491,6 @@ here is =sops= secrets config for my dae config.
 						         "fd"
 						         "mpv"
 						         "alacritty"
-						         "fish"
 						         "gcc-toolchain"
 						         "xwayland-satellite"
 						         "git"
@@ -2594,18 +2593,29 @@ patch to use flypy
 	(extra-content "allow-loopback-pinentry")
 	(ssh-support? #t)))
 #+end_src
+*** The =base.scm= section about env
+~hm-services~
+#+begin_src scheme :noweb-ref hm-services
+(simple-service 'base-env-vars-service
+                home-environment-variables-service-type
+                `(("EDITOR" . "emacsclient")))
+#+end_src
 *** The =base.scm= section about bash
 ~hm-services~
 #+begin_src scheme :noweb-ref hm-services
 (service home-bash-service-type
-  (home-bash-configuration
-	(aliases '(("em" . "emacsclient")
-			   ("e" . "nvim")))
-	(environment-variables '(("EDITOR" . "emacsclient")))
-	(bashrc (list (local-file "plain/.bashrc" "bashrc")))
-	(bash-profile (list (local-file
-						 "plain/.bash_profile"
-						 "bash_profile")))))
+		 (home-bash-configuration
+		   (aliases '(("em" . "emacsclient")
+					  ("e" . "nvim")))
+		   (environment-variables '())
+		   (bashrc (list (local-file "plain/.bashrc" "bashrc")))
+		   (bash-profile (list (local-file
+								"plain/.bash_profile"
+								"bash_profile")))))
+#+end_src
+fish
+#+begin_src scheme :noweb-ref hm-services
+(service home-fish-service-type)
 #+end_src
 *** The =base.scm= section about rustconfig
 ~hm-services~
