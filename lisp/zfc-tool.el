@@ -46,8 +46,8 @@
 (fc/map 'normal "gg" #'magit)
 
 (use-package blamer
-  :bind (("C-c i" . blamer-show-posframe-commit-info))
-  :defer 20
+  ;; :bind (("C-c i" . blamer-show-posframe-commit-info))
+  ;; :defer 20
   :custom
   (blamer-idle-time 0.3)
   (blamer-min-offset 70)
@@ -60,7 +60,6 @@
                         :italic t)))))
 
   (fc/map 'normal "tb" #'blamer-mode)
-
   ;; (global-blamer-mode 1)
   )
 
