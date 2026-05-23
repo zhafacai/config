@@ -200,15 +200,15 @@
   (org-edna-mode)
   ;; Add org-gtd files to your agenda (in :config so org-gtd-directory is defined)
   (setq org-agenda-files (list org-gtd-directory))
-  :bind
-  ;; Global keybindings (work anywhere in Emacs)
-  (("C-c d c" . org-gtd-capture)
-   ("C-c d e" . org-gtd-engage)
-   ("C-c d p" . org-gtd-process-inbox)
-   ("C-c d n" . org-gtd-show-all-next)
-   ("C-c d s" . org-gtd-reflect-stuck-projects)
+  (fc/map 'normal
+    "dc"  #'org-gtd-capture
+    "de"  #'org-gtd-engage
+    "dp"  #'org-gtd-process-inbox
+    "dn"  #'org-gtd-show-all-next
+    "ds"  #'org-gtd-reflect-stuck-projects)
 
-   ;; Keybinding for organizing items (only works in clarify buffers)
+  :bind
+  (;; Keybinding for organizing items (only works in clarify buffers)
    :map org-gtd-clarify-mode-map
    ("C-c c" . org-gtd-organize)
 

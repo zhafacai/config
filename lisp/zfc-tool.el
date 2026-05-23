@@ -2,8 +2,8 @@
 
 (use-package telega
   :ensure nil
-  :bind
-  ("C-c t" . telega)
+  ;; :bind
+  ;; ("C-c t" . telega)
   :commands telega
   :config
   (setq telega-use-tracking-for '(or unmuted mention)
@@ -59,7 +59,10 @@
                         :height 140
                         :italic t)))))
 
-  (global-blamer-mode 1))
+  (fc/map 'normal "tb" #'blamer-mode)
+
+  ;; (global-blamer-mode 1)
+  )
 
 ;; (defun fc/diff-hl-update-colors (&rest _)
 ;;   "Dynamically apply the current theme's standard diff colors to diff-hl faces.
@@ -150,7 +153,11 @@
   (blue-prettify-compilation-mode 1))
 
 (use-package ghostel
-  :ensure t)
+  :ensure t
+  :bind
+  ("C-c t" . ghostel)
+  :custom
+  (ghostel-shell "fish"))
 
 ;; (use-package direnv
 ;;   :config

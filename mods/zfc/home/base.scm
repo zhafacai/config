@@ -103,6 +103,17 @@
                                  ;; fennel
                                  "fnlfmt"
 
+
+								 ;; dirvish
+								 "vips"
+								 "poppler"
+								 "ffmpegthumbnailer"
+								 "epub-thumbnailer"
+								 "mediainfo"
+								 "7zip"
+								 "imagemagick"
+								 "eza"
+
 						         "cryptsetup"))))
 
 	(services
@@ -130,7 +141,12 @@
 		                 (".local/share/fcitx5/rime/symbols_caps_v.yaml" 
 		                  ,(file-append rime-ice "/share/rime-data/symbols_caps_v.yaml"))
 		                 (".local/share/fcitx5/rime/default.custom.yaml"
-		                  ,(local-file "packages/default.custom.yaml"))))
+		                  ,(local-file "packages/default.custom.yaml"))
+		      
+		      
+		      		   ;; 3. Downloads dir-locals
+		                 ("Downloads/.dir-locals.el" ,(local-file "plain/Downloads.el"))
+		      		   ))
 		      (service home-dbus-service-type)
 		      (service home-graphical-session-service-type
 		               (home-graphical-session-configuration
