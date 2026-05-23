@@ -740,7 +740,14 @@ dired
   (push 'eza dirvish-preview-dispatchers)
   (evil-define-key 'normal dirvish-mode-map
     "q" #'dirvish-quit
-    "N"    #'dirvish-narrow)
+    "?" #'dirvish-dispatch
+    "o" #'dirvish-quick-access
+    (kbd "TAB") #'dirvish-subtree-toggle
+    "f" #'dirvish-file-info-menu
+    "l" #'dirvish-ls-switches-menu
+    "s" #'dirvish-quicksort
+    "*" #'dirvish-mark-menu
+    "N" #'dirvish-narrow)
 
   :hook
   (dirvish-setup . dirvish-emerge-mode)
@@ -752,18 +759,11 @@ dired
    ("C-c d s" . dirvish-side)
    ("C-c d q" . dirvish-quick-access)
    :map dirvish-mode-map               ; Dirvish inherits `dired-mode-map'
-   ("?"   . dirvish-dispatch)          ; [?] a helpful cheatsheet
    ("a"   . dirvish-setup-menu)        ; [a]ttributes settings:`t' toggles mtime, `f' toggles fullframe, etc.
-   ("f"   . dirvish-file-info-menu)    ; [f]ile info
-   ("C-c o"   . dirvish-quick-access)      ; [o]pen `dirvish-quick-access-entries'
-   ("s"   . dirvish-quicksort)         ; [s]ort flie list
    ("r"   . dirvish-history-jump)      ; [r]ecent visited
-   ("l"   . dirvish-ls-switches-menu)  ; [l]s command flags
-   ("v"   . dirvish-vc-menu)           ; [v]ersion control commands
-   ("*"   . dirvish-mark-menu)
+   ("v"   . dirvish-vc-menu)
    ("y"   . dirvish-yank-menu)
    ("^"   . dirvish-history-last)
-   ("TAB" . dirvish-subtree-toggle)
    ("M-f" . dirvish-history-go-forward)
    ("M-b" . dirvish-history-go-backward)
    ("M-e" . dirvish-emerge-menu)))
