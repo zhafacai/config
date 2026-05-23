@@ -72,6 +72,7 @@
 						         
 						         ;; cli
                                  "brightnessctl"
+								 "bat"
                                  "telegram-desktop"
                                  "ddcutil"
                                  "github-cli"
@@ -159,7 +160,35 @@
 		      		   (bash-profile (list (local-file
 		      								"plain/.bash_profile"
 		      								"bash_profile")))))
-		      (service home-fish-service-type)
+		      (service home-fish-service-type
+		               (home-fish-configuration
+		                 (config
+		                  (list (plain-file "fish_greeting.fish" "set -g fish_greeting")
+		                        (plain-file "plugins.fish" (string-append "starship init fish | source\n"
+		                                                                  "zoxide init fish | source\n"
+		      															"fish_config theme choose catppuccin-mocha\n"
+		                                                                  "direnv hook fish | source"))))))
+		      
+		      ;; REVIEW have to run guix home reconfigure AT FIRST.
+		      (simple-service 'fish-fisher
+		                      home-activation-service-type
+		                      #~(begin
+		                          (use-modules (guix build utils)
+		                                       (zfc config common))
+		                          (let* ((source (canonicalize-path (config-files-path "fish/fish_plugins")))
+		                                 (target (string-append (getenv "XDG_CONFIG_HOME") "/fish/fish_plugins")))
+		                            (format #t "Directly symlinking fish_plugins (~a) to ~a~%" source target)
+		                            (when (false-if-exception (lstat target))
+		                              (delete-file target))
+		                            (symlink source target))
+		                          (if (not (file-exists? (string-append (getenv "XDG_CONFIG_HOME") "/fish/functions/fisher.fish")))
+		                              (begin
+		                                (format #t "Installing fisher~%")
+		                                (system (string-append "fish -c \"curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | "
+		                                                       "source && fisher install jorgebucaran/fisher\""))))
+		                          (format #t "Updating fisher plugins~%")
+		                          (system "fish -c \"fisher update\"")))
+		      
 		      (simple-service 'cargo-config
 		      	home-files-service-type
 		        `(( ".cargo/config.toml" ,(local-file "plain/cargo.toml"))))
@@ -192,3 +221,5 @@
 		              (permissions #o400))))))
 		      )
              %base-home-services))))
+
+home-base

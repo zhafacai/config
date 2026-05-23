@@ -11,7 +11,7 @@
   (popen prog args))
 
 (define-command (update-guix-command args)
-  ((invoke "update-guix")
+  ((invoke "udg")
    (category 'system)
    (synopsis "Update guix channel")
    (help "
@@ -22,8 +22,18 @@
 	(lambda ()
 	  ($ "guix" "describe" "-f" "channels"))))
 
+(define-command (upgrade-home-command args)
+  ((invoke "ugh")
+   (category 'system)
+   (synopsis "Upgrade guix home")
+   (help "
+  Upgrade guix home.
+  "))
+  ($ "guix" "time-machine" "-C" "channels.lock" "--"
+     "home" "reconfigure" "mods/zfc/system/art.scm" "-L" "mods"))
+
 (define-command (upgrade-guix-command args)
-  ((invoke "upgrade-guix")
+  ((invoke "ugg")
    (category 'system)
    (synopsis "Upgrade guix system")
    (help "
@@ -33,7 +43,7 @@
      "system" "reconfigure" "mods/zfc/system/art.scm" "-L" "mods"))
 
 (define-command (update-nix-command args)
-  ((invoke "update-nix")
+  ((invoke "udn")
    (category 'system)
    (synopsis "Update nix flake")
    (help "
@@ -42,7 +52,7 @@
   ($ "nix" "flake" "update"))
 
 (define-command (upgrade-nix-command args)
-  ((invoke "upgrade-nix")
+  ((invoke "ugn")
    (category 'system)
    (synopsis "Upgrade nix flake")
    (help "
@@ -52,7 +62,7 @@
 
 
 (define-command (edit-sops-command args)
-  ((invoke "edit-sops")
+  ((invoke "eds")
    (category 'system)
    (synopsis "Edit sops encrypted file")
    (help "[FILE_PATH]
@@ -71,4 +81,5 @@
    update-nix-command
    update-guix-command
    upgrade-nix-command
+   upgrade-home-command
    upgrade-guix-command)))
