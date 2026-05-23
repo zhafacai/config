@@ -37,8 +37,11 @@
           tailwindcss-language-server
           typescript-go
 
-          # fennel
-          fnlfmt
+          # python
+          ty
+          ruff
+          rassumfrassum
+          black
 
           # lua
           stylua
@@ -47,7 +50,6 @@
 
           vscode-json-languageserver
           shfmt
-          black
 
           # nix
           nixd

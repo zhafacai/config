@@ -155,19 +155,11 @@
 
   :custom
   (eglot-autoshutdown         t)
-  (eglot-send-changes-idle-time 0.5) ;; send changes faster (default is 0.5 anyway)
-
-  ;; (eglot-ignored-server-capabilities
-  ;;  '(:documentHighlightProvider      ;; disable if too slow/noisy
-  ;;    :foldingRangeProvider
-  ;;    ))            ;; many people disable inlay hints or use a dedicated package
-
-  ;; 3. Optional: better event logging (useful when debugging)
-  ;; :custom (eglot-events-buffer-size 2000000)  ;; bigger log buffer
+  (eglot-send-changes-idle-time 0.5)
 
   :config
   (add-to-list 'eglot-server-programs
-               '((python-mode python-ts-mode) . ("ty" "server")))
+               '((python-mode python-ts-mode) . ("rass" "python")))
 
   (add-to-list 'eglot-server-programs
                '(((typescript-ts-mode :language-id "typescript")
@@ -175,10 +167,10 @@
                   (typescript-mode :language-id "typescript")
                   (js-mode :language-id "javascript")
                   (js-ts-mode :language-id "javascript"))
-                 . ("tsgo" "--lsp" "--stdio")))
-
-  (add-to-list 'eglot-server-programs
-               '(tsx-ts-mode . ("tailwindcss-language-server" "--stdio")))
+                 . ("rass" "--"
+					"tsgo" "--lsp" "--stdio" "--"
+					"tailwindcss-language-server" "--stdio"
+					)))
 
   (general-define-key
    :states 'normal

@@ -4,6 +4,9 @@
 (use-package sol-mode
   :mode "\\.sol\\'")
 
+(use-package nix-ts-mode
+ :mode "\\.nix\\'")
+
 ;; NOTE https://github.com/liblit/demangle-mode this one might be helpful
 (use-package disaster
   :commands (disaster)
