@@ -18,9 +18,11 @@
   Update guix channels.
   "))
   ($ "guix" "pull" "-C" "channels.scm")
-  (with-output-to-file "channels.lock"
-	(lambda ()
-	  ($ "guix" "describe" "-f" "channels"))))
+  (system "guix describe -f channels > channels.lock")
+  ;; (with-output-to-file "channels.tmp"
+  ;; 	(lambda ()
+  ;; 	  ($ "guix" "describe" "-f" "channels")))
+  )
 
 (define-command (upgrade-home-command args)
   ((invoke "ugh")
