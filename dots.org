@@ -2049,9 +2049,8 @@ email
   ("C-c e" . notmuch)
   :config
   (setq notmuch-identities '("zfc <zhafacai@gmail.com>"))
-  (setq notmuch-fcc-dirs
-        '(("zhafacai@gmail.com" . "gmail/Sent")))
-  (setq notmuch-show-logo nil
+  (setq notmuch-fcc-dirs nil)
+  (setq notmuch-show-logo t
         notmuch-column-control 1.0
         notmuch-hello-auto-refresh t
         notmuch-hello-recent-searches-max 20
@@ -2070,14 +2069,15 @@ email
             :query "tag:unread and tag:inbox"
             :sort-order newest-first
             :key ,(kbd "u"))
-          ( :name "🔮 unread crypto"
-            :query "tag:unread and tag:crypto"
-            :sort-order newest-first
-            :key ,(kbd "c"))
-          ( :name "🌞 unread life"
-            :query "tag:unread and tag:life"
-            :sort-order newest-first
-            :key ,(kbd "l")))))
+          ;; ( :name "🔮 unread crypto"
+          ;;   :query "tag:unread and tag:crypto"
+          ;;   :sort-order newest-first
+          ;;   :key ,(kbd "c"))
+          ;; ( :name "🌞 unread life"
+          ;;   :query "tag:unread and tag:life"
+          ;;   :sort-order newest-first
+          ;;   :key ,(kbd "l"))
+		  )))
 
 
 (setq browse-url-browser-function 'browse-url-generic
@@ -2564,10 +2564,11 @@ patch to use flypy
 ~hm-services~
 #+begin_src scheme :noweb-ref hm-services
 (service home-gpg-agent-service-type
-  (home-gpg-agent-configuration
-	(pinentry-program (file-append pinentry-gnome3 "/bin/pinentry-gnome3"))
-	(extra-content "allow-loopback-pinentry")
-	(ssh-support? #t)))
+         (home-gpg-agent-configuration
+          (pinentry-program (file-append pinentry-gnome3 "/bin/pinentry-gnome3"))
+          (default-cache-ttl 1800)
+          (extra-content "allow-loopback-pinentry")
+          (ssh-support? #t)))
 #+end_src
 *** The =base.scm= section about env
 ~hm-services~
@@ -2693,6 +2694,22 @@ git config
                   "0 12 * * *"
                   #~(#$(file-append isync "/bin/mbsync") "gmail")
                   #:documentation "Synchronize Gmail via mbsync daily at noon.")))
+#+end_src
+~hm-services~
+#+begin_src scheme :noweb-ref hm-services
+(simple-service 'notmuch-config-service
+                home-files-service-type
+                (list
+                 `(".config/notmuch/default/config"
+                   ,(mixed-text-file "notmuch-config"
+                                     "[user]\n"
+                                     "primary_email=zhafacai@gmail.com\n"))))
+
+;; cannot use getenv HOME in home-files-service-type
+(simple-service 'notmuch-env-service
+                home-environment-variables-service-type
+                `(("NOTMUCH_DATABASE" . ,(string-append (getenv "HOME") "/Documents/Mail"))))
+
 #+end_src
 *** The =base.scm= section about elfeed
 ~home-use~

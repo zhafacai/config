@@ -161,10 +161,11 @@
                                 (input-method-editors
                                  (list fcitx5-rime))))
                       (service home-gpg-agent-service-type
-                        (home-gpg-agent-configuration
-                      	(pinentry-program (file-append pinentry-gnome3 "/bin/pinentry-gnome3"))
-                      	(extra-content "allow-loopback-pinentry")
-                      	(ssh-support? #t)))
+                               (home-gpg-agent-configuration
+                                (pinentry-program (file-append pinentry-gnome3 "/bin/pinentry-gnome3"))
+                                (default-cache-ttl 1800)
+                                (extra-content "allow-loopback-pinentry")
+                                (ssh-support? #t)))
                       (simple-service 'base-env-vars-service
                                       home-environment-variables-service-type
                                       `(("EDITOR" . "emacsclient")))
@@ -231,6 +232,19 @@
                                         "0 12 * * *"
                                         #~(#$(file-append isync "/bin/mbsync") "gmail")
                                         #:documentation "Synchronize Gmail via mbsync daily at noon.")))
+                      (simple-service 'notmuch-config-service
+                                      home-files-service-type
+                                      (list
+                                       `(".config/notmuch/default/config"
+                                         ,(mixed-text-file "notmuch-config"
+                                                           "[user]\n"
+                                                           "primary_email=zhafacai@gmail.com\n"))))
+                      
+                      ;; cannot use getenv HOME in home-files-service-type
+                      (simple-service 'notmuch-env-service
+                                      home-environment-variables-service-type
+                                      `(("NOTMUCH_DATABASE" . ,(string-append (getenv "HOME") "/Documents/Mail"))))
+                      
                       ;; (service home-sops-secrets-service-type
                       ;;          (home-sops-service-configuration
                       ;;           (secrets

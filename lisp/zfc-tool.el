@@ -344,9 +344,8 @@
   ("C-c e" . notmuch)
   :config
   (setq notmuch-identities '("zfc <zhafacai@gmail.com>"))
-  (setq notmuch-fcc-dirs
-        '(("zhafacai@gmail.com" . "gmail/Sent")))
-  (setq notmuch-show-logo nil
+  (setq notmuch-fcc-dirs nil)
+  (setq notmuch-show-logo t
         notmuch-column-control 1.0
         notmuch-hello-auto-refresh t
         notmuch-hello-recent-searches-max 20
@@ -365,14 +364,15 @@
             :query "tag:unread and tag:inbox"
             :sort-order newest-first
             :key ,(kbd "u"))
-          ( :name "🔮 unread crypto"
-            :query "tag:unread and tag:crypto"
-            :sort-order newest-first
-            :key ,(kbd "c"))
-          ( :name "🌞 unread life"
-            :query "tag:unread and tag:life"
-            :sort-order newest-first
-            :key ,(kbd "l")))))
+          ;; ( :name "🔮 unread crypto"
+          ;;   :query "tag:unread and tag:crypto"
+          ;;   :sort-order newest-first
+          ;;   :key ,(kbd "c"))
+          ;; ( :name "🌞 unread life"
+          ;;   :query "tag:unread and tag:life"
+          ;;   :sort-order newest-first
+          ;;   :key ,(kbd "l"))
+		  )))
 
 
 (setq browse-url-browser-function 'browse-url-generic
