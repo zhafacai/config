@@ -47,7 +47,7 @@ more packages.
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'tooltip-mode) (tooltip-mode -1))
-(if (fboundp 'fringe-mode) (fringe-mode -1))
+(if (fboundp 'fringe-mode) (fringe-mode 0))
 
 ;; Avoid raising the *Messages* buffer if anything is still without
 ;; lexical bindings
@@ -120,8 +120,8 @@ setup elpaca using git
 (setq use-package-always-ensure t)
 
 (require 'zfc-macro)
-(require 'zfc-ui)
 (require 'zfc-evil)
+(require 'zfc-ui)
 (require 'zfc-base)
 (require 'zfc-dev)
 (require 'zfc-org)
@@ -155,210 +155,6 @@ setup elpaca using git
 #+begin_src emacs-lisp
 (provide 'zfc-macro)
 #+end_src
-** The =zfc-ui.el= section
-:PROPERTIES:
-:header-args:emacs-lisp: :tangle lisp/zfc-ui.el
-:END:
-*** The =zfc-ui.el= section about themes
-#+begin_src emacs-lisp
-(use-package modus-themes
-  :init
-  (modus-themes-include-derivatives-mode 1)
-  :config
-  ;; Your customizations here:
-  (setq modus-themes-to-toggle '(modus-operandi modus-vivendi)
-        modus-themes-to-rotate modus-themes-items
-        modus-themes-mixed-fonts t
-        modus-themes-variable-pitch-ui t
-        modus-themes-italic-constructs t
-        modus-themes-bold-constructs t
-        modus-themes-completions '((t . (bold)))
-        modus-themes-prompts '(bold)
-        modus-themes-headings
-        '(
-          ;; (agenda-structure . (variable-pitch light 2.2))
-          ;; (agenda-date . (variable-pitch regular 1.3))
-	      ;; (t . (regular 1.15))
-	      ))
-
-  (setq modus-themes-common-palette-overrides nil)
-  (modus-themes-load-random 'dark))
-
-(use-package ef-themes
-  :init
-  (ef-themes-take-over-modus-themes-mode 1))
-
-(use-package logos
-  :config
-  ;; If you want to use outlines instead of page breaks (the ^L):
-  (setq logos-outlines-are-pages t)
-
-  ;; This is the default value for the outlines:
-  (setq logos-outline-regexp-alist
-        `((emacs-lisp-mode . "^;;;+ ")
-          (org-mode . "^\\*+ +")
-          (markdown-mode . "^\\#+ +")))
-
-  ;; These apply when `logos-focus-mode' is enabled.  Their value is
-  ;; buffer-local.
-  (setq-default logos-hide-cursor nil
-                logos-hide-mode-line t
-                logos-hide-header-line t
-                logos-hide-buffer-boundaries t
-                logos-hide-fringe t
-                logos-variable-pitch nil
-                logos-buffer-read-only nil
-                logos-scroll-lock nil
-                logos-olivetti nil)
-
-
-  (let ((map global-map))
-    (define-key map [remap narrow-to-region] #'logos-narrow-dwim)
-    (define-key map [remap forward-page] #'logos-forward-page-dwim)
-    (define-key map [remap backward-page] #'logos-backward-page-dwim))
-
-
-  )
-
-
-(use-package writeroom-mode
-  :custom
-  (writeroom-maximize-window nil)
-  (writeroom-fullscreen-effect nil)
-  ;; (writeroom-width 90)
-  :hook
-  (org-mode . writeroom-mode)
-  (nov-mode . writeroom-mode)
-  (Info-mode . writeroom-mode))
-
-(use-package olivetti
-  :custom
-  (olivetti-minimum-body-width 80)
-  (olivetti-recall-visual-line-mode-entry-state t)
-  :config
-  (setq-default olivetti-body-width 0.5))
-#+end_src
-
-default fonts
-#+begin_src emacs-lisp
-(set-face-attribute 'default nil
-                    :family "Iosevka SS02"
-                    :height 150)
-
-(set-face-attribute 'variable-pitch nil
-                    :family "Aporetic Serif")
-
-(set-face-attribute 'fixed-pitch nil
-                    :family "Aporetic Sans Mono")
-
-(set-face-attribute 'fixed-pitch-serif nil
-                    :family "Aporetic Serif Mono")
-#+end_src
-
-中文字体
-#+begin_src emacs-lisp
-(dolist (charset '(kana han cjk-misc symbol bopomofo))
-  (set-fontset-font t charset (font-spec :family "LXGW WenKai")))
-#+end_src
-#+begin_src emacs-lisp
-(use-package hl-todo
-  :hook (prog-mode . hl-todo-mode))
-(after! evil
-  (evil-global-set-key 'normal "]t" #'hl-todo-next)
-  (evil-global-set-key 'normal "[t" #'hl-todo-previous))
-#+end_src
-
-#+begin_src emacs-lisp
-(use-package doom-modeline
-  :config
-  (setq doom-modeline-check nil)
-  (setq doom-modeline-buffer-encoding nil)
-  (setq doom-modeline-always-show-macro-register t)
-  (setq doom-modeline-position-column-line-format '(""))
-
-  :init (doom-modeline-mode 1))
-#+end_src
-
-#+begin_src emacs-lisp
-(use-package pulsar
-  :config
-  (dolist (fn '(pulsar-pulse-line-red pulsar-recenter-top pulsar-reveal-entry))
-    (add-hook 'minibuffer-setup-hook fn))
-  (setq pulsar-delay 0.045
-        pulsar-iterations 4
-        pulsar-face 'pulsar-green
-        pulsar-region-face 'pulsar-yellow
-        pulsar-highlight-face 'pulsar-magenta)
-  (pulsar-global-mode 1))
-#+end_src
-#+begin_src emacs-lisp
-(use-package theme-buffet
-  :ensure (:wait t)
-  :after evil
-  :config
-  (setq theme-buffet-menu 'end-user)
-
-  (setq theme-buffet-end-user
-        '( :night     (modus-vivendi ef-dark ef-winter ef-autumn ef-night ef-duo-dark ef-symbiosis)
-           :morning   (modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light)
-           :afternoon (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
-           :evening   (modus-vivendi-tinted ef-rosa ef-elea-dark ef-maris-dark ef-melissa-dark ef-trio-dark ef-dream)))
-
-  
-  (theme-buffet-timer-hours 1))
-
-(with-eval-after-load 'evil
-  (with-eval-after-load 'theme-buffet
-	;; TODO this is ugly
-    (run-with-idle-timer 0.5 nil
-      (lambda ()
-        (evil-global-set-key 'normal (kbd "SPC t t") #'theme-buffet-a-la-carte)
-        (evil-global-set-key 'normal (kbd "SPC t o") #'theme-buffet-order-other-period)))))
-#+end_src
-#+begin_src emacs-lisp
-(use-package rainbow-delimiters
-  :config
-  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-#+end_src
-
-#+begin_src emacs-lisp
-(use-package nyan-mode
-  :after doom-modeline
-  :custom
-  (nyan-wavy-trail t)
-  (nyan-animate-nyancat t)
-  (nyan-bar-length 15)
-  :config
-  (nyan-mode))
-#+end_src
-#+begin_src emacs-lisp
-(use-package which-key
-  :custom
-  (which-key-idle-delay 0.5)
-  :init
-  (which-key-mode))
-#+end_src
-#+begin_src emacs-lisp
-(use-package lin
-  :config
-  (setopt lin-face 'lin-blue) ; check doc string for alternative styles
-  
-  (global-hl-line-mode 1)
-  (lin-global-mode 1)
-
-  ;; If you are using the GNOME desktop and want to synchronise the
-  ;; `lin-face' with GNOME's accent colour:
-  (lin-gnome-accent-color-mode 1))
-#+end_src
-#+begin_src emacs-lisp
-(use-package idle-highlight-mode
-  :config (setq idle-highlight-idle-time 0.2)
-  :hook (eglot--managed-mode . idle-highlight-mode))
-#+end_src
-*** The =zfc-ui.el= section for calling provide
-#+begin_src emacs-lisp
-(provide 'zfc-ui)
-#+end_src
 ** The =zfc-evil.el= section
 :PROPERTIES:
 :header-args:emacs-lisp: :tangle lisp/zfc-evil.el
@@ -376,7 +172,8 @@ set leader and general
   :ensure (:wait t)
   :config
   (general-create-definer fc/map
-    :prefix fc/leader-key))
+    :prefix fc/leader-key)
+  (general-evil-setup))
 
 (use-package evil
   :ensure (:wait t)
@@ -570,6 +367,198 @@ toggle alpha background
 *** The =zfc-evil.el= section for calling provide
 #+begin_src emacs-lisp
 (provide 'zfc-evil)
+#+end_src
+** The =zfc-ui.el= section
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle lisp/zfc-ui.el
+:END:
+*** The =zfc-ui.el= section about themes
+#+begin_src emacs-lisp
+(use-package modus-themes
+  :init
+  (modus-themes-include-derivatives-mode 1)
+  :config
+  ;; Your customizations here:
+  (setq modus-themes-to-toggle '(modus-operandi modus-vivendi)
+        modus-themes-to-rotate modus-themes-items
+        modus-themes-mixed-fonts t
+        modus-themes-variable-pitch-ui t
+        modus-themes-italic-constructs t
+        modus-themes-bold-constructs t
+        modus-themes-completions '((t . (bold)))
+        modus-themes-prompts '(bold)
+        modus-themes-headings
+        '(
+          ;; (agenda-structure . (variable-pitch light 2.2))
+          ;; (agenda-date . (variable-pitch regular 1.3))
+	      ;; (t . (regular 1.15))
+	      ))
+
+  (setq modus-themes-common-palette-overrides nil)
+  (modus-themes-load-random 'dark))
+
+(use-package ef-themes
+  :init
+  (ef-themes-take-over-modus-themes-mode 1))
+
+(use-package logos
+  :config
+  ;; If you want to use outlines instead of page breaks (the ^L):
+  (setq logos-outlines-are-pages t)
+
+  ;; This is the default value for the outlines:
+  (setq logos-outline-regexp-alist
+        `((emacs-lisp-mode . "^;;;+ ")
+          (org-mode . "^\\*+ +")
+          (markdown-mode . "^\\#+ +")))
+
+  ;; These apply when `logos-focus-mode' is enabled.  Their value is
+  ;; buffer-local.
+  (setq-default logos-hide-cursor nil
+                logos-hide-mode-line t
+                logos-hide-header-line t
+                logos-hide-buffer-boundaries t
+                logos-hide-fringe t
+                logos-variable-pitch nil
+                logos-buffer-read-only nil
+                logos-scroll-lock nil
+                logos-olivetti nil)
+
+
+  (let ((map global-map))
+    (define-key map [remap narrow-to-region] #'logos-narrow-dwim)
+    (define-key map [remap forward-page] #'logos-forward-page-dwim)
+    (define-key map [remap backward-page] #'logos-backward-page-dwim)))
+
+(use-package olivetti
+  :general
+  (general-nmap "SPC tf" 'olivetti-mode)
+  :custom
+  (olivetti-minimum-body-width 80)
+  (olivetti-recall-visual-line-mode-entry-state t)
+  :config
+  (setq-default olivetti-body-width 0.5))
+#+end_src
+
+default fonts
+#+begin_src emacs-lisp
+(set-face-attribute 'default nil
+                    :family "Iosevka SS02"
+                    :height 150)
+
+(set-face-attribute 'variable-pitch nil
+                    :family "Aporetic Serif")
+
+(set-face-attribute 'fixed-pitch nil
+                    :family "Aporetic Sans Mono")
+
+(set-face-attribute 'fixed-pitch-serif nil
+                    :family "Aporetic Serif Mono")
+#+end_src
+
+中文字体
+#+begin_src emacs-lisp
+(dolist (charset '(kana han cjk-misc symbol bopomofo))
+  (set-fontset-font t charset (font-spec :family "LXGW WenKai")))
+#+end_src
+#+begin_src emacs-lisp
+(use-package hl-todo
+  :hook (prog-mode . hl-todo-mode))
+(after! evil
+  (evil-global-set-key 'normal "]t" #'hl-todo-next)
+  (evil-global-set-key 'normal "[t" #'hl-todo-previous))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package doom-modeline
+  :config
+  (setq doom-modeline-check nil)
+  (setq doom-modeline-buffer-encoding nil)
+  (setq doom-modeline-always-show-macro-register t)
+  (setq doom-modeline-position-column-line-format '(""))
+
+  :init (doom-modeline-mode 1))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package pulsar
+  :config
+  (dolist (fn '(pulsar-pulse-line-red pulsar-recenter-top pulsar-reveal-entry))
+    (add-hook 'minibuffer-setup-hook fn))
+  (setq pulsar-delay 0.045
+        pulsar-iterations 4
+        pulsar-face 'pulsar-green
+        pulsar-region-face 'pulsar-yellow
+        pulsar-highlight-face 'pulsar-magenta)
+  (pulsar-global-mode 1))
+#+end_src
+#+begin_src emacs-lisp
+(use-package theme-buffet
+  :ensure (:wait t)
+  :after evil
+  :config
+  (setq theme-buffet-menu 'end-user)
+
+  (setq theme-buffet-end-user
+        '( :night     (modus-vivendi ef-dark ef-winter ef-autumn ef-night ef-duo-dark ef-symbiosis)
+           :morning   (modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light)
+           :afternoon (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
+           :evening   (modus-vivendi-tinted ef-rosa ef-elea-dark ef-maris-dark ef-melissa-dark ef-trio-dark ef-dream)))
+
+  
+  (theme-buffet-timer-hours 1))
+
+(with-eval-after-load 'evil
+  (with-eval-after-load 'theme-buffet
+	;; TODO this is ugly
+    (run-with-idle-timer 0.5 nil
+      (lambda ()
+        (evil-global-set-key 'normal (kbd "SPC t t") #'theme-buffet-a-la-carte)
+        (evil-global-set-key 'normal (kbd "SPC t o") #'theme-buffet-order-other-period)))))
+#+end_src
+#+begin_src emacs-lisp
+(use-package rainbow-delimiters
+  :config
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package nyan-mode
+  :after doom-modeline
+  :custom
+  (nyan-wavy-trail t)
+  (nyan-animate-nyancat t)
+  (nyan-bar-length 15)
+  :config
+  (nyan-mode))
+#+end_src
+#+begin_src emacs-lisp
+(use-package which-key
+  :custom
+  (which-key-idle-delay 0.5)
+  :init
+  (which-key-mode))
+#+end_src
+#+begin_src emacs-lisp
+(use-package lin
+  :config
+  (setopt lin-face 'lin-blue) ; check doc string for alternative styles
+  
+  (global-hl-line-mode 1)
+  (lin-global-mode 1)
+
+  ;; If you are using the GNOME desktop and want to synchronise the
+  ;; `lin-face' with GNOME's accent colour:
+  (lin-gnome-accent-color-mode 1))
+#+end_src
+#+begin_src emacs-lisp
+(use-package idle-highlight-mode
+  :config (setq idle-highlight-idle-time 0.2)
+  :hook (eglot--managed-mode . idle-highlight-mode))
+#+end_src
+*** The =zfc-ui.el= section for calling provide
+#+begin_src emacs-lisp
+(provide 'zfc-ui)
 #+end_src
 ** The =zfc-base.el= section
 :PROPERTIES:
@@ -1915,6 +1904,7 @@ direnv
 emms
 #+begin_src emacs-lisp
 (use-package emms
+  :ensure nil
   :after evil
   :commands emms
   :custom

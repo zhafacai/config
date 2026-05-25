@@ -49,8 +49,8 @@
 (setq use-package-always-ensure t)
 
 (require 'zfc-macro)
-(require 'zfc-ui)
 (require 'zfc-evil)
+(require 'zfc-ui)
 (require 'zfc-base)
 (require 'zfc-dev)
 (require 'zfc-org)

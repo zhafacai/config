@@ -172,6 +172,7 @@
   (add-hook 'after-init-hook #'ben-global-mode 99))
 
 (use-package emms
+  :ensure nil
   :after evil
   :commands emms
   :custom

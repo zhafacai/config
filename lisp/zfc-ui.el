@@ -52,23 +52,11 @@
   (let ((map global-map))
     (define-key map [remap narrow-to-region] #'logos-narrow-dwim)
     (define-key map [remap forward-page] #'logos-forward-page-dwim)
-    (define-key map [remap backward-page] #'logos-backward-page-dwim))
-
-
-  )
-
-
-(use-package writeroom-mode
-  :custom
-  (writeroom-maximize-window nil)
-  (writeroom-fullscreen-effect nil)
-  ;; (writeroom-width 90)
-  :hook
-  (org-mode . writeroom-mode)
-  (nov-mode . writeroom-mode)
-  (Info-mode . writeroom-mode))
+    (define-key map [remap backward-page] #'logos-backward-page-dwim)))
 
 (use-package olivetti
+  :general
+  (general-nmap "SPC tf" 'olivetti-mode)
   :custom
   (olivetti-minimum-body-width 80)
   (olivetti-recall-visual-line-mode-entry-state t)

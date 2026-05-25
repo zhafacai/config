@@ -8,7 +8,8 @@
   :ensure (:wait t)
   :config
   (general-create-definer fc/map
-    :prefix fc/leader-key))
+    :prefix fc/leader-key)
+  (general-evil-setup))
 
 (use-package evil
   :ensure (:wait t)
