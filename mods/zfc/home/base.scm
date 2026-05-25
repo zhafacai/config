@@ -2,6 +2,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages fcitx5)
+  #:use-module (gnu packages shells)
   #:use-module (gnu home services shepherd)
   #:use-module (gnu packages mail)
   #:use-module (sops secrets)
@@ -185,25 +186,35 @@
                       															"fish_config theme choose catppuccin-mocha\n"
                                                                                   "direnv hook fish | source"))))))
                       
-                      ;; REVIEW have to run guix home reconfigure AT FIRST.
-                      (simple-service 'fish-fisher
-                                      home-activation-service-type
-                                      #~(begin
-                                          (use-modules (guix build utils)
-                                                       (zfc config common))
-                                          (let* ((source (canonicalize-path (config-files-path "fish/fish_plugins")))
-                                                 (target (string-append (getenv "XDG_CONFIG_HOME") "/fish/fish_plugins")))
-                                            (format #t "Directly symlinking fish_plugins (~a) to ~a~%" source target)
-                                            (when (false-if-exception (lstat target))
-                                              (delete-file target))
-                                            (symlink source target))
-                                          (if (not (file-exists? (string-append (getenv "XDG_CONFIG_HOME") "/fish/functions/fisher.fish")))
-                                              (begin
-                                                (format #t "Installing fisher~%")
-                                                (system (string-append "fish -c \"curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | "
-                                                                       "source && fisher install jorgebucaran/fisher\""))))
-                                          (format #t "Updating fisher plugins~%")
-                                          (system "fish -c \"fisher update\"")))
+                      
+                      (simple-service 'fish-fisher-service
+                                      home-shepherd-service-type
+                                      (list
+                                       (shepherd-service
+                                        (provision '(fish-fisher))
+                                        (one-shot? #t)
+                                        (start
+                                         #~(lambda ()
+                                             (use-modules (guix build utils)
+                                                          (zfc config common))
+                                             (let* ((source (canonicalize-path (config-files-path "fish/fish_plugins")))
+                                                    (target (string-append (getenv "XDG_CONFIG_HOME") "/fish/fish_plugins"))
+                                                    (fish-bin #$(file-append fish "/bin/fish")))
+                                               
+                                               (format #t "Directly symlinking fish_plugins (~a) to ~a~%" source target)
+                                               (when (false-if-exception (lstat target))
+                                                 (delete-file target))
+                                               (symlink source target)
+                                               
+                                               (unless (file-exists? (string-append (getenv "XDG_CONFIG_HOME") "/fish/functions/fisher.fish"))
+                                                 (format #t "Installing fisher~%")
+                                                 (system (string-append fish-bin " -c \"curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | "
+                                                                        "source && fisher install jorgebucaran/fisher\"")))
+                                               
+                                               (format #t "Updating fisher plugins~%")
+                                               (system (string-append fish-bin " -c \"fisher update\""))
+                                               #t)))
+                                        (documentation "Initialize and update Fish plugins via fisher."))))
                       
                       (simple-service 'cargo-config
                       	home-files-service-type
@@ -213,14 +224,13 @@
                         (list `(".gitconfig"
                                 ,(local-file "plain/gitconfig"))))
                       (simple-service 'mbsync-gmail-timer-service
-                                      home-shepherd-service-type
+                                      home-shepherd-timer-service-type
                                       (list
                                        (shepherd-timer
                                         '(mbsync-gmail)
                                         "0 12 * * *"
                                         #~(#$(file-append isync "/bin/mbsync") "gmail")
                                         #:documentation "Synchronize Gmail via mbsync daily at noon.")))
-                      
                       ;; (service home-sops-secrets-service-type
                       ;;          (home-sops-service-configuration
                       ;;           (secrets
