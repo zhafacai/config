@@ -344,6 +344,8 @@
 
 (use-package notmuch
   :ensure nil
+  :hook
+  (notmuch-hello-mode . notmuch-poll-and-refresh-this-buffer)
   :bind
   ("C-c e" . notmuch)
   :config
