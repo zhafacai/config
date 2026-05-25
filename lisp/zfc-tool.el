@@ -325,7 +325,8 @@
 	          (when (string-match-p "\\*agent-shell-diff\\*" (buffer-name))
 		        (evil-emacs-state)))))
 
-(setq epg-pinentry-mode 'loopback)
+;; (setq epg-pinentry-mode 'loopback) 
+(setq epa-file-encrypt-to '("zhafacai@gmail.com"))
 
 (setq auth-sources '("~/.authinfo.gpg")
       user-full-name "zhafacai"

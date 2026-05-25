@@ -2022,9 +2022,10 @@ agent-shell
 
 #+end_src
 *** The =zfc-tool.el= section about email
-pinentry
+epa
 #+begin_src emacs-lisp
-(setq epg-pinentry-mode 'loopback) 
+;; (setq epg-pinentry-mode 'loopback) 
+(setq epa-file-encrypt-to '("zhafacai@gmail.com"))
 #+end_src
 email
 #+begin_src emacs-lisp
