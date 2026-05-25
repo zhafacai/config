@@ -55,6 +55,8 @@
     (define-key map [remap backward-page] #'logos-backward-page-dwim)))
 
 (use-package olivetti
+  :hook
+  (Info-mode . olivetti-mode)
   :general
   (general-nmap "SPC tf" 'olivetti-mode)
   :custom
