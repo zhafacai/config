@@ -5,6 +5,8 @@
   #:use-module (gnu packages shells)
   #:use-module (gnu home services shepherd)
   #:use-module (gnu packages mail)
+  #:use-module (rosenthal services desktop)
+  #:use-module (gnu packages gnome-xyz)
   #:use-module (sops secrets)
   #:use-module (sops home services sops)
   #:use-module (nongnu packages chrome)
@@ -162,7 +164,7 @@
                                  (list fcitx5-rime))))
                       (service home-gpg-agent-service-type
                                (home-gpg-agent-configuration
-                                (pinentry-program (file-append pinentry-gnome3 "/bin/pinentry-gnome3"))
+                                (pinentry-program (file-append pinentry-rofi "/bin/pinentry-rofi"))
                                 (default-cache-ttl 1800)
                                 (extra-content "allow-loopback-pinentry")
                                 (ssh-support? #t)))
@@ -225,7 +227,7 @@
                         (list `(".gitconfig"
                                 ,(local-file "plain/gitconfig"))))
                       (simple-service 'mbsync-gmail-timer-service
-                                      home-shepherd-timer-service-type
+                                      home-shepherd-service-type
                                       (list
                                        (shepherd-timer
                                         '(mbsync-gmail)
@@ -245,6 +247,11 @@
                                       home-environment-variables-service-type
                                       `(("NOTMUCH_DATABASE" . ,(string-append (getenv "HOME") "/Documents/Mail"))))
                       
+                      (service home-theme-service-type
+                               (home-theme-configuration
+                                (packages (list qogir-icon-theme))
+                                (icon-theme "Qogir")
+                                (cursor-theme "Qogir")))
                       ;; (service home-sops-secrets-service-type
                       ;;          (home-sops-service-configuration
                       ;;           (secrets

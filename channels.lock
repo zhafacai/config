@@ -2,7 +2,7 @@
        (name 'guix)
        (url "https://mirror.sjtu.edu.cn/git/guix.git")
        (branch "master")
-       (commit "c5006909c1d3b0093c858883581c70e5451794d7")
+       (commit "ac43d7ed18a5372a7c87c5e5adc40f202363b956")
        (introduction
         (make-channel-introduction
          "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -32,7 +32,7 @@
        (name 'rosenthal)
        (url "https://codeberg.org/hako/rosenthal.git")
        (branch "trunk")
-       (commit "9e60a11917cbdca57e10c51e174dfa56379e74cc")
+       (commit "0b6b5feb72483966ae41ff03aac98bdff52d045c")
        (introduction
         (make-channel-introduction
          "7677db76330121a901604dfbad19077893865f35"

@@ -30,101 +30,102 @@
 
 
 (operating-system
- ;; (kernel linux-6.6)
- (kernel linux-7.0)
- (initrd microcode-initrd)
- (firmware (list linux-firmware))
- (host-name "art")
- (timezone "Asia/Shanghai")
- (locale "en_US.utf8")
+  ;; (kernel linux-6.6)
+  (kernel linux-7.0)
+  (initrd microcode-initrd)
+  (firmware (list linux-firmware))
+  (host-name "art")
+  (timezone "Asia/Shanghai")
+  (locale "en_US.utf8")
 
- ;; Choose US English keyboard layout.  The "altgr-intl"
- ;; variant provides dead keys for accented characters.
- (keyboard-layout (keyboard-layout "us"
-                                   #:options '("ctrl:nocaps")))
+  ;; Choose US English keyboard layout.  The "altgr-intl"
+  ;; variant provides dead keys for accented characters.
+  (keyboard-layout (keyboard-layout "us"
+									#:options '("ctrl:nocaps")))
 
- ;; Use the UEFI variant of GRUB with the EFI System
- ;; Partition mounted on /boot/efi.
- (bootloader (bootloader-configuration
-              (bootloader grub-efi-bootloader)
-              (targets '("/boot/efi"))
-              (keyboard-layout keyboard-layout)
-              (theme (grub-theme
-                      (inherit (grub-theme))
-                      (gfxmode '("1024x768x32" "auto"))))))
+  ;; Use the UEFI variant of GRUB with the EFI System
+  ;; Partition mounted on /boot/efi.
+  (bootloader (bootloader-configuration
+				(bootloader grub-efi-bootloader)
+				(targets '("/boot/efi"))
+				(keyboard-layout keyboard-layout)
+				(theme (grub-theme
+						(inherit (grub-theme))
+						(gfxmode '("1024x768x32" "auto"))))))
 
- ;; Specify a mapped device for the encrypted root partition.
- ;; The UUID is that returned by 'cryptsetup luksUUID'.
- (mapped-devices
-  (list (mapped-device
-         (source (uuid "7a3e1a89-474c-4efb-8826-2470162e7a66"))
-         (target "root")
-	     (type luks-device-mapping))))
+  ;; Specify a mapped device for the encrypted root partition.
+  ;; The UUID is that returned by 'cryptsetup luksUUID'.
+  (mapped-devices
+   (list (mapped-device
+           (source (uuid "7a3e1a89-474c-4efb-8826-2470162e7a66"))
+           (target "root")
+	       (type luks-device-mapping))))
 
- (file-systems (append
-                (list (file-system
-                       (device (file-system-label "root"))
-                       (mount-point "/")
-                       (type "ext4")
-                       (dependencies mapped-devices))
-                      (file-system
-                       (device (uuid "558B-E023" 'fat))
-                       (mount-point "/boot/efi")
-                       (type "vfat")))
-                %base-file-systems))
+  (file-systems (append
+                 (list (file-system
+						 (device (file-system-label "root"))
+						 (mount-point "/")
+						 (type "ext4")
+						 (dependencies mapped-devices))
+                       (file-system
+						 (device (uuid "558B-E023" 'fat))
+						 (mount-point "/boot/efi")
+						 (type "vfat")))
+                 %base-file-systems))
 
- ;; Specify a swap file for the system, which resides on the
- ;; root file system.
- (swap-devices (list (swap-space
-                      (target "/swapfile"))))
+  ;; Specify a swap file for the system, which resides on the
+  ;; root file system.
+  (swap-devices (list (swap-space
+						(target "/swapfile"))))
 
- (users (cons (user-account
-               (name "zfc")
-               (comment "zhafacai")
-               (group "users")
-               (password "$6$RHK3ZQYo7KixPw/f$Wz1cc8nIU.AlQ7UuFQ/mPYQGa4.jt0vzZ8UeHlpS0znTEM7qg3ael8RJbCczYMp.I8YqIP0x7Nrg9A6opT1TU0")
-               (supplementary-groups '("wheel" "netdev"
-				                       "libvirt"
-                                       "audio" "video")))
-              %base-user-accounts))
+  (users (cons (user-account
+				 (name "zfc")
+				 (comment "zhafacai")
+				 (group "users")
+				 (password "$6$RHK3ZQYo7KixPw/f$Wz1cc8nIU.AlQ7UuFQ/mPYQGa4.jt0vzZ8UeHlpS0znTEM7qg3ael8RJbCczYMp.I8YqIP0x7Nrg9A6opT1TU0")
+				 (supplementary-groups '("wheel" "netdev"
+										 "libvirt"
+										 "audio" "video")))
+               %base-user-accounts))
 
 
- ;; This is where we specify system-wide packages.
- (packages (append (list
-		            neovim
-		            niri
-		            xdg-desktop-portal-gnome
-                    gvfs)
-                   %base-packages))
+  ;; This is where we specify system-wide packages.
+  (packages (append (list
+		             neovim
+		             niri
+		             xdg-desktop-portal-gnome
+                     gvfs)
+					%base-packages))
 
- (services (append (list (service gnome-desktop-service-type)
-			             (service bluetooth-service-type)
-			             (service libvirt-service-type
-				                  (libvirt-configuration))
-			             (service virtlog-service-type
-				                  (virtlog-configuration))
-                         (service nix-service-type
-                           (nix-configuration
-                                         (extra-config
-                                          '("experimental-features = nix-command flakes\n"
-                                            "trusted-users = zfc root\n"
-                                            "substituters =  https://mirrors.ustc.edu.cn/nix-channels/store/ https://cache.nixos.org/\n"))))
-			             (service guix-home-service-type
-				                  `(("zfc" ,home-base)))
-			             polkit-wheel-service)
-				   (modify-services %desktop-services
-									(guix-service-type
-									 config => (guix-configuration
-									            (inherit config)
-									            (authorized-keys
-									             (append (list (local-file "./signing-key.pub")
-									                           (local-file "./guix-moe.pub"))
-									                     %default-authorized-guix-keys))
-									            (substitute-urls '("https://mirror.sjtu.edu.cn/guix/"
-									                               "https://cache-cdn.guix.moe"
-									                               "https://substitutes.nonguix.org"
-									                               "https://ci.guix.gnu.org"))))
-									)))
+  (services (append (list
+                     ;;(service gnome-desktop-service-type)
+			         (service bluetooth-service-type)
+			         (service libvirt-service-type
+				       (libvirt-configuration))
+			         (service virtlog-service-type
+				       (virtlog-configuration))
+                     (service nix-service-type
+                       (nix-configuration
+                                     (extra-config
+                                      '("experimental-features = nix-command flakes\n"
+                                        "trusted-users = zfc root\n"
+                                        "substituters =  https://mirrors.ustc.edu.cn/nix-channels/store/ https://cache.nixos.org/\n"))))
+			         (service guix-home-service-type
+				       `(("zfc" ,home-base)))
+			         polkit-wheel-service)
+					(modify-services %desktop-services
+					  (guix-service-type
+					   config => (guix-configuration
+					              (inherit config)
+					              (authorized-keys
+					               (append (list (local-file "./signing-key.pub")
+					                             (local-file "./guix-moe.pub"))
+					                       %default-authorized-guix-keys))
+					              (substitute-urls '("https://mirror.sjtu.edu.cn/guix/"
+					                                 "https://cache-cdn.guix.moe"
+					                                 "https://substitutes.nonguix.org"
+					                                 "https://ci.guix.gnu.org"))))
+					  )))
 
- ;; Allow resolution of '.local' host names with mDNS.
- (name-service-switch %mdns-host-lookup-nss))
+  ;; Allow resolution of '.local' host names with mDNS.
+  (name-service-switch %mdns-host-lookup-nss))

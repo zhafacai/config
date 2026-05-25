@@ -2207,89 +2207,90 @@ email
 <<sys-def>>
 
 (operating-system
- ;; (kernel linux-6.6)
- (kernel linux-7.0)
- (initrd microcode-initrd)
- (firmware (list linux-firmware))
- (host-name "art")
- (timezone "Asia/Shanghai")
- (locale "en_US.utf8")
+  ;; (kernel linux-6.6)
+  (kernel linux-7.0)
+  (initrd microcode-initrd)
+  (firmware (list linux-firmware))
+  (host-name "art")
+  (timezone "Asia/Shanghai")
+  (locale "en_US.utf8")
 
- ;; Choose US English keyboard layout.  The "altgr-intl"
- ;; variant provides dead keys for accented characters.
- (keyboard-layout (keyboard-layout "us"
-                                   #:options '("ctrl:nocaps")))
+  ;; Choose US English keyboard layout.  The "altgr-intl"
+  ;; variant provides dead keys for accented characters.
+  (keyboard-layout (keyboard-layout "us"
+									#:options '("ctrl:nocaps")))
 
- ;; Use the UEFI variant of GRUB with the EFI System
- ;; Partition mounted on /boot/efi.
- (bootloader (bootloader-configuration
-              (bootloader grub-efi-bootloader)
-              (targets '("/boot/efi"))
-              (keyboard-layout keyboard-layout)
-              (theme (grub-theme
-                      (inherit (grub-theme))
-                      (gfxmode '("1024x768x32" "auto"))))))
+  ;; Use the UEFI variant of GRUB with the EFI System
+  ;; Partition mounted on /boot/efi.
+  (bootloader (bootloader-configuration
+				(bootloader grub-efi-bootloader)
+				(targets '("/boot/efi"))
+				(keyboard-layout keyboard-layout)
+				(theme (grub-theme
+						(inherit (grub-theme))
+						(gfxmode '("1024x768x32" "auto"))))))
 
- ;; Specify a mapped device for the encrypted root partition.
- ;; The UUID is that returned by 'cryptsetup luksUUID'.
- (mapped-devices
-  (list (mapped-device
-         (source (uuid "7a3e1a89-474c-4efb-8826-2470162e7a66"))
-         (target "root")
-	     (type luks-device-mapping))))
+  ;; Specify a mapped device for the encrypted root partition.
+  ;; The UUID is that returned by 'cryptsetup luksUUID'.
+  (mapped-devices
+   (list (mapped-device
+           (source (uuid "7a3e1a89-474c-4efb-8826-2470162e7a66"))
+           (target "root")
+	       (type luks-device-mapping))))
 
- (file-systems (append
-                (list (file-system
-                       (device (file-system-label "root"))
-                       (mount-point "/")
-                       (type "ext4")
-                       (dependencies mapped-devices))
-                      (file-system
-                       (device (uuid "558B-E023" 'fat))
-                       (mount-point "/boot/efi")
-                       (type "vfat")))
-                %base-file-systems))
+  (file-systems (append
+                 (list (file-system
+						 (device (file-system-label "root"))
+						 (mount-point "/")
+						 (type "ext4")
+						 (dependencies mapped-devices))
+                       (file-system
+						 (device (uuid "558B-E023" 'fat))
+						 (mount-point "/boot/efi")
+						 (type "vfat")))
+                 %base-file-systems))
 
- ;; Specify a swap file for the system, which resides on the
- ;; root file system.
- (swap-devices (list (swap-space
-                      (target "/swapfile"))))
+  ;; Specify a swap file for the system, which resides on the
+  ;; root file system.
+  (swap-devices (list (swap-space
+						(target "/swapfile"))))
 
- (users (cons (user-account
-               (name "zfc")
-               (comment "zhafacai")
-               (group "users")
-               (password "$6$RHK3ZQYo7KixPw/f$Wz1cc8nIU.AlQ7UuFQ/mPYQGa4.jt0vzZ8UeHlpS0znTEM7qg3ael8RJbCczYMp.I8YqIP0x7Nrg9A6opT1TU0")
-               (supplementary-groups '("wheel" "netdev"
-				                       "libvirt"
-                                       "audio" "video")))
-              %base-user-accounts))
+  (users (cons (user-account
+				 (name "zfc")
+				 (comment "zhafacai")
+				 (group "users")
+				 (password "$6$RHK3ZQYo7KixPw/f$Wz1cc8nIU.AlQ7UuFQ/mPYQGa4.jt0vzZ8UeHlpS0znTEM7qg3ael8RJbCczYMp.I8YqIP0x7Nrg9A6opT1TU0")
+				 (supplementary-groups '("wheel" "netdev"
+										 "libvirt"
+										 "audio" "video")))
+               %base-user-accounts))
 
 
- ;; This is where we specify system-wide packages.
- (packages (append (list
-		            neovim
-		            niri
-		            xdg-desktop-portal-gnome
-                    gvfs)
-                   %base-packages))
+  ;; This is where we specify system-wide packages.
+  (packages (append (list
+		             neovim
+		             niri
+		             xdg-desktop-portal-gnome
+                     gvfs)
+					%base-packages))
 
- (services (append (list (service gnome-desktop-service-type)
-			             (service bluetooth-service-type)
-			             (service libvirt-service-type
-				                  (libvirt-configuration))
-			             (service virtlog-service-type
-				                  (virtlog-configuration))
-                         <<sys-services>>
-			             (service guix-home-service-type
-				                  `(("zfc" ,home-base)))
-			             polkit-wheel-service)
-				   (modify-services %desktop-services
-									<<modify-service>>
-									)))
+  (services (append (list
+                     ;;(service gnome-desktop-service-type)
+			         (service bluetooth-service-type)
+			         (service libvirt-service-type
+				       (libvirt-configuration))
+			         (service virtlog-service-type
+				       (virtlog-configuration))
+                     <<sys-services>>
+			         (service guix-home-service-type
+				       `(("zfc" ,home-base)))
+			         polkit-wheel-service)
+					(modify-services %desktop-services
+					  <<modify-service>>
+					  )))
 
- ;; Allow resolution of '.local' host names with mDNS.
- (name-service-switch %mdns-host-lookup-nss))
+  ;; Allow resolution of '.local' host names with mDNS.
+  (name-service-switch %mdns-host-lookup-nss))
 #+end_src
 *** COMMENT The =art.scm= section about sops.
 ~sys-services~
@@ -2573,7 +2574,7 @@ patch to use flypy
 #+begin_src scheme :noweb-ref hm-services
 (service home-gpg-agent-service-type
          (home-gpg-agent-configuration
-          (pinentry-program (file-append pinentry-gnome3 "/bin/pinentry-gnome3"))
+          (pinentry-program (file-append pinentry-rofi "/bin/pinentry-rofi"))
           (default-cache-ttl 1800)
           (extra-content "allow-loopback-pinentry")
           (ssh-support? #t)))
@@ -2695,7 +2696,7 @@ git config
 ~hm-services~
 #+begin_src scheme :noweb-ref hm-services
 (simple-service 'mbsync-gmail-timer-service
-                home-shepherd-timer-service-type
+                home-shepherd-service-type
                 (list
                  (shepherd-timer
                   '(mbsync-gmail)
@@ -2718,6 +2719,20 @@ git config
                 home-environment-variables-service-type
                 `(("NOTMUCH_DATABASE" . ,(string-append (getenv "HOME") "/Documents/Mail"))))
 
+#+end_src
+*** The =base.scm= section about theme
+~home-use~
+#+begin_src scheme :noweb-ref home-use
+#:use-module (rosenthal services desktop)
+#:use-module (gnu packages gnome-xyz)
+#+end_src
+~hm-services~
+#+begin_src scheme :noweb-ref hm-services
+(service home-theme-service-type
+         (home-theme-configuration
+          (packages (list qogir-icon-theme))
+          (icon-theme "Qogir")
+          (cursor-theme "Qogir")))
 #+end_src
 *** The =base.scm= section about elfeed
 ~home-use~
