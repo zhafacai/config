@@ -19,7 +19,11 @@
 
 (use-package reader
   :ensure nil
-  :hook (reader-mode . (lambda () (hl-line-mode 0))))
+  :hook (reader-mode .
+					 (lambda ()
+                       (hl-line-mode 0)
+                       (set-window-dedicated-p (selected-window) nil)
+                       (delete-other-windows))))
 
 (use-package nov
   :config

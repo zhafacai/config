@@ -129,6 +129,7 @@
      ("m" "/mnt/"                       "Drives")
      ("t" "~/.local/share/Trash/files/" "TrashCan")))
   (dirvish-default-layout '(0 0.4 0.55))
+  ;; (dirvish-reuse-session nil)
   :config
   ;; (dirvish-peek-mode)             ; Preview files in minibuffer
   ;; (dirvish-side-follow-mode)      ; similar to `treemacs-follow-mode'

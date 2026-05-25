@@ -57,6 +57,7 @@
 (use-package olivetti
   :hook
   (Info-mode . olivetti-mode)
+  (nov-mode . olivetti-mode)
   :general
   (general-nmap "SPC tf" 'olivetti-mode)
   :custom

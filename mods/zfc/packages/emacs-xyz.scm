@@ -18,16 +18,16 @@
 (define emacs-reader
   (package
    (name "emacs-reader")
-   (version "0.3.2")
+   (version "master")
    (source
     (origin
      (method git-fetch)
      (uri (git-reference
            (url "https://codeberg.org/divyaranjan/emacs-reader")
-           (commit "9824fc91eb51bec0edb8c3634a74d73226d26525")))
+           (commit "7792885f28e65d8b413c3aaefa8ad9d467c7bd5f")))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "1dj23hgmvirsrb7cvmd14j8lhxybfd4jh4fz1xilf7r360vzr2zk"))))
+      (base32 "1x7nrjsiygcf7f38b7gdmsg7wpw02r2q8qih66454flp8c8inffy"))))
    (build-system emacs-build-system)
    (arguments
     (list

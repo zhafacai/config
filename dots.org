@@ -428,6 +428,7 @@ toggle alpha background
 (use-package olivetti
   :hook
   (Info-mode . olivetti-mode)
+  (nov-mode . olivetti-mode)
   :general
   (general-nmap "SPC tf" 'olivetti-mode)
   :custom
@@ -701,6 +702,7 @@ dired
      ("m" "/mnt/"                       "Drives")
      ("t" "~/.local/share/Trash/files/" "TrashCan")))
   (dirvish-default-layout '(0 0.4 0.55))
+  ;; (dirvish-reuse-session nil)
   :config
   ;; (dirvish-peek-mode)             ; Preview files in minibuffer
   ;; (dirvish-side-follow-mode)      ; similar to `treemacs-follow-mode'
@@ -1641,7 +1643,13 @@ reader
 #+begin_src emacs-lisp
 (use-package reader
   :ensure nil
-  :hook (reader-mode . (lambda () (hl-line-mode 0))))
+  :hook (reader-mode .
+					 (lambda ()
+                       (hl-line-mode 0)
+                       (set-window-dedicated-p (selected-window) nil)
+                       (delete-other-windows))))
+
+
 #+end_src
 ~home-pkgs~
 #+begin_src scheme :noweb-ref home-pkgs
