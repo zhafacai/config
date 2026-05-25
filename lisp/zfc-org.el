@@ -39,11 +39,10 @@
   (org-mode . mixed-pitch-mode))
 
 (use-package org-tree-slide
-  :after evil
-  :config
-  (fc/map :keymaps 'org-tree-slide-mode-map
-    "j" #'org-tree-slide-move-next-tree
-    "k" #'org-tree-slide-move-previous-tree))
+  :general
+  (:states 'normal :keymaps 'org-tree-slided-mode-map
+		   "j" #'org-tree-slide-move-next-tree
+		   "k" #'org-tree-slide-move-previous-tree))
 
 (use-package valign
   :hook
@@ -97,8 +96,10 @@
           (t
            (call-interactively 'org-insert-link)))))
 
-(evil-define-key 'normal org-mode-map
-  (kbd "C-c C-l") #'fc/org-insert-link-dwim)
+(use-package org
+  :ensure nil
+  :general
+  (:states 'normal :keymaps 'org-mode-map "C-c C-l" #'fc/org-insert-link-dwim))
 
 (use-package denote
   :hook
@@ -200,13 +201,14 @@
   (org-edna-mode)
   ;; Add org-gtd files to your agenda (in :config so org-gtd-directory is defined)
   (setq org-agenda-files (list org-gtd-directory))
-  (fc/map 'normal
-    "dc"  #'org-gtd-capture
-    "de"  #'org-gtd-engage
-    "dp"  #'org-gtd-process-inbox
-    "dn"  #'org-gtd-show-all-next
-    "ds"  #'org-gtd-reflect-stuck-projects)
 
+  :general
+  (general-nmap
+    "SPC dc"  #'org-gtd-capture
+    "SPC de"  #'org-gtd-engage
+    "SPC dp"  #'org-gtd-process-inbox
+    "SPC dn"  #'org-gtd-show-all-next
+    "SPC ds"  #'org-gtd-reflect-stuck-projects)
   :bind
   (;; Keybinding for organizing items (only works in clarify buffers)
    :map org-gtd-clarify-mode-map

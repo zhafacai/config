@@ -171,8 +171,6 @@ set leader and general
 (use-package general
   :ensure (:wait t)
   :config
-  (general-create-definer fc/map
-    :prefix fc/leader-key)
   (general-evil-setup))
 
 (use-package evil
@@ -194,7 +192,7 @@ set leader and general
   ;; Conflicts with evil-open-below
   (put 'other-window 'repeat-map nil)
 
-  (general-define-key :keymaps 'normal "C-e" #'end-of-line)
+  (general-nmap "C-e" #'end-of-line)
 
   (evil-mode 1))
 #+end_src
@@ -202,10 +200,6 @@ setup evil
 *** The =zfc-evil.el= section about evil plugins
 evil collection for bunch of maps in different mode
 #+begin_src emacs-lisp
-
-;; TODO find a way to use it in zfc-ui
-;; (fc/map 'normal "tt" #'theme-buffet-a-la-carte)
-;; (fc/map 'normal "to" #'theme-buffet-order-other-period)
 
 (use-package evil-collection
   :after evil
@@ -227,21 +221,20 @@ envy neovim flash.nvim
 #+begin_src emacs-lisp
 (use-package flash
   :commands (flash-jump flash-jump-continue
-			            flash-treesitter)
+                        flash-treesitter)
   :custom
   (flash-multi-window t)
   ;; (flash-autojump t)
   (flash-rainbow t)
   :init
   ;; Evil integration (simple setup)
-  (after! evil
-    (require 'flash-evil)
-    (flash-evil-setup t)
-    (setq flash-char-jump-labels t))
+  (require 'flash-evil)
+  (flash-evil-setup t)
+  (setq flash-char-jump-labels t)
 
-  (evil-define-key 'normal 'global (kbd "C-s") #'flash-evil-jump)
-  (evil-define-key 'normal 'global (kbd "s") #'flash-evil-jump)
-  (evil-define-key 'visual 'global (kbd "C-s") #'flash-evil-jump)
+  :general
+  (:states '(normal visual) "C-s" #'flash-evil-jump)
+  (:states 'normal "s" #'flash-evil-jump)
 
   :config
   ;; Search integration (labels during C-s, /, ?)
@@ -305,15 +298,17 @@ comment
 #+begin_src emacs-lisp
 (use-package evil-nerd-commenter
   :config
-  (evil-define-key '(normal visual) 'global "gc" #'evilnc-comment-operator)
-  (evilnc-default-hotkeys))
+  (evilnc-default-hotkeys)
+  :general
+  (:states '(normal visual) "gc" #'evilnc-comment-operator))
 #+end_src
 numbers
 #+begin_src emacs-lisp
 (use-package evil-numbers
-  :config
-  (define-key evil-normal-state-map (kbd "C-c =") 'evil-numbers/inc-at-pt)
-  (define-key evil-normal-state-map (kbd "C-c -") 'evil-numbers/dec-at-pt))
+  :general
+  (general-nmap
+	"C-c =" 'evil-numbers/inc-at-pt
+	"C-c -" 'evil-numbers/dec-at-pt))
 #+end_src
 exato
 #+begin_src emacs-lisp
@@ -360,7 +355,7 @@ toggle alpha background
                              90
                            100))))
 
-(fc/map 'normal "ta" #'fc/toggle-alpha-background)
+(general-nmap "ta" #'fc/toggle-alpha-background)
 
 #+end_src
 
@@ -463,10 +458,11 @@ default fonts
 #+end_src
 #+begin_src emacs-lisp
 (use-package hl-todo
-  :hook (prog-mode . hl-todo-mode))
-(after! evil
-  (evil-global-set-key 'normal "]t" #'hl-todo-next)
-  (evil-global-set-key 'normal "[t" #'hl-todo-previous))
+  :hook (prog-mode . hl-todo-mode)
+  :general
+  (general-nmap
+	"]t" #'hl-todo-next
+	"[t" #'hl-todo-previous))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -495,7 +491,10 @@ default fonts
 #+begin_src emacs-lisp
 (use-package theme-buffet
   :ensure (:wait t)
-  :after evil
+  :general
+  (general-nmap
+	"SPC t t" #'theme-buffet-a-la-carte
+	"SPC t o" #'theme-buffet-order-other-period)
   :config
   (setq theme-buffet-menu 'end-user)
 
@@ -505,26 +504,18 @@ default fonts
            :afternoon (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
            :evening   (modus-vivendi-tinted ef-rosa ef-elea-dark ef-maris-dark ef-melissa-dark ef-trio-dark ef-dream)))
 
-  
+
   (theme-buffet-timer-hours 1))
 
-(with-eval-after-load 'evil
-  (with-eval-after-load 'theme-buffet
-	;; TODO this is ugly
-    (run-with-idle-timer 0.5 nil
-      (lambda ()
-        (evil-global-set-key 'normal (kbd "SPC t t") #'theme-buffet-a-la-carte)
-        (evil-global-set-key 'normal (kbd "SPC t o") #'theme-buffet-order-other-period)))))
 #+end_src
 #+begin_src emacs-lisp
 (use-package rainbow-delimiters
-  :config
-  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+  :hook
+  (prog-mode . rainbow-delimiters-mode))
 #+end_src
 
 #+begin_src emacs-lisp
 (use-package nyan-mode
-  :after doom-modeline
   :custom
   (nyan-wavy-trail t)
   (nyan-animate-nyancat t)
@@ -727,16 +718,17 @@ dired
                  "--group-directories-first" ,file))))
 
   (push 'eza dirvish-preview-dispatchers)
-  (evil-define-key 'normal dirvish-mode-map
-    "q" #'dirvish-quit
-    "?" #'dirvish-dispatch
-    "o" #'dirvish-quick-access
-    (kbd "TAB") #'dirvish-subtree-toggle
-    "f" #'dirvish-file-info-menu
-    "l" #'dirvish-ls-switches-menu
-    "s" #'dirvish-quicksort
-    "*" #'dirvish-mark-menu
-    "N" #'dirvish-narrow)
+  :general
+  (:states 'normal :keymaps 'dirvish-mode-map
+   "q" #'dirvish-quit
+   "?" #'dirvish-dispatch
+   "o" #'dirvish-quick-access
+   (kbd "TAB") #'dirvish-subtree-toggle
+   "f" #'dirvish-file-info-menu
+   "l" #'dirvish-ls-switches-menu
+   "s" #'dirvish-quicksort
+   "*" #'dirvish-mark-menu
+   "N" #'dirvish-narrow)
 
   :hook
   (dirvish-setup . dirvish-emerge-mode)
@@ -801,6 +793,10 @@ consult
   (consult-fd (expand-file-name "~/Documents/books")))
 
 (use-package consult
+  :general
+  (general-nmap
+	"SPC f" #'consult-ripgrep
+	"SPC SPC" #'consult-fd)
   ;; Replace bindings. Lazily loaded by `use-package'.
   :bind (;; C-c bindings in `mode-specific-map'
          ("C-c M-x" . consult-mode-command)
@@ -902,24 +898,21 @@ consult
   ;; You may want to use `embark-prefix-help-command' or which-key instead.
   ;; (keymap-set consult-narrow-map (concat consult-narrow-key " ?") #'consult-narrow-help)
   )
-(fc/map 'normal
-  "f" #'consult-ripgrep
-  "SPC" #'consult-fd)
 #+end_src
 helpful
 #+begin_src emacs-lisp
-(use-package helpful)
-(evil-define-key 'insert 'global
-  (kbd "C-c C-d") #'helpful-at-point)
-(fc/map 'normal 
-  "hi" #'info-emacs-manual
-  "hr" #'info-display-manual
-  "hf" #'helpful-callable
-  "hv" #'helpful-variable
-  "hk" #'helpful-key
-  "hm" #'describe-mode
-  "hp" #'describe-package
-  "hc" #'helpful-command)
+(use-package helpful
+  :general
+  (:states 'insert "C-c C-d" #'helpful-at-point)
+  (:states 'normal 
+		   "SPC hi" #'info-emacs-manual
+		   "SPC hr" #'info-display-manual
+		   "SPC hf" #'helpful-callable
+		   "SPC hv" #'helpful-variable
+		   "SPC hk" #'helpful-key
+		   "SPC hm" #'describe-mode
+		   "SPC hp" #'describe-package
+		   "SPC hc" #'helpful-command))
 (use-package elisp-demos
   :after helpful
   :config
@@ -927,14 +920,6 @@ helpful
 #+end_src
 vertico
 #+begin_src emacs-lisp
-;; Enable Vertico.
-;; (use-package compat
-;;   :ensure (:wait t)
-;;   :demand t)
-;; (elpaca (compat :source "gnu-elpa")
-;;   (require 'compat)
-;;   (use-package compat :demand t))
-
 (use-package vertico
   :custom
   ;; (vertico-scroll-margin 0) ;; Different scroll margin
@@ -996,7 +981,10 @@ embark
   (("C-." . embark-act)         ;; pick some comfortable binding
    ("C-;" . embark-dwim)        ;; good alternative: M-.
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-
+  (:map vertico-map
+		("C-c C-e" . embark-export)
+		("C-c C-o" . embark-collect)
+		("C-c C-l" . embark-live))
   :init
 
   ;; Optionally replace the key help with a completing-read interface
@@ -1020,10 +1008,7 @@ embark
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none)))))
-(fc/map 'normal vertico-map
-      "C-c C-e" #'embark-export
-      "C-c C-o" #'embark-collect
-      "C-c C-l" #'embark-live)
+
 (use-package embark-consult
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
@@ -1069,26 +1054,8 @@ embark
   ;; Enable optional extension modes:
   ;; (corfu-history-mode)
   (corfu-popupinfo-mode))
-(with-eval-after-load 'yasnippet
-  (keymap-unset yas-minor-mode-map "TAB")
-  (keymap-unset yas-minor-mode-map "<tab>"))
-(defun my/tab ()
-  (interactive)
-  (cond
-   ;; corfu popup
-   ((and (bound-and-true-p corfu-mode)
-         (boundp 'corfu--candidates)
-         corfu--candidates)
-    (corfu-insert))
 
-   ;; snippet
-   ((and (bound-and-true-p yas-minor-mode)
-         (yas-expand)))
 
-   ;; default
-   (t
-    (indent-for-tab-command))))
-(global-set-key (kbd "TAB") #'my/tab)
 ;; A few more useful configurations...
 (use-package emacs
   :ensure nil
@@ -1220,7 +1187,6 @@ use built-in lsp client
 #+begin_src emacs-lisp
 (use-package eglot
   :ensure nil
-  :defer t
   :hook
   ((python-ts-mode       . eglot-ensure)
    (rustic-mode           . eglot-ensure)
@@ -1251,17 +1217,15 @@ use built-in lsp client
 					"tailwindcss-language-server" "--stdio"
 					)))
 
-  (general-define-key
-   :states 'normal
-   :keymaps 'eglot-mode-map
-   "grn" 'eglot-rename
-   "gra" 'eglot-code-actions))
+  :general
+  (:states 'normal :keymaps 'eglot-mode-map
+		   "grn" 'eglot-rename
+		   "gra" 'eglot-code-actions))
 
 (use-package consult-eglot
   :after eglot
-  :config
-  (evil-define-key 'normal eglot-mode-map
-    "gO" #'consult-eglot-symbols))
+  :general
+  (:states 'normal :keymaps 'eglot-mode-map "gO" #'consult-eglot-symbols))
 #+end_src
 #+begin_src emacs-lisp
 (use-package eldoc
@@ -1274,8 +1238,8 @@ use built-in lsp client
 (use-package eldoc-box
   :hook
   (eglot-managed-mode . eldoc-box-hover-mode)
-  :config
-  (evil-define-key 'normal eglot-mode-map "K" #'eldoc-box-help-at-point))
+  :general
+  (:states 'normal :keymaps 'eglot-mode-map "K" #'eldoc-box-help-at-point))
 
 ;; (use-package eldoc-mouse
 ;;   :config
@@ -1289,18 +1253,16 @@ use built-in lsp client
   (prog-mode . flymake-mode)
   :custom
   (flymake-show-diagnostics-at-end-of-line 'fancy)
-  :config
-  (evil-global-set-key 'normal (kbd "]d") 'flymake-goto-next-error)
-  (evil-global-set-key 'normal (kbd "[d") 'flymake-goto-prev-error)
-  (fc/map 'normal
-    "xx" #'flymake-show-buffer-diagnostics
-    "xp" #'flymake-show-buffer-diagnostics))
+  :general
+  (:states 'normal "]d" 'flymake-goto-next-error)
+  (:states 'normal "[d" 'flymake-goto-prev-error))
 #+end_src
 #+begin_src emacs-lisp
 (use-package xref
   :ensure nil
-  :bind (:map evil-motion-state-map
-              ("gd" . xref-find-definitions)))
+  :general
+  (general-nmap
+	"gd" 'xref-find-definitions))
 #+end_src
 *** The =zfc-dev.el= section about treesitter
 #+begin_src emacs-lisp
@@ -1311,17 +1273,6 @@ use built-in lsp client
   :custom
   (treesit-auto-install 'prompt)
   :config
-  ;; (after! org
-  ;;   (dolist (mode
-  ;;            '(("cmake"      . cmake-ts)
-  ;;              ("dockerfile" . dockerfile-ts)
-  ;;              ("go"         . go-ts)
-  ;;              ("lua"        . lua-ts)
-  ;;              ("rust"       . rust-ts)
-  ;;              ("typescript" . typescript-ts)
-  ;;              ("yaml"       . yaml-ts)))
-  ;;     (add-to-list 'org-src-lang-modes mode)))
-  
   (treesit-auto-add-to-auto-mode-alist 'all)
 
   ;; FIXME cannot make this work
@@ -1442,11 +1393,10 @@ use built-in lsp client
   (org-mode . mixed-pitch-mode))
 
 (use-package org-tree-slide
-  :after evil
-  :config
-  (fc/map :keymaps 'org-tree-slide-mode-map
-    "j" #'org-tree-slide-move-next-tree
-    "k" #'org-tree-slide-move-previous-tree))
+  :general
+  (:states 'normal :keymaps 'org-tree-slided-mode-map
+		   "j" #'org-tree-slide-move-next-tree
+		   "k" #'org-tree-slide-move-previous-tree))
 
 (use-package valign
   :hook
@@ -1505,8 +1455,10 @@ use built-in lsp client
           (t
            (call-interactively 'org-insert-link)))))
 
-(evil-define-key 'normal org-mode-map
-  (kbd "C-c C-l") #'fc/org-insert-link-dwim)
+(use-package org
+  :ensure nil
+  :general
+  (:states 'normal :keymaps 'org-mode-map "C-c C-l" #'fc/org-insert-link-dwim))
 #+end_src
 
 *** The =zfc-org.el= section about denote
@@ -1626,13 +1578,14 @@ use built-in lsp client
   (org-edna-mode)
   ;; Add org-gtd files to your agenda (in :config so org-gtd-directory is defined)
   (setq org-agenda-files (list org-gtd-directory))
-  (fc/map 'normal
-    "dc"  #'org-gtd-capture
-    "de"  #'org-gtd-engage
-    "dp"  #'org-gtd-process-inbox
-    "dn"  #'org-gtd-show-all-next
-    "ds"  #'org-gtd-reflect-stuck-projects)
 
+  :general
+  (general-nmap
+    "SPC dc"  #'org-gtd-capture
+    "SPC de"  #'org-gtd-engage
+    "SPC dp"  #'org-gtd-process-inbox
+    "SPC dn"  #'org-gtd-show-all-next
+    "SPC ds"  #'org-gtd-reflect-stuck-projects)
   :bind
   (;; Keybinding for organizing items (only works in clarify buffers)
    :map org-gtd-clarify-mode-map
@@ -1716,66 +1669,46 @@ elfeed
 *** The =zfc-tool.el= section about git
 #+begin_src emacs-lisp
 (use-package magit
+  :general
+  (general-nmap "SPC gg" 'magit)
   :config
   (add-hook 'magit-process-find-password-functions 'magit-process-password-auth-source)
   :custom
   (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
   :hook
-  (git-commit-mode . evil-insert-state)
-  :defer t)
-
-(fc/map 'normal "gg" #'magit)
+  (git-commit-mode . evil-insert-state))
 
 (use-package blamer
   ;; :bind (("C-c i" . blamer-show-posframe-commit-info))
   ;; :defer 20
+  :general
+  (general-nmap "SPC tb" 'blamer-mode)
   :custom
   (blamer-idle-time 0.3)
   (blamer-min-offset 70)
   :config
   (modus-themes-with-colors
     (custom-set-faces
-     `(blamer-face ((,c :foreground ,magenta   ; 或其他你喜欢的 semantic color
+     `(blamer-face ((,c :foreground ,magenta
                         :background nil
                         :height 140
-                        :italic t)))))
-
-  (fc/map 'normal "tb" #'blamer-mode)
-  ;; (global-blamer-mode 1)
-  )
+                        :italic t))))))
 #+end_src
 diff-hl
 #+begin_src emacs-lisp
-;; (defun fc/diff-hl-update-colors (&rest _)
-;;   "Dynamically apply the current theme's standard diff colors to diff-hl faces.
-;;    Sets both background and foreground to create a solid fringe block."
-;;   (let ((added   (face-attribute 'diff-added :foreground nil 'default))
-;;         (changed (face-attribute 'diff-changed :foreground nil 'default))
-;;         (removed (face-attribute 'diff-removed :foreground nil 'default)))
-;;     (custom-set-faces
-;;      ;; Added lines: Inherit current theme's 'Added' color
-;;      `(diff-hl-insert ((t (:inherit diff-added :background ,added :foreground ,added))))
-;;      ;; Changed lines: Inherit current theme's 'Changed' color
-;;      `(diff-hl-change ((t (:inherit diff-changed :background ,changed :foreground ,changed))))
-;;      ;; Deleted lines: Inherit current theme's 'Removed' color
-;;      `(diff-hl-delete ((t (:inherit diff-removed :background ,removed :foreground ,removed)))))))
-
-;; (add-hook 'enable-theme-functions #'fc/diff-hl-update-colors)
-
-;; (fc/diff-hl-update-colors)
-
 (use-package diff-hl
   :init
   (global-diff-hl-mode)
   :config
-  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
-(evil-global-set-key 'normal (kbd "]h") #'diff-hl-next-hunk)
-(evil-global-set-key 'normal (kbd "[h") #'diff-hl-previous-hunk)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+  :general
+  (:states 'normal "]h" #'diff-hl-next-hunk)
+  (:states 'normal "[h" #'diff-hl-previous-hunk))
 #+end_src
 #+begin_src emacs-lisp
 (use-package browse-at-remote
-  :config
-  (fc/map 'normal "gb" #'browse-at-remote))
+  :general
+  (general-nmap  "gb" #'browse-at-remote))
 #+end_src
 #+begin_src emacs-lisp
 (use-package forge
@@ -1785,9 +1718,8 @@ diff-hl
 #+end_src
 #+begin_src emacs-lisp
 (use-package git-timemachine
-  :after transient
-  :config
-  (fc/map 'normal "gt" #'git-timemachine))
+  :general
+  (general-nmap "gt" #'git-timemachine))
 #+end_src
 #+begin_src emacs-lisp
 (use-package git-modes)
@@ -1812,9 +1744,9 @@ guix
 #+begin_src emacs-lisp
 (use-package guix
   :ensure nil
-  :bind
-  (:map evil-normal-state-map
-        ("SPC g i" . guix)))
+  :general
+  (general-nmap
+    "SPC gi" 'guix))
 
 
 (add-hook 'scheme-mode-hook (lambda () (evil-local-set-key 'normal "K" #'geiser-doc-look-up-manual)))
@@ -1835,10 +1767,12 @@ translater
   (setq gt-default-translator
         (gt-translator :engines (gt-stardict-engine
                                  :dir "~/.stardict/dic"
-                                 :exact nil))))
+                                 :exact nil)))
+  :general
+  (:states 'normal
+		   [down-mouse-3] #'gt-translate
+		   "SPC l" #'gt-translate))
 
-(evil-define-key 'normal 'global [down-mouse-3] #'gt-translate)
-(fc/map 'normal "l" #'gt-translate)
 
 
 #+end_src
@@ -1933,20 +1867,20 @@ emms
       map)
     "Keymap for continuous volume adjustment in EMMS")
 
-  (general-define-key
-    "C-c m SPC" #'emms-pause
-    "C-c m p" #'emms-previous
-    "C-c m n" #'emms-next
-    "C-c m s" #'emms-stop
-    "C-c m m" #'emms
-    "C-c m =" #'emms-volume-raise
-    "C-c m -" #'emms-volume-lower)
 
   (setq emms-volume-change-function 'emms-volume-pulse-change)
 
-  (evil-define-key 'normal emms-playlist-mode-map
-    "s" #'emms-sort
-    "q" #'emms-playlist-mode-bury-buffer))
+  :general
+  ("C-c m SPC" #'emms-pause
+   "C-c m p" #'emms-previous
+   "C-c m n" #'emms-next
+   "C-c m s" #'emms-stop
+   "C-c m m" #'emms
+   "C-c m =" #'emms-volume-raise
+   "C-c m -" #'emms-volume-lower)
+  (:states 'normal :keymaps 'emms-playlist-mode-map
+		   "s" #'emms-sort
+		   "q" #'emms-playlist-mode-bury-buffer))
 #+end_src
 
 *** The =zfc-tool.el= section about ai
@@ -2062,6 +1996,8 @@ gptel
 agent-shell
 #+begin_src emacs-lisp
 (use-package agent-shell
+  :bind
+  ("C-c a s" . agent-shell)
   :custom
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
@@ -2084,7 +2020,6 @@ agent-shell
 	          (when (string-match-p "\\*agent-shell-diff\\*" (buffer-name))
 		        (evil-emacs-state)))))
 
-(general-define-key "C-c a s" #'agent-shell)
 #+end_src
 *** The =zfc-tool.el= section about email
 pinentry

@@ -80,10 +80,11 @@
   (set-fontset-font t charset (font-spec :family "LXGW WenKai")))
 
 (use-package hl-todo
-  :hook (prog-mode . hl-todo-mode))
-(after! evil
-  (evil-global-set-key 'normal "]t" #'hl-todo-next)
-  (evil-global-set-key 'normal "[t" #'hl-todo-previous))
+  :hook (prog-mode . hl-todo-mode)
+  :general
+  (general-nmap
+	"]t" #'hl-todo-next
+	"[t" #'hl-todo-previous))
 
 (use-package doom-modeline
   :config
@@ -107,7 +108,10 @@
 
 (use-package theme-buffet
   :ensure (:wait t)
-  :after evil
+  :general
+  (general-nmap
+	"SPC t t" #'theme-buffet-a-la-carte
+	"SPC t o" #'theme-buffet-order-other-period)
   :config
   (setq theme-buffet-menu 'end-user)
 
@@ -117,23 +121,14 @@
            :afternoon (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
            :evening   (modus-vivendi-tinted ef-rosa ef-elea-dark ef-maris-dark ef-melissa-dark ef-trio-dark ef-dream)))
 
-  
+
   (theme-buffet-timer-hours 1))
 
-(with-eval-after-load 'evil
-  (with-eval-after-load 'theme-buffet
-	;; TODO this is ugly
-    (run-with-idle-timer 0.5 nil
-      (lambda ()
-        (evil-global-set-key 'normal (kbd "SPC t t") #'theme-buffet-a-la-carte)
-        (evil-global-set-key 'normal (kbd "SPC t o") #'theme-buffet-order-other-period)))))
-
 (use-package rainbow-delimiters
-  :config
-  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+  :hook
+  (prog-mode . rainbow-delimiters-mode))
 
 (use-package nyan-mode
-  :after doom-modeline
   :custom
   (nyan-wavy-trail t)
   (nyan-animate-nyancat t)

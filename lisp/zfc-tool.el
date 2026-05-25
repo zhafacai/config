@@ -35,63 +35,43 @@
   (elfeed-org))
 
 (use-package magit
+  :general
+  (general-nmap "SPC gg" 'magit)
   :config
   (add-hook 'magit-process-find-password-functions 'magit-process-password-auth-source)
   :custom
   (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
   :hook
-  (git-commit-mode . evil-insert-state)
-  :defer t)
-
-(fc/map 'normal "gg" #'magit)
+  (git-commit-mode . evil-insert-state))
 
 (use-package blamer
   ;; :bind (("C-c i" . blamer-show-posframe-commit-info))
   ;; :defer 20
+  :general
+  (general-nmap "SPC tb" 'blamer-mode)
   :custom
   (blamer-idle-time 0.3)
   (blamer-min-offset 70)
   :config
   (modus-themes-with-colors
     (custom-set-faces
-     `(blamer-face ((,c :foreground ,magenta   ; 或其他你喜欢的 semantic color
+     `(blamer-face ((,c :foreground ,magenta
                         :background nil
                         :height 140
-                        :italic t)))))
-
-  (fc/map 'normal "tb" #'blamer-mode)
-  ;; (global-blamer-mode 1)
-  )
-
-;; (defun fc/diff-hl-update-colors (&rest _)
-;;   "Dynamically apply the current theme's standard diff colors to diff-hl faces.
-;;    Sets both background and foreground to create a solid fringe block."
-;;   (let ((added   (face-attribute 'diff-added :foreground nil 'default))
-;;         (changed (face-attribute 'diff-changed :foreground nil 'default))
-;;         (removed (face-attribute 'diff-removed :foreground nil 'default)))
-;;     (custom-set-faces
-;;      ;; Added lines: Inherit current theme's 'Added' color
-;;      `(diff-hl-insert ((t (:inherit diff-added :background ,added :foreground ,added))))
-;;      ;; Changed lines: Inherit current theme's 'Changed' color
-;;      `(diff-hl-change ((t (:inherit diff-changed :background ,changed :foreground ,changed))))
-;;      ;; Deleted lines: Inherit current theme's 'Removed' color
-;;      `(diff-hl-delete ((t (:inherit diff-removed :background ,removed :foreground ,removed)))))))
-
-;; (add-hook 'enable-theme-functions #'fc/diff-hl-update-colors)
-
-;; (fc/diff-hl-update-colors)
+                        :italic t))))))
 
 (use-package diff-hl
   :init
   (global-diff-hl-mode)
   :config
-  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
-(evil-global-set-key 'normal (kbd "]h") #'diff-hl-next-hunk)
-(evil-global-set-key 'normal (kbd "[h") #'diff-hl-previous-hunk)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+  :general
+  (:states 'normal "]h" #'diff-hl-next-hunk)
+  (:states 'normal "[h" #'diff-hl-previous-hunk))
 
 (use-package browse-at-remote
-  :config
-  (fc/map 'normal "gb" #'browse-at-remote))
+  :general
+  (general-nmap  "gb" #'browse-at-remote))
 
 (use-package forge
   :after magit
@@ -99,9 +79,8 @@
   (forge-add-default-bindings nil))
 
 (use-package git-timemachine
-  :after transient
-  :config
-  (fc/map 'normal "gt" #'git-timemachine))
+  :general
+  (general-nmap "gt" #'git-timemachine))
 
 (use-package git-modes)
 
@@ -114,9 +93,9 @@
 
 (use-package guix
   :ensure nil
-  :bind
-  (:map evil-normal-state-map
-        ("SPC g i" . guix)))
+  :general
+  (general-nmap
+    "SPC gi" 'guix))
 
 
 (add-hook 'scheme-mode-hook (lambda () (evil-local-set-key 'normal "K" #'geiser-doc-look-up-manual)))
@@ -128,10 +107,11 @@
   (setq gt-default-translator
         (gt-translator :engines (gt-stardict-engine
                                  :dir "~/.stardict/dic"
-                                 :exact nil))))
-
-(evil-define-key 'normal 'global [down-mouse-3] #'gt-translate)
-(fc/map 'normal "l" #'gt-translate)
+                                 :exact nil)))
+  :general
+  (:states 'normal
+		   [down-mouse-3] #'gt-translate
+		   "SPC l" #'gt-translate))
 
 (use-package sops
   ;; :ensure (:type git :host github :repo "djgoku/sops")
@@ -201,20 +181,20 @@
       map)
     "Keymap for continuous volume adjustment in EMMS")
 
-  (general-define-key
-    "C-c m SPC" #'emms-pause
-    "C-c m p" #'emms-previous
-    "C-c m n" #'emms-next
-    "C-c m s" #'emms-stop
-    "C-c m m" #'emms
-    "C-c m =" #'emms-volume-raise
-    "C-c m -" #'emms-volume-lower)
 
   (setq emms-volume-change-function 'emms-volume-pulse-change)
 
-  (evil-define-key 'normal emms-playlist-mode-map
-    "s" #'emms-sort
-    "q" #'emms-playlist-mode-bury-buffer))
+  :general
+  ("C-c m SPC" #'emms-pause
+   "C-c m p" #'emms-previous
+   "C-c m n" #'emms-next
+   "C-c m s" #'emms-stop
+   "C-c m m" #'emms
+   "C-c m =" #'emms-volume-raise
+   "C-c m -" #'emms-volume-lower)
+  (:states 'normal :keymaps 'emms-playlist-mode-map
+		   "s" #'emms-sort
+		   "q" #'emms-playlist-mode-bury-buffer))
 
 (use-package dwim-shell-command
   :custom
@@ -321,6 +301,8 @@
   )
 
 (use-package agent-shell
+  :bind
+  ("C-c a s" . agent-shell)
   :custom
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
@@ -342,8 +324,6 @@
 	        (lambda ()
 	          (when (string-match-p "\\*agent-shell-diff\\*" (buffer-name))
 		        (evil-emacs-state)))))
-
-(general-define-key "C-c a s" #'agent-shell)
 
 (setq epg-pinentry-mode 'loopback)
 

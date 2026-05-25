@@ -29,26 +29,8 @@
   ;; Enable optional extension modes:
   ;; (corfu-history-mode)
   (corfu-popupinfo-mode))
-(with-eval-after-load 'yasnippet
-  (keymap-unset yas-minor-mode-map "TAB")
-  (keymap-unset yas-minor-mode-map "<tab>"))
-(defun my/tab ()
-  (interactive)
-  (cond
-   ;; corfu popup
-   ((and (bound-and-true-p corfu-mode)
-         (boundp 'corfu--candidates)
-         corfu--candidates)
-    (corfu-insert))
 
-   ;; snippet
-   ((and (bound-and-true-p yas-minor-mode)
-         (yas-expand)))
 
-   ;; default
-   (t
-    (indent-for-tab-command))))
-(global-set-key (kbd "TAB") #'my/tab)
 ;; A few more useful configurations...
 (use-package emacs
   :ensure nil
@@ -141,7 +123,6 @@
 
 (use-package eglot
   :ensure nil
-  :defer t
   :hook
   ((python-ts-mode       . eglot-ensure)
    (rustic-mode           . eglot-ensure)
@@ -172,17 +153,15 @@
 					"tailwindcss-language-server" "--stdio"
 					)))
 
-  (general-define-key
-   :states 'normal
-   :keymaps 'eglot-mode-map
-   "grn" 'eglot-rename
-   "gra" 'eglot-code-actions))
+  :general
+  (:states 'normal :keymaps 'eglot-mode-map
+		   "grn" 'eglot-rename
+		   "gra" 'eglot-code-actions))
 
 (use-package consult-eglot
   :after eglot
-  :config
-  (evil-define-key 'normal eglot-mode-map
-    "gO" #'consult-eglot-symbols))
+  :general
+  (:states 'normal :keymaps 'eglot-mode-map "gO" #'consult-eglot-symbols))
 
 (use-package eldoc
   :ensure nil
@@ -194,8 +173,8 @@
 (use-package eldoc-box
   :hook
   (eglot-managed-mode . eldoc-box-hover-mode)
-  :config
-  (evil-define-key 'normal eglot-mode-map "K" #'eldoc-box-help-at-point))
+  :general
+  (:states 'normal :keymaps 'eglot-mode-map "K" #'eldoc-box-help-at-point))
 
 ;; (use-package eldoc-mouse
 ;;   :config
@@ -207,17 +186,15 @@
   (prog-mode . flymake-mode)
   :custom
   (flymake-show-diagnostics-at-end-of-line 'fancy)
-  :config
-  (evil-global-set-key 'normal (kbd "]d") 'flymake-goto-next-error)
-  (evil-global-set-key 'normal (kbd "[d") 'flymake-goto-prev-error)
-  (fc/map 'normal
-    "xx" #'flymake-show-buffer-diagnostics
-    "xp" #'flymake-show-buffer-diagnostics))
+  :general
+  (:states 'normal "]d" 'flymake-goto-next-error)
+  (:states 'normal "[d" 'flymake-goto-prev-error))
 
 (use-package xref
   :ensure nil
-  :bind (:map evil-motion-state-map
-              ("gd" . xref-find-definitions)))
+  :general
+  (general-nmap
+	"gd" 'xref-find-definitions))
 
 (use-package treesit
   :ensure nil)
@@ -226,17 +203,6 @@
   :custom
   (treesit-auto-install 'prompt)
   :config
-  ;; (after! org
-  ;;   (dolist (mode
-  ;;            '(("cmake"      . cmake-ts)
-  ;;              ("dockerfile" . dockerfile-ts)
-  ;;              ("go"         . go-ts)
-  ;;              ("lua"        . lua-ts)
-  ;;              ("rust"       . rust-ts)
-  ;;              ("typescript" . typescript-ts)
-  ;;              ("yaml"       . yaml-ts)))
-  ;;     (add-to-list 'org-src-lang-modes mode)))
-  
   (treesit-auto-add-to-auto-mode-alist 'all)
 
   ;; FIXME cannot make this work

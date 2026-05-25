@@ -7,8 +7,6 @@
 (use-package general
   :ensure (:wait t)
   :config
-  (general-create-definer fc/map
-    :prefix fc/leader-key)
   (general-evil-setup))
 
 (use-package evil
@@ -30,13 +28,9 @@
   ;; Conflicts with evil-open-below
   (put 'other-window 'repeat-map nil)
 
-  (general-define-key :keymaps 'normal "C-e" #'end-of-line)
+  (general-nmap "C-e" #'end-of-line)
 
   (evil-mode 1))
-
-;; TODO find a way to use it in zfc-ui
-;; (fc/map 'normal "tt" #'theme-buffet-a-la-carte)
-;; (fc/map 'normal "to" #'theme-buffet-order-other-period)
 
 (use-package evil-collection
   :after evil
@@ -56,21 +50,20 @@
 
 (use-package flash
   :commands (flash-jump flash-jump-continue
-			            flash-treesitter)
+                        flash-treesitter)
   :custom
   (flash-multi-window t)
   ;; (flash-autojump t)
   (flash-rainbow t)
   :init
   ;; Evil integration (simple setup)
-  (after! evil
-    (require 'flash-evil)
-    (flash-evil-setup t)
-    (setq flash-char-jump-labels t))
+  (require 'flash-evil)
+  (flash-evil-setup t)
+  (setq flash-char-jump-labels t)
 
-  (evil-define-key 'normal 'global (kbd "C-s") #'flash-evil-jump)
-  (evil-define-key 'normal 'global (kbd "s") #'flash-evil-jump)
-  (evil-define-key 'visual 'global (kbd "C-s") #'flash-evil-jump)
+  :general
+  (:states '(normal visual) "C-s" #'flash-evil-jump)
+  (:states 'normal "s" #'flash-evil-jump)
 
   :config
   ;; Search integration (labels during C-s, /, ?)
@@ -116,13 +109,15 @@
 
 (use-package evil-nerd-commenter
   :config
-  (evil-define-key '(normal visual) 'global "gc" #'evilnc-comment-operator)
-  (evilnc-default-hotkeys))
+  (evilnc-default-hotkeys)
+  :general
+  (:states '(normal visual) "gc" #'evilnc-comment-operator))
 
 (use-package evil-numbers
-  :config
-  (define-key evil-normal-state-map (kbd "C-c =") 'evil-numbers/inc-at-pt)
-  (define-key evil-normal-state-map (kbd "C-c -") 'evil-numbers/dec-at-pt))
+  :general
+  (general-nmap
+	"C-c =" 'evil-numbers/inc-at-pt
+	"C-c -" 'evil-numbers/dec-at-pt))
 
 (use-package exato)
 
@@ -157,6 +152,6 @@
                              90
                            100))))
 
-(fc/map 'normal "ta" #'fc/toggle-alpha-background)
+(general-nmap "ta" #'fc/toggle-alpha-background)
 
 (provide 'zfc-evil)

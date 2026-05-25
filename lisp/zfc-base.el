@@ -148,16 +148,17 @@
                  "--group-directories-first" ,file))))
 
   (push 'eza dirvish-preview-dispatchers)
-  (evil-define-key 'normal dirvish-mode-map
-    "q" #'dirvish-quit
-    "?" #'dirvish-dispatch
-    "o" #'dirvish-quick-access
-    (kbd "TAB") #'dirvish-subtree-toggle
-    "f" #'dirvish-file-info-menu
-    "l" #'dirvish-ls-switches-menu
-    "s" #'dirvish-quicksort
-    "*" #'dirvish-mark-menu
-    "N" #'dirvish-narrow)
+  :general
+  (:states 'normal :keymaps 'dirvish-mode-map
+   "q" #'dirvish-quit
+   "?" #'dirvish-dispatch
+   "o" #'dirvish-quick-access
+   (kbd "TAB") #'dirvish-subtree-toggle
+   "f" #'dirvish-file-info-menu
+   "l" #'dirvish-ls-switches-menu
+   "s" #'dirvish-quicksort
+   "*" #'dirvish-mark-menu
+   "N" #'dirvish-narrow)
 
   :hook
   (dirvish-setup . dirvish-emerge-mode)
@@ -214,6 +215,10 @@
   (consult-fd (expand-file-name "~/Documents/books")))
 
 (use-package consult
+  :general
+  (general-nmap
+	"SPC f" #'consult-ripgrep
+	"SPC SPC" #'consult-fd)
   ;; Replace bindings. Lazily loaded by `use-package'.
   :bind (;; C-c bindings in `mode-specific-map'
          ("C-c M-x" . consult-mode-command)
@@ -315,34 +320,23 @@
   ;; You may want to use `embark-prefix-help-command' or which-key instead.
   ;; (keymap-set consult-narrow-map (concat consult-narrow-key " ?") #'consult-narrow-help)
   )
-(fc/map 'normal
-  "f" #'consult-ripgrep
-  "SPC" #'consult-fd)
 
-(use-package helpful)
-(evil-define-key 'insert 'global
-  (kbd "C-c C-d") #'helpful-at-point)
-(fc/map 'normal 
-  "hi" #'info-emacs-manual
-  "hr" #'info-display-manual
-  "hf" #'helpful-callable
-  "hv" #'helpful-variable
-  "hk" #'helpful-key
-  "hm" #'describe-mode
-  "hp" #'describe-package
-  "hc" #'helpful-command)
+(use-package helpful
+  :general
+  (:states 'insert "C-c C-d" #'helpful-at-point)
+  (:states 'normal 
+		   "SPC hi" #'info-emacs-manual
+		   "SPC hr" #'info-display-manual
+		   "SPC hf" #'helpful-callable
+		   "SPC hv" #'helpful-variable
+		   "SPC hk" #'helpful-key
+		   "SPC hm" #'describe-mode
+		   "SPC hp" #'describe-package
+		   "SPC hc" #'helpful-command))
 (use-package elisp-demos
   :after helpful
   :config
   (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
-
-;; Enable Vertico.
-;; (use-package compat
-;;   :ensure (:wait t)
-;;   :demand t)
-;; (elpaca (compat :source "gnu-elpa")
-;;   (require 'compat)
-;;   (use-package compat :demand t))
 
 (use-package vertico
   :custom
@@ -403,7 +397,10 @@
   (("C-." . embark-act)         ;; pick some comfortable binding
    ("C-;" . embark-dwim)        ;; good alternative: M-.
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-
+  (:map vertico-map
+		("C-c C-e" . embark-export)
+		("C-c C-o" . embark-collect)
+		("C-c C-l" . embark-live))
   :init
 
   ;; Optionally replace the key help with a completing-read interface
@@ -427,10 +424,7 @@
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none)))))
-(fc/map 'normal vertico-map
-      "C-c C-e" #'embark-export
-      "C-c C-o" #'embark-collect
-      "C-c C-l" #'embark-live)
+
 (use-package embark-consult
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
