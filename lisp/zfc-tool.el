@@ -202,7 +202,7 @@
 
 (use-package dwim-shell-command
   :custom
-  (dwim-shell-commands-git-clone-dirs '("~/dev" "~/Downloads"))
+  (dwim-shell-commands-git-clone-dirs '("~/repo" "~/Downloads"))
   :bind (([remap shell-command] . dwim-shell-command)
          :map dired-mode-map
          ([remap dired-do-async-shell-command] . dwim-shell-command)
@@ -212,9 +212,12 @@
   (require 'dwim-shell-commands))
 
 (use-package gptel
+  :custom
+  (gptel-default-mode #'org-mode)
   :bind
   (("C-c a p" . gptel)
    ("C-c a r" . gptel-rewrite)
+   ("C-c C-RET" . gptel-send)
    ("C-c a m" . gptel-menu))
   :config
   (gptel-make-openai "OpenRouter"             
@@ -228,56 +231,7 @@
               nvidia/nemotron-3-super-120b-a12b:free
               nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free))
 
-  ;; (gptel-make-openai "OpenCode"
-  ;;   :host "opencode.ai"
-  ;;   :endpoint "/zen/v1/chat/completions"            
-  ;;   :stream t                                      
-  ;;   :key #'gptel-api-key-from-auth-source         
-  ;;   :models '((minimax-m2.5-free
-  ;;              :description "minimax"
-  ;;              :capabilities (tool-use json)
-  ;;              :context-window 200
-  ;;              :input-cost 0.0
-  ;;              :output-cost 0.0)
-  ;; 		      (big-pickle
-  ;;              :description "Big Pickle model"
-  ;;              :capabilities (tool-use json)
-  ;;              :context-window 200
-  ;;              :input-cost 0.0
-  ;;              :output-cost 0.0)))
-
-  ;; (gptel-make-openai "BaiLian"
-  ;;   :host "dashscope.aliyuncs.com"
-  ;;   :endpoint "/compatible-mode/v1/chat/completions"            
-  ;;   :stream t                                      
-  ;;   :key #'gptel-api-key-from-auth-source         
-  ;;   ;; :key (auth-source-pick-first-password :host "api.aliyuncs.com")
-  ;;   :models '((qwen3.5-flash
-  ;;              :description "qwen3.5-flash"
-  ;;              :capabilities (tool-use json)
-  ;;              :context-window 200
-  ;;              :input-cost 0.0
-  ;;              :output-cost 0.0)
-  ;;             (kimi-k2.5
-  ;;              :description "kimi-k2.5"
-  ;;              :capabilities (tool-use json)
-  ;;              :context-window 200
-  ;;              :input-cost 0.0
-  ;;              :output-cost 0.0)
-  ;;             (qwen3.5-plus
-  ;;              :description "qwen3.5-plus"
-  ;;              :capabilities (tool-use json)
-  ;;              :context-window 200
-  ;;              :input-cost 0.0
-  ;;              :output-cost 0.0)
-  ;;             (MiniMax-M25
-  ;;              :description "MiniMax-M2.5"
-  ;;              :capabilities (tool-use json)
-  ;;              :context-window 200
-  ;;              :input-cost 0.0
-  ;;              :output-cost 0.0)))
   (setq gptel-backend (gptel-get-backend "OpenRouter"))
-  (setq gptel-default-mode #'org-mode)
   (setq gptel-model 'deepseek/deepseek-v4-flash:free))
 
 (use-package gptel-agent
