@@ -31,9 +31,9 @@
 
 (define %network-manager-ipv6-privacy
   `("ip6-privacy.conf"
-    ,(ini-file "ip6-privacy.conf"
-       #~'(("connection"
-            ("ipv6.ip6-privacy" . 2))))))
+	,(ini-file "ip6-privacy.conf"
+	   #~'(("connection"
+			("ipv6.ip6-privacy" . 2))))))
 
 (define %network-manager-random-mac-address
   `("random-mac-address.conf"
@@ -119,20 +119,20 @@
                        (virtlog-configuration))
                      (service nix-service-type
                        (nix-configuration
-                                     (extra-config
-                                      '("experimental-features = nix-command flakes\n"
-                                        "trusted-users = zfc root\n"
-                                        "substituters =  https://mirrors.ustc.edu.cn/nix-channels/store/ https://cache.nixos.org/\n"))))
+                     	(extra-config
+                     	 '("experimental-features = nix-command flakes\n"
+                     	   "trusted-users = zfc root\n"
+                     	   "substituters =  https://mirrors.ustc.edu.cn/nix-channels/store/ https://cache.nixos.org/\n"))))
                      (service guix-home-service-type
                        `(("zfc" ,home-base)))
                      polkit-wheel-service)
                     (modify-services %desktop-services
                       (network-manager-service-type
                        config => (network-manager-configuration
-                                  (inherit config)
-                                  (extra-configuration-files
-                                   (list %network-manager-ipv6-privacy
-                                         %network-manager-random-mac-address))))
+                      			 (inherit config)
+                      			 (extra-configuration-files
+                      			  (list %network-manager-ipv6-privacy
+                      					%network-manager-random-mac-address))))
                       (guix-service-type
                        config => (guix-configuration
                                   (inherit config)

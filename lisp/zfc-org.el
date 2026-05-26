@@ -9,6 +9,10 @@
   ;; org-clock-out-when-done '("DONE" "CANCEL" "WAIT")
   ;; org-agenda-files `(,org-default-notes-file)
   ;; org-agenda-start-with-log-mode t
+
+  (org-src-window-setup 'current-window)
+  (org-src-preserve-indentation t)
+
   (org-M-RET-may-split-line '((default . nil)))
   (org-insert-heading-respect-content t)
   (org-log-done 'time)

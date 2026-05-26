@@ -1367,6 +1367,10 @@ use built-in lsp client
   ;; org-clock-out-when-done '("DONE" "CANCEL" "WAIT")
   ;; org-agenda-files `(,org-default-notes-file)
   ;; org-agenda-start-with-log-mode t
+
+  (org-src-window-setup 'current-window)
+  (org-src-preserve-indentation t)
+
   (org-M-RET-may-split-line '((default . nil)))
   (org-insert-heading-respect-content t)
   (org-log-done 'time)
@@ -2318,19 +2322,19 @@ here is =sops= secrets config for my dae config.
 #+begin_src scheme :noweb-ref sys-services
 (service nix-service-type
   (nix-configuration
-                (extra-config
-                 '("experimental-features = nix-command flakes\n"
-                   "trusted-users = zfc root\n"
-                   "substituters =  https://mirrors.ustc.edu.cn/nix-channels/store/ https://cache.nixos.org/\n"))))
+	(extra-config
+	 '("experimental-features = nix-command flakes\n"
+	   "trusted-users = zfc root\n"
+	   "substituters =  https://mirrors.ustc.edu.cn/nix-channels/store/ https://cache.nixos.org/\n"))))
 #+end_src
 *** The =art.scm= section about NetworkManager
 ~sys-def~
 #+begin_src scheme :noweb-ref sys-def
 (define %network-manager-ipv6-privacy
   `("ip6-privacy.conf"
-    ,(ini-file "ip6-privacy.conf"
-       #~'(("connection"
-            ("ipv6.ip6-privacy" . 2))))))
+	,(ini-file "ip6-privacy.conf"
+	   #~'(("connection"
+			("ipv6.ip6-privacy" . 2))))))
 
 (define %network-manager-random-mac-address
   `("random-mac-address.conf"
@@ -2343,10 +2347,10 @@ here is =sops= secrets config for my dae config.
 #+begin_src scheme :noweb-ref modify-service
 (network-manager-service-type
  config => (network-manager-configuration
-            (inherit config)
-            (extra-configuration-files
-             (list %network-manager-ipv6-privacy
-                   %network-manager-random-mac-address))))
+			 (inherit config)
+			 (extra-configuration-files
+			  (list %network-manager-ipv6-privacy
+					%network-manager-random-mac-address))))
 #+end_src
 *** The =art.scm= section about substitute
 #+begin_src scheme :noweb-ref modify-service
