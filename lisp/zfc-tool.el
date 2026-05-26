@@ -217,6 +217,8 @@
   :bind
   (("C-c a p" . gptel)
    ("C-c a r" . gptel-rewrite)
+   ("C-c a a" . gptel-add)
+   ("C-c a f" . gptel-add-file)
    ("C-c C-RET" . gptel-send)
    ("C-c a m" . gptel-menu))
   :config
