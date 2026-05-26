@@ -2545,9 +2545,9 @@ patch to use flypy
   	          (method git-fetch)
   	          (uri (git-reference
   		             (url "https://github.com/iDvel/rime-ice")
-  		             (commit "23f0c39a0b443524e37dbff4f085236b32691291")))
+  		             (commit "e0b1588f8ca405fb81dfd92235ecd5bdccfa18ce")))
   	          (sha256
-  	           (base32 "0jfdw277z5cynb906i2m24iasgj3an7r1gsrbx3hy9gymm9yvbv3"))))
+  	           (base32 "1wj9dhz46wka0rj72dz4y97rbihrzh1kbik8cjj74qwg0bcy07yx"))))
       (build-system copy-build-system)
       (arguments
        '(#:install-plan '(("." "share/rime-data" #:exclude ("README.md" "LICENSE")))))
