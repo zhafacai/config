@@ -1392,7 +1392,6 @@ use built-in lsp client
   (org-agenda-restore-windows-after-quit t)
   (org-startup-with-inline-images t)
   (org-startup-indented t)
-  (org-src-preserve-indentation nil)
   (org-edit-src-content-indentation 0))
 ;; :config
 ;; (advice-add 'org-agenda-todo :after (lambda (&rest _) (org-save-all-org-buffers))))
@@ -2259,17 +2258,17 @@ email
 here is =sops= secrets config for my dae config.
 #+begin_src scheme :noweb-ref sys-services
 (service sops-secrets-service-type
-  (sops-service-configuration
-    (gnupg-home "/var/lib/sops")
-    ;; (generate-key? #t)
-    (secrets
-     (list
-      (sops-secret
-        (key '("sec" "dae"))
-        (file (local-file "../../secrets/sub.yaml"))
-        (user "zfc")
-        (group "wheel")
-        (permissions #o400))))))
+		 (sops-service-configuration
+		  (gnupg-home "/var/lib/sops")
+		  ;; (generate-key? #t)
+		  (secrets
+		   (list
+			(sops-secret
+			 (key '("sec" "dae"))
+			 (file (local-file "../../secrets/sub.yaml"))
+			 (user "zfc")
+			 (group "wheel")
+			 (permissions #o400))))))
 #+end_src
 *** The =art.scm= section about nix
 ~sys-services~
@@ -2473,11 +2472,11 @@ here is =sops= secrets config for my dae config.
                       `(
                         <<hm-files>>
                         ))
-                      <<hm-services>>
-                      )
-             %base-home-services))))
+             <<hm-services>>
+             )
+            %base-home-services))))
 
-  home-base
+home-base
 #+end_src
 *** The =base.scm= section about fcitx5
 ~hm-files~

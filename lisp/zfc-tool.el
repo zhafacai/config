@@ -142,18 +142,18 @@
   :custom
   (ghostel-shell "fish"))
 
-;; (use-package direnv
-;;   :config
-;;   (direnv-mode))
-(use-package ben
-  :ensure (:host codeberg :repo "pastor/ben.el")
-  :bind
-  ("C-c E" . ben-command-map)
-  :config
-  (setq ben-indicator `(,(substring-no-properties (nerd-icons-faicon "nf-fa-cubes"))
-                        "[" (:eval (ben--status)) "]"))
-  :init
-  (add-hook 'after-init-hook #'ben-global-mode 99))
+  ;; (use-package direnv
+  ;;   :config
+  ;;   (direnv-mode))
+  (use-package ben
+    :ensure (:host codeberg :repo "pastor/ben.el")
+    :bind
+    ("C-c E" . ben-command-map)
+    :config
+    (setq ben-indicator `(,(substring-no-properties (nerd-icons-faicon "nf-fa-cubes"))
+                          "[" (:eval (ben--status)) "]"))
+    :init
+    (add-hook 'after-init-hook #'ben-global-mode 99))
 
 (use-package emms
   :ensure nil

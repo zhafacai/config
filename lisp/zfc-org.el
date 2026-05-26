@@ -34,7 +34,6 @@
   (org-agenda-restore-windows-after-quit t)
   (org-startup-with-inline-images t)
   (org-startup-indented t)
-  (org-src-preserve-indentation nil)
   (org-edit-src-content-indentation 0))
 ;; :config
 ;; (advice-add 'org-agenda-todo :after (lambda (&rest _) (org-save-all-org-buffers))))
