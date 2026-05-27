@@ -50,6 +50,9 @@
                                 
                                 "emacs-rime"
                                 
+                                "wtype"
+                                
+                                
                                 "emacs-guix"
                                 
                                 "sdcv"

@@ -2,7 +2,6 @@
   :init
   (modus-themes-include-derivatives-mode 1)
   :config
-  ;; Your customizations here:
   (setq modus-themes-to-toggle '(modus-operandi modus-vivendi)
         modus-themes-to-rotate modus-themes-items
         modus-themes-mixed-fonts t
@@ -12,18 +11,24 @@
         modus-themes-completions '((t . (bold)))
         modus-themes-prompts '(bold)
         modus-themes-headings
-        '(
-          ;; (agenda-structure . (variable-pitch light 2.2))
-          ;; (agenda-date . (variable-pitch regular 1.3))
-	      ;; (t . (regular 1.15))
-	      ))
+        '((0 . (variable-pitch 1.6))
+          (1 . (variable-pitch semibold 1.55))
+          (2 . (variable-pitch regular 1.5))
+          (3 . (variable-pitch regular 1.45))
+          (4 . (variable-pitch regular 1.4))
+          (5 . (variable-pitch light 1.35))
+          (6 . (variable-pitch light 1.3))
+          (7 . (variable-pitch light 1.25))
+          (agenda-date . (semilight 1.5))
+          (agenda-structure . (variable-pitch light 1.9))
+          (t . (variable-pitch semilight 1.2))))
 
-  (setq modus-themes-common-palette-overrides nil)
-  (modus-themes-load-random 'dark))
+  (setq modus-themes-common-palette-overrides nil))
 
 (use-package ef-themes
   :init
-  (ef-themes-take-over-modus-themes-mode 1))
+  (ef-themes-take-over-modus-themes-mode 1)
+  (ef-themes-load-random-dark))
 
 (use-package logos
   :config
