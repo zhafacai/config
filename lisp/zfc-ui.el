@@ -61,7 +61,9 @@
 
 (use-package olivetti
   :hook
-  (Info-mode . olivetti-mode)
+  (Info-mode . (lambda ()
+				 (setq-local olivetti-body-width 0.4)
+				 (olivetti-mode)))
   (nov-mode . olivetti-mode)
   :general
   (general-nmap "SPC tf" 'olivetti-mode)

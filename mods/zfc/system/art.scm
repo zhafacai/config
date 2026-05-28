@@ -43,7 +43,6 @@
             ("wifi.cloned-mac-address" . "stable"))))))
 
 (operating-system
- ;; (kernel linux-6.6)
  (kernel linux-7.0)
  (initrd microcode-initrd)
  (firmware (list linux-firmware))
@@ -111,7 +110,8 @@
                    %base-packages))
 
  (services (append (list
-                    (service bluetooth-service-type)
+                    (service bluetooth-service-type
+							 (bluetooth-configuration (auto-enable? #t)))
                     (service libvirt-service-type
 							 (libvirt-configuration))
                     (service virtlog-service-type
