@@ -1621,8 +1621,6 @@ use built-in lsp client
 *** The =zfc-tool.el= section about social media
 telegram
 #+begin_src emacs-lisp
-(use-package tracking)
-
 (use-package telega
   :ensure nil
   ;; :bind
@@ -1838,7 +1836,7 @@ translater
 
 
 #+end_src
-=epkgs=
+~epkgs~
 #+begin_src scheme :noweb-ref epkgs
 "sdcv"
 #+end_src
@@ -2019,7 +2017,8 @@ agent-shell
   :custom
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
-  (agent-shell-opencode-default-model-id "openrouter/poolside/laguna-xs.2:free")
+  ;; (agent-shell-opencode-default-model-id "openrouter/poolside/laguna-xs.2:free")
+  (agent-shell-opencode-default-model-id "opencode/mimo-v2.5-free")
   :config
   ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
   (general-define-key
@@ -2101,7 +2100,7 @@ email
 (setq browse-url-browser-function 'browse-url-generic
       browse-url-generic-program "librewolf")
 #+end_src
-=epkgs= for email
+~epkgs~ for email
 #+begin_src scheme :noweb-ref epkgs
 "notmuch"
 "emacs-notmuch"
@@ -2881,7 +2880,7 @@ blue
 #+end_src
 ~home-pkgs~
 #+begin_src scheme :noweb-ref home-pkgs
-noctalia-shell
+noctalia
 mihomo
 #+end_src
 *** The sops for =channels.scm=

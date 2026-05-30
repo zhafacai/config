@@ -40,7 +40,7 @@
 	  
 	  google-chrome-stable
 	  blue
-	  noctalia-shell
+	  noctalia
 	  mihomo
 	  )
      (specifications->packages (list

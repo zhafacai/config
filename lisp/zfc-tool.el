@@ -1,5 +1,3 @@
-(use-package tracking)
-
 (use-package telega
   :ensure nil
   ;; :bind
@@ -300,7 +298,8 @@
   :custom
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
-  (agent-shell-opencode-default-model-id "openrouter/poolside/laguna-xs.2:free")
+  ;; (agent-shell-opencode-default-model-id "openrouter/poolside/laguna-xs.2:free")
+  (agent-shell-opencode-default-model-id "opencode/mimo-v2.5-free")
   :config
   ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
   (general-define-key
