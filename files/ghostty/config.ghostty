@@ -21,7 +21,7 @@ gtk-titlebar = false
 quit-after-last-window-closed = false
 font-family = "monospace"
 background-opacity = 0.88
-theme = Oxocarbon
+theme = noctalia
 font-size = 16
 command = fish
 # Vim-mode keybindings for Ghostty.
