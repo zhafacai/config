@@ -433,7 +433,8 @@ toggle alpha background
 (use-package olivetti
   :hook
   (Info-mode . (lambda ()
-				 (setq-local olivetti-body-width 0.4)
+				 (setq-local olivetti-minimum-body-width fill-column)
+				 (setq-local olivetti-body-width 0.3)
 				 (olivetti-mode)))
   (nov-mode . olivetti-mode)
   :general
