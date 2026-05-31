@@ -4,7 +4,7 @@
   (set! g neovide_opacity 0.8)
   (set! g neovide_floating_blur_amount_x 2)
   (set! g floating_blur_amount_y 2)
-  (set! g neovide_fullscreen false)
+  (set! g neovide_fullscreen true)
   (set! g neovide_cursor_animation_length 0.1)
   (set! g neovide_cursor_vfx_mode :ripple)
   (seto! guifont "Iosevka Nerd Font:h18")
