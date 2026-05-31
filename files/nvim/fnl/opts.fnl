@@ -7,7 +7,7 @@
   (set! g neovide_fullscreen false)
   (set! g neovide_cursor_animation_length 0.1)
   (set! g neovide_cursor_vfx_mode :ripple)
-  (seto! guifont "Iosevka SS02:h14")
+  (seto! guifont "Iosevka Nerd Font:h18")
   (set! o scrolloff 0))
 
 (set! g mapleader " ")

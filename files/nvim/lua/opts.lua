@@ -6,7 +6,7 @@ if vim.g.neovide then
   vim.g["neovide_fullscreen"] = false
   vim.g["neovide_cursor_animation_length"] = 0.1
   vim.g["neovide_cursor_vfx_mode"] = "ripple"
-  vim.opt["guifont"] = "Iosevka SS02:h14"
+  vim.opt["guifont"] = "Iosevka Nerd Font:h18"
   vim.opt["scrolloff"] = 0
 else
 end
