@@ -2,24 +2,29 @@
 id = "git"
 url = "*"
 run = "git"
+group = "git"
 
 [[plugin.prepend_fetchers]]
 id = "git"
 url = "*/"
 run = "git"
+group = "git"
 
 [[plugin.prepend_fetchers]]
 id = "mime"
 url = "local://*"
 run = "mime-ext.local"
 prio = "high"
+group = "mime"
 
 [[plugin.prepend_fetchers]]
 id = "mime"
 url = "remote://*"
 run = "mime-ext.remote"
 prio = "high"
+group = "mime"
 
 [[plugin.prepend_previewers]]
 mime = "application/{*zip,tar,bzip2,7z*,rar,xz,zstd,java-archive}"
 run = "ouch"
+group = "ouch"
