@@ -24,6 +24,7 @@
 
 (autocmd! :FileType [:help
                      :grug-far*
+                     :nvim-pack
                      :qf
                      :lspinfo
                      :man

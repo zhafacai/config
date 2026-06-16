@@ -14,6 +14,4 @@
 
 (require :dev)
 
-(require :org)
-
 (require :zfc.dial)

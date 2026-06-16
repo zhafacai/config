@@ -21,7 +21,7 @@ local function _2_()
   vim.keymap.set("n", "q", vim.cmd.q, {buffer = true, desc = "Close window"})
   return vim.keymap.set("n", "gq", "q", {buffer = true, desc = "Record macro"})
 end
-vim.api.nvim_create_autocmd("FileType", {callback = _2_, pattern = {"help", "grug-far*", "qf", "lspinfo", "man", "query", "checkhealth", "Neogit*", "norg*", "org*", "markdown", "octo", "text"}})
+vim.api.nvim_create_autocmd("FileType", {callback = _2_, pattern = {"help", "grug-far*", "nvim-pack", "qf", "lspinfo", "man", "query", "checkhealth", "Neogit*", "norg*", "org*", "markdown", "octo", "text"}})
 local function _3_()
   return vim.keymap.set("n", "gd", vim.lsp.buf.definition, {buffer = true, desc = "Go to definition"})
 end

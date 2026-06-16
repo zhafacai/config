@@ -45,21 +45,11 @@
              :desc :Help
              :icon "󰞋 "
              :key :h}
-            {:action ":Neogit" :desc :Git :icon " " :key :g}
-            {:action "<cmd>Org agenda<CR>" :desc :Agenda :icon "󱨋 " :key :a}
-            ; {:action :<cmd>OrgSuperAgenda!<CR>
-            ;  :desc :SuperAgenda
-            ;  :icon "󰠮 "
-            ;  :key :a}
-            {:action ":Denote" :desc :Note :icon " " :key :n}
-            {:action "<cmd>Org capture<CR>"
-             :desc :Capture
-             :icon "󰛨 "
-             :key :c}
+            {:action ":Neogit" :desc :Git :icon " " :key :l}
             {:action ":lua Snacks.dashboard.pick('files', {cwd = '~/dots'})"
              :desc :Config
              :icon " "
-             :key :C}
+             :key :c}
             {:desc :Session
              :icon " "
              :key :s
