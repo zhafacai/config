@@ -57,7 +57,6 @@
 (gh-pkg! :rebelot/kanagawa.nvim)
 (gh-pkg! :nyoom-engineering/oxocarbon.nvim)
 (gh-pkg! :folke/tokyonight.nvim)
-(gh-pkg! :miikanissi/modus-themes.nvim)
 (gh-pkg! :AlexvZyl/nordic.nvim)
 (gh-pkg! :ellisonleao/gruvbox.nvim)
 (gh-pkg! :catppuccin/nvim {:name :catppuccin})
@@ -69,7 +68,6 @@
              :evergarden-summer
              :catppuccin-latte
              :tokyonight-day
-             ; :modus_operandi
              :kanagawa-lotus
              :gruvbox
              :oxocarbon
@@ -87,8 +85,6 @@
             :catppuccin
             :gruvbox
             :nordic
-            ; :modus
-            ; :modus_vivendi
             :tokyonight-moon
             :tokyonight-night
             :tokyonight-storm
@@ -99,11 +95,7 @@
             :kanagawa
             :everforest]
       hour (tonumber (os.date "%H"))
-      ; bg (if (and (>= hour 7) (< hour 19)) :light :dark)
       bg :dark
-      ;; themes (if (and (>= hour 7) (< hour 19))
-      ;;            light
-      ;;            dark)
       themes dark
       _ (math.randomseed (os.time))
       idx (+ 1 (math.random (length themes)))

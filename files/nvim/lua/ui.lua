@@ -90,9 +90,6 @@ do
   vim.pack.add({{src = "https://github.com/folke/tokyonight.nvim"}})
 end
 do
-  vim.pack.add({{src = "https://github.com/miikanissi/modus-themes.nvim"}})
-end
-do
   vim.pack.add({{src = "https://github.com/AlexvZyl/nordic.nvim"}})
 end
 do
