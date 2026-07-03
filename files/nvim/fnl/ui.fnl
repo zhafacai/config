@@ -98,7 +98,7 @@
       bg :dark
       themes dark
       _ (math.randomseed (os.time))
-      idx (+ 1 (math.random (length themes)))
+      idx (math.random (length themes))
       theme (. themes idx)]
   (set! o background bg)
   (vim.cmd.colorscheme theme))

@@ -110,7 +110,7 @@ local hour = tonumber(os.date("%H"))
 local bg = "dark"
 local themes = dark
 local _ = math.randomseed(os.time())
-local idx = (1 + math.random(#themes))
+local idx = math.random(#themes)
 local theme = themes[idx]
 vim.opt["background"] = bg
 return vim.cmd.colorscheme(theme)
