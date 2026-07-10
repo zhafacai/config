@@ -84,6 +84,7 @@
            {:setup {:bigfile {:enabled true}
                     ; :input {:enabled true}
                     :image {:enabled true}
+                    ; :statuscolumn {}
                     :scratch {:enabled true}
                     :dashboard {:enabled true :preset {: keys} : sections}
                     :picker {:enabled true}}}))
