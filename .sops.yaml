@@ -3,7 +3,7 @@ keys:
   - &home 4F3BAAE30FE2E3064BC7ECA05ABCBDEC900FD06A
 
 creation_rules:
-    - path_regex: secrets/subs\.yaml
+    - path_regex: secrets/sub\.yaml
       key_groups:
           - pgp:
                 - *root
