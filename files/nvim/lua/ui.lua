@@ -101,13 +101,9 @@ end
 do
   vim.pack.add({{name = "ember", src = "https://github.com/ember-theme/nvim"}})
 end
-local light = {"ember-light", "evergarden-summer", "catppuccin-latte", "tokyonight-day", "kanagawa-lotus", "oxocarbon", "everforest"}
 local dark = {"ember-soft", "ember", "evergarden-fall", "evergarden-spring", "evergarden-winter", "evergarden", "catppuccin-frappe", "catppuccin-macchiato", "catppuccin-mocha", "catppuccin-nvim", "catppuccin", "nordic", "tokyonight-moon", "tokyonight-night", "tokyonight-storm", "tokyonight", "oxocarbon", "kanagawa-dragon", "kanagawa-wave", "kanagawa", "everforest"}
-local hour = tonumber(os.date("%H"))
-local bg = "dark"
-local themes = dark
 local _ = math.randomseed(os.time())
-local idx = math.random(#themes)
-local theme = themes[idx]
-vim.opt["background"] = bg
+local idx = math.random(#dark)
+local theme = dark[idx]
+vim.opt["background"] = "dark"
 return vim.cmd.colorscheme(theme)

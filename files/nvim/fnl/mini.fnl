@@ -1,4 +1,4 @@
-(import-macros {: set! : gh-pkg! : nmap! : autocmd! : augroup!} :macros)
+(import-macros {: set! : gh-pkg! : nmap! : autocmd!} :macros)
 
 (gh-pkg! :nvim-mini/mini.statusline)
 (gh-pkg! :nvim-mini/mini.icons {:setup {}})

@@ -2,12 +2,11 @@
 if vim.g.neovide then
   vim.g["neovide_opacity"] = 0.8
   vim.g["neovide_floating_blur_amount_x"] = 2
-  vim.g["floating_blur_amount_y"] = 2
+  vim.g["neovide_floating_blur_amount_y"] = 2
   vim.g["neovide_fullscreen"] = true
   vim.g["neovide_cursor_animation_length"] = 0.1
   vim.g["neovide_cursor_vfx_mode"] = "ripple"
   vim.opt["guifont"] = "Iosevka Nerd Font:h18"
-  vim.opt["scrolloff"] = 0
 else
 end
 vim.g["mapleader"] = " "
@@ -31,7 +30,7 @@ vim.opt["splitkeep"] = "screen"
 vim.opt["foldcolumn"] = "1"
 vim.opt["jumpoptions"] = "stack"
 vim.opt["foldmethod"] = "expr"
-vim.opt["foldexpr"] = "nvim_treesitter#foldexpr"
+vim.opt["foldexpr"] = "v:lua.vim.treesitter.foldexpr()"
 vim.opt["showbreak"] = "  \243\176\152\141"
 vim.opt["shell"] = "fish"
 vim.opt["shellcmdflag"] = "-c"

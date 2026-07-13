@@ -3,12 +3,11 @@
 (when vim.g.neovide
   (set! g neovide_opacity 0.8)
   (set! g neovide_floating_blur_amount_x 2)
-  (set! g floating_blur_amount_y 2)
+  (set! g neovide_floating_blur_amount_y 2)
   (set! g neovide_fullscreen true)
   (set! g neovide_cursor_animation_length 0.1)
   (set! g neovide_cursor_vfx_mode :ripple)
-  (seto! guifont "Iosevka Nerd Font:h18")
-  (set! o scrolloff 0))
+  (seto! guifont "Iosevka Nerd Font:h18"))
 
 (set! g mapleader " ")
 (set! g maplocalleader ",")
@@ -31,7 +30,7 @@
 (seto! foldcolumn :1)
 (seto! jumpoptions :stack)
 (seto! foldmethod :expr)
-(seto! foldexpr "nvim_treesitter#foldexpr")
+(seto! foldexpr "v:lua.vim.treesitter.foldexpr()")
 (seto! showbreak "  󰘍")
 (seto! shell :fish)
 (seto! shellcmdflag :-c)

@@ -62,15 +62,7 @@
 (gh-pkg! :everviolet/nvim {:name :everviolet})
 (gh-pkg! :ember-theme/nvim {:name :ember})
 
-;; fnlfmt: skip
-(let [light [:ember-light
-             :evergarden-summer
-             :catppuccin-latte
-             :tokyonight-day
-             :kanagawa-lotus
-             :oxocarbon
-             :everforest]
-      dark [:ember-soft
+(let [dark [:ember-soft
             :ember
             :evergarden-fall
             :evergarden-spring
@@ -91,11 +83,8 @@
             :kanagawa-wave
             :kanagawa
             :everforest]
-      hour (tonumber (os.date "%H"))
-      bg :dark
-      themes dark
       _ (math.randomseed (os.time))
-      idx (math.random (length themes))
-      theme (. themes idx)]
-  (set! o background bg)
+      idx (math.random (length dark))
+      theme (. dark idx)]
+  (set! o background :dark)
   (vim.cmd.colorscheme theme))

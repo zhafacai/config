@@ -11,7 +11,7 @@
 (use-package disaster
   :commands (disaster)
   :init
-  (setq disaster-assembly-mode #'nasm-mde))
+  (setq disaster-assembly-mode #'nasm-mode))
 ;; TODO use map like this
 ;; (map! :localleader
 ;;       :map (c++-mode-map c-mode-map)

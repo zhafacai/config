@@ -306,7 +306,7 @@ vim.keymap.set("n", "glm", _38_, {desc = "Chainsaw: log message"})
 local function _39_()
   return cs.timeLog()
 end
-vim.keymap.set("n", "glt", _39_, {desc = "Chainsaw: log time"})
+vim.keymap.set("n", "glT", _39_, {desc = "Chainsaw: log time"})
 local function _40_()
   return cs.stacktraceLog()
 end

@@ -50,7 +50,6 @@
                                      :markdown [:rumdl]
                                      :toml [:tombi]
                                      :python [:black]
-                                     :fennel [:fnlfmt]
                                      :nix [:nixfmt]
                                      :json [:jq]
                                      :rust [:rustfmt]

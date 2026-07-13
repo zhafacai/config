@@ -43,7 +43,7 @@
 
 (use-package org-tree-slide
   :general
-  (:states 'normal :keymaps 'org-tree-slided-mode-map
+  (:states 'normal :keymaps 'org-tree-slide-mode-map
 		   "j" #'org-tree-slide-move-next-tree
 		   "k" #'org-tree-slide-move-previous-tree))
 

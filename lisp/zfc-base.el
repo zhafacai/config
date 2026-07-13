@@ -43,7 +43,6 @@
   ;; Silence compiler warnings as they can be pretty disruptive
   (native-comp-async-report-warnings-errors nil)
   :init
-  (tooltip-mode nil)
   (recentf-mode 1)
   (repeat-mode 1)
   (savehist-mode 1)

@@ -179,7 +179,7 @@
   (nmap! :gla #(cs.assertLog) "Chainsaw: log assert")
   (nmap! :gle #(cs.emojiLog) "Chainsaw: log emoji")
   (nmap! :glm #(cs.messageLog) "Chainsaw: log message")
-  (nmap! :glt #(cs.timeLog) "Chainsaw: log time")
+  (nmap! :glT #(cs.timeLog) "Chainsaw: log time")
   (nmap! :gls #(cs.stacktraceLog) "Chainsaw: log stacktrace")
   (nmap! :glc #(cs.clearLog) "Chainsaw: clear log")
   (nmap! :glr #(cs.removeLog) "Chainsaw: remove log")

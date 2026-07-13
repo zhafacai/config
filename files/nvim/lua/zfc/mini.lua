@@ -40,7 +40,7 @@ local start_spinner = function()
 		spinner_timer = nil
 	end
 
-	spinner_timer = vim.loop.new_timer()
+	spinner_timer = vim.uv.new_timer()
 	if not spinner_timer then
 		return
 	end

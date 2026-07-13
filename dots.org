@@ -212,7 +212,7 @@ evil collection for bunch of maps in different mode
 
 (use-package evil-org
   :after org
-  :hook (org-mode . (lambda () evil-org-mode))
+  :hook (org-mode . evil-org-mode)
   :config
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
@@ -614,7 +614,6 @@ basic packages which extend core features in emacs
   ;; Silence compiler warnings as they can be pretty disruptive
   (native-comp-async-report-warnings-errors nil)
   :init
-  (tooltip-mode nil)
   (recentf-mode 1)
   (repeat-mode 1)
   (savehist-mode 1)
@@ -1409,7 +1408,7 @@ use built-in lsp client
 
 (use-package org-tree-slide
   :general
-  (:states 'normal :keymaps 'org-tree-slided-mode-map
+  (:states 'normal :keymaps 'org-tree-slide-mode-map
 		   "j" #'org-tree-slide-move-next-tree
 		   "k" #'org-tree-slide-move-previous-tree))
 
@@ -2134,7 +2133,7 @@ email
 (use-package disaster
   :commands (disaster)
   :init
-  (setq disaster-assembly-mode #'nasm-mde))
+  (setq disaster-assembly-mode #'nasm-mode))
 ;; TODO use map like this
 ;; (map! :localleader
 ;;       :map (c++-mode-map c-mode-map)

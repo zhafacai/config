@@ -7,7 +7,7 @@ require("blink.cmp").setup({
 		-- ["<C-d>"] = { "scroll_documentation_down", "fallback" },
 		["<c-g>"] = {
 			function()
-				require("blink-cmp").show({ providers = { "ripgrep" } })
+				require("blink.cmp").show({ providers = { "ripgrep" } })
 			end,
 		},
 	},
