@@ -93,9 +93,6 @@ do
   vim.pack.add({{src = "https://github.com/AlexvZyl/nordic.nvim"}})
 end
 do
-  vim.pack.add({{src = "https://github.com/ellisonleao/gruvbox.nvim"}})
-end
-do
   vim.pack.add({{name = "catppuccin", src = "https://github.com/catppuccin/nvim"}})
 end
 do
@@ -104,8 +101,8 @@ end
 do
   vim.pack.add({{name = "ember", src = "https://github.com/ember-theme/nvim"}})
 end
-local light = {"ember-light", "evergarden-summer", "catppuccin-latte", "tokyonight-day", "kanagawa-lotus", "gruvbox", "oxocarbon", "everforest"}
-local dark = {"ember-soft", "ember", "evergarden-fall", "evergarden-spring", "evergarden-winter", "evergarden", "catppuccin-frappe", "catppuccin-macchiato", "catppuccin-mocha", "catppuccin-nvim", "catppuccin", "gruvbox", "nordic", "tokyonight-moon", "tokyonight-night", "tokyonight-storm", "tokyonight", "oxocarbon", "kanagawa-dragon", "kanagawa-wave", "kanagawa", "everforest"}
+local light = {"ember-light", "evergarden-summer", "catppuccin-latte", "tokyonight-day", "kanagawa-lotus", "oxocarbon", "everforest"}
+local dark = {"ember-soft", "ember", "evergarden-fall", "evergarden-spring", "evergarden-winter", "evergarden", "catppuccin-frappe", "catppuccin-macchiato", "catppuccin-mocha", "catppuccin-nvim", "catppuccin", "nordic", "tokyonight-moon", "tokyonight-night", "tokyonight-storm", "tokyonight", "oxocarbon", "kanagawa-dragon", "kanagawa-wave", "kanagawa", "everforest"}
 local hour = tonumber(os.date("%H"))
 local bg = "dark"
 local themes = dark

@@ -58,7 +58,6 @@
 (gh-pkg! :nyoom-engineering/oxocarbon.nvim)
 (gh-pkg! :folke/tokyonight.nvim)
 (gh-pkg! :AlexvZyl/nordic.nvim)
-(gh-pkg! :ellisonleao/gruvbox.nvim)
 (gh-pkg! :catppuccin/nvim {:name :catppuccin})
 (gh-pkg! :everviolet/nvim {:name :everviolet})
 (gh-pkg! :ember-theme/nvim {:name :ember})
@@ -69,7 +68,6 @@
              :catppuccin-latte
              :tokyonight-day
              :kanagawa-lotus
-             :gruvbox
              :oxocarbon
              :everforest]
       dark [:ember-soft
@@ -83,7 +81,6 @@
             :catppuccin-mocha
             :catppuccin-nvim
             :catppuccin
-            :gruvbox
             :nordic
             :tokyonight-moon
             :tokyonight-night

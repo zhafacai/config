@@ -25,7 +25,7 @@
       "src": "https://github.com/moyiz/blink-emoji.nvim"
     },
     "blink-ripgrep.nvim": {
-      "rev": "fba1932bd2af10f584c1e65bbc1dce178b3fb1b9",
+      "rev": "5993c435999ca3f07d93db16abd5ac2a9233dc56",
       "src": "https://github.com/mikavilpas/blink-ripgrep.nvim"
     },
     "blink.cmp": {
@@ -50,7 +50,7 @@
       "src": "https://github.com/dchinmay2/clangd_extensions.nvim"
     },
     "codecompanion.nvim": {
-      "rev": "a8a754491999d97695d6134e8d3d98effe6b2a98",
+      "rev": "16ebb400e2405f5c1a4b9c79e94bcfaa563713ac",
       "src": "https://github.com/olimorris/codecompanion.nvim"
     },
     "codediff.nvim": {
@@ -116,10 +116,6 @@
     "grug-far.nvim": {
       "rev": "1cc080f55706b38aabfa97d40acb6adf59ac4a5a",
       "src": "https://github.com/MagicDuck/grug-far.nvim"
-    },
-    "gruvbox.nvim": {
-      "rev": "154eb5ff5b96d0641307113fa385eaf0d36d9796",
-      "src": "https://github.com/ellisonleao/gruvbox.nvim"
     },
     "helpview.nvim": {
       "rev": "06006b471890f19efeb199ffab5da49a2d624619",
