@@ -2,6 +2,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages fcitx5)
+  #:use-module (gnu home services ssh)
   #:use-module (gnu packages shells)
   #:use-module (gnu home services shepherd)
   #:use-module (gnu packages mail)
@@ -11,8 +12,8 @@
   #:use-module (sops home services sops)
   #:use-module (nongnu packages chrome)
   #:use-module (bluebox packages blue)
-  #:use-module (rosenthal packages wm)
   #:use-module (rosenthal packages networking)
+  #:use-module (noctalia)
   #:use-module (gnu services)
   #:use-module (gnu home)
   #:use-module (gnu home services)
@@ -40,8 +41,8 @@
 	  
 	  google-chrome-stable
 	  blue
-	  noctalia
 	  mihomo
+	  noctalia-git
 	  )
      (specifications->packages (list
                                 ;; emacs
@@ -183,11 +184,14 @@
              		   (bash-profile (list (local-file
              								"plain/.bash_profile"
              								"bash_profile")))))
+             (service home-openssh-service-type
+             		 (home-openssh-configuration))
              (service home-fish-service-type
                       (home-fish-configuration
                         (config
                          (list (plain-file "fish_greeting.fish" "set -g fish_greeting")
                                (plain-file "plugins.fish" (string-append "starship init fish | source\n"
+             															"set -x GPG_TTY (tty)\n"
                                                                          "zoxide init fish | source\n"
              															"fish_config theme choose catppuccin-mocha\n"
                                                                          "direnv hook fish | source"))))))

@@ -2,7 +2,7 @@
        (name 'guix)
        (url "https://mirror.sjtu.edu.cn/git/guix.git")
        (branch "master")
-       (commit "c66c1023efdfcb7fe6207c68d7d19d692c7f0e73")
+       (commit "c143f00ce73ee0603f50f70aa0846c7e1f381ed0")
        (introduction
         (make-channel-introduction
          "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -12,7 +12,7 @@
        (name 'nonguix)
        (url "https://gitlab.com/nonguix/nonguix")
        (branch "master")
-       (commit "01ccd92a73434029119c0ef1bd8e0f1a7bb71a8e")
+       (commit "3b66965566fe8c96edb5a41fd39a9e5a90ad9b61")
        (introduction
         (make-channel-introduction
          "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
@@ -32,7 +32,7 @@
        (name 'rosenthal)
        (url "https://codeberg.org/hako/rosenthal.git")
        (branch "trunk")
-       (commit "2889a00542cc17b21fb90f4e6a43cb7679de0db7")
+       (commit "63d7c774dc3b4e3c1de785bfcf5935a052bd44b1")
        (introduction
         (make-channel-introduction
          "7677db76330121a901604dfbad19077893865f35"
@@ -47,4 +47,9 @@
         (make-channel-introduction
          "0bbaf1fdd25266c7df790f65640aaa01e6d2dbc9"
          (openpgp-fingerprint
-          "8D10 60B9 6BB8 292E 829B  7249 AED4 1CC1 93B7 01E2")))))
+          "8D10 60B9 6BB8 292E 829B  7249 AED4 1CC1 93B7 01E2"))))
+      (channel
+       (name 'noctalia)
+       (url "https://github.com/noctalia-dev/noctalia-shell")
+       (branch "v5")
+       (commit "69fbf464ca18c2638515bc4ff522b8482b79cc44")))

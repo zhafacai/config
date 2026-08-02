@@ -2219,7 +2219,7 @@ email
 <<sys-def>>
 
 (operating-system
- (kernel linux-7.0)
+ (kernel linux-7.1)
  (initrd microcode-initrd)
  (firmware (list linux-firmware))
  (host-name "art")
@@ -2640,6 +2640,15 @@ patch to use flypy
 								"plain/.bash_profile"
 								"bash_profile")))))
 #+end_src
+*** The =base.scm= section about openssh
+~home-use~
+#+begin_src scheme :noweb-ref home-use
+#:use-module (gnu home services ssh)
+#+end_src
+#+begin_src scheme :noweb-ref hm-services
+(service home-openssh-service-type
+		 (home-openssh-configuration))
+#+end_src
 *** The =base.scm= section about fish
 ~home-use~
 #+begin_src scheme :noweb-ref home-use
@@ -2651,6 +2660,7 @@ patch to use flypy
            (config
             (list (plain-file "fish_greeting.fish" "set -g fish_greeting")
                   (plain-file "plugins.fish" (string-append "starship init fish | source\n"
+															"set -x GPG_TTY (tty)\n"
                                                             "zoxide init fish | source\n"
 															"fish_config theme choose catppuccin-mocha\n"
                                                             "direnv hook fish | source"))))))
@@ -2876,12 +2886,10 @@ blue
 #+end_src
 ~home-use~
 #+begin_src scheme :noweb-ref home-use
-#:use-module (rosenthal packages wm)
 #:use-module (rosenthal packages networking)
 #+end_src
 ~home-pkgs~
 #+begin_src scheme :noweb-ref home-pkgs
-noctalia
 mihomo
 #+end_src
 *** The sops for =channels.scm=
@@ -2896,6 +2904,22 @@ mihomo
    "0bbaf1fdd25266c7df790f65640aaa01e6d2dbc9"
    (openpgp-fingerprint
     "8D10 60B9 6BB8 292E 829B  7249 AED4 1CC1 93B7 01E2"))))
+#+end_src
+*** The noctalia for =channels.scm=
+~chl~
+#+begin_src scheme :noweb-ref channels
+(channel
+ (name 'noctalia)
+ (url "https://github.com/noctalia-dev/noctalia-shell")
+ (branch "v5"))
+#+end_src
+~home-use~
+#+begin_src scheme :noweb-ref home-use
+#:use-module (noctalia)
+#+end_src
+~home-pkgs~
+#+begin_src scheme :noweb-ref home-pkgs
+noctalia-git
 #+end_src
 *** COMMENT The guixcn for =channels.scm=
 ~chl~

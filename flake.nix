@@ -57,6 +57,7 @@
 
           # cli
           opencode
+          codex
           yazi
           ghostty
           jq

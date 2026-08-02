@@ -43,7 +43,7 @@
             ("wifi.cloned-mac-address" . "stable"))))))
 
 (operating-system
- (kernel linux-7.0)
+ (kernel linux-7.1)
  (initrd microcode-initrd)
  (firmware (list linux-firmware))
  (host-name "art")
