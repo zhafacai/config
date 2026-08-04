@@ -79,13 +79,13 @@
                     :height 150)
 
 (set-face-attribute 'variable-pitch nil
-                    :family "Aporetic Serif")
+                    :family "Iosevka Slab")
 
 (set-face-attribute 'fixed-pitch nil
-                    :family "Aporetic Sans Mono")
+                    :family "Iosevka SS17")
 
 (set-face-attribute 'fixed-pitch-serif nil
-                    :family "Aporetic Serif Mono")
+                    :family "Iosevka SS08")
 
 (dolist (charset '(kana han cjk-misc symbol bopomofo))
   (set-fontset-font t charset (font-spec :family "LXGW WenKai")))

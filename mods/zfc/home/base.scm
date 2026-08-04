@@ -10,7 +10,7 @@
   #:use-module (gnu packages gnome-xyz)
   #:use-module (sops secrets)
   #:use-module (sops home services sops)
-  #:use-module (nongnu packages chrome)
+  ;; #:use-module (nongnu packages chrome)
   #:use-module (bluebox packages blue)
   #:use-module (rosenthal packages networking)
   #:use-module (noctalia)
@@ -39,7 +39,7 @@
 	  
 	    emacs-reader
 	  
-	  google-chrome-stable
+	  ;; google-chrome-stable
 	  blue
 	  mihomo
 	  noctalia-git
@@ -68,8 +68,11 @@
 
 						        ;; fonts
 						        "font-google-noto-emoji"
-						        "font-aporetic"
+						        "font-cormorant"
 						        "font-iosevka-ss02"
+						        "font-iosevka-ss08"
+						        "font-iosevka-ss17"
+						        "font-iosevka-slab"
 						        "font-nerd-symbols"
 						        "font-lxgw-wenkai"
 

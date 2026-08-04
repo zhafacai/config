@@ -453,13 +453,13 @@ default fonts
                     :height 150)
 
 (set-face-attribute 'variable-pitch nil
-                    :family "Aporetic Serif")
+                    :family "Iosevka Slab")
 
 (set-face-attribute 'fixed-pitch nil
-                    :family "Aporetic Sans Mono")
+                    :family "Iosevka SS17")
 
 (set-face-attribute 'fixed-pitch-serif nil
-                    :family "Aporetic Serif Mono")
+                    :family "Iosevka SS08")
 #+end_src
 
 中文字体
@@ -2189,7 +2189,7 @@ email
 (define-module (zfc system art)
   #:use-module (gnu)
   #:use-module (gnu system nss)
-  #:use-module (gnu packages wm)
+  #:use-module (gnu packages window-management)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages vim)
@@ -2364,8 +2364,8 @@ here is =sops= secrets config for my dae config.
              (append (list (local-file "./signing-key.pub")
                            (local-file "./guix-moe.pub"))
                      %default-authorized-guix-keys))
-            (substitute-urls '("https://mirror.sjtu.edu.cn/guix/"
-                               "https://cache-cdn.guix.moe"
+            (substitute-urls '("https://cache-cdn.guix.moe"
+							   "https://mirror.sjtu.edu.cn/guix/"
                                "https://substitutes.nonguix.org"
                                "https://ci.guix.gnu.org"))))
 #+end_src
@@ -2458,8 +2458,11 @@ here is =sops= secrets config for my dae config.
 
 						        ;; fonts
 						        "font-google-noto-emoji"
-						        "font-aporetic"
+						        "font-cormorant"
 						        "font-iosevka-ss02"
+						        "font-iosevka-ss08"
+						        "font-iosevka-ss17"
+						        "font-iosevka-slab"
 						        "font-nerd-symbols"
 						        "font-lxgw-wenkai"
 
@@ -2844,11 +2847,11 @@ I just use sjtu mirror.
 #+end_src
 ~home-use~
 #+begin_src scheme :noweb-ref home-use
-#:use-module (nongnu packages chrome)
+;; #:use-module (nongnu packages chrome)
 #+end_src
 ~home-pkgs~
 #+begin_src scheme :noweb-ref home-pkgs
-google-chrome-stable
+;; google-chrome-stable
 #+end_src
 *** The bluebox for =channels.scm=
 ~chl~

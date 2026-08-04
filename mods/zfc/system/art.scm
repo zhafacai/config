@@ -2,7 +2,7 @@
 (define-module (zfc system art)
   #:use-module (gnu)
   #:use-module (gnu system nss)
-  #:use-module (gnu packages wm)
+  #:use-module (gnu packages window-management)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages vim)
@@ -139,8 +139,8 @@
 									             (append (list (local-file "./signing-key.pub")
 									                           (local-file "./guix-moe.pub"))
 									                     %default-authorized-guix-keys))
-									            (substitute-urls '("https://mirror.sjtu.edu.cn/guix/"
-									                               "https://cache-cdn.guix.moe"
+									            (substitute-urls '("https://cache-cdn.guix.moe"
+																   "https://mirror.sjtu.edu.cn/guix/"
 									                               "https://substitutes.nonguix.org"
 									                               "https://ci.guix.gnu.org"))))
 									)))
