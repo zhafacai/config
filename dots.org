@@ -5,9 +5,9 @@
 #+PROPERTY: header-args:emacs-lisp :tangle yes
 
 * Intro
-This repo consists of guix and emacs configuration.
-My personal laptop is on guix which should be as FOSS as possible,
-while the server I prefer to use is nixos which has more recent and
+This repo contains guix and emacs configuration.
+My personal laptop runs guix which should be as FOSS as possible,
+while the server I prefer to use is based on nixos which has more recent and
 more packages.
 * Emacs
 ** The =early-init.el= section
@@ -465,7 +465,7 @@ default fonts
 中文字体
 #+begin_src emacs-lisp
 (dolist (charset '(kana han cjk-misc symbol bopomofo))
-  (set-fontset-font t charset (font-spec :family "LXGW WenKai")))
+  (set-fontset-font t charset (font-spec :family "LXGW Marker Gothic")))
 #+end_src
 #+begin_src emacs-lisp
 (use-package hl-todo
@@ -2427,14 +2427,6 @@ here is =sops= secrets config for my dae config.
         (chmod "/etc/dae/base.dae" #o600)
         (chmod "/etc/dae/config.dae" #o600)))
 #+end_src
-*** COMMENT The =art.scm= section about clash
-~sys-services~
-#+begin_src scheme :noweb-ref sys-services
-(service clash-service-type
-  (clash-configuration
-    (config ())
-        ))
-#+end_src
 ** The =base.scm= section for Guix Home
 *** The inbox =base.scm=
 #+begin_src scheme :tangle mods/zfc/home/base.scm :noweb yes
@@ -2458,94 +2450,96 @@ here is =sops= secrets config for my dae config.
   #:use-module (guix transformations)
   #:use-module (zfc home packages rime-ice)
   #:use-module (zfc packages emacs-xyz)
+  #:use-module (zfc packages fonts)
   #:export (home-base))
 
 (define home-base
   (home-environment
-   (packages
-    (append
-     (list
-	  <<home-pkgs>>
-	  )
-     (specifications->packages (list
-                                ;; emacs
-                                <<epkgs>>
-                                "emacs-next-pgtk"
-                                ;; dev
-                                "rust"
+	(packages
+     (append
+      (list
+	   <<home-pkgs>>
+	   )
+      (specifications->packages (list
+                                 ;; emacs
+                                 <<epkgs>>
+                                 "emacs-next-pgtk"
+                                 ;; dev
+                                 "rust"
 
-						        ;; fonts
-						        "font-google-noto-emoji"
-						        "font-cormorant"
-						        "font-iosevka-ss02"
-						        "font-iosevka-ss08"
-						        "font-iosevka-ss17"
-						        "font-iosevka-slab"
-						        "font-nerd-symbols"
-						        "font-lxgw-wenkai"
+						         ;; fonts
+						         "font-google-noto-emoji"
+						         "font-cormorant"
+								 "font-lxgw-markergothic"
+						         "font-iosevka-ss02"
+"font-iosevka-ss08"
+"font-iosevka-ss17"
+"font-iosevka-slab"
+"font-nerd-symbols"
+"font-lxgw-wenkai"
 
-						        "librewolf"
-                                "qutebrowser"
-                                "qtwayland"
-						        "virt-manager"
-                                "wl-clipboard"
-						        
-						        ;; cli
-                                "brightnessctl"
-								"bat"
-                                "telegram-desktop"
-                                "ddcutil"
-                                "github-cli"
-                                "tree-sitter-cli"
-                                "bluez"
-                                "openssh"
-                                "fzf"
-                                "just"
-						        "starship"
-						        "make"
-						        "unzip"
-						        "zoxide"
-						        "btop"
-								"sops"
-						        "yt-dlp"
-                                "krdc"
-						        "ripgrep"
-						        "fd"
-						        "mpv"
-						        "alacritty"
-						        "gcc-toolchain"
-						        "xwayland-satellite"
-						        "git"
-						        "file"
-						        "neovim"
-						        "neofetch"
-						        "curl"
-                                ;; fennel
-                                "fnlfmt"
+"librewolf"
+"qutebrowser"
+"qtwayland"
+"virt-manager"
+"wl-clipboard"
+
+;; cli
+"brightnessctl"
+"bat"
+"telegram-desktop"
+"ddcutil"
+"github-cli"
+"tree-sitter-cli"
+"bluez"
+"openssh"
+"fzf"
+"just"
+"starship"
+"make"
+"unzip"
+"zoxide"
+"btop"
+"sops"
+"yt-dlp"
+"krdc"
+"ripgrep"
+"fd"
+"mpv"
+"alacritty"
+"gcc-toolchain"
+"xwayland-satellite"
+"git"
+"file"
+"neovim"
+"neofetch"
+"curl"
+;; fennel
+"fnlfmt"
 
 
-								;; dirvish
-								"vips"
-								"poppler"
-								"ffmpegthumbnailer"
-								"epub-thumbnailer"
-								"mediainfo"
-								"7zip"
-								"imagemagick"
-								"eza"
+;; dirvish
+"vips"
+"poppler"
+"ffmpegthumbnailer"
+"epub-thumbnailer"
+"mediainfo"
+"7zip"
+"imagemagick"
+"eza"
 
-						        "cryptsetup"))))
+"cryptsetup"))))
 
-   (services
-    (append (list 
-             (service home-pipewire-service-type)
-             (service home-files-service-type
-                      `(
-                        <<hm-files>>
-                        ))
-             <<hm-services>>
-             )
-            %base-home-services))))
+	(services
+     (append (list 
+              (service home-pipewire-service-type)
+              (service home-files-service-type
+                       `(
+                         <<hm-files>>
+                         ))
+              <<hm-services>>
+              )
+             %base-home-services))))
 
 home-base
 #+end_src

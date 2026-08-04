@@ -88,7 +88,7 @@
                     :family "Iosevka SS08")
 
 (dolist (charset '(kana han cjk-misc symbol bopomofo))
-  (set-fontset-font t charset (font-spec :family "LXGW WenKai")))
+  (set-fontset-font t charset (font-spec :family "LXGW Marker Gothic")))
 
 (use-package hl-todo
   :hook (prog-mode . hl-todo-mode)
