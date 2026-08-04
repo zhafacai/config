@@ -2,7 +2,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages fcitx5)
-  #:use-module (gnu home services ssh)
+  ;; #:use-module (gnu home services ssh)
   #:use-module (gnu packages shells)
   #:use-module (gnu home services shepherd)
   #:use-module (gnu packages mail)
@@ -187,8 +187,8 @@
              		   (bash-profile (list (local-file
              								"plain/.bash_profile"
              								"bash_profile")))))
-             (service home-openssh-service-type
-             		 (home-openssh-configuration))
+             ;; (service home-openssh-service-type
+             ;; 		 (home-openssh-configuration))
              (service home-fish-service-type
                       (home-fish-configuration
                         (config

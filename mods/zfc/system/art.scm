@@ -12,6 +12,7 @@
   #:use-module (gnu services virtualization)
   #:use-module (gnu services guix)
   #:use-module (gnu services networking)
+  #:use-module (gnu services shepherd)
   #:use-module (gnu home)
   #:use-module (gnu home services)
   #:use-module (guix packages)
@@ -122,6 +123,19 @@
                     	 '("experimental-features = nix-command flakes\n"
                     	   "trusted-users = zfc root\n"
                     	   "substituters =  https://mirrors.ustc.edu.cn/nix-channels/store/ https://cache.nixos.org/\n"))))
+                    (simple-service 'mihomo
+                    				shepherd-root-service-type
+                    				(list
+                    				 (shepherd-service
+                    				  (provision '(mihomo))
+                    				  (requirement '(networking))
+                    				  (auto-start? #t)
+                    				  (start #~(make-forkexec-constructor
+                    							(list #$(file-append (specification->package "mihomo") "/bin/mihomo")
+                    								  "-d" "/root/.config/mihomo"
+                    								  "-f" "/root/test.conf")
+                    							#:log-file "/var/log/mihomo.log"))
+                    				  (stop #~(make-kill-destructor)))))
                     (service guix-home-service-type
 							 `(("zfc" ,home-base)))
                     polkit-wheel-service)

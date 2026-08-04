@@ -75,14 +75,14 @@
   (setq-default olivetti-body-width 0.5))
 
 (set-face-attribute 'default nil
-                    :family "Iosevka SS02"
+                    :family "Iosevka SS17"
                     :height 150)
 
 (set-face-attribute 'variable-pitch nil
                     :family "Iosevka Slab")
 
 (set-face-attribute 'fixed-pitch nil
-                    :family "Iosevka SS17")
+                    :family "Iosevka SS02")
 
 (set-face-attribute 'fixed-pitch-serif nil
                     :family "Iosevka SS08")

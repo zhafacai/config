@@ -449,14 +449,14 @@ toggle alpha background
 default fonts
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
-                    :family "Iosevka SS02"
+                    :family "Iosevka SS17"
                     :height 150)
 
 (set-face-attribute 'variable-pitch nil
                     :family "Iosevka Slab")
 
 (set-face-attribute 'fixed-pitch nil
-                    :family "Iosevka SS17")
+                    :family "Iosevka SS02")
 
 (set-face-attribute 'fixed-pitch-serif nil
                     :family "Iosevka SS08")
@@ -2199,6 +2199,7 @@ email
   #:use-module (gnu services virtualization)
   #:use-module (gnu services guix)
   #:use-module (gnu services networking)
+  #:use-module (gnu services shepherd)
   #:use-module (gnu home)
   #:use-module (gnu home services)
   #:use-module (guix packages)
@@ -2329,6 +2330,23 @@ here is =sops= secrets config for my dae config.
 	 '("experimental-features = nix-command flakes\n"
 	   "trusted-users = zfc root\n"
 	   "substituters =  https://mirrors.ustc.edu.cn/nix-channels/store/ https://cache.nixos.org/\n"))))
+#+end_src
+*** The =art.scm= section about mihomo
+~sys-services~
+#+begin_src scheme :noweb-ref sys-services
+(simple-service 'mihomo
+				shepherd-root-service-type
+				(list
+				 (shepherd-service
+				  (provision '(mihomo))
+				  (requirement '(networking))
+				  (auto-start? #t)
+				  (start #~(make-forkexec-constructor
+							(list #$(file-append (specification->package "mihomo") "/bin/mihomo")
+								  "-d" "/root/.config/mihomo"
+								  "-f" "/root/test.conf")
+							#:log-file "/var/log/mihomo.log"))
+				  (stop #~(make-kill-destructor)))))
 #+end_src
 *** The =art.scm= section about NetworkManager
 ~sys-def~
@@ -2646,11 +2664,11 @@ patch to use flypy
 *** The =base.scm= section about openssh
 ~home-use~
 #+begin_src scheme :noweb-ref home-use
-#:use-module (gnu home services ssh)
+;; #:use-module (gnu home services ssh)
 #+end_src
 #+begin_src scheme :noweb-ref hm-services
-(service home-openssh-service-type
-		 (home-openssh-configuration))
+;; (service home-openssh-service-type
+;; 		 (home-openssh-configuration))
 #+end_src
 *** The =base.scm= section about fish
 ~home-use~
