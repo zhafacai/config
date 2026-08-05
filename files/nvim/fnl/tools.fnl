@@ -48,7 +48,7 @@
                   :formatters_by_ft {:lua [:stylua]
                                      :sh [:shfmt]
                                      :markdown [:rumdl]
-                                     :toml [:tombi]
+                                     :toml [:taplo]
                                      :python [:black]
                                      :nix [:nixfmt]
                                      :json [:jq]
