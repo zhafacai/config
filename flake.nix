@@ -1,8 +1,6 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixgl.url = "github:nix-community/nixGL";
-    nixgl.inputs.nixpkgs.follows = "nixpkgs";
   };
   nixConfig = {
     extra-substituters = [
@@ -15,14 +13,12 @@
   outputs =
     {
       nixpkgs,
-      nixgl,
       ...
     }:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
         inherit system;
-        overlays = [ nixgl.overlay ];
         config.allowUnfree = true;
       };
     in
@@ -59,12 +55,9 @@
           opencode
           codex
           yazi
-          ghostty
           jq
           neovim
 
-          #flake
-          pkgs.nixgl.nixGLIntel
         ];
       };
     };

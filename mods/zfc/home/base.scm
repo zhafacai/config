@@ -76,7 +76,7 @@
 								 "font-iosevka-ss17"
 								 "font-iosevka-slab"
 								 "font-nerd-symbols"
-								 "font-lxgw-wenkai"
+								 ;; "font-lxgw-wenkai"
 
 								 "librewolf"
 								 "qutebrowser"

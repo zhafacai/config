@@ -1,6 +1,8 @@
 ;; -*- mode: scheme; -*-
 (define-module (zfc system art)
   #:use-module (gnu)
+  #:use-module (saayix packages terminals)
+  #:use-module (saayix packages file-managers)
   #:use-module (gnu system nss)
   #:use-module (gnu packages window-management)
   #:use-module (gnu packages shells)
@@ -107,6 +109,8 @@
                     neovim
                     niri
                     xdg-desktop-portal-gnome
+					ghostty
+					;; yazi
                     gvfs)
                    %base-packages))
 

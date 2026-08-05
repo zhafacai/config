@@ -324,7 +324,7 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
-    Mod+W hotkey-overlay-title="Open a Terminal: ghostty" { spawn "nixGLIntel" "ghostty"; }
+    Mod+W hotkey-overlay-title="Open a Terminal: ghostty" { spawn "ghostty"; }
     // Mod+W hotkey-overlay-title="Open a Terminal: alacritty" { spawn "alacritty"; }
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.

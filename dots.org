@@ -2188,6 +2188,7 @@ email
 ;; -*- mode: scheme; -*-
 (define-module (zfc system art)
   #:use-module (gnu)
+  <<sys-use>>
   #:use-module (gnu system nss)
   #:use-module (gnu packages window-management)
   #:use-module (gnu packages shells)
@@ -2283,6 +2284,7 @@ email
                     neovim
                     niri
                     xdg-desktop-portal-gnome
+					<<sys-pkgs>>
                     gvfs)
                    %base-packages))
 
@@ -2476,7 +2478,7 @@ here is =sops= secrets config for my dae config.
 								 "font-iosevka-ss17"
 								 "font-iosevka-slab"
 								 "font-nerd-symbols"
-								 "font-lxgw-wenkai"
+								 ;; "font-lxgw-wenkai"
 
 								 "librewolf"
 								 "qutebrowser"
@@ -2906,6 +2908,29 @@ blue
 ~home-pkgs~
 #+begin_src scheme :noweb-ref home-pkgs
 mihomo
+#+end_src
+*** The saayix for =channels.scm=
+~chl~
+#+begin_src scheme :noweb-ref channels
+(channel
+ (name 'saayix)
+ (branch "main")
+ (url "https://codeberg.org/look/saayix")
+ (introduction
+  (make-channel-introduction
+   "12540f593092e9a177eb8a974a57bb4892327752"
+   (openpgp-fingerprint
+	"3FFA 7335 973E 0A49 47FC  0A8C 38D5 96BE 07D3 34AB"))))
+#+end_src
+~sys-use~
+#+begin_src scheme :noweb-ref sys-use
+#:use-module (saayix packages terminals)
+#:use-module (saayix packages file-managers)
+#+end_src
+~sys-pkgs~
+#+begin_src scheme :noweb-ref sys-pkgs
+ghostty
+;; yazi
 #+end_src
 *** The sops for =channels.scm=
 ~chl~

@@ -36,6 +36,15 @@
     (openpgp-fingerprint
  	"13E7 6CD6 E649 C28C 3385  4DF5 5E5A A665 6149 17F7"))))
  (channel
+  (name 'saayix)
+  (branch "main")
+  (url "https://codeberg.org/look/saayix")
+  (introduction
+   (make-channel-introduction
+    "12540f593092e9a177eb8a974a57bb4892327752"
+    (openpgp-fingerprint
+ 	"3FFA 7335 973E 0A49 47FC  0A8C 38D5 96BE 07D3 34AB"))))
+ (channel
   (name 'sops-guix)
   (url "https://github.com/fishinthecalculator/sops-guix.git")
   (branch "main")
