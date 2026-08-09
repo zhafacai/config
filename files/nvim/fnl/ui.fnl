@@ -62,9 +62,7 @@
 (gh-pkg! :everviolet/nvim {:name :everviolet})
 (gh-pkg! :ember-theme/nvim {:name :ember})
 
-(let [dark [:ember-soft
-            :ember
-            :evergarden-fall
+(let [dark [:evergarden-fall
             :evergarden-spring
             :evergarden-winter
             :evergarden

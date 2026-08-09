@@ -243,6 +243,7 @@
   :config
   (require 'dwim-shell-commands))
 
+(use-package transient :ensure t)
 (use-package gptel
   :custom
   (gptel-default-mode #'org-mode)

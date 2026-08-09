@@ -450,7 +450,7 @@ default fonts
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
                     :family "Iosevka SS17"
-                    :height 150)
+                    :height 200)
 
 (set-face-attribute 'variable-pitch nil
                     :family "Iosevka Slab")
@@ -1959,6 +1959,7 @@ dwim
 #+end_src
 gptel
 #+begin_src emacs-lisp
+(use-package transient :ensure t)
 (use-package gptel
   :custom
   (gptel-default-mode #'org-mode)
@@ -2444,7 +2445,6 @@ here is =sops= secrets config for my dae config.
   #:use-module (gnu home services gnupg)
   #:use-module (gnu home services desktop)
   #:use-module (gnu home services sound)
-  #:use-module (rosenthal services desktop)
   #:use-module (rosenthal home services desktop)
   #:use-module (guix gexp)
   #:use-module (guix channels)
