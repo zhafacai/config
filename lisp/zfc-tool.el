@@ -244,17 +244,19 @@
   (require 'dwim-shell-commands))
 
 (use-package transient :ensure t)
+
 (use-package gptel
   :custom
   (gptel-default-mode #'org-mode)
+  :hook (gptel-mode . gptel-highlight-mode)
   :bind
   (("C-c a p" . gptel)
    ("C-c a r" . gptel-rewrite)
    ("C-c a a" . gptel-add)
    ("C-c a f" . gptel-add-file)
-   ("C-c C-RET" . gptel-send)
    ("C-c a m" . gptel-menu))
   :config
+  (define-key fc/override-mode-map (kbd "C-c RET") 'gptel-send)
   (gptel-make-openai "OpenRouter"
 	:host "openrouter.ai"
 	:endpoint "/api/v1/chat/completions"
@@ -277,6 +279,7 @@
 	:key #'gptel-api-key-from-auth-source
 	:stream t
 	:models '(nvidia/nemotron-3-ultra-550b-a55b
+			  z-ai/glm-5.2
 			  thinkingmachines/inkling))
 
   (setq gptel-backend (gptel-get-backend "Nim"))

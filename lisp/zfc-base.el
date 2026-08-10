@@ -429,4 +429,15 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
+(defvar fc/override-mode-map (make-sparse-keymap)
+  "Keymap for the `fc/override-mode'.")
+
+(define-minor-mode fc/override-mode
+  "Activate the `fc/override-mode-map'."
+  :global t
+  :init-value nil
+  :keymap fc/override-mode-map)
+
+(fc/override-mode)
+
 (provide 'zfc-base)
