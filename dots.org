@@ -2076,12 +2076,15 @@ agent-shell
 
 (use-package agent-shell-dashboard
   :ensure (:host github :repo "wandersoncferreira/agent-shell-dashboard")
-  :after agent-shell
   :bind
   ("C-c a d" . agent-shell-dashboard)
   :custom
   ;; (initial-buffer-choice #'agent-shell-dashboard)
-  (agent-shell-dashboard-excerpt-function #'agent-shell-dashboard-excerpt-tail))
+  (agent-shell-dashboard-excerpt-function #'agent-shell-dashboard-excerpt-tail)
+  :config
+  (evil-define-key 'normal agent-shell-dashboard-mode-map
+	(kbd "g") (lookup-key evil-normal-state-map (kbd "g"))
+    (kbd "g r") #'agent-shell-dashboard-refresh))
 
 (use-package magent
   :ensure (:host github :repo "Jamie-Cui/magent" :files (:defaults "prompts"))
