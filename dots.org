@@ -1669,8 +1669,6 @@ reader
                        (hl-line-mode 0)
                        (set-window-dedicated-p (selected-window) nil)
                        (delete-other-windows))))
-
-
 #+end_src
 ~home-pkgs~
 #+begin_src scheme :noweb-ref home-pkgs

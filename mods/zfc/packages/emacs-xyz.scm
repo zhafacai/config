@@ -24,10 +24,10 @@
      (method git-fetch)
      (uri (git-reference
            (url "https://codeberg.org/divyaranjan/emacs-reader")
-           (commit "7792885f28e65d8b413c3aaefa8ad9d467c7bd5f")))
+           (commit "87b193d6996093530ab01cb0314c4d23b9777057")))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "1x7nrjsiygcf7f38b7gdmsg7wpw02r2q8qih66454flp8c8inffy"))))
+      (base32 "0s9hs1rmgqa68mpjv8lq754sfbl04wrmpkkclwl4ljy8xra9r6by"))))
    (build-system emacs-build-system)
    (arguments
     (list
@@ -53,3 +53,5 @@
 This package intends to take from doc-view, nov.el, and pdf-tools and make them better.
 And as such, it is effectively a drop-in replacement for them.")
    (license license:gpl3+)))
+
+emacs-reader
