@@ -255,24 +255,27 @@
    ("C-c C-RET" . gptel-send)
    ("C-c a m" . gptel-menu))
   :config
-  (gptel-make-openai "OpenRouter"             
-    :host "openrouter.ai"
-    :endpoint "/api/v1/chat/completions"
-    :key #'gptel-api-key-from-auth-source         
-    :stream t
-    :models '(deepseek/deepseek-v4-flash:free
-              baidu/cobuddy:free
-              poolside/laguna-xs.2:free
-              nvidia/nemotron-3-super-120b-a12b:free
-              nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free))
+  (gptel-make-openai "OpenRouter"
+	:host "openrouter.ai"
+	:endpoint "/api/v1/chat/completions"
+	:key #'gptel-api-key-from-auth-source
+	:stream t
+	:models '(poolside/laguna-s-2.1:free
+			  nvidia/nemotron-3-ultra-550b-a55b:free))
+  (gptel-make-openai "Nim"
+	:host "integrate.api.nvidia.com"
+	:endpoint "/v1/chat/completions"
+	:stream t
+	:models '(nvidia/nemotron-3-ultra-550b-a55b
+			  thinkingmachines/inkling))
 
-  (setq gptel-backend (gptel-get-backend "OpenRouter"))
-  (setq gptel-model 'deepseek/deepseek-v4-flash:free))
+  (setq gptel-backend (gptel-get-backend "Nim"))
+  (setq gptel-model 'nvidia/nemotron-3-ultra-550b-a55b))
 
 (use-package gptel-agent
   :ensure ( :host github :repo "karthink/gptel-agent")
   
-  :config (gptel-agent-update))         
+  :config (gptel-agent-update))
 
 (use-package ob-gptel
   :ensure (:host github :repo "jwiegley/ob-gptel")
@@ -292,6 +295,11 @@
   ;; Ensure prompts are updated if prompt files change
   ;; (gptel-prompts-add-update-watchers)
   )
+
+
+(use-package gptel-magit
+  :ensure (:host github :repo "roife/gptel-magit")
+  :hook (magit-mode . gptel-magit-install))
 
 (use-package agent-shell
   :bind
@@ -318,6 +326,17 @@
 	        (lambda ()
 	          (when (string-match-p "\\*agent-shell-diff\\*" (buffer-name))
 		        (evil-emacs-state)))))
+
+
+(use-package magent
+  :ensure (:host github :repo "Jamie-Cui/magent" :files (:defaults "prompts"))
+  :after (agent-shell gptel)
+  :demand t
+  :config
+  (add-to-list 'magent-skill-directories
+			   (expand-file-name "skills" user-emacs-directory)
+			   t)
+  (magent-agent-shell-ensure-config))
 
 ;; (setq epg-pinentry-mode 'loopback) 
 (setq epa-file-encrypt-to '("zhafacai@gmail.com"))
