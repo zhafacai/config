@@ -1,20 +1,3 @@
-(use-package telega
-  :ensure nil
-  ;; :bind
-  ;; ("C-c t" . telega)
-  :commands telega
-  :config
-  (setq telega-use-tracking-for '(or unmuted mention)
-        telega-completing-read-function #'completing-read
-        telega-msg-rainbow-title t
-        telega-chat-fill-column 75)
-
-  ;; Show notifications in the mode line
-  (add-hook 'telega-load-hook #'telega-mode-line-hook)
-
-  ;; Disable chat buffer auto-fill
-  (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
-
 (use-package reader
   :ensure nil
   :hook (reader-mode .
@@ -35,6 +18,23 @@
   (rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed"))
   :config
   (elfeed-org))
+
+(use-package telega
+  :ensure nil
+  ;; :bind
+  ;; ("C-c t" . telega)
+  :commands telega
+  :config
+  (setq telega-use-tracking-for '(or unmuted mention)
+        telega-completing-read-function #'completing-read
+        telega-msg-rainbow-title t
+        telega-chat-fill-column 75)
+
+  ;; Show notifications in the mode line
+  (add-hook 'telega-load-hook #'telega-mode-line-hook)
+
+  ;; Disable chat buffer auto-fill
+  (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
 
 (use-package magit
   :general
@@ -282,20 +282,23 @@
 			  z-ai/glm-5.2
 			  thinkingmachines/inkling))
 
-  (setq gptel-backend (gptel-get-backend "Nim"))
-  (setq gptel-model 'nvidia/nemotron-3-ultra-550b-a55b))
+  (setq gptel-backend (gptel-get-backend "ByteDance"))
+  (setq gptel-model 'deepseek-v4-flash)
+  ;; (setq gptel-backend (gptel-get-backend "Nim"))
+  ;; (setq gptel-model 'nvidia/nemotron-3-ultra-550b-a55b)
+  )
 
 (use-package gptel-agent
-  :ensure ( :host github :repo "karthink/gptel-agent")
-  
   :config (gptel-agent-update))
 
 (use-package ob-gptel
   :ensure (:host github :repo "jwiegley/ob-gptel")
   :config
   (add-to-list 'org-babel-load-languages '(gptel . t))
-  (add-hook 'completion-at-point-functions
-            'ob-gptel-capf nil t)) 
+  (defun ob-gptel-setup-completions ()
+    (add-hook 'completion-at-point-functions
+              'ob-gptel-capf nil t))
+  :hook (org-mode . ob-gptel-setup-completions))
 
 (use-package gptel-prompts
   :ensure (:host github :repo "jwiegley/gptel-prompts")
@@ -318,10 +321,10 @@
   :bind
   ("C-c a s" . agent-shell)
   :custom
+  (agent-shell-preferred-agent-config '(preselect . opencode))
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
-  ;; (agent-shell-opencode-default-model-id "openrouter/poolside/laguna-xs.2:free")
-  (agent-shell-opencode-default-model-id "opencode/mimo-v2.5-free")
+  (agent-shell-opencode-default-model-id "nim/nvidia/nemotron-3-ultra-550b-a55b")
   :config
   ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
   (general-define-key
@@ -340,6 +343,15 @@
 	          (when (string-match-p "\\*agent-shell-diff\\*" (buffer-name))
 		        (evil-emacs-state)))))
 
+
+(use-package agent-shell-dashboard
+  :ensure (:host github :repo "wandersoncferreira/agent-shell-dashboard")
+  :after agent-shell
+  :bind
+  ("C-c a d" . agent-shell-dashboard)
+  :custom
+  ;; (initial-buffer-choice #'agent-shell-dashboard)
+  (agent-shell-dashboard-excerpt-function #'agent-shell-dashboard-excerpt-tail))
 
 (use-package magent
   :ensure (:host github :repo "Jamie-Cui/magent" :files (:defaults "prompts"))
