@@ -262,9 +262,19 @@
 	:stream t
 	:models '(poolside/laguna-s-2.1:free
 			  nvidia/nemotron-3-ultra-550b-a55b:free))
+
+  (gptel-make-openai "ByteDance"
+	:host "ark.cn-beijing.volces.com"
+	:endpoint "/api/coding/v3/chat/completions"
+	:key #'gptel-api-key-from-auth-source
+	:stream t
+	:models '(deepseek-v4-flash
+			  doubao-seed-2-1-turbo-260628))
+
   (gptel-make-openai "Nim"
 	:host "integrate.api.nvidia.com"
 	:endpoint "/v1/chat/completions"
+	:key #'gptel-api-key-from-auth-source
 	:stream t
 	:models '(nvidia/nemotron-3-ultra-550b-a55b
 			  thinkingmachines/inkling))
