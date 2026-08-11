@@ -14,11 +14,9 @@
   :custom
   (evil-want-keybinding nil)
   :init
-  ;; (setq evil-disable-insert-state-bindings t)
+  (setq evil-disable-insert-state-bindings t)
   (setq evil-respect-visual-line-mode t)
   (setq evil-want-Y-yank-to-eol t)
-  ;; (setq evil-want-C-w-delete t)
-  ;; (setq evil-want-C-w-in-emacs-state t)
   (setq evil-undo-system 'undo-fu)
   (global-visual-line-mode 1)
   :config

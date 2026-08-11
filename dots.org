@@ -119,6 +119,9 @@ setup elpaca using git
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (setq use-package-always-ensure t)
 
+(use-package use-package-x
+  :demand)
+
 (require 'zfc-macro)
 (require 'zfc-evil)
 (require 'zfc-ui)
@@ -178,11 +181,9 @@ set leader and general
   :custom
   (evil-want-keybinding nil)
   :init
-  ;; (setq evil-disable-insert-state-bindings t)
+  (setq evil-disable-insert-state-bindings t)
   (setq evil-respect-visual-line-mode t)
   (setq evil-want-Y-yank-to-eol t)
-  ;; (setq evil-want-C-w-delete t)
-  ;; (setq evil-want-C-w-in-emacs-state t)
   (setq evil-undo-system 'undo-fu)
   (global-visual-line-mode 1)
   :config
@@ -444,6 +445,15 @@ toggle alpha background
   (olivetti-recall-visual-line-mode-entry-state t)
   :config
   (setq-default olivetti-body-width 0.5))
+
+(use-package colorful-mode
+  :custom
+  (colorful-use-prefix t)
+  (colorful-only-strings 'only-prog)
+  (css-fontify-colors nil)
+  :config
+  (global-colorful-mode t)
+  (add-to-list 'global-colorful-modes 'helpful-mode))
 #+end_src
 
 default fonts
@@ -1387,6 +1397,7 @@ use built-in lsp client
   ;; org-clock-out-when-done '("DONE" "CANCEL" "WAIT")
   ;; org-agenda-files `(,org-default-notes-file)
   ;; org-agenda-start-with-log-mode t
+  (org-attach-directory "orgments/")
 
   (org-src-window-setup 'current-window)
   (org-src-preserve-indentation t)
@@ -1431,13 +1442,13 @@ use built-in lsp client
 #+end_src
 #+begin_src emacs-lisp
 (use-package org-modern
+  :after org
   :custom
   (org-modern-hide-stars nil)
   (org-modern-star '("◉" "○" "◈" "◇"))
   (org-modern-block-name nil)
-  :hook
-  (org-mode . org-modern-mode)
-  (org-agenda-finalize . org-modern-agenda))
+  :config
+  (global-org-modern-mode))
 
 (use-package org-appear
   :hook
@@ -1445,14 +1456,22 @@ use built-in lsp client
 
 (use-package org-modern-indent
   :ensure (:host github :repo "jdtsmith/org-modern-indent")
-  :config
-  (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
+  :hook+
+  (:depth 90
+		  (org-mode . org-modern-indent-mode)))
 #+end_src
 #+begin_src emacs-lisp
 (use-package org-contrib
   :init
   (setq org-eldoc-breadcrumb-separator " → ")
   :hook (org-mode . org-eldoc-load))
+
+
+(use-package org-download
+  :custom
+  (org-download-method 'attach)
+  :config
+  (org-download-enable))
 #+end_src
 
 
@@ -1841,7 +1860,7 @@ translater
                                  :exact nil)))
   :general
   (:states 'normal
-		   [down-mouse-3] #'gt-translate
+		   [mouse-3] #'gt-translate
 		   "SPC l" #'gt-translate))
 
 
@@ -1878,11 +1897,28 @@ sops
 ghostel
 #+begin_src emacs-lisp
 (use-package ghostel
-  :ensure t
-  :bind
-  ("C-c t" . ghostel)
-  :custom
-  (ghostel-shell "fish"))
+  :hook
+  (after-init . ghostel-comint-global-mode)
+  (ghostel-mode . ghostel-ime-mode)
+  :bind (("C-x m" . ghostel)
+         :map ghostel-semi-char-mode-map
+         ("C-s"  . consult-line)
+         ("C-k"  . my/ghostel-send-C-k-and-kill)
+         :map project-prefix-map
+         ("m" . ghostel-project)
+         ("M" . ghostel-project-list-buffers))
+  :config
+  (defun my/ghostel-send-C-k-and-kill ()
+    "Send `C-k' to ghostel.
+Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
+    (interactive)
+    (kill-ring-save (point) (line-end-position))
+    (ghostel-send-key "k" "ctrl"))
+
+  (add-to-list 'project-switch-commands '(ghostel-project "Ghostel") t)
+  (add-to-list 'project-switch-commands '(ghostel-project-list-buffers "Ghostel buffers") t)
+  (add-to-list 'ghostel-eval-cmds '("magit-status-setup-buffer" magit-status-setup-buffer)))
+
 #+end_src
 
 direnv

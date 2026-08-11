@@ -9,6 +9,7 @@
   ;; org-clock-out-when-done '("DONE" "CANCEL" "WAIT")
   ;; org-agenda-files `(,org-default-notes-file)
   ;; org-agenda-start-with-log-mode t
+  (org-attach-directory "orgments/")
 
   (org-src-window-setup 'current-window)
   (org-src-preserve-indentation t)
@@ -52,13 +53,13 @@
   (org-mode . valign-mode))
 
 (use-package org-modern
+  :after org
   :custom
   (org-modern-hide-stars nil)
   (org-modern-star '("◉" "○" "◈" "◇"))
   (org-modern-block-name nil)
-  :hook
-  (org-mode . org-modern-mode)
-  (org-agenda-finalize . org-modern-agenda))
+  :config
+  (global-org-modern-mode))
 
 (use-package org-appear
   :hook
@@ -66,13 +67,21 @@
 
 (use-package org-modern-indent
   :ensure (:host github :repo "jdtsmith/org-modern-indent")
-  :config
-  (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
+  :hook+
+  (:depth 90
+		  (org-mode . org-modern-indent-mode)))
 
 (use-package org-contrib
   :init
   (setq org-eldoc-breadcrumb-separator " → ")
   :hook (org-mode . org-eldoc-load))
+
+
+(use-package org-download
+  :custom
+  (org-download-method 'attach)
+  :config
+  (org-download-enable))
 
 (defun fc/org-insert-link-dwim ()
   "Like `org-insert-link' but with personal dwim preferences."

@@ -48,6 +48,9 @@
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (setq use-package-always-ensure t)
 
+(use-package use-package-x
+  :demand)
+
 (require 'zfc-macro)
 (require 'zfc-evil)
 (require 'zfc-ui)

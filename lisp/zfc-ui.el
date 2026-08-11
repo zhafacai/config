@@ -74,6 +74,15 @@
   :config
   (setq-default olivetti-body-width 0.5))
 
+(use-package colorful-mode
+  :custom
+  (colorful-use-prefix t)
+  (colorful-only-strings 'only-prog)
+  (css-fontify-colors nil)
+  :config
+  (global-colorful-mode t)
+  (add-to-list 'global-colorful-modes 'helpful-mode))
+
 (set-face-attribute 'default nil
                     :family "Iosevka SS17"
                     :height 200)
