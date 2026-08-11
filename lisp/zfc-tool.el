@@ -336,6 +336,9 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 (use-package gptel-quick
   :ensure (:host github :repo "karthink/gptel-quick")
   :after embark
+  :custom
+  (gptel-quick-system-message (lambda (count)
+								(format "Explain in %d words or fewer in Chinese." count)))
   :bind (:map embark-region-map
               ("?" . gptel-quick)
          :map embark-identifier-map
