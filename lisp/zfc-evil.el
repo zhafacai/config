@@ -20,6 +20,7 @@
   (setq evil-undo-system 'undo-fu)
   (global-visual-line-mode 1)
   :config
+  (evil-define-key 'normal 'global (kbd "C-.") nil)
   (evil-set-leader '(normal visual) (kbd fc/leader-key))
   (evil-set-leader 'normal (kbd fc/localleader-key) t)
 

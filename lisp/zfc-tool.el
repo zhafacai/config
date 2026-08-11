@@ -151,9 +151,6 @@
 
 (use-package sops
   ;; :ensure (:type git :host github :repo "djgoku/sops")
-  :bind (("C-c C-c" . sops-save-file)
-         ("C-c C-k" . sops-cancel)
-         ("C-c C-e" . sops-edit-file))
   :init
   ;; (setq sops-before-encrypt-decrypt-hook 'sops-setup-env)
   (global-sops-mode 1))
@@ -168,6 +165,8 @@
   (blue-prettify-compilation-mode 1))
 
 (use-package ghostel
+  :custom
+  (ghostel-shell "fish")
   :hook
   (after-init . ghostel-comint-global-mode)
   (ghostel-mode . ghostel-ime-mode)
@@ -332,6 +331,15 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 (use-package gptel-magit
   :ensure (:host github :repo "roife/gptel-magit")
   :hook (magit-mode . gptel-magit-install))
+
+
+(use-package gptel-quick
+  :ensure (:host github :repo "karthink/gptel-quick")
+  :after embark
+  :bind (:map embark-region-map
+              ("?" . gptel-quick)
+         :map embark-identifier-map
+              ("?" . gptel-quick)))
 
 (use-package agent-shell
   :bind

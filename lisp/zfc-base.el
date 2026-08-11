@@ -1,7 +1,8 @@
 (use-package emacs
   :ensure nil
   :bind                                              ; NOTE: M-x describe-personal-bindings (for all use-packge binds)
-  (("M-o" . other-window)
+  (
+   ;; ("M-o" . other-window)
    ("C-x p l". project-list-buffers)
    ("C-x C-z" . nil)
    ([remap capitalize-word] . capitalize-dwim)       ; Make M-c work on regions
@@ -276,6 +277,8 @@
          ("M-r" . consult-history))                ;; orig. previous-matching-history-element
 
   :custom
+  (consult-locate-args "plocate --ignore-case")
+
   (consult-async-min-input 2)
   (consult-fd-args '("fd" "--full-path --color=never -E node_modules -H -E .git"))
   ;; The :init configuration is always executed (Not lazy)
@@ -320,6 +323,12 @@
   ;; You may want to use `embark-prefix-help-command' or which-key instead.
   ;; (keymap-set consult-narrow-map (concat consult-narrow-key " ?") #'consult-narrow-help)
   )
+
+(use-package consult-dir
+  :bind (("C-x C-d" . consult-dir)
+         :map vertico-map
+         ("C-x C-d" . consult-dir)
+         ("C-x C-j" . consult-dir-jump-file)))
 
 (use-package helpful
   :general
@@ -395,12 +404,19 @@
 (use-package embark
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
-   ("C-;" . embark-dwim)        ;; good alternative: M-.
-   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-  (:map vertico-map
-		("C-c C-e" . embark-export)
-		("C-c C-o" . embark-collect)
-		("C-c C-l" . embark-live))
+   ("C-;"     . embark-dwim)        ;; good alternative: M-.
+   ("C-h B"   . embark-bindings) ;; alternative for `describe-bindings'
+   :map embark-file-map
+   ("S"       . sudo-find-file)
+   ("M-u"     . 0x0-upload-file)
+   :map embark-buffer-map
+   ("M-u"     . 0x0-dwim)
+   :map embark-region-map
+   ("M-u"     . 0x0-dwim)
+   :map vertico-map
+   ("C-c C-e" . embark-export)
+   ("C-c C-o" . embark-collect)
+   ("C-c C-l" . embark-live))
   :init
 
   ;; Optionally replace the key help with a completing-read interface
@@ -425,9 +441,38 @@
                  nil
                  (window-parameters (mode-line-format . none)))))
 
-(use-package embark-consult
-  :hook
-  (embark-collect-mode . consult-preview-at-point-mode))
+(use-package embark-consult)
+(use-package ace-window
+  :custom
+  (aw-keys '(?q ?w ?e ?r ?a ?s ?d ?f))
+  (aw-dispatch-always nil)
+  :bind
+  ("M-o" . ace-window))
+
+(use-package tramp
+  :ensure nil
+  :commands (sudo-find-file sudo-this-file)
+  :bind ("C-x C-S-f" . sudo-find-file)
+  :config
+  (defun sudo-find-file (file)
+    "Open FILE as root."
+    (interactive "FOpen file as root: ")
+    (when (file-writable-p file)
+      (user-error "File is user writeable, aborting sudo"))
+    (find-file (if (file-remote-p file)
+                   (concat "/" (file-remote-p file 'method) ":"
+                           (file-remote-p file 'user) "@" (file-remote-p file 'host)
+                           "|sudo:root@"
+                           (file-remote-p file 'host) ":" (file-remote-p file 'localname))
+                 (concat "/sudo:root@localhost:" file))))
+  (defun sudo-this-file ()
+    "Open the current file as root."
+    (interactive)
+    (sudo-find-file (file-truename buffer-file-name))))
+
+(use-package 0x0
+  :commands (0x0-upload 0x0-dwim)
+  :bind ("C-x M-u" . 0x0-dwim))
 
 (defvar fc/override-mode-map (make-sparse-keymap)
   "Keymap for the `fc/override-mode'.")
