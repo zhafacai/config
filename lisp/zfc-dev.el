@@ -197,26 +197,16 @@
 	"gd" 'xref-find-definitions))
 
 (use-package treesit
-  :ensure nil)
-
-(use-package treesit-auto
+  :ensure nil
   :custom
-  (treesit-auto-install 'prompt)
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
+  (treesit-auto-install-grammar 'always)
+  (treesit-enabled-modes t))
 
-  ;; FIXME cannot make this work
-  (add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
-                                          :lang 'qmljs
-                                          :ts-mode 'qml-ts-mode
-                                          :remap 'qml-mode
-                                          :url "https://github.com/yuja/tree-sitter-qmljs"
-                                          :ext "\\.qml\\'"))
-  (add-to-list 'treesit-auto-langs 'qmljs)
-  (global-treesit-auto-mode))
+;; (use-package qml-ts-mode
+;;   :ensure (:host github :repo "xhcoding/qml-ts-mode"))
 
-(use-package qml-ts-mode
-  :ensure (:host github :repo "xhcoding/qml-ts-mode"))
+(use-package markdown-ts-mode
+  :ensure nil)
 
 (use-package evil-textobj-tree-sitter
   :config

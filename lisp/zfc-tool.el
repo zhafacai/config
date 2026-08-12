@@ -37,6 +37,9 @@
   (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
 
 (use-package magit
+  ;; :bind
+  ;; (:map project-prefix-map
+  ;; 		("v" . magit-project-status))
   :general
   (general-nmap "SPC gg" 'magit)
   :config
@@ -271,7 +274,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
    ("C-c a f" . gptel-add-file)
    ("C-c a m" . gptel-menu))
   :config
-  (define-key fc/override-mode-map (kbd "C-c RET") 'gptel-send)
+  (define-key fc/override-mode-map (kbd "C-c C-<return>") 'gptel-send)
   (gptel-make-openai "OpenRouter"
 	:host "openrouter.ai"
 	:endpoint "/api/v1/chat/completions"

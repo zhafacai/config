@@ -3,7 +3,6 @@
   :bind                                              ; NOTE: M-x describe-personal-bindings (for all use-packge binds)
   (
    ;; ("M-o" . other-window)
-   ("C-x p l". project-list-buffers)
    ("C-x C-z" . nil)
    ([remap capitalize-word] . capitalize-dwim)       ; Make M-c work on regions
    ([remap downcase-word] . downcase-dwim)           ; Make M-l work on regions
@@ -97,6 +96,24 @@
 
 (use-package wgrep)
 
+(use-package project
+  :ensure nil
+  :bind
+  (:map project-prefix-map
+		("v" . magit-project-status))
+  :config
+  (setq project-switch-commands (assq-delete-all 'project-vc-dir project-switch-commands))
+  (add-to-list 'project-switch-commands '(magit-project-status "Magit") t))
+
+(use-package project-x
+  :after project
+  :config
+  ;; auto-save project state after 5 seconds of idle time
+  (setq project-x-auto-save-delay 5) ; nil to disable autosave
+  ;; use the custom prompter that shows session labels (optional)
+  (setq project-prompter #'project-x--project-prompt)
+  (project-x-mode 1))
+
 (use-package nerd-icons-dired
   :hook
   (dired-mode . nerd-icons-dired-mode))
@@ -108,6 +125,12 @@
 
 (use-package dired
   :ensure nil
+  :general
+  (:states 'normal :keymaps 'dired-mode-map
+		   "h" #'dired-up-directory
+		   "l" #'dired-find-file)
+  :custom
+  (dired-dwim-target t)
   :config
   (setq dired-listing-switches
         "-l --almost-all --human-readable --group-directories-first --no-group")
@@ -156,54 +179,23 @@
    "o" #'dirvish-quick-access
    (kbd "TAB") #'dirvish-subtree-toggle
    "f" #'dirvish-file-info-menu
-   "l" #'dirvish-ls-switches-menu
+   ;; "l" #'dirvish-ls-switches-menu
    "s" #'dirvish-quicksort
    "*" #'dirvish-mark-menu
+   "y" #'dirvish-yank-menu
    "N" #'dirvish-narrow)
 
   :hook
   (dirvish-setup . dirvish-emerge-mode)
-  ;; BUG can not make it work
-  ;; setting it after dirvish to ensure `dirvish-mode-map' is loaded
-  ;; (evil-make-overriding-map dirvish-mode-map 'normal)
-  :bind ; Bind `dirvish-fd|dirvish-side|dirvish-dwim' as you see fit
+  :bind
   (("C-c d d" . dirvish)
    ("C-c d s" . dirvish-side)
    ("C-c d q" . dirvish-quick-access)
-   :map dirvish-mode-map               ; Dirvish inherits `dired-mode-map'
-   ("a"   . dirvish-setup-menu)        ; [a]ttributes settings:`t' toggles mtime, `f' toggles fullframe, etc.
-   ("r"   . dirvish-history-jump)      ; [r]ecent visited
-   ("v"   . dirvish-vc-menu)
-   ("y"   . dirvish-yank-menu)
+   :map dirvish-mode-map
    ("^"   . dirvish-history-last)
    ("M-f" . dirvish-history-go-forward)
    ("M-b" . dirvish-history-go-backward)
    ("M-e" . dirvish-emerge-menu)))
-
-(use-package projectile
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :custom
-  (projectile-project-search-path '("~/repo/"))
-  (projectile-auto-discover t)
-  (projectile-ignored-project-function
-   (lambda (project-root)
-     (string-prefix-p "/tmp" project-root)))
-  :config
-  (projectile-mode +1))
-
-(use-package perspective
-  :demand t
-  :bind
-  ("C-x C-b" . persp-list-buffers)
-  :custom
-  (persp-mode-prefix-key (kbd "C-c w")) 
-  :config
-  (after! consult 
-    (consult-customize consult-source-buffer :hidden t :default nil)
-    (add-to-list 'consult-buffer-sources persp-consult-source))
-  :init
-  (persp-mode))
 
 (use-package smartparens
   :hook (prog-mode text-mode markdown-mode)
@@ -410,9 +402,9 @@
    ("S"       . sudo-find-file)
    ("M-u"     . 0x0-upload-file)
    :map embark-buffer-map
-   ("M-u"     . 0x0-dwim)
+   ("M-u"     . 0x0-upload)
    :map embark-region-map
-   ("M-u"     . 0x0-dwim)
+   ("M-u"     . 0x0-upload)
    :map vertico-map
    ("C-c C-e" . embark-export)
    ("C-c C-o" . embark-collect)
@@ -471,8 +463,10 @@
     (sudo-find-file (file-truename buffer-file-name))))
 
 (use-package 0x0
-  :commands (0x0-upload 0x0-dwim)
-  :bind ("C-x M-u" . 0x0-dwim))
+  :ensure (:host codeberg :repo "pkal/0x0.el")
+  :commands (0x0-upload 0x0-upload-file)
+  :custom (0x0-default-service 'x0)
+  :bind ("C-x M-u" . 0x0-upload))
 
 (defvar fc/override-mode-map (make-sparse-keymap)
   "Keymap for the `fc/override-mode'.")
