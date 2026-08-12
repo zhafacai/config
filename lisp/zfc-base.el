@@ -21,8 +21,6 @@
   (kill-do-not-save-duplicates t)
   (create-lockfiles nil)   ; No lock files
   (make-backup-files nil)  ; No backup files
-  (project-list-file (expand-file-name "cache/projects" user-emacs-directory))
-  (project-vc-extra-root-markers '("Cargo.toml" "package.json" "go.mod")) ; Excelent for mono repos with multiple langs, makes Eglot happy
   (read-answer-short t)
   (recentf-max-saved-items 300) ; default is 20
   (recentf-max-menu-items 15)
@@ -98,6 +96,9 @@
 
 (use-package project
   :ensure nil
+  :custom
+  (project-list-file (expand-file-name "cache/projects" user-emacs-directory))
+  (project-vc-extra-root-markers '("Cargo.toml" "package.json" "go.mod" ".dir-locals.el"))
   :bind
   (:map project-prefix-map
 		("v" . magit-project-status))
@@ -107,6 +108,11 @@
 
 (use-package project-x
   :after project
+  :custom
+  (project-x-window-list-file (expand-file-name "cache/project-window-list" user-emacs-directory))
+  :bind
+  (:map project-x-layout-map
+		("r" . project-x-rename-session))
   :config
   ;; auto-save project state after 5 seconds of idle time
   (setq project-x-auto-save-delay 5) ; nil to disable autosave
