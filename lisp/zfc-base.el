@@ -129,6 +129,36 @@
   (dired-mode . hl-line-mode)
   (dired-mode . diredfl-mode))
 
+(use-package wdired
+  :after dired
+  :ensure nil
+  :commands wdired-change-to-wdired-mode
+  :config
+  (setq wdired-allow-to-change-permissions t)
+  (setq wdired-create-parent-directories t))
+
+(use-package dired-subtree
+  :after dired
+  :config
+  (setq dired-subtree-use-backgrounds nil))
+
+(use-package dired-filter
+  :after dired)
+
+(use-package dired-preview
+  :after dired
+  :general
+  (:states 'normal
+   :keymaps 'dired-mode-map
+   "p" #'dired-preview-mode)
+  :config
+  (setq dired-preview-delay 0.2))
+
+(use-package ready-player
+  :config
+  (setq ready-player-open-playback-commands '(("mplayer")))
+  (ready-player-mode +1))
+
 (use-package dired
   :ensure nil
   :general
@@ -145,6 +175,7 @@
   (put 'dired-find-alternate-file 'disabled nil))
 
 (use-package dirvish
+  :disabled
   :ensure (:host github :repo "latiagertrutis/dirvish")
   :init
   (dirvish-override-dired-mode)
@@ -155,6 +186,7 @@
      ("o" "~/Documents/"                "Documents")
 	 ("p" "~/Pictures/"                 "Pictures")
      ("c" "~/.config/"                  "config")
+     ("s" "/ssh:zfc@192.168.10.100:~"   "ssh")
      ("m" "/mnt/"                       "Drives")
      ("t" "~/.local/share/Trash/files/" "TrashCan")))
   (dirvish-default-layout '(0 0.4 0.55))
@@ -452,6 +484,17 @@
   :commands (sudo-find-file sudo-this-file)
   :bind ("C-x C-S-f" . sudo-find-file)
   :config
+  (connection-local-set-profile-variables
+   'remote-direct-async-process
+   '((tramp-direct-async-process . t)))
+  (connection-local-set-profiles
+   '(:application tramp :protocol "ssh")
+   'remote-direct-async-process)
+  ;; Tips to speed up connections
+  (setq tramp-verbose 10)
+  (setq tramp-chunksize 2000)
+  (setq tramp-ssh-controlmaster-options nil)
+  (setq tramp-auto-save-directory (locate-user-emacs-file "cache/tramp/"))
   (defun sudo-find-file (file)
     "Open FILE as root."
     (interactive "FOpen file as root: ")
