@@ -107,7 +107,8 @@
   (add-to-list 'project-switch-commands '(magit-project-status "Magit") t))
 
 (use-package project-x
-  :after project
+  :init
+  (project-x-mode 1)
   :custom
   (project-x-window-list-file (expand-file-name "cache/project-window-list" user-emacs-directory))
   :bind
@@ -115,10 +116,9 @@
 		("r" . project-x-rename-session))
   :config
   ;; auto-save project state after 5 seconds of idle time
-  (setq project-x-auto-save-delay 5) ; nil to disable autosave
+  (setq project-x-auto-save-delay 5)
   ;; use the custom prompter that shows session labels (optional)
-  (setq project-prompter #'project-x--project-prompt)
-  (project-x-mode 1))
+  (setq project-prompter #'project-x--project-prompt))
 
 (use-package nerd-icons-dired
   :hook
