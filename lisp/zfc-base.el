@@ -378,6 +378,7 @@
   (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
 
 (use-package vertico
+  :hook (rfn-eshadow-update-overlay . vertico-directory-tidy)
   :custom
   ;; (vertico-scroll-margin 0) ;; Different scroll margin
   ;; (vertico-count 20) ;; Show more candidates

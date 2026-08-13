@@ -469,7 +469,21 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 		  )))
 
 
-(setq browse-url-browser-function 'browse-url-generic
-      browse-url-generic-program "librewolf")
+;; (setq browse-url-browser-function 'browse-url-generic
+;;       browse-url-generic-program "librewolf")
+
+
+(use-package notmuch-indicator
+  :config
+  (setq notmuch-indicator-args
+		'((:terms "tag:unread and tag:inbox" :label "📭" :label-face success)
+		  (:terms "tag:unread and tag:package" :label "P" :label-face warning :counter-face inherit)
+		  (:terms "tag:unread and tag:coach" :label "C" :label-face bold :counter-face error))
+
+		notmuch-indicator-refresh-count (* 60 3)
+		notmuch-indicator-hide-empty-counters t
+		notmuch-indicator-force-refresh-commands '(notmuch-refresh-this-buffer))
+
+  (notmuch-indicator-mode 1))
 
 (provide 'zfc-tool)
