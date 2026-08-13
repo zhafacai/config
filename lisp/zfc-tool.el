@@ -283,13 +283,31 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 	:models '(poolside/laguna-s-2.1:free
 			  nvidia/nemotron-3-ultra-550b-a55b:free))
 
+  (gptel-make-openai "Flash"
+	:host "ark.cn-beijing.volces.com"
+	:endpoint "/api/coding/v3/chat/completions"
+	:key #'gptel-api-key-from-auth-source
+	:stream t
+	:request-params '(:thinking (:type "disabled"))
+	:models '(deepseek-v4-flash-ga-260731))
+  
+  (gptel-make-openai-responses "ByteDance(response)"
+	:host "ark.cn-beijing.volces.com"
+	:endpoint "/api/coding/v3/responses"
+	:key #'gptel-api-key-from-auth-source
+	:stream t
+	:models '(deepseek-v4-flash
+			  deepseek-v4-flash-ga-260731
+			  doubao-seed-evolving))
+
   (gptel-make-openai "ByteDance"
 	:host "ark.cn-beijing.volces.com"
 	:endpoint "/api/coding/v3/chat/completions"
 	:key #'gptel-api-key-from-auth-source
 	:stream t
 	:models '(deepseek-v4-flash
-			  doubao-seed-2-1-turbo-260628))
+			  deepseek-v4-flash-ga-260731
+			  doubao-seed-evolving))
 
   (gptel-make-openai "Nim"
 	:host "integrate.api.nvidia.com"
@@ -342,6 +360,8 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :custom
   (gptel-quick-system-message (lambda (count)
 								(format "Explain in %d words or fewer in Chinese." count)))
+  (gptel-quick-backend (gptel-get-backend "Flash"))
+  (gptel-quick-model 'deepseek-v4-flash-ga-260731)
   :bind (:map embark-region-map
               ("?" . gptel-quick)
          :map embark-identifier-map

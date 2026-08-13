@@ -21,6 +21,8 @@
   (global-visual-line-mode 1)
   :config
   (evil-define-key 'normal 'global (kbd "C-.") nil)
+  (evil-define-key 'normal fc/override-mode-map (kbd "zj") #'scroll-other-window)
+  (evil-define-key 'normal fc/override-mode-map (kbd "zk") #'scroll-other-window-down)
   (evil-set-leader '(normal visual) (kbd fc/leader-key))
   (evil-set-leader 'normal (kbd fc/localleader-key) t)
 
