@@ -395,19 +395,18 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
             :query "tag:inbox"
             :sort-order newest-first
             :key ,(kbd "i"))
-          ( :name "💬 all unread (inbox)"
+          ( :name "📭 all unread (inbox)"
             :query "tag:unread and tag:inbox"
             :sort-order newest-first
             :key ,(kbd "u"))
-          ;; ( :name "🔮 unread crypto"
-          ;;   :query "tag:unread and tag:crypto"
-          ;;   :sort-order newest-first
-          ;;   :key ,(kbd "c"))
-          ;; ( :name "🌞 unread life"
-          ;;   :query "tag:unread and tag:life"
-          ;;   :sort-order newest-first
-          ;;   :key ,(kbd "l"))
-		  )))
+          ( :name "🔥 unread crypto"
+            :query "tag:unread and tag:crypto"
+            :sort-order newest-first
+            :key ,(kbd "c"))
+          ( :name "🔖 unread dev"
+            :query "tag:unread and tag:dev"
+            :sort-order newest-first
+            :key ,(kbd "d")))))
 
 
 ;; (setq browse-url-browser-function 'browse-url-generic
@@ -418,13 +417,16 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :config
   (setq notmuch-indicator-args
 		'((:terms "tag:unread and tag:inbox" :label "📭" :label-face success)
-		  (:terms "tag:unread and tag:package" :label "P" :label-face warning :counter-face inherit)
-		  (:terms "tag:unread and tag:coach" :label "C" :label-face bold :counter-face error))
+		  (:terms "tag:unread and tag:crypto" :label "🔥" :label-face warning :counter-face inherit)
+		  (:terms "tag:unread and tag:dev" :label "🔖" :label-face bold :counter-face error))
 
 		notmuch-indicator-refresh-count (* 60 3)
 		notmuch-indicator-hide-empty-counters t
 		notmuch-indicator-force-refresh-commands '(notmuch-refresh-this-buffer))
 
   (notmuch-indicator-mode 1))
+
+(use-package ol-notmuch
+  :after (notmuch org))
 
 (provide 'zfc-tool)
