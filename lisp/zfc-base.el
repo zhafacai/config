@@ -399,6 +399,7 @@
                  (window-parameters (mode-line-format . none)))))
 
 (use-package embark-consult)
+
 (use-package ace-window
   :custom
   (aw-keys '(?q ?w ?e ?r ?a ?s ?d ?f))

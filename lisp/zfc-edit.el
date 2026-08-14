@@ -10,23 +10,35 @@
 
 (fc/override-mode)
 
-(use-package flash
-  :commands (flash-jump flash-jump-continue
-                        flash-treesitter)
-  :bind
-  ("C-s" . flash-jump)
-  :custom
-  (flash-multi-window t)
-  ;; (flash-autojump t)
-  (flash-rainbow t)
-  :config
-  ;; Search integration (labels during C-s, /, ?)
-  (require 'flash-isearch)
-  (flash-isearch-mode 1))
-
-;; (use-package avy
+;; (use-package flash
+;;   :commands (flash-jump flash-jump-continue
+;;                         flash-treesitter)
+;;   :bind
+;;   ("C-s" . flash-jump)
+;;   :custom
+;;   (flash-multi-window t)
+;;   ;; (flash-autojump t)
+;;   (flash-rainbow t)
 ;;   :config
-;;   (avy-setup-default))
+;;   ;; Search integration (labels during C-s, /, ?)
+;;   (require 'flash-isea
+;; 		   rch)
+;;   (flash-isearch-mode 1))
+
+(use-package avy
+  :bind
+  ("M-s y"   . avy-copy-line)
+  ("M-s M-y" . avy-copy-region)
+  ("M-s M-k" . avy-kill-whole-line)
+  ("M-s M-j" . avy-goto-char-2)
+  ("M-s M-s" . avy-goto-line)
+  ("M-s M-l" . avy-goto-end-of-line)
+  ("M-s C-w" . avy-kill-region)
+  ("M-s M-w" . avy-kill-ring-save-region)
+  ("M-s t"   . avy-move-line)
+  ("M-s M-t" . avy-move-region)
+  :config
+  (avy-setup-default))
 
 (use-package expand-region
   :bind ("C-," . er/expand-region)
