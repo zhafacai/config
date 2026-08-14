@@ -43,11 +43,7 @@
   :hook
   (org-mode . mixed-pitch-mode))
 
-(use-package org-tree-slide
-  :general
-  (:states 'normal :keymaps 'org-tree-slide-mode-map
-		   "j" #'org-tree-slide-move-next-tree
-		   "k" #'org-tree-slide-move-previous-tree))
+(use-package org-tree-slide)
 
 (use-package valign
   :hook
@@ -68,9 +64,8 @@
 
 (use-package org-modern-indent
   :ensure (:host github :repo "jdtsmith/org-modern-indent")
-  :hook+
-  (:depth 90
-		  (org-mode . org-modern-indent-mode)))
+  :config
+  (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
 
 (use-package org-contrib
   :init
@@ -111,8 +106,9 @@
 
 (use-package org
   :ensure nil
-  :general
-  (:states 'normal :keymaps 'org-mode-map "C-c C-l" #'fc/org-insert-link-dwim))
+  :bind
+  (:map org-mode-map
+   ("C-c C-l" . fc/org-insert-link-dwim)))
 
 (use-package denote
   :hook
@@ -192,7 +188,7 @@
 
 (use-package org-gtd
   :after (org transient)
-  :demand t
+  :demand
   :init
   ;; Suppress upgrade warnings (must be set before package loads)
   (setq org-gtd-update-ack "4.0.0")
@@ -215,15 +211,17 @@
   ;; Add org-gtd files to your agenda (in :config so org-gtd-directory is defined)
   (setq org-agenda-files (list org-gtd-directory))
 
-  :general
-  (general-nmap
-    "SPC dc"  #'org-gtd-capture
-    "SPC de"  #'org-gtd-engage
-    "SPC dp"  #'org-gtd-process-inbox
-    "SPC dn"  #'org-gtd-show-all-next
-    "SPC ds"  #'org-gtd-reflect-stuck-projects)
+  
+  
   :bind
-  (;; Keybinding for organizing items (only works in clarify buffers)
+  (
+   ("C-c d c" . org-gtd-capture)
+   ("C-c d e" . org-gtd-engage)
+   ("C-c d p" . org-gtd-process-inbox)
+   ("C-c d n" . org-gtd-show-all-next)
+   ("C-c d s" . org-gtd-reflect-stuck-projects)
+
+   ;; Keybinding for organizing items (only works in clarify buffers)
    :map org-gtd-clarify-mode-map
    ("C-c c" . org-gtd-organize)
 

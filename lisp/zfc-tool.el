@@ -38,33 +38,10 @@
   (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
 
 (use-package magit
-  ;; :bind
-  ;; (:map project-prefix-map
-  ;; 		("v" . magit-project-status))
-  :general
-  (general-nmap "SPC gg" 'magit)
   :config
   (add-hook 'magit-process-find-password-functions 'magit-process-password-auth-source)
   :custom
-  (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
-  :hook
-  (git-commit-mode . evil-insert-state))
-
-(use-package blamer
-  ;; :bind (("C-c i" . blamer-show-posframe-commit-info))
-  ;; :defer 20
-  :general
-  (general-nmap "SPC tb" 'blamer-mode)
-  :custom
-  (blamer-idle-time 0.3)
-  (blamer-min-offset 70)
-  :config
-  (modus-themes-with-colors
-    (custom-set-faces
-     `(blamer-face ((,c :foreground ,magenta
-                        :background nil
-                        :height 140
-                        :italic t))))))
+  (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 
 (use-package diff-hl
   :init
@@ -78,23 +55,16 @@
 			  (defun fc/diff-hl-recenter (&optional _)
 				(when (derived-mode-p 'org-mode)
 				  (org-show-context 'org-goto))
-				(recenter)))
-  :general
-  (:states 'normal "]c" #'diff-hl-next-hunk)
-  (:states 'normal "[c" #'diff-hl-previous-hunk))
+				(recenter))))
 
-(use-package browse-at-remote
-  :general
-  (general-nmap  "gb" #'browse-at-remote))
+(use-package browse-at-remote)
 
 (use-package forge
   :after magit
   :custom
   (forge-add-default-bindings nil))
 
-(use-package git-timemachine
-  :general
-  (general-nmap "gt" #'git-timemachine))
+(use-package git-timemachine)
 
 (use-package git-modes)
 
@@ -141,12 +111,9 @@
 
 (use-package guix
   :ensure nil
-  :general
-  (general-nmap
-    "SPC gi" 'guix))
-
-
-(add-hook 'scheme-mode-hook (lambda () (evil-local-set-key 'normal "K" #'geiser-doc-look-up-manual)))
+  ;; override insert-file in emacs
+  :bind
+  ("C-x i" . guix))
 
 (use-package gt
   :commands (gt-translate)
@@ -156,10 +123,8 @@
         (gt-translator :engines (gt-stardict-engine
                                  :dir "~/.stardict/dic"
                                  :exact nil)))
-  :general
-  (:states 'normal
-		   [mouse-3] #'gt-translate
-		   "SPC l" #'gt-translate))
+  :bind
+  ("C-x l" . gt-translate))
 
 (use-package sops
   ;; :ensure (:type git :host github :repo "djgoku/sops")
@@ -216,7 +181,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 (use-package emms
   :ensure nil
-  :after evil
   :commands emms
   :custom
   ;; (emms-mode-line-format nil)
@@ -245,19 +209,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
     "Keymap for continuous volume adjustment in EMMS")
 
 
-  (setq emms-volume-change-function 'emms-volume-pulse-change)
-
-  :general
-  ("C-c m SPC" #'emms-pause
-   "C-c m p" #'emms-previous
-   "C-c m n" #'emms-next
-   "C-c m s" #'emms-stop
-   "C-c m m" #'emms
-   "C-c m =" #'emms-volume-raise
-   "C-c m -" #'emms-volume-lower)
-  (:states 'normal :keymaps 'emms-playlist-mode-map
-		   "s" #'emms-sort
-		   "q" #'emms-playlist-mode-bury-buffer))
+  (setq emms-volume-change-function 'emms-volume-pulse-change))
 
 (use-package dwim-shell-command
   :custom
@@ -384,24 +336,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (agent-shell-preferred-agent-config '(preselect . opencode))
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
-  (agent-shell-opencode-default-model-id "nim/nvidia/nemotron-3-ultra-550b-a55b")
-  :config
-  ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
-  (general-define-key
-   :keymaps 'agent-shell-mode-map
-   :states 'insert
-   "RET" #'newline
-   "TAB" nil
-   :states 'normal
-   "RET" #'comint-send-input
-   "TAB" nil)
-
-  
-  ;; Configure *agent-shell-diff* buffers to start in Emacs state
-  (add-hook 'diff-mode-hook
-	        (lambda ()
-	          (when (string-match-p "\\*agent-shell-diff\\*" (buffer-name))
-		        (evil-emacs-state)))))
+  (agent-shell-opencode-default-model-id "nim/nvidia/nemotron-3-ultra-550b-a55b"))
 
 
 (use-package agent-shell-dashboard
@@ -410,11 +345,8 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   ("C-c a d" . agent-shell-dashboard)
   :custom
   ;; (initial-buffer-choice #'agent-shell-dashboard)
-  (agent-shell-dashboard-excerpt-function #'agent-shell-dashboard-excerpt-tail)
-  :config
-  (evil-define-key 'normal agent-shell-dashboard-mode-map
-	(kbd "g") (lookup-key evil-normal-state-map (kbd "g"))
-    (kbd "g r") #'agent-shell-dashboard-refresh))
+  (agent-shell-dashboard-excerpt-function #'agent-shell-dashboard-excerpt-tail))
+
 
 (use-package magent
   :ensure (:host github :repo "Jamie-Cui/magent" :files (:defaults "prompts"))

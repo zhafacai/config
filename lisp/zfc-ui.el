@@ -67,8 +67,8 @@
 				 (setq-local olivetti-body-width 0.3)
 				 (olivetti-mode)))
   (nov-mode . olivetti-mode)
-  :general
-  (general-nmap "SPC tf" 'olivetti-mode)
+  :bind
+  ("C-c O" . olivetti-mode)
   :custom
   (olivetti-minimum-body-width 80)
   (olivetti-recall-visual-line-mode-entry-state t)
@@ -102,10 +102,10 @@
 
 (use-package hl-todo
   :hook (prog-mode . hl-todo-mode)
-  :general
-  (general-nmap
-	"]t" #'hl-todo-next
-	"[t" #'hl-todo-previous))
+  :bind
+  (:map prog-mode-map
+	("M-g t" . hl-todo-next)
+	("M-g T" . hl-todo-previous)))
 
 (use-package doom-modeline
   :config
@@ -129,10 +129,6 @@
 
 (use-package theme-buffet
   :ensure (:wait t)
-  :general
-  (general-nmap
-	"SPC t t" #'theme-buffet-a-la-carte
-	"SPC t o" #'theme-buffet-order-other-period)
   :config
   (setq theme-buffet-menu 'end-user)
 

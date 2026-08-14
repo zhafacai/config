@@ -152,17 +152,10 @@
                  . ("rass" "--"
 					"tsgo" "--lsp" "--stdio" "--"
 					"tailwindcss-language-server" "--stdio"
-					)))
-
-  :general
-  (:states 'normal :keymaps 'eglot-mode-map
-		   "grn" 'eglot-rename
-		   "gra" 'eglot-code-actions))
+					))))
 
 (use-package consult-eglot
-  :after eglot
-  :general
-  (:states 'normal :keymaps 'eglot-mode-map "gO" #'consult-eglot-symbols))
+  :after eglot)
 
 (use-package eldoc
   :ensure nil
@@ -173,29 +166,14 @@
 
 (use-package eldoc-box
   :hook
-  (eglot-managed-mode . eldoc-box-hover-mode)
-  :general
-  (:states 'normal :keymaps 'eglot-mode-map "K" #'eldoc-box-help-at-point))
-
-;; (use-package eldoc-mouse
-;;   :config
-;;   (evil-define-key 'normal eglot-mode-map "K" #'eldoc-mouse-pop-doc-at-cursor))
+  (eglot-managed-mode . eldoc-box-hover-mode))
 
 (use-package flymake
   :ensure nil
   :hook
   (prog-mode . flymake-mode)
   :custom
-  (flymake-show-diagnostics-at-end-of-line 'fancy)
-  :general
-  (:states 'normal "]d" 'flymake-goto-next-error)
-  (:states 'normal "[d" 'flymake-goto-prev-error))
-
-(use-package xref
-  :ensure nil
-  :general
-  (general-nmap
-	"gd" 'xref-find-definitions))
+  (flymake-show-diagnostics-at-end-of-line 'fancy))
 
 (use-package treesit
   :ensure nil
@@ -208,56 +186,5 @@
 
 (use-package markdown-ts-mode
   :ensure nil)
-
-(use-package evil-textobj-tree-sitter
-  :config
-  (evil-define-motion evil-motion-to-next-closing-quote (count)
-    "Move to the next closing quote ', \", or `."
-    :type exclusive
-    (let ((found (save-excursion (search-forward-regexp "['\"`]" nil t))))
-      (if found
-          (goto-char (1- found))
-        (error "No closing quote found"))))
-
-  (define-key evil-operator-state-map "Q" 'evil-motion-to-next-closing-quote)
-  (define-key evil-visual-state-map "Q" 'evil-motion-to-next-closing-quote)
-  (evil-define-motion evil-motion-to-next-closing-bracket (count)
-    "Move to the next closing bracket ), ], or }."
-    :type exclusive
-    (let ((found (save-excursion (search-forward-regexp "[]})]" nil t))))
-      (if found
-          (goto-char (1- found))
-        (error "No closing bracket found"))))
-
-  (define-key evil-operator-state-map "C" 'evil-motion-to-next-closing-bracket)
-  (define-key evil-visual-state-map "C" 'evil-motion-to-next-closing-bracket)
-
-  (evil-define-text-object evil-any-quote-inner (count &optional beg end type)
-    (let ((range (evil-select-quote ?\" beg end type count nil)))
-      (dolist (char '(?\' ?\`))
-        (let ((new (evil-select-quote char beg end type count nil)))
-          (when (and new (> (car new) (car (or range '(0)))) )
-            (setq range new))))
-      range))
-
-  (evil-define-text-object evil-any-quote-outer (count &optional beg end type)
-    (let ((range (evil-select-quote ?\" beg end type count t)))
-      (dolist (char '(?\' ?\`))
-        (let ((new (evil-select-quote char beg end type count t)))
-          (when (and new (> (car new) (car (or range '(0)))) )
-            (setq range new))))
-      range))
-
-  (define-key evil-inner-text-objects-map "q" 'evil-any-quote-inner)
-  (define-key evil-outer-text-objects-map "q" 'evil-any-quote-outer)
-
-  (evil-define-text-object evil-textobj-url (count &optional beg end type)
-    "Select inner URL using standard Emacs 'thing-at-point'."
-    (cl-destructuring-bind (start . end)
-        (bounds-of-thing-at-point 'url)
-      (evil-range start end)))
-
-  (define-key evil-operator-state-map "L" 'evil-textobj-url)
-  (define-key evil-visual-state-map "L" 'evil-textobj-url))
 
 (provide 'zfc-dev)

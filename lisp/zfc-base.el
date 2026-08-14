@@ -147,10 +147,6 @@
 
 (use-package dired-preview
   :after dired
-  :general
-  (:states 'normal
-   :keymaps 'dired-mode-map
-   "p" #'dired-preview-mode)
   :config
   (setq dired-preview-delay 0.2))
 
@@ -161,10 +157,6 @@
 
 (use-package dired
   :ensure nil
-  :general
-  (:states 'normal :keymaps 'dired-mode-map
-		   "h" #'dired-up-directory
-		   "l" #'dired-find-file)
   :custom
   (dired-dwim-target t)
   :config
@@ -173,67 +165,6 @@
   ;; this command is useful when you want to close the window of `dirvish-side'
   ;; automatically when opening a file
   (put 'dired-find-alternate-file 'disabled nil))
-
-(use-package dirvish
-  :disabled
-  :ensure (:host github :repo "latiagertrutis/dirvish")
-  :init
-  (dirvish-override-dired-mode)
-  :custom
-  (dirvish-quick-access-entries ; It's a custom option, `setq' won't work
-   '(("h" "~/"                          "Home")
-     ("d" "~/Downloads/"                "Downloads")
-     ("o" "~/Documents/"                "Documents")
-	 ("p" "~/Pictures/"                 "Pictures")
-     ("c" "~/.config/"                  "config")
-     ("s" "/ssh:zfc@192.168.10.100:~"   "ssh")
-     ("m" "/mnt/"                       "Drives")
-     ("t" "~/.local/share/Trash/files/" "TrashCan")))
-  (dirvish-default-layout '(0 0.4 0.55))
-  ;; (dirvish-reuse-session nil)
-  :config
-  ;; (dirvish-peek-mode)             ; Preview files in minibuffer
-  ;; (dirvish-side-follow-mode)      ; similar to `treemacs-follow-mode'
-  (setq dirvish-mode-line-format
-        '(:left (sort symlink) :right (omit yank index)))
-  (setq dirvish-attributes           ; The order *MATTERS* for some attributes
-        '(vc-state subtree-state collapse git-msg file-time file-size)
-        dirvish-side-attributes
-        '(vc-state collapse file-modes file-size))
-  ;; open large directory (over 20000 files) asynchronously with `fd' command
-  (setq dirvish-large-directory-threshold 20000)
-  (dirvish-define-preview eza (file)
-    "Use `eza' to generate directory preview."
-    :require ("eza") ; tell Dirvish to check if we have the executable
-    (when (file-directory-p file) ; we only interest in directories here
-      `(shell . ("eza" "-al" "--color=always" "--icons=always"
-                 "--group-directories-first" ,file))))
-
-  (push 'eza dirvish-preview-dispatchers)
-  :general
-  (:states 'normal :keymaps 'dirvish-mode-map
-   "q" #'dirvish-quit
-   "?" #'dirvish-dispatch
-   "o" #'dirvish-quick-access
-   (kbd "TAB") #'dirvish-subtree-toggle
-   "f" #'dirvish-file-info-menu
-   ;; "l" #'dirvish-ls-switches-menu
-   "s" #'dirvish-quicksort
-   "*" #'dirvish-mark-menu
-   "y" #'dirvish-yank-menu
-   "N" #'dirvish-narrow)
-
-  :hook
-  (dirvish-setup . dirvish-emerge-mode)
-  :bind
-  (("C-c d d" . dirvish)
-   ("C-c d s" . dirvish-side)
-   ("C-c d q" . dirvish-quick-access)
-   :map dirvish-mode-map
-   ("^"   . dirvish-history-last)
-   ("M-f" . dirvish-history-go-forward)
-   ("M-b" . dirvish-history-go-backward)
-   ("M-e" . dirvish-emerge-menu)))
 
 (use-package smartparens
   :hook (prog-mode text-mode markdown-mode)
@@ -250,10 +181,6 @@
   (consult-fd (expand-file-name fc/books-directory)))
 
 (use-package consult
-  :general
-  (general-nmap
-	"SPC f" #'consult-ripgrep
-	"SPC SPC" #'consult-fd)
   ;; Replace bindings. Lazily loaded by `use-package'.
   :bind (;; C-c bindings in `mode-specific-map'
          ("C-c M-x" . consult-mode-command)
@@ -286,8 +213,8 @@
          ("M-g i" . consult-imenu)
          ("M-g I" . consult-imenu-multi)
          ;; M-s bindings in `search-map'
-         ("M-s d" . consult-fd)                  ;; Alternative: consult-fd
-         ("M-s c" . consult-locate)
+         ("M-s f" . consult-fd)                  ;; Alternative: consult-fd
+         ;; ("M-s c" . consult-locate)				 ;
          ("M-s g" . consult-grep)
          ("M-s G" . consult-git-grep)
          ("M-s r" . consult-ripgrep)
@@ -365,17 +292,12 @@
          ("C-x C-j" . consult-dir-jump-file)))
 
 (use-package helpful
-  :general
-  (:states 'insert "C-c C-d" #'helpful-at-point)
-  (:states 'normal 
-		   "SPC hi" #'info-emacs-manual
-		   "SPC hr" #'info-display-manual
-		   "SPC hf" #'helpful-callable
-		   "SPC hv" #'helpful-variable
-		   "SPC hk" #'helpful-key
-		   "SPC hm" #'describe-mode
-		   "SPC hp" #'describe-package
-		   "SPC hc" #'helpful-command))
+  :bind
+  ("C-c C-d" . helpful-at-point)
+  ("C-h f" . helpful-callable)
+  ("C-h v" . helpful-variable)
+  ("C-h k" . helpful-key)
+  ("C-h c" . helpful-command))
 (use-package elisp-demos
   :after helpful
   :config

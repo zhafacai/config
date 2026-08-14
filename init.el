@@ -49,10 +49,7 @@
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (setq use-package-always-ensure t)
 
-(use-package use-package-x
-  :demand t)
-
-(require 'zfc-evil)
+(require 'zfc-edit)
 (require 'zfc-ui)
 (require 'zfc-base)
 (require 'zfc-dev)
