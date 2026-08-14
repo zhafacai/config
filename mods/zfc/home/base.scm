@@ -65,6 +65,10 @@
                                  "emacs-next-pgtk"
                                  ;; dev
                                  "rust"
+                                 ;; LSP/JSON-RPC multiplexer; provides the `rass'
+                                 ;; wrapper used by the eglot server programs in
+                                 ;; lisp/zfc-dev.el
+                                 "rassumfrassum"
 
 						         ;; fonts
 						         "font-google-noto-emoji"
@@ -134,6 +138,11 @@
               (service home-pipewire-service-type)
               (service home-files-service-type
                        `(
+                         ;; NOTE on rime data: these entries symlink read-only store paths into the
+                         ;; rime user data dir.  rime reads them fine and keeps its writable state
+                         ;; (userdb, build/) in the user dir itself.  If you ever see rime failing to
+                         ;; write user dictionaries, convert the *directory* links below (cn_dicts /
+                         ;; en_dicts / opencc / lua) to file-level links or a writable copy.
                          ;; 1. Link the heavy data directories
                          (".local/share/fcitx5/rime/en_dicts" ,(file-append rime-ice "/share/rime-data/en_dicts"))
                          (".local/share/fcitx5/rime/cn_dicts" ,(file-append rime-ice "/share/rime-data/cn_dicts"))
@@ -222,11 +231,19 @@
                                        
                                        (unless (file-exists? (string-append (getenv "XDG_CONFIG_HOME") "/fish/functions/fisher.fish"))
                                          (format #t "Installing fisher~%")
-                                         (system (string-append fish-bin " -c \"curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | "
-                                                                "source && fisher install jorgebucaran/fisher\"")))
+                                         ;; Non-fatal: a fresh machine may be offline during
+                                         ;; the first activation.
+                                         (false-if-exception
+                                          (system (string-append fish-bin " -c \"curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | "
+                                                                 "source && fisher install jorgebucaran/fisher\""))))
                                        
                                        (format #t "Updating fisher plugins~%")
-                                       (system (string-append fish-bin " -c \"fisher update\""))
+                                       ;; Non-fatal: don't fail the whole reconfigure when the
+                                       ;; network is unavailable or a plugin can't be fetched.
+                                       (unless (zero? (or (false-if-exception
+                                                           (system (string-append fish-bin " -c \"fisher update\"")))
+                                                          -1))
+                                         (format #t "Warning: `fisher update' failed (network error?)~%"))
                                        #t)))
                                 (documentation "Initialize and update Fish plugins via fisher."))))
               

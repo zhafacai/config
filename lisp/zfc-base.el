@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t -*-
 (use-package emacs
   :ensure nil
   :bind                                              ; NOTE: M-x describe-personal-bindings (for all use-packge binds)
@@ -30,8 +31,6 @@
   (use-dialog-box nil)
   (use-file-dialog nil)
   (use-short-answers t)
-  (xref-search-program 'ripgrep)        ; TODO: make it dinamic check if ripgrep is available before setting it and if it costs too much of the init time
-  (grep-command "rg -nS --no-heading ") ; TODO: make it dinamic check if ripgrep is available before setting it and if it costs too much of the init time
   (grep-find-ignored-directories
    '("SCCS" "RCS" "CVS" "MCVS" ".src" ".svn" ".jj" ".git" ".hg" ".bzr" "_MTN" "_darcs" "{arch}" "node_modules" "build" "dist"))
 
@@ -40,16 +39,17 @@
   (vc-follow-symlinks t)
   ;; Silence compiler warnings as they can be pretty disruptive
   (native-comp-async-report-warnings-errors nil)
+  :config
+  ;; Only use ripgrep when it is actually available (e.g. in the Guix/Nix
+  ;; profile); fall back to Emacs' defaults otherwise.
+  (when (executable-find "rg")
+    (setq xref-search-program 'ripgrep
+          grep-command "rg -nS --no-heading "))
   :init
   (recentf-mode 1)
   (repeat-mode 1)
   (savehist-mode 1)
   (save-place-mode 1))
-
-(use-package auth-source
-  :ensure nil
-  :custom
-  (auth-source-debug t))
 
 
 (use-package autorevert
@@ -240,10 +240,14 @@
   :config
   (require 'smartparens-config))
 
+(defcustom fc/books-directory "~/Documents/books"
+  "Directory containing books for `fc/consult-books'."
+  :type 'directory)
+
 (defun fc/consult-books ()
-  "Consult books in the ~/Documents/books/ folder."
+  "Consult books in `fc/books-directory'."
   (interactive)
-  (consult-fd (expand-file-name "~/Documents/books")))
+  (consult-fd (expand-file-name fc/books-directory)))
 
 (use-package consult
   :general
@@ -491,8 +495,9 @@
   (connection-local-set-profiles
    '(:application tramp :protocol "ssh")
    'remote-direct-async-process)
-  ;; Tips to speed up connections
-  (setq tramp-verbose 10)
+  ;; Keep tramp quiet: 0-3 is normal logging, 10 is debug-level and dumps
+  ;; *tramp/debug* buffers on every connection (slows things down).
+  (setq tramp-verbose 3)
   (setq tramp-chunksize 2000)
   (setq tramp-ssh-controlmaster-options nil)
   (setq tramp-auto-save-directory (locate-user-emacs-file "cache/tramp/"))
@@ -517,16 +522,5 @@
   :commands (0x0-upload 0x0-upload-file)
   :custom (0x0-default-service 'x0)
   :bind ("C-x M-u" . 0x0-upload))
-
-(defvar fc/override-mode-map (make-sparse-keymap)
-  "Keymap for the `fc/override-mode'.")
-
-(define-minor-mode fc/override-mode
-  "Activate the `fc/override-mode-map'."
-  :global t
-  :init-value nil
-  :keymap fc/override-mode-map)
-
-(fc/override-mode)
 
 (provide 'zfc-base)

@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t -*-
 (use-package reader
   :ensure nil
   :hook (reader-mode .
@@ -68,11 +69,19 @@
 (use-package diff-hl
   :init
   (global-diff-hl-mode)
+  :custom
+  (diff-hl-draw-borders nil)
   :config
+  (diff-hl-flydiff-mode 1)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+  (advice-add 'diff-hl-next-hunk :after
+			  (defun fc/diff-hl-recenter (&optional _)
+				(when (derived-mode-p 'org-mode)
+				  (org-show-context 'org-goto))
+				(recenter)))
   :general
-  (:states 'normal "]h" #'diff-hl-next-hunk)
-  (:states 'normal "[h" #'diff-hl-previous-hunk))
+  (:states 'normal "]c" #'diff-hl-next-hunk)
+  (:states 'normal "[c" #'diff-hl-previous-hunk))
 
 (use-package browse-at-remote
   :general

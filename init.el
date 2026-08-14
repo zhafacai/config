@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t -*-
 (set-default-toplevel-value 'lexical-binding t)
 
 ;; setup elpaca
@@ -49,9 +50,8 @@
 (setq use-package-always-ensure t)
 
 (use-package use-package-x
-  :demand)
+  :demand t)
 
-(require 'zfc-macro)
 (require 'zfc-evil)
 (require 'zfc-ui)
 (require 'zfc-base)

@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t -*-
 (use-package modus-themes
   :init
   (modus-themes-include-derivatives-mode 1)

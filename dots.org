@@ -15,6 +15,7 @@ more packages.
 :header-args:emacs-lisp: :tangle early-init.el
 :END:
 #+begin_src emacs-lisp
+;;; -*- lexical-binding: t -*-
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file nil t))
@@ -47,7 +48,6 @@ more packages.
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'tooltip-mode) (tooltip-mode -1))
-(if (fboundp 'fringe-mode) (fringe-mode 0))
 
 ;; Avoid raising the *Messages* buffer if anything is still without
 ;; lexical bindings
@@ -63,6 +63,7 @@ more packages.
 *** The =init.el= section about setup elpaca
 lexical scope by default
 #+begin_src emacs-lisp
+;;; -*- lexical-binding: t -*-
 (set-default-toplevel-value 'lexical-binding t)
 #+end_src
 
@@ -120,9 +121,8 @@ setup elpaca using git
 (setq use-package-always-ensure t)
 
 (use-package use-package-x
-  :demand)
+  :demand t)
 
-(require 'zfc-macro)
 (require 'zfc-evil)
 (require 'zfc-ui)
 (require 'zfc-base)
@@ -131,33 +131,6 @@ setup elpaca using git
 (require 'zfc-tool)
 (require 'zfc-lang)
 #+end_src
-** The =zfc-macro.el= section
-:PROPERTIES:
-:header-args:emacs-lisp: :tangle lisp/zfc-macro.el
-:END:
-
-#+begin_src emacs-lisp
-(defmacro after! (features &rest body)
-  (declare (indent 1) (debug t))
-
-  (unless (or (symbolp features) (consp features))
-    (error "the first param of after! should be symbol or list."))
-
-  (let ((fs (if (symbolp features)
-                (list features)
-              features))
-        (form `(progn ,@body)))
-
-    (dolist (f (reverse fs))
-      (setq form `(with-eval-after-load ',f
-                    ,form)))
-
-    form))
-#+end_src
-*** The =zfc-macro.el= section for calling provide
-#+begin_src emacs-lisp
-(provide 'zfc-macro)
-#+end_src
 ** The =zfc-evil.el= section
 :PROPERTIES:
 :header-args:emacs-lisp: :tangle lisp/zfc-evil.el
@@ -165,11 +138,23 @@ setup elpaca using git
 *** The =zfc-evil.el= section about general and evil
 set leader and general
 #+begin_src emacs-lisp
+;;; -*- lexical-binding: t -*-
 (defvar fc/leader-key "SPC"
   "my leader key.")
 
 (defvar fc/localleader-key ","
   "my local leader key.")
+
+(defvar fc/override-mode-map (make-sparse-keymap)
+  "Keymap for the `fc/override-mode'.")
+
+(define-minor-mode fc/override-mode
+  "Activate the `fc/override-mode-map'."
+  :global t
+  :init-value nil
+  :keymap fc/override-mode-map)
+
+(fc/override-mode)
 
 (use-package general
   :ensure (:wait t)
@@ -373,6 +358,7 @@ toggle alpha background
 :END:
 *** The =zfc-ui.el= section about themes
 #+begin_src emacs-lisp
+;;; -*- lexical-binding: t -*-
 (use-package modus-themes
   :init
   (modus-themes-include-derivatives-mode 1)
@@ -582,6 +568,7 @@ default fonts
 basic packages which extend core features in emacs
 *** The =zfc-base.el= section about internal packages
 #+begin_src emacs-lisp
+;;; -*- lexical-binding: t -*-
 (use-package emacs
   :ensure nil
   :bind                                              ; NOTE: M-x describe-personal-bindings (for all use-packge binds)
@@ -614,8 +601,6 @@ basic packages which extend core features in emacs
   (use-dialog-box nil)
   (use-file-dialog nil)
   (use-short-answers t)
-  (xref-search-program 'ripgrep)        ; TODO: make it dinamic check if ripgrep is available before setting it and if it costs too much of the init time
-  (grep-command "rg -nS --no-heading ") ; TODO: make it dinamic check if ripgrep is available before setting it and if it costs too much of the init time
   (grep-find-ignored-directories
    '("SCCS" "RCS" "CVS" "MCVS" ".src" ".svn" ".jj" ".git" ".hg" ".bzr" "_MTN" "_darcs" "{arch}" "node_modules" "build" "dist"))
 
@@ -624,16 +609,17 @@ basic packages which extend core features in emacs
   (vc-follow-symlinks t)
   ;; Silence compiler warnings as they can be pretty disruptive
   (native-comp-async-report-warnings-errors nil)
+  :config
+  ;; Only use ripgrep when it is actually available (e.g. in the Guix/Nix
+  ;; profile); fall back to Emacs' defaults otherwise.
+  (when (executable-find "rg")
+    (setq xref-search-program 'ripgrep
+          grep-command "rg -nS --no-heading "))
   :init
   (recentf-mode 1)
   (repeat-mode 1)
   (savehist-mode 1)
   (save-place-mode 1))
-
-(use-package auth-source
-  :ensure nil
-  :custom
-  (auth-source-debug t))
 
 
 (use-package autorevert
@@ -840,10 +826,14 @@ dired
 #+end_src
 consult
 #+begin_src emacs-lisp
+(defcustom fc/books-directory "~/Documents/books"
+  "Directory containing books for `fc/consult-books'."
+  :type 'directory)
+
 (defun fc/consult-books ()
-  "Consult books in the ~/Documents/books/ folder."
+  "Consult books in `fc/books-directory'."
   (interactive)
-  (consult-fd (expand-file-name "~/Documents/books")))
+  (consult-fd (expand-file-name fc/books-directory)))
 
 (use-package consult
   :general
@@ -1100,8 +1090,9 @@ embark
   (connection-local-set-profiles
    '(:application tramp :protocol "ssh")
    'remote-direct-async-process)
-  ;; Tips to speed up connections
-  (setq tramp-verbose 10)
+  ;; Keep tramp quiet: 0-3 is normal logging, 10 is debug-level and dumps
+  ;; *tramp/debug* buffers on every connection (slows things down).
+  (setq tramp-verbose 3)
   (setq tramp-chunksize 2000)
   (setq tramp-ssh-controlmaster-options nil)
   (setq tramp-auto-save-directory (locate-user-emacs-file "cache/tramp/"))
@@ -1127,19 +1118,6 @@ embark
   :custom (0x0-default-service 'x0)
   :bind ("C-x M-u" . 0x0-upload))
 #+end_src
-*** The =zfc-base.el= section for minor mode
-#+begin_src emacs-lisp
-(defvar fc/override-mode-map (make-sparse-keymap)
-  "Keymap for the `fc/override-mode'.")
-
-(define-minor-mode fc/override-mode
-  "Activate the `fc/override-mode-map'."
-  :global t
-  :init-value nil
-  :keymap fc/override-mode-map)
-
-(fc/override-mode)
-#+end_src
 *** The =zfc-base.el= section for calling provide
 #+begin_src emacs-lisp
 (provide 'zfc-base)
@@ -1150,6 +1128,7 @@ embark
 :END:
 *** The =zfc-dev.el= section about completion
 #+begin_src emacs-lisp
+;;; -*- lexical-binding: t -*-
 (use-package corfu
   ;; Optional customizations
   :custom
@@ -1469,6 +1448,7 @@ use built-in lsp client
 :END:
 *** The =zfc-org.el= section about basic org
 #+begin_src emacs-lisp
+;;; -*- lexical-binding: t -*-
 (use-package org
   :ensure nil
   :bind
@@ -1736,6 +1716,7 @@ use built-in lsp client
 *** The =zfc-tool.el= section about documents
 reader
 #+begin_src emacs-lisp
+;;; -*- lexical-binding: t -*-
 (use-package reader
   :ensure nil
   :hook (reader-mode .
@@ -1833,11 +1814,19 @@ diff-hl
 (use-package diff-hl
   :init
   (global-diff-hl-mode)
+  :custom
+  (diff-hl-draw-borders nil)
   :config
+  (diff-hl-flydiff-mode 1)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+  (advice-add 'diff-hl-next-hunk :after
+			  (defun fc/diff-hl-recenter (&optional _)
+				(when (derived-mode-p 'org-mode)
+				  (org-show-context 'org-goto))
+				(recenter)))
   :general
-  (:states 'normal "]h" #'diff-hl-next-hunk)
-  (:states 'normal "[h" #'diff-hl-previous-hunk))
+  (:states 'normal "]c" #'diff-hl-next-hunk)
+  (:states 'normal "[c" #'diff-hl-previous-hunk))
 #+end_src
 #+begin_src emacs-lisp
 (use-package browse-at-remote
@@ -2340,6 +2329,7 @@ email
 :END:
 
 #+begin_src emacs-lisp
+;;; -*- lexical-binding: t -*-
 (use-package uiua-mode
   :mode "\\.ua\\'")
 #+end_src
@@ -2688,6 +2678,10 @@ here is =sops= secrets config for my dae config.
                                  "emacs-next-pgtk"
                                  ;; dev
                                  "rust"
+                                 ;; LSP/JSON-RPC multiplexer; provides the `rass'
+                                 ;; wrapper used by the eglot server programs in
+                                 ;; lisp/zfc-dev.el
+                                 "rassumfrassum"
 
 						         ;; fonts
 						         "font-google-noto-emoji"
@@ -2768,6 +2762,11 @@ home-base
 *** The =base.scm= section about fcitx5
 ~hm-files~
 #+begin_src scheme :noweb-ref hm-files
+;; NOTE on rime data: these entries symlink read-only store paths into the
+;; rime user data dir.  rime reads them fine and keeps its writable state
+;; (userdb, build/) in the user dir itself.  If you ever see rime failing to
+;; write user dictionaries, convert the *directory* links below (cn_dicts /
+;; en_dicts / opencc / lua) to file-level links or a writable copy.
 ;; 1. Link the heavy data directories
 (".local/share/fcitx5/rime/en_dicts" ,(file-append rime-ice "/share/rime-data/en_dicts"))
 (".local/share/fcitx5/rime/cn_dicts" ,(file-append rime-ice "/share/rime-data/cn_dicts"))
@@ -2924,11 +2923,19 @@ patch to use flypy
                          
                          (unless (file-exists? (string-append (getenv "XDG_CONFIG_HOME") "/fish/functions/fisher.fish"))
                            (format #t "Installing fisher~%")
-                           (system (string-append fish-bin " -c \"curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | "
-                                                  "source && fisher install jorgebucaran/fisher\"")))
+                           ;; Non-fatal: a fresh machine may be offline during
+                           ;; the first activation.
+                           (false-if-exception
+                            (system (string-append fish-bin " -c \"curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | "
+                                                   "source && fisher install jorgebucaran/fisher\""))))
                          
                          (format #t "Updating fisher plugins~%")
-                         (system (string-append fish-bin " -c \"fisher update\""))
+                         ;; Non-fatal: don't fail the whole reconfigure when the
+                         ;; network is unavailable or a plugin can't be fetched.
+                         (unless (zero? (or (false-if-exception
+                                             (system (string-append fish-bin " -c \"fisher update\"")))
+                                            -1))
+                           (format #t "Warning: `fisher update' failed (network error?)~%"))
                          #t)))
                   (documentation "Initialize and update Fish plugins via fisher."))))
 

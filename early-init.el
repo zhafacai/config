@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t -*-
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file nil t))
@@ -28,7 +29,6 @@
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'tooltip-mode) (tooltip-mode -1))
-(if (fboundp 'fringe-mode) (fringe-mode 0))
 
 ;; Avoid raising the *Messages* buffer if anything is still without
 ;; lexical bindings

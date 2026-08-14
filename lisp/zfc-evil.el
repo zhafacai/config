@@ -1,8 +1,20 @@
+;;; -*- lexical-binding: t -*-
 (defvar fc/leader-key "SPC"
   "my leader key.")
 
 (defvar fc/localleader-key ","
   "my local leader key.")
+
+(defvar fc/override-mode-map (make-sparse-keymap)
+  "Keymap for the `fc/override-mode'.")
+
+(define-minor-mode fc/override-mode
+  "Activate the `fc/override-mode-map'."
+  :global t
+  :init-value nil
+  :keymap fc/override-mode-map)
+
+(fc/override-mode)
 
 (use-package general
   :ensure (:wait t)

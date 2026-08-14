@@ -36,7 +36,6 @@
           # python
           ty
           ruff
-          rassumfrassum
           black
 
           # lua
