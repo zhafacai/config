@@ -193,6 +193,13 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
          ([remap dired-do-shell-command] . dwim-shell-command)
          ([remap dired-smart-shell-command] . dwim-shell-command))
   :config
+  (defun dwim-shell-commands-video-convert-to-mp4 ()
+    "Convert to any video to mp4"
+    (interactive)
+    (dwim-shell-command-on-marked-files
+     "Convert to video to mp4"
+     "ffmpeg -i '<<f>>' -c:v libx264 -c:a aac -movflags +faststart '<<fne>>'.mp4"
+     :utils "ffmpeg"))
   (require 'dwim-shell-commands))
 
 (use-package transient :ensure t)
