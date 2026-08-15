@@ -21,11 +21,7 @@
   #:use-module (guix channels)
   #:use-module (nongnu packages linux)
   #:use-module (nongnu system linux-initrd)
-  ;; NOTE: dae is currently disabled, so the modules that only served it are
-  ;; not imported: (zfc packages networking) [dae-bin], (rosenthal services
-  ;; child-error), (rosenthal utils file), (ice-9 popen), (rnrs io ports).
-  ;; Re-add them together with the dae section if you re-enable dae.
-  ;; #:use-module (guixcn services networking)
+  #:use-module (rosenthal utils file)
   #:use-module (zfc home base))
 
 (define %network-manager-ipv6-privacy
@@ -49,13 +45,9 @@
  (timezone "Asia/Shanghai")
  (locale "en_US.utf8")
 
- ;; Choose US English keyboard layout.  The "altgr-intl"
- ;; variant provides dead keys for accented characters.
  (keyboard-layout (keyboard-layout "us"
                                    #:options '("ctrl:nocaps")))
 
- ;; Use the UEFI variant of GRUB with the EFI System
- ;; Partition mounted on /boot/efi.
  (bootloader (bootloader-configuration
               (bootloader grub-efi-bootloader)
               (targets '("/boot/efi"))
@@ -64,8 +56,6 @@
                       (inherit (grub-theme))
                       (gfxmode '("1024x768x32" "auto"))))))
 
- ;; Specify a mapped device for the encrypted root partition.
- ;; The UUID is that returned by 'cryptsetup luksUUID'.
  (mapped-devices
   (list (mapped-device
          (source (uuid "7a3e1a89-474c-4efb-8826-2470162e7a66"))
@@ -84,8 +74,6 @@
                        (type "vfat")))
                 %base-file-systems))
 
- ;; Specify a swap file for the system, which resides on the
- ;; root file system.
  (swap-devices (list (swap-space
                       (target "/swapfile"))))
 
@@ -100,7 +88,6 @@
               %base-user-accounts))
 
 
- ;; This is where we specify system-wide packages.
  (packages (append (list
                     neovim
                     niri

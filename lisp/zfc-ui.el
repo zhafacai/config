@@ -26,16 +26,13 @@
 
   (setq modus-themes-common-palette-overrides nil))
 
+(add-to-list 'custom-theme-load-path (expand-file-name "lisp" user-emacs-directory))
+
 (use-package ef-themes
   :init
   (ef-themes-take-over-modus-themes-mode 1)
+  (modus-themes-activate 'oxocarbon-light)
   (ef-themes-load-theme 'oxocarbon))
-
-;; Oxocarbon is defined in the real theme file `lisp/oxocarbon-theme.el'
-;; (see the separate "oxocarbon" section below) so that `load-theme' and
-;; theme-buffet can actually find it — Emacs binds themes to files.  Our
-;; lisp/ directory must therefore be on `custom-theme-load-path'.
-(add-to-list 'custom-theme-load-path (expand-file-name "lisp" user-emacs-directory))
 
 (use-package logos
   :config

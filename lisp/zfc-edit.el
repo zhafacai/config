@@ -33,8 +33,9 @@
 
 (use-package expand-region
   :bind
-  (("C-," . er/expand-region)
-   ("C-=" . er/expand-region))
+  (:map fc/override-mode-map
+        ("C-," . er/expand-region))
+  ("C-=" . er/expand-region)
   :config
   (add-to-list 'expand-region-exclude-text-mode-expansions 'org-mode))
 
@@ -44,35 +45,19 @@
    ("C-c e c" . embrace-change)
    ("C-c e d" . embrace-delete)))
 
-;; iedit: non-modal multi-region editing (the evil-multiedit replacement).
-;; C-; is already embark-dwim, so iedit gets C-S-;.
 (use-package iedit
   :bind ("C-:" . iedit-mode))
 
-;; move-text: move lines/regions up/down.  No arrow keys: `C-c e n' moves down
-;; (mirroring C-n = next line), `C-c e p' moves up (mirroring C-p).  Both are
-;; free in the `C-c e' prefix, globally and in org.
 (use-package move-text
   :bind
   (("C-c e n" . move-text-down)
    ("C-c e p" . move-text-up)))
 
-;; crux: handy editing commands (open a line above, duplicate, ...).
 (use-package crux
   :bind
   (("C-S-o" . crux-smart-open-line-above)
    ("C-k" . crux-smart-kill-line)))
 
-;; symbol-overlay: highlight & jump between occurrences of the symbol at point.
-;; Its own minor-mode keymap (M-i/M-n/M-p) only activates while a symbol is
-;; highlighted, so normal editing is never affected.
-(use-package symbol-overlay
-  :bind (("C-c e s" . symbol-overlay-put)))
-
-;; mwim: smart C-a/C-e — "move where I mean".  mwim ships no global minor
-;; mode; it provides commands, so bind C-a/C-e directly.  Pressing C-a
-;; repeatedly cycles line-beginning → code-beginning → comment-beginning
-;; (C-e likewise for the ends), respecting org structure.
 (use-package mwim
   :bind
   (("C-a" . mwim-beginning)

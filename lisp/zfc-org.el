@@ -37,8 +37,7 @@
   (org-startup-with-inline-images t)
   (org-startup-indented t)
   (org-edit-src-content-indentation 0))
-;; :config
-;; (advice-add 'org-agenda-todo :after (lambda (&rest _) (org-save-all-org-buffers))))
+
 (use-package mixed-pitch
   :hook
   (org-mode . mixed-pitch-mode))

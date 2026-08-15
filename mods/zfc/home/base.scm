@@ -2,11 +2,11 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages fcitx5)
-  ;; #:use-module (gnu home services ssh)
   #:use-module (gnu packages shells)
-  #:use-module (zfc config common)  ; config-files-path, used by fish-fisher below
+  #:use-module (zfc config common)
   #:use-module (gnu home services shepherd)
   #:use-module (gnu packages mail)
+  #:use-module (gnu packages bash)
   #:use-module (rosenthal services desktop)
   #:use-module (gnu packages gnome-xyz)
   #:use-module (sops secrets)
@@ -66,9 +66,7 @@
                                  "emacs-next-pgtk"
                                  ;; dev
                                  "rust"
-                                 ;; LSP/JSON-RPC multiplexer; provides the `rass'
-                                 ;; wrapper used by the eglot server programs in
-                                 ;; lisp/zfc-dev.el
+                                 
                                  "rassumfrassum"
 
 						         ;; fonts
@@ -109,7 +107,6 @@
 								 "krdc"
 								 "ripgrep"
 								 "fd"
-								 "mpv"
 								 "alacritty"
 								 "gcc-toolchain"
 								 "xwayland-satellite"
@@ -122,10 +119,12 @@
 								 "fnlfmt"
 
 
-								 ;; dirvish
+								 ;; ready-player
+                                 "mpv"
+                                 "ffmpeg"
+								 "ffmpegthumbnailer"
 								 "vips"
 								 "poppler"
-								 "ffmpegthumbnailer"
 								 "epub-thumbnailer"
 								 "mediainfo"
 								 "7zip"
@@ -197,8 +196,6 @@
               		   (bash-profile (list (local-file
               								"plain/.bash_profile"
               								"bash_profile")))))
-              ;; (service home-openssh-service-type
-              ;; 		 (home-openssh-configuration))
               (service home-fish-service-type
                        (home-fish-configuration
                          (config
@@ -263,15 +260,33 @@
                                (shepherd-timer
                                 '(mbsync-gmail)
                                 "0 12 * * *"
-                                #~(#$(file-append isync "/bin/mbsync") "gmail")
-                                #:documentation "Synchronize Gmail via mbsync daily at noon.")))
+                                ;; mbsync first, then index new mail with notmuch, then
+                                ;; apply the tagging rules from plain/notmuch-tag-new
+                                ;; (see the section below).
+                                #~(#$(file-append bash "/bin/bash")
+                                   #$(mixed-text-file
+                                      "mbsync-gmail"
+                                      ;; NB: mixed-text-file takes plain strings and
+                                      ;; file-like objects; no #$ splicing inside it.
+                                      "set -e\n"
+                                      "export NOTMUCH_DATABASE=\"${NOTMUCH_DATABASE:-$HOME/Documents/Mail}\"\n"
+                                      "export PATH=\"" (file-append notmuch "/bin") ":$PATH\"\n"
+                                      (file-append isync "/bin/mbsync") " gmail\n"
+                                      (file-append notmuch "/bin/notmuch") " new\n"
+                                      (file-append bash "/bin/bash") " " (local-file "plain/notmuch-tag-new") "\n"))
+                                #:documentation "Synchronize Gmail via mbsync, index it with notmuch and apply the tagging rules, daily at noon.")))
               (simple-service 'notmuch-config-service
                               home-files-service-type
                               (list
                                `(".config/notmuch/default/config"
                                  ,(mixed-text-file "notmuch-config"
                                                    "[user]\n"
-                                                   "primary_email=zhafacai@gmail.com\n"))))
+                                                   "primary_email=zhafacai@gmail.com\n"
+                                                   ;; the `new' tag lets the rules in
+                                                   ;; plain/notmuch-tag-new target freshly
+                                                   ;; indexed messages only
+                                                   "[new]\n"
+                                                   "tags=new;unread;inbox\n"))))
               
               ;; cannot use getenv HOME in home-files-service-type
               (simple-service 'notmuch-env-service

@@ -1,0 +1,18 @@
+#!/bin/sh
+# notmuch-tag-new --- sample tagging rules for freshly indexed mail.
+# Run after `mbsync gmail' + `notmuch new' by the mbsync-gmail shepherd
+# timer.  Rules only touch `tag:new' messages (assigned by `notmuch new'
+# per the [new] tags in the notmuch config); the last command strips the
+# tag again so every message is processed only once.
+
+# Crypto newsletters/exchanges -> the "unread crypto" saved search.
+notmuch tag +crypto -- 'tag:new and (from:coindesk.com or from:cointelegraph.com or from:binance.com or from:okx.com or from:coinbase.com)'
+
+# Development notifications -> the "unread dev" saved search.
+notmuch tag +dev -- 'tag:new and (from:github.com or from:gitlab.com or from:codeberg.org or subject:"pull request")'
+
+# Newsletters that only need archiving can skip the inbox:
+# notmuch tag -inbox -- 'tag:new and from:newsletter.example.com'
+
+# Done: stop treating these as new.
+notmuch tag -new -- 'tag:new'

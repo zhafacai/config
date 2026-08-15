@@ -3,16 +3,14 @@
   :ensure nil
   :bind                                              ; NOTE: M-x describe-personal-bindings (for all use-packge binds)
   (
-   ;; ("M-o" . other-window)
    ("C-x C-z" . nil)
+   ("M-j" . join-line)
    ([remap capitalize-word] . capitalize-dwim)       ; Make M-c work on regions
    ([remap downcase-word] . downcase-dwim)           ; Make M-l work on regions
    ([remap upcase-word] . upcase-dwim)               ; Make M-u work on regions
    ([remap kill-buffer] . kill-current-buffer)       ; C-x k stops prompting for buffer to kill
-   ([remap delete-horizontal-space] . cycle-spacing) ; M-\. Called twice, cycle-spacing has same effect and its default binding (M-SPC) is problematic in macOS
-   )
+   ([remap delete-horizontal-space] . cycle-spacing))
   :custom
-  (column-number-mode t)
   (completion-ignore-case t)
   (completions-detailed t)
   (help-window-select t)
@@ -26,7 +24,6 @@
   (recentf-max-saved-items 300) ; default is 20
   (recentf-max-menu-items 15)
   (tab-width 4)
-  ;; (recentf-exclude (list "^/\\(?:ssh\\|su\\|sudo\\)?:"))
   (treesit-font-lock-level 4)
   (use-dialog-box nil)
   (use-file-dialog nil)
@@ -41,7 +38,6 @@
   (native-comp-async-report-warnings-errors nil)
 
   ;; --- non-modal editing ergonomics ---
-  (kill-whole-line t)                     ; C-k kills the whole line
   (sentence-end-double-space nil)
   (require-final-newline t)
   (indent-tabs-mode nil)
@@ -75,13 +71,7 @@
   ;; Modes that make a non-modal (no-evil) editing experience comfortable:
   (delete-selection-mode 1)              ; typing over a selection replaces it
   (electric-pair-mode 1)                 ; auto-pair delimiters
-  (show-paren-mode 1)
-  (winner-mode 1)
-  ;; winner-mode defaults to the arrow keys (C-c <left>/<right>); this config
-  ;; is arrow-key-free, so undo/redo of the window layout live on C-c u / C-c r
-  ;; instead (both free, globally and in org).
-  (global-set-key (kbd "C-c u") #'winner-undo)
-  (global-set-key (kbd "C-c r") #'winner-redo))
+  (show-paren-mode 1))
 
 
 (use-package autorevert
@@ -139,6 +129,7 @@
   (add-to-list 'project-switch-commands '(magit-project-status "Magit") t))
 
 (use-package project-x
+  :demand
   :ensure (:host github :repo "vmargb/project-x")
   :custom
   (project-x-window-list-file (expand-file-name "cache/project-window-list" user-emacs-directory))
@@ -172,7 +163,16 @@
 (use-package dired-subtree
   :after dired
   :config
-  (setq dired-subtree-use-backgrounds nil))
+  (defun fc/dired-subtree-up (&optional arg)
+    "Jump up one directory."
+    (interactive "p")
+    (or (dired-subtree-up arg) (dired-up-directory (eq arg 4))))
+  (setq dired-subtree-use-backgrounds nil)
+  :bind
+  (:map dired-mode-map
+              ("<tab>" . dired-subtree-toggle)
+              ("<C-tab>" . dired-subtree-cycle)
+              ("h" . fc/dired-subtree-up)))
 
 (use-package dired-filter
   :after dired)
@@ -184,7 +184,6 @@
 
 (use-package ready-player
   :config
-  (setq ready-player-open-playback-commands '(("mplayer")))
   (ready-player-mode +1))
 
 (use-package dired
@@ -193,10 +192,7 @@
   (dired-dwim-target t)
   :config
   (setq dired-listing-switches
-        "-l --almost-all --human-readable --group-directories-first --no-group")
-  ;; this command is useful when you want to close the window of `dirvish-side'
-  ;; automatically when opening a file
-  (put 'dired-find-alternate-file 'disabled nil))
+        "-l --almost-all --human-readable --group-directories-first --no-group"))
 
 (use-package smartparens
   :hook (prog-mode text-mode markdown-mode)
@@ -275,7 +271,6 @@
 
   (consult-async-min-input 2)
   (consult-fd-args '("fd" "--full-path --color=never -E node_modules -H -E .git"))
-  ;; The :init configuration is always executed (Not lazy)
   :init
 
   ;; Tweak the register preview for `consult-register-load',
@@ -348,13 +343,6 @@
   :init
   (vertico-mode))
 
-;; Persist history over Emacs restarts. Vertico sorts by history position.
-(use-package savehist
-  :ensure nil
-  :init
-  (savehist-mode))
-
-;; Emacs minibuffer configurations.
 (use-package emacs
   :ensure nil
   :custom
@@ -442,11 +430,6 @@
   :bind
   ("M-o" . ace-window))
 
-;; winum: numbered windows — C-x w <n> to jump, numbers shown in the modeline.
-;; C-x w is unused elsewhere.
-(use-package winum
-  :config
-  (winum-mode 1))
 
 (use-package tramp
   :ensure nil
@@ -485,7 +468,5 @@
   :ensure (:host codeberg :repo "pkal/0x0.el")
   :commands (0x0-upload 0x0-upload-file)
   :custom (0x0-default-service 'x0))
-  ;; Uploading stays reachable via Embark's context menus (M-u in the
-  ;; file/buffer/region maps); the global `C-x M-u' was redundant with them.
 
 (provide 'zfc-base)

@@ -14,6 +14,7 @@
 (use-package elfeed
   :bind
   ("C-c f" . elfeed))
+;; FIXME this file does not exist yet
 (use-package elfeed-org
   :custom
   (rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed"))
@@ -22,8 +23,8 @@
 
 (use-package telega
   :ensure nil
-  ;; :bind
-  ;; ("C-c t" . telega)
+  :bind
+  ("C-c t" . telega)
   :commands telega
   :config
   (setq telega-use-tracking-for '(or unmuted mention)
@@ -141,12 +142,16 @@
   ;; and comint buffers.
   (blue-prettify-compilation-mode 1))
 
+(use-package ghostel-ime
+  :ensure nil
+  :hook (ghostel-mode . ghostel-ime-mode))
+
 (use-package ghostel
   :custom
   (ghostel-shell "fish")
   :hook
   (after-init . ghostel-comint-global-mode)
-  (ghostel-mode . ghostel-ime-mode)
+  ;; (ghostel-mode . ghostel-ime-mode)
   :bind (("C-x m" . ghostel)
          :map ghostel-semi-char-mode-map
          ("C-s"  . consult-line)
@@ -178,38 +183,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
                           "[" (:eval (ben--status)) "]"))
     :init
     (add-hook 'after-init-hook #'ben-global-mode 99))
-
-(use-package emms
-  :ensure nil
-  :commands emms
-  :custom
-  ;; (emms-mode-line-format nil)
-  (emms-player-list '(emms-player-mpv))
-  ;; (emms-lyrics-display-on-modeline nil)
-  :config
-  (emms-all)
-  (emms-add-directory-tree "~/Music/")
-  (emms-shuffle)
-  ;; Volume commands in repeat mode
-  (dolist (elm '(emms-volume-raise
-                 emms-volume-lower
-		         emms-pause
-                 emms-next
-                 emms-previous))
-    (put elm 'repeat-map 'emms-volume-repeat-map))
-
-  (defvar emms-volume-repeat-map
-    (let ((map (make-sparse-keymap)))
-      (define-key map "=" #'emms-volume-raise)
-      (define-key map "-" #'emms-volume-lower)
-      (define-key map (kbd "SPC") #'emms-pause)
-      (define-key map "n" #'emms-next)
-      (define-key map "p" #'emms-previous)
-      map)
-    "Keymap for continuous volume adjustment in EMMS")
-
-
-  (setq emms-volume-change-function 'emms-volume-pulse-change))
 
 (use-package dwim-shell-command
   :custom
@@ -346,17 +319,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :custom
   ;; (initial-buffer-choice #'agent-shell-dashboard)
   (agent-shell-dashboard-excerpt-function #'agent-shell-dashboard-excerpt-tail))
-
-
-;; (use-package magent
-;;   :ensure (:host github :repo "Jamie-Cui/magent" :files (:defaults "prompts"))
-;;   :after (agent-shell gptel)
-;;   :demand t
-;;   :config
-;;   (add-to-list 'magent-skill-directories
-;; 			   (expand-file-name "skills" user-emacs-directory)
-;; 			   t)
-;;   (magent-agent-shell-ensure-config))
 
 ;; (setq epg-pinentry-mode 'loopback) 
 (setq epa-file-encrypt-to '("zhafacai@gmail.com"))
