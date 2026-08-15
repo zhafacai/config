@@ -92,7 +92,7 @@
 
 (set-face-attribute 'default nil
                     :family "Iosevka SS17"
-                    :height 190)
+                    :height 150)
 
 (set-face-attribute 'variable-pitch nil
                     :family "Iosevka Slab")
@@ -121,14 +121,6 @@
   (setq doom-modeline-position-column-line-format '(""))
 
   :init (doom-modeline-mode 1))
-
-;; keycast: show the current key sequence in the mode line (great for
-;; teaching/learning your own bindings).  Toggle with C-c z (no F-keys;
-;; C-c z is free globally and in org).
-(use-package keycast
-  :config
-  (global-set-key (kbd "C-c z") #'keycast-mode)
-  (add-to-list 'global-mode-string '("" keycast-mode-line)))
 
 (use-package pulsar
   :config

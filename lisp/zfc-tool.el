@@ -348,15 +348,15 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (agent-shell-dashboard-excerpt-function #'agent-shell-dashboard-excerpt-tail))
 
 
-(use-package magent
-  :ensure (:host github :repo "Jamie-Cui/magent" :files (:defaults "prompts"))
-  :after (agent-shell gptel)
-  :demand t
-  :config
-  (add-to-list 'magent-skill-directories
-			   (expand-file-name "skills" user-emacs-directory)
-			   t)
-  (magent-agent-shell-ensure-config))
+;; (use-package magent
+;;   :ensure (:host github :repo "Jamie-Cui/magent" :files (:defaults "prompts"))
+;;   :after (agent-shell gptel)
+;;   :demand t
+;;   :config
+;;   (add-to-list 'magent-skill-directories
+;; 			   (expand-file-name "skills" user-emacs-directory)
+;; 			   t)
+;;   (magent-agent-shell-ensure-config))
 
 ;; (setq epg-pinentry-mode 'loopback) 
 (setq epa-file-encrypt-to '("zhafacai@gmail.com"))

@@ -70,3 +70,4 @@ keybind = vim/i=deactivate_key_table
 
 # Catch unbound keys
 keybind = vim/catch_all=ignore
+theme = noctalia

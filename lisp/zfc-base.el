@@ -76,7 +76,6 @@
   (delete-selection-mode 1)              ; typing over a selection replaces it
   (electric-pair-mode 1)                 ; auto-pair delimiters
   (show-paren-mode 1)
-  (global-display-line-numbers-mode 1)
   (winner-mode 1)
   ;; winner-mode defaults to the arrow keys (C-c <left>/<right>); this config
   ;; is arrow-key-free, so undo/redo of the window layout live on C-c u / C-c r
@@ -140,8 +139,7 @@
   (add-to-list 'project-switch-commands '(magit-project-status "Magit") t))
 
 (use-package project-x
-  :init
-  (project-x-mode 1)
+  :ensure (:host github :repo "vmargb/project-x")
   :custom
   (project-x-window-list-file (expand-file-name "cache/project-window-list" user-emacs-directory))
   :bind
@@ -151,7 +149,8 @@
   ;; auto-save project state after 5 seconds of idle time
   (setq project-x-auto-save-delay 5)
   ;; use the custom prompter that shows session labels (optional)
-  (setq project-prompter #'project-x--project-prompt))
+  (setq project-prompter #'project-x--project-prompt)
+  (project-x-mode 1))
 
 (use-package nerd-icons-dired
   :hook

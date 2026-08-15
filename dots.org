@@ -843,13 +843,11 @@ value.  For overrides shared across all Ef themes refer to
 ;;; oxocarbon-light-theme.el ends here
 #+end_src
 
-
-
 default fonts
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
                     :family "Iosevka SS17"
-                    :height 190)
+                    :height 150)
 
 (set-face-attribute 'variable-pitch nil
                     :family "Iosevka Slab")
@@ -885,13 +883,6 @@ default fonts
 
   :init (doom-modeline-mode 1))
 
-;; keycast: show the current key sequence in the mode line (great for
-;; teaching/learning your own bindings).  Toggle with C-c z (no F-keys;
-;; C-c z is free globally and in org).
-(use-package keycast
-  :config
-  (global-set-key (kbd "C-c z") #'keycast-mode)
-  (add-to-list 'global-mode-string '("" keycast-mode-line)))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -1050,7 +1041,6 @@ basic packages which extend core features in emacs
   (delete-selection-mode 1)              ; typing over a selection replaces it
   (electric-pair-mode 1)                 ; auto-pair delimiters
   (show-paren-mode 1)
-  (global-display-line-numbers-mode 1)
   (winner-mode 1)
   ;; winner-mode defaults to the arrow keys (C-c <left>/<right>); this config
   ;; is arrow-key-free, so undo/redo of the window layout live on C-c u / C-c r
@@ -1124,8 +1114,7 @@ project
   (add-to-list 'project-switch-commands '(magit-project-status "Magit") t))
 
 (use-package project-x
-  :init
-  (project-x-mode 1)
+  :ensure (:host github :repo "vmargb/project-x")
   :custom
   (project-x-window-list-file (expand-file-name "cache/project-window-list" user-emacs-directory))
   :bind
@@ -1135,7 +1124,8 @@ project
   ;; auto-save project state after 5 seconds of idle time
   (setq project-x-auto-save-delay 5)
   ;; use the custom prompter that shows session labels (optional)
-  (setq project-prompter #'project-x--project-prompt))
+  (setq project-prompter #'project-x--project-prompt)
+  (project-x-mode 1))
 #+end_src
 dired
 #+begin_src emacs-lisp
@@ -2450,15 +2440,15 @@ agent-shell
   (agent-shell-dashboard-excerpt-function #'agent-shell-dashboard-excerpt-tail))
 
 
-(use-package magent
-  :ensure (:host github :repo "Jamie-Cui/magent" :files (:defaults "prompts"))
-  :after (agent-shell gptel)
-  :demand t
-  :config
-  (add-to-list 'magent-skill-directories
-			   (expand-file-name "skills" user-emacs-directory)
-			   t)
-  (magent-agent-shell-ensure-config))
+;; (use-package magent
+;;   :ensure (:host github :repo "Jamie-Cui/magent" :files (:defaults "prompts"))
+;;   :after (agent-shell gptel)
+;;   :demand t
+;;   :config
+;;   (add-to-list 'magent-skill-directories
+;; 			   (expand-file-name "skills" user-emacs-directory)
+;; 			   t)
+;;   (magent-agent-shell-ensure-config))
 #+end_src
 *** The =zfc-tool.el= section about email
 epa
