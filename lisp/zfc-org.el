@@ -3,7 +3,7 @@
   :ensure nil
   :bind
   ("C-c l" . org-store-link)
-  ("C-c o" . org-open-at-point-global)
+  ;; ("C-c o" . org-open-at-point-global)
   :custom
   ;; org-default-notes-file (concat org-directory "notes.org")
   ;; org-clock-in-switch-to-state "DOING"

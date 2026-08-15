@@ -13,10 +13,8 @@
   :commands (disaster)
   :init
   (setq disaster-assembly-mode #'nasm-mode))
-;; TODO use map like this
-;; (map! :localleader
-;;       :map (c++-mode-map c-mode-map)
-;;       :desc "Disaster" "d" #'disaster))
+;; (Disaster is only autoloaded; bind it per-mode with use-package :bind if
+;;  wanted.  The Doom `map!' macro is not used in this config anymore.)
 (use-package cmake-mode)
 
 (use-package uv-mode

@@ -376,7 +376,9 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :hook
   (notmuch-hello-mode . notmuch-poll-and-refresh-this-buffer)
   :bind
-  ("C-c e" . notmuch)
+  ;; Not "C-c e": that's the edit prefix now.  "C-c m" is ready-player's
+  ;; prefix, so mail lives on C-c j ("jump to mail"), which is free.
+  ("C-c j" . notmuch)
   :config
   (setq notmuch-identities '("zfc <zhafacai@gmail.com>"))
   (setq notmuch-fcc-dirs nil)

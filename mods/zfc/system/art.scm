@@ -21,15 +21,11 @@
   #:use-module (guix channels)
   #:use-module (nongnu packages linux)
   #:use-module (nongnu system linux-initrd)
+  ;; NOTE: dae is currently disabled, so the modules that only served it are
+  ;; not imported: (zfc packages networking) [dae-bin], (rosenthal services
+  ;; child-error), (rosenthal utils file), (ice-9 popen), (rnrs io ports).
+  ;; Re-add them together with the dae section if you re-enable dae.
   ;; #:use-module (guixcn services networking)
-  #:use-module (zfc packages networking)
-  #:use-module (rosenthal services child-error)
-  #:use-module (rosenthal utils file)
-  ;; #:use-module (sops secrets)
-  ;; #:use-module (sops services sops)
-  #:use-module ((ice-9 popen) #:select (open-input-pipe close-pipe))
-  #:use-module ((rnrs io ports) #:select (get-string-all))
-  ;; #:use-module ((sops secrets) #:select (sanitize-sops-key))
   #:use-module (zfc home base))
 
 (define %network-manager-ipv6-privacy
@@ -137,7 +133,7 @@
                     				  (start #~(make-forkexec-constructor
                     							(list #$(file-append (specification->package "mihomo") "/bin/mihomo")
                     								  "-d" "/root/.config/mihomo"
-                    								  "-f" "/root/test.conf")
+                    								  "-f" "/root/.config/mihomo/config.yaml")
                     							#:log-file "/var/log/mihomo.log"))
                     				  (stop #~(make-kill-destructor)))))
                     (service guix-home-service-type

@@ -4,6 +4,7 @@
   #:use-module (gnu packages fcitx5)
   ;; #:use-module (gnu home services ssh)
   #:use-module (gnu packages shells)
+  #:use-module (zfc config common)  ; config-files-path, used by fish-fisher below
   #:use-module (gnu home services shepherd)
   #:use-module (gnu packages mail)
   #:use-module (rosenthal services desktop)
@@ -165,7 +166,6 @@
                          (".local/share/fcitx5/rime/default.custom.yaml"
                           ,(local-file "packages/default.custom.yaml"))
                          
-                         ("Downloads/.dir-locals.el" ,(local-file "plain/Downloads.el"))
                          ))
               (service home-dbus-service-type)
               (service home-graphical-session-service-type
@@ -216,35 +216,38 @@
                                (shepherd-service
                                 (provision '(fish-fisher))
                                 (one-shot? #t)
-                                (start
-                                 #~(lambda ()
-                                     (use-modules (guix build utils)
-                                                  (zfc config common))
-                                     (let* ((source (canonicalize-path (config-files-path "fish/fish_plugins")))
-                                            (target (string-append (getenv "XDG_CONFIG_HOME") "/fish/fish_plugins"))
-                                            (fish-bin #$(file-append fish "/bin/fish")))
-                                       
-                                       (format #t "Directly symlinking fish_plugins (~a) to ~a~%" source target)
-                                       (when (false-if-exception (lstat target))
-                                         (delete-file target))
-                                       (symlink source target)
-                                       
-                                       (unless (file-exists? (string-append (getenv "XDG_CONFIG_HOME") "/fish/functions/fisher.fish"))
-                                         (format #t "Installing fisher~%")
-                                         ;; Non-fatal: a fresh machine may be offline during
-                                         ;; the first activation.
-                                         (false-if-exception
-                                          (system (string-append fish-bin " -c \"curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | "
-                                                                 "source && fisher install jorgebucaran/fisher\""))))
-                                       
-                                       (format #t "Updating fisher plugins~%")
-                                       ;; Non-fatal: don't fail the whole reconfigure when the
-                                       ;; network is unavailable or a plugin can't be fetched.
-                                       (unless (zero? (or (false-if-exception
-                                                           (system (string-append fish-bin " -c \"fisher update\"")))
-                                                          -1))
-                                         (format #t "Warning: `fisher update' failed (network error?)~%"))
-                                       #t)))
+                                 ;; Resolve the plugins path at *configure* time (it is fixed
+                                 ;; once (zfc config common) loads) and splice it into the
+                                 ;; activation script with #$.  The script then needs no
+                                 ;; (use-modules (zfc config common)) and no load-path at
+                                 ;; activation time.  getenv calls get a HOME fallback.
+                                 (start
+                                  (let ((plugins (config-files-path "fish/fish_plugins")))
+                                    #~(lambda ()
+                                        (let* ((xdg (or (getenv "XDG_CONFIG_HOME")
+                                                        (string-append (getenv "HOME") "/.config")))
+                                               (source #$plugins)
+                                               (target (string-append xdg "/fish/fish_plugins"))
+                                               (fish-bin #$(file-append fish "/bin/fish")))
+                                          (format #t "Directly symlinking fish_plugins (~a) to ~a~%" source target)
+                                          (when (false-if-exception (lstat target))
+                                            (delete-file target))
+                                          (symlink source target)
+                                          (unless (file-exists? (string-append xdg "/fish/functions/fisher.fish"))
+                                            (format #t "Installing fisher~%")
+                                            ;; Non-fatal: a fresh machine may be offline during
+                                            ;; the first activation.
+                                            (false-if-exception
+                                             (system (string-append fish-bin " -c \"curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | "
+                                                                    "source && fisher install jorgebucaran/fisher\""))))
+                                          (format #t "Updating fisher plugins~%")
+                                          ;; Non-fatal: don't fail the whole reconfigure when the
+                                          ;; network is unavailable or a plugin can't be fetched.
+                                          (unless (zero? (or (false-if-exception
+                                                              (system (string-append fish-bin " -c \"fisher update\"")))
+                                                             -1))
+                                            (format #t "Warning: `fisher update' failed (network error?)~%"))
+                                          #t))))
                                 (documentation "Initialize and update Fish plugins via fisher."))))
               
                 (simple-service 'cargo-config
@@ -280,17 +283,6 @@
                         (packages (list qogir-icon-theme))
                         (icon-theme "Qogir")
                         (cursor-theme "Qogir")))
-              ;; (service home-sops-secrets-service-type
-              ;;          (home-sops-service-configuration
-              ;;           (secrets
-              ;;            (list
-              ;;             (sops-secret
-              ;;              (key '("data"))
-              ;;              (output-type "binary")
-              ;;              (file (local-file "../../../secrets/elfeed.org"))
-              ;;              (permissions #o400))))))
-              
-              
               (service home-sops-secrets-service-type
                 (home-sops-service-configuration
                   (secrets

@@ -29,7 +29,13 @@
 (use-package ef-themes
   :init
   (ef-themes-take-over-modus-themes-mode 1)
-  (ef-themes-load-random-dark))
+  (ef-themes-load-theme 'oxocarbon))
+
+;; Oxocarbon is defined in the real theme file `lisp/oxocarbon-theme.el'
+;; (see the separate "oxocarbon" section below) so that `load-theme' and
+;; theme-buffet can actually find it — Emacs binds themes to files.  Our
+;; lisp/ directory must therefore be on `custom-theme-load-path'.
+(add-to-list 'custom-theme-load-path (expand-file-name "lisp" user-emacs-directory))
 
 (use-package logos
   :config
@@ -116,6 +122,14 @@
 
   :init (doom-modeline-mode 1))
 
+;; keycast: show the current key sequence in the mode line (great for
+;; teaching/learning your own bindings).  Toggle with C-c z (no F-keys;
+;; C-c z is free globally and in org).
+(use-package keycast
+  :config
+  (global-set-key (kbd "C-c z") #'keycast-mode)
+  (add-to-list 'global-mode-string '("" keycast-mode-line)))
+
 (use-package pulsar
   :config
   (dolist (fn '(pulsar-pulse-line-red pulsar-recenter-top pulsar-reveal-entry))
@@ -133,9 +147,9 @@
   (setq theme-buffet-menu 'end-user)
 
   (setq theme-buffet-end-user
-        '( :night     (modus-vivendi ef-dark ef-winter ef-autumn ef-night ef-duo-dark ef-symbiosis)
-           :morning   (modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light)
-           :afternoon (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
+        '( :night     (oxocarbon modus-vivendi ef-dark ef-winter ef-autumn ef-night ef-duo-dark ef-symbiosis)
+           :morning   (oxocarbon-light modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light)
+           :afternoon (oxocarbon-light modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
            :evening   (modus-vivendi-tinted ef-rosa ef-elea-dark ef-maris-dark ef-melissa-dark ef-trio-dark ef-dream)))
 
 

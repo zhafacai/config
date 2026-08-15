@@ -39,6 +39,28 @@
   (vc-follow-symlinks t)
   ;; Silence compiler warnings as they can be pretty disruptive
   (native-comp-async-report-warnings-errors nil)
+
+  ;; --- non-modal editing ergonomics ---
+  (kill-whole-line t)                     ; C-k kills the whole line
+  (sentence-end-double-space nil)
+  (require-final-newline t)
+  (indent-tabs-mode nil)
+  (word-wrap t)
+  (truncate-partial-width-windows 80)
+  (split-width-threshold 160)
+  (split-height-threshold 50)
+  (scroll-margin 3)
+  (scroll-conservatively 101)
+  (scroll-preserve-screen-position t)
+  (fast-but-imprecise-scrolling t)
+  (mouse-wheel-scroll-amount '(1 ((shift) . 5)))
+  (ring-bell-function #'ignore)
+  (highlight-nonselected-windows nil)
+  (idle-update-delay 1)
+  (set-mark-command-repeat-pop t)
+  (read-process-output-max (* 1024 1024))
+  (display-line-numbers-width-start t)
+  (show-paren-style 'parenthesis)
   :config
   ;; Only use ripgrep when it is actually available (e.g. in the Guix/Nix
   ;; profile); fall back to Emacs' defaults otherwise.
@@ -49,7 +71,18 @@
   (recentf-mode 1)
   (repeat-mode 1)
   (savehist-mode 1)
-  (save-place-mode 1))
+  (save-place-mode 1)
+  ;; Modes that make a non-modal (no-evil) editing experience comfortable:
+  (delete-selection-mode 1)              ; typing over a selection replaces it
+  (electric-pair-mode 1)                 ; auto-pair delimiters
+  (show-paren-mode 1)
+  (global-display-line-numbers-mode 1)
+  (winner-mode 1)
+  ;; winner-mode defaults to the arrow keys (C-c <left>/<right>); this config
+  ;; is arrow-key-free, so undo/redo of the window layout live on C-c u / C-c r
+  ;; instead (both free, globally and in org).
+  (global-set-key (kbd "C-c u") #'winner-undo)
+  (global-set-key (kbd "C-c r") #'winner-redo))
 
 
 (use-package autorevert
@@ -228,7 +261,8 @@
          ;; Isearch integration
          ("M-s e" . consult-isearch-history)
          :map isearch-mode-map
-         ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
+         ;; Keep `M-e' = isearch-edit-string (edit the current search string);
+         ;; consult-isearch-history stays on `M-s e'.
          ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
          ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
          ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
@@ -264,7 +298,7 @@
   ;; is 'any, such that any key triggers the preview.
   ;; (setq consult-preview-key 'any)
   ;; (setq consult-preview-key "M-.")
-  ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
+  ;; (setq consult-preview-key '("C-n" "C-p"))   ; no arrow keys
   ;; For some commands and buffer sources it is useful to configure the
   ;; :preview-key on a per-command basis using the `consult-customize' macro.
   (consult-customize
@@ -289,11 +323,13 @@
   :bind (("C-x C-d" . consult-dir)
          :map vertico-map
          ("C-x C-d" . consult-dir)
-         ("C-x C-j" . consult-dir-jump-file)))
+         ("C-x j" . consult-dir-jump-file))) ; C-x C-j restored to dired-jump
 
 (use-package helpful
   :bind
-  ("C-c C-d" . helpful-at-point)
+  ;; `C-c C-d' is left free as a prefix (denote-dired uses C-c C-d C-*);
+  ;; helpful-at-point moves to C-h . ("help at point").
+  ("C-h ." . helpful-at-point)
   ("C-h f" . helpful-callable)
   ("C-h v" . helpful-variable)
   ("C-h k" . helpful-key)
@@ -407,6 +443,12 @@
   :bind
   ("M-o" . ace-window))
 
+;; winum: numbered windows — C-x w <n> to jump, numbers shown in the modeline.
+;; C-x w is unused elsewhere.
+(use-package winum
+  :config
+  (winum-mode 1))
+
 (use-package tramp
   :ensure nil
   :commands (sudo-find-file sudo-this-file)
@@ -443,7 +485,8 @@
 (use-package 0x0
   :ensure (:host codeberg :repo "pkal/0x0.el")
   :commands (0x0-upload 0x0-upload-file)
-  :custom (0x0-default-service 'x0)
-  :bind ("C-x M-u" . 0x0-upload))
+  :custom (0x0-default-service 'x0))
+  ;; Uploading stays reachable via Embark's context menus (M-u in the
+  ;; file/buffer/region maps); the global `C-x M-u' was redundant with them.
 
 (provide 'zfc-base)

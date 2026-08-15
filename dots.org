@@ -148,52 +148,78 @@ setup elpaca using git
 
 #+end_src
 
-envy neovim flash.nvim
+avy: jump / select / copy / move
 #+begin_src emacs-lisp
-;; (use-package flash
-;;   :commands (flash-jump flash-jump-continue
-;;                         flash-treesitter)
-;;   :bind
-;;   ("C-s" . flash-jump)
-;;   :custom
-;;   (flash-multi-window t)
-;;   ;; (flash-autojump t)
-;;   (flash-rainbow t)
-;;   :config
-;;   ;; Search integration (labels during C-s, /, ?)
-;;   (require 'flash-isea
-;; 		   rch)
-;;   (flash-isearch-mode 1))
-
+;; Jump/navigate — kept on M-s, the search prefix, because these *locate*
+;; things.  All copy/kill/move editing lives under `C-c e' below so that M-s
+;; stays a pure search prefix.
 (use-package avy
   :bind
-  ("M-s y"   . avy-copy-line)
-  ("M-s M-y" . avy-copy-region)
-  ("M-s M-k" . avy-kill-whole-line)
   ("M-s M-j" . avy-goto-char-2)
   ("M-s M-s" . avy-goto-line)
   ("M-s M-l" . avy-goto-end-of-line)
-  ("M-s C-w" . avy-kill-region)
-  ("M-s M-w" . avy-kill-ring-save-region)
-  ("M-s t"   . avy-move-line)
-  ("M-s M-t" . avy-move-region)
+  ;; Editing actions under the `C-c e' (edit) prefix.  `C-c e' is free globally
+  ;; and in org; notmuch moved to `C-c m' so this prefix stays unambiguous.
+  ;; Case convention: lower-case = current line, upper-case = region.
+  ("C-c e y" . avy-copy-line)
+  ("C-c e Y" . avy-copy-region)
+  ("C-c e k" . avy-kill-whole-line)
+  ("C-c e K" . avy-kill-region)
+  ("C-c e w" . avy-kill-ring-save-region)
+  ("C-c e m" . avy-move-line)
+  ("C-c e M" . avy-move-region)
   :config
   (avy-setup-default))
 #+end_src
 
-surround
+surround / expand region
 #+begin_src emacs-lisp
 (use-package expand-region
-  :bind ("C-," . er/expand-region)
+  :bind
+  (("C-," . er/expand-region)
+   ("C-=" . er/expand-region))
   :config
   (add-to-list 'expand-region-exclude-text-mode-expansions 'org-mode))
 
 (use-package embrace
   :bind
-  ("M-s a" . embrace-add)
-  ("M-s c" . embrace-change)
-  ("M-s d" . embrace-delete))
+  (("C-c e a" . embrace-add)
+   ("C-c e c" . embrace-change)
+   ("C-c e d" . embrace-delete)))
 
+;; iedit: non-modal multi-region editing (the evil-multiedit replacement).
+;; C-; is already embark-dwim, so iedit gets C-S-;.
+(use-package iedit
+  :bind ("C-:" . iedit-mode))
+
+;; move-text: move lines/regions up/down.  No arrow keys: `C-c e n' moves down
+;; (mirroring C-n = next line), `C-c e p' moves up (mirroring C-p).  Both are
+;; free in the `C-c e' prefix, globally and in org.
+(use-package move-text
+  :bind
+  (("C-c e n" . move-text-down)
+   ("C-c e p" . move-text-up)))
+
+;; crux: handy editing commands (open a line above, duplicate, ...).
+(use-package crux
+  :bind
+  (("C-S-o" . crux-smart-open-line-above)
+   ("C-k" . curx-smart-kill-line)))
+
+;; symbol-overlay: highlight & jump between occurrences of the symbol at point.
+;; Its own minor-mode keymap (M-i/M-n/M-p) only activates while a symbol is
+;; highlighted, so normal editing is never affected.
+(use-package symbol-overlay
+  :bind (("C-c e s" . symbol-overlay-put)))
+
+;; mwim: smart C-a/C-e — "move where I mean".  mwim ships no global minor
+;; mode; it provides commands, so bind C-a/C-e directly.  Pressing C-a
+;; repeatedly cycles line-beginning → code-beginning → comment-beginning
+;; (C-e likewise for the ends), respecting org structure.
+(use-package mwim
+  :bind
+  (("C-a" . mwim-beginning)
+   ("C-e" . mwim-end)))
 #+end_src
 
 undo
@@ -208,16 +234,8 @@ multicursors
 #+begin_src emacs-lisp
 (use-package multiple-cursors
   :bind
-  ("C-S-c C-S-c" . mc/edit-lines))
-
+  (("C-x c e" . mc/edit-lines)))
 #+end_src
-align
-#+begin_src emacs-lisp
-;; (use-package evil-lion
-;;   :config
-;;   (evil-lion-mode))
-#+end_src
-
 match number in modeline
 #+begin_src emacs-lisp
 (use-package anzu
@@ -279,7 +297,13 @@ toggle alpha background
 (use-package ef-themes
   :init
   (ef-themes-take-over-modus-themes-mode 1)
-  (ef-themes-load-random-dark))
+  (ef-themes-load-theme 'oxocarbon))
+
+;; Oxocarbon is defined in the real theme file `lisp/oxocarbon-theme.el'
+;; (see the separate "oxocarbon" section below) so that `load-theme' and
+;; theme-buffet can actually find it — Emacs binds themes to files.  Our
+;; lisp/ directory must therefore be on `custom-theme-load-path'.
+(add-to-list 'custom-theme-load-path (expand-file-name "lisp" user-emacs-directory))
 
 (use-package logos
   :config
@@ -335,6 +359,492 @@ toggle alpha background
   (add-to-list 'global-colorful-modes 'helpful-mode))
 #+end_src
 
+*** The =oxocarbon-theme.el= section
+A real theme file so that `load-theme' (and thus theme-buffet) can find
+oxocarbon.  Emacs binds themes to files: `modus-themes-theme' only works
+once the theme's file is loaded, and `custom-theme-load-path' (added in
+the themes section above) already points at lisp/ where this is tangled.
+#+begin_src emacs-lisp :tangle lisp/oxocarbon-theme.el
+;;; oxocarbon-theme.el --- Oxocarbon, a dark theme derived from the Ef themes  -*- lexical-binding: t; -*-
+
+;;; Commentary:
+
+;; Oxocarbon — a dark theme derived from the `ef-themes' (same machinery as
+;; every shipped Ef theme: `modus-themes-theme' with family `ef-themes').
+;; The palette is the oxocarbon.nvim one (IBM Carbon): a near-black
+;; background, an off-white foreground and pink / teal / blue / purple
+;; accents.  The semantic mappings follow oxocarbon.nvim's own highlighting
+;; (keywords purple, strings sky-blue, functions green, constants blue,
+;; classes pink, variables cyan).
+
+;;; Code:
+
+(require 'ef-themes)
+
+(defconst oxocarbon-dark-palette-partial
+  '(
+    ;; Structural (IBM Carbon / oxocarbon.nvim)
+    (cursor          "#eeffff")
+    (bg-main         "#161616")
+    (bg-dim          "#1c1c1c")
+    (bg-alt          "#262626")
+    (fg-main         "#eeffff")
+    (fg-dim          "#dde1e6")
+    (fg-alt          "#b8bcc2")
+    (bg-active       "#393939")
+    (bg-inactive     "#262626")
+    (border          "#525252")
+
+    ;; Red / pink (oxocarbon.nvim base0A / base0C)
+    (red             "#ee5396")
+    (red-warmer      "#ff7eb6")
+    (red-cooler      "#ee5396")
+    (red-faint       "#ff7eb6")
+
+    ;; Green / teal (base0D / base07)
+    (green           "#42be65")
+    (green-warmer    "#42be65")
+    (green-cooler    "#08bdba")
+    (green-faint     "#42be65")
+
+    ;; Yellow — oxocarbon.nvim has no yellow; the pink accent carries the
+    ;; "warm" warning role (lighter than the deeper error pink).
+    (yellow          "#ff7eb6")
+    (yellow-warmer   "#ff7eb6")
+    (yellow-cooler   "#ee5396")
+    (yellow-faint    "#ff7eb6")
+
+    ;; Blue / sky (base09 / base0B)
+    (blue            "#78a9ff")
+    (blue-warmer     "#33b1ff")
+    (blue-cooler     "#78a9ff")
+    (blue-faint      "#82cfff")
+
+    ;; Magenta (base0E / base0F)
+    (magenta         "#be95ff")
+    (magenta-warmer  "#be95ff")
+    (magenta-cooler  "#82cfff")
+    (magenta-faint   "#be95ff")
+
+    ;; Cyan (base08 / base07)
+    (cyan            "#3ddbd9")
+    (cyan-warmer     "#08bdba")
+    (cyan-cooler     "#3ddbd9")
+    (cyan-faint      "#3ddbd9")
+
+    ;; Tinted backgrounds
+    (bg-red-intense   "#5a1e3a")
+    (bg-green-intense "#1f5230")
+    (bg-yellow-intense "#4f2034")
+    (bg-blue-intense  "#1f3a6e")
+    (bg-magenta-intense "#3a2a5c")
+    (bg-cyan-intense  "#1a4a4a")
+    (bg-red-subtle    "#3a1226")
+    (bg-green-subtle  "#0f3520")
+    (bg-yellow-subtle "#341428")
+    (bg-blue-subtle   "#16284a")
+    (bg-magenta-subtle "#261a3a")
+    (bg-cyan-subtle   "#0f3333")
+    (bg-red-nuanced   "#26101c")
+    (bg-green-nuanced "#0a2618")
+    (bg-yellow-nuanced "#200c18")
+    (bg-blue-nuanced  "#101c33")
+    (bg-magenta-nuanced "#1a1226")
+    (bg-cyan-nuanced  "#0a2424")
+
+    ;; Git / diff
+    (bg-added         "#0f3520")
+    (bg-added-faint   "#0a2818")
+    (bg-added-refine  "#1a5230")
+    (fg-added         "#42be65")
+    (bg-changed       "#341428")
+    (bg-changed-faint "#200c18")
+    (bg-changed-refine "#4f2034")
+    (fg-changed       "#ff7eb6")
+    (bg-removed       "#3a1226")
+    (bg-removed-faint "#2a0c1a")
+    (bg-removed-refine "#5a1e3a")
+    (fg-removed       "#ee5396")
+
+    ;; UI
+    (bg-mode-line-active "#262626")
+    (fg-mode-line-active "#eeffff")
+    (bg-completion    "#1f3a6e")
+    (bg-popup         "#1c1c1c")
+    (bg-hover         "#2a4a46")
+    (bg-hover-secondary "#4a3a24")
+    (bg-hl-line       "#262626")
+    (bg-paren-match   "#1a4a4a")
+    (bg-err           "#3a1226")
+    (bg-warning       "#341428")
+    (bg-info          "#0f3520")
+    (bg-region        "#393939")))
+
+(defconst oxocarbon-palette-mappings-partial
+  '(
+    ;; Error / warning / info — oxocarbon.nvim has no yellow, so warnings
+    ;; are the lighter pink and errors the deeper pink.
+    (err red)
+    (warning yellow)
+    (info green)
+
+    (fg-link green-cooler)
+    (fg-link-visited magenta)
+    (name red)
+    (keybind magenta)
+    (identifier red-warmer)
+    (fg-prompt red)
+
+    ;; oxocarbon.nvim roles: keywords purple, strings sky-blue, functions
+    ;; green, constants blue, classes pink, variables cyan.
+    (builtin green-cooler)
+    (comment fg-dim)
+    (constant blue)
+    (fnname green)
+    (fnname-call green)
+    (keyword magenta)
+    (preprocessor magenta-cooler)
+    (docstring blue-faint)
+    (string blue-warmer)
+    (type red)
+    (variable cyan)
+    (variable-use cyan)
+    (rx-backslash yellow)
+    (rx-construct cyan-cooler)
+
+    (accent-0 green)
+    (accent-1 red)
+    (accent-2 cyan)
+    (accent-3 magenta)
+
+    (date-common green)
+    (date-deadline red)
+    (date-deadline-subtle red-faint)
+    (date-event fg-alt)
+    (date-holiday red-warmer)
+    (date-now fg-main)
+    (date-range fg-alt)
+    (date-scheduled yellow)
+    (date-scheduled-subtle yellow-faint)
+    (date-weekday green-cooler)
+    (date-weekend red)
+
+    (fg-prose-code magenta)
+    (prose-done green)
+    (fg-prose-macro red-warmer)
+    (prose-metadata fg-dim)
+    (prose-metadata-value fg-alt)
+    (prose-table fg-alt)
+    (prose-table-formula info)
+    (prose-tag cyan)
+    (prose-todo yellow)
+    (fg-prose-verbatim blue-warmer)
+
+    (mail-cite-0 green-cooler)
+    (mail-cite-1 green)
+    (mail-cite-2 red)
+    (mail-cite-3 red-warmer)
+    (mail-part green)
+    (mail-recipient red-faint)
+    (mail-subject red)
+    (mail-other red-warmer)
+
+    (bg-search-static bg-warning)
+    (bg-search-current bg-yellow-intense)
+    (bg-search-lazy bg-blue-intense)
+    (bg-search-replace bg-red-intense)
+
+    (bg-search-rx-group-0 bg-magenta-intense)
+    (bg-search-rx-group-1 bg-green-intense)
+    (bg-search-rx-group-2 bg-red-subtle)
+    (bg-search-rx-group-3 bg-cyan-subtle)
+
+    (bg-space-err bg-yellow-intense)
+
+    (rainbow-0 green)
+    (rainbow-1 red-faint)
+    (rainbow-2 green-cooler)
+    (rainbow-3 yellow)
+    (rainbow-4 blue-warmer)
+    (rainbow-5 cyan-cooler)
+    (rainbow-6 magenta-cooler)
+    (rainbow-7 red-cooler)
+    (rainbow-8 cyan)))
+
+(defcustom oxocarbon-palette-overrides nil
+  "Overrides for the `oxocarbon' and `oxocarbon-light' palettes.
+
+Mirror the elements of the aforementioned palettes, overriding their
+value.  For overrides shared across all Ef themes refer to
+`modus-themes-common-palette-overrides'."
+  :group 'ef-themes
+  :package-version '(ef-themes . "1.0.0")
+  :type '(repeat (list symbol (choice symbol string)))
+  :link '(info-link "(ef-themes) Palette overrides"))
+
+(defconst oxocarbon-dark-palette
+  (modus-themes-generate-palette
+   oxocarbon-dark-palette-partial
+   nil
+   nil
+   (append oxocarbon-palette-mappings-partial ef-themes-palette-common)))
+
+;;;###theme-autoload
+(modus-themes-theme
+ 'oxocarbon
+ 'ef-themes
+ "Oxocarbon — a dark theme derived from the Ef themes with the IBM-Carbon-inspired oxocarbon.nvim palette."
+ 'dark
+ 'oxocarbon-dark-palette
+ nil
+ 'oxocarbon-palette-overrides)
+
+(provide 'oxocarbon-theme)
+
+;;; oxocarbon-theme.el ends here
+#+end_src
+*** The =oxocarbon-light-theme.el= section
+Light counterpart of the dark oxocarbon theme, using the same Ef
+machinery and the same IBM-Carbon accent identity (pink / teal / blue /
+purple) on a light background.  A separate file is required because
+`load-theme' finds themes by their `NAME-theme.el' file.
+#+begin_src emacs-lisp :tangle lisp/oxocarbon-light-theme.el
+;;; oxocarbon-light-theme.el --- Oxocarbon, a light theme derived from the Ef themes  -*- lexical-binding: t; -*-
+
+;;; Commentary:
+
+;; Light counterpart of `oxocarbon-theme' with the same Ef machinery and
+;; the same IBM-Carbon-inspired "oxocarbon" accent identity (pink / teal /
+;; blue / purple) on a light background.
+
+;;; Code:
+
+(require 'ef-themes)
+
+(defconst oxocarbon-light-palette-partial
+  '(
+    ;; Structural
+    (cursor          "#2a5fc0")
+    (bg-main         "#f2f4f8")
+    (bg-dim          "#e8ebf1")
+    (bg-alt          "#dde2ea")
+    (fg-main         "#161616")
+    (fg-dim          "#4a5058")
+    (fg-alt          "#5f6772")
+    (bg-active       "#ccd3de")
+    (bg-inactive     "#e4e8ee")
+    (border          "#b8c0cc")
+
+    ;; Red / pink — darker versions of the oxocarbon.nvim pinks
+    (red             "#c21f5a")
+    (red-warmer      "#d63384")
+    (red-cooler      "#a81c50")
+    (red-faint       "#cf6b9a")
+
+    ;; Green / teal
+    (green           "#1a7f3c")
+    (green-warmer    "#2a9050")
+    (green-cooler    "#0f6f6a")
+    (green-faint     "#5a9e72")
+
+    ;; Yellow — pink, matching the dark theme (no true yellow)
+    (yellow          "#d63384")
+    (yellow-warmer   "#cf6b9a")
+    (yellow-cooler   "#c21f5a")
+    (yellow-faint    "#cf6b9a")
+
+    ;; Blue / sky
+    (blue            "#2f5fd0")
+    (blue-warmer     "#1a8bd0")
+    (blue-cooler     "#2452a8")
+    (blue-faint      "#5a80c8")
+
+    ;; Magenta
+    (magenta         "#7a4fd0")
+    (magenta-warmer  "#8f5fe0")
+    (magenta-cooler  "#6a42b8")
+    (magenta-faint   "#9a82da")
+
+    ;; Cyan
+    (cyan            "#008f8a")
+    (cyan-warmer     "#0a8a84")
+    (cyan-cooler     "#005f5a")
+    (cyan-faint      "#3f948f")
+
+    ;; Tinted backgrounds
+    (bg-red-intense   "#eec2cc")
+    (bg-green-intense "#b8e4c2")
+    (bg-yellow-intense "#e8b8c8")
+    (bg-blue-intense  "#bccdf0")
+    (bg-magenta-intense "#d9c2ec")
+    (bg-cyan-intense  "#b4e0dc")
+    (bg-red-subtle    "#f6d6de")
+    (bg-green-subtle  "#d2ecd8")
+    (bg-yellow-subtle "#f0c8d6")
+    (bg-blue-subtle   "#d4e0f4")
+    (bg-magenta-subtle "#e4d8ee")
+    (bg-cyan-subtle   "#cce8e4")
+    (bg-red-nuanced   "#fae8ec")
+    (bg-green-nuanced "#e4f2e8")
+    (bg-yellow-nuanced "#f4dce4")
+    (bg-blue-nuanced  "#e2e8f6")
+    (bg-magenta-nuanced "#ece2f2")
+    (bg-cyan-nuanced  "#e0eeec")
+
+    ;; Git / diff
+    (bg-added         "#d2ecd8")
+    (bg-added-faint   "#e2f2e6")
+    (bg-added-refine  "#b8e0c2")
+    (fg-added         "#1a7f3c")
+    (bg-changed       "#f0c8d6")
+    (bg-changed-faint "#f4dce4")
+    (bg-changed-refine "#e8b8c8")
+    (fg-changed       "#c21f5a")
+    (bg-removed       "#f6d6de")
+    (bg-removed-faint "#fae4e8")
+    (bg-removed-refine "#eebec8")
+    (fg-removed       "#a81c50")
+
+    ;; UI
+    (bg-mode-line-active "#dde2ea")
+    (fg-mode-line-active "#161616")
+    (bg-completion    "#bccdf0")
+    (bg-popup         "#e8ebf1")
+    (bg-hover         "#c2e4cc")
+    (bg-hover-secondary "#eedcba")
+    (bg-hl-line       "#e4e8ee")
+    (bg-paren-match   "#b4e0dc")
+    (bg-err           "#f6d6de")
+    (bg-warning       "#f0c8d6")
+    (bg-info          "#d2ecd8")
+    (bg-region        "#ccd3de")))
+
+(defconst oxocarbon-light-palette-mappings-partial
+  '(
+    ;; Error / warning / info — no true yellow, so warnings are the lighter
+    ;; pink and errors the deeper pink (mirrors the dark theme).
+    (err red)
+    (warning yellow)
+    (info green)
+
+    (fg-link green-cooler)
+    (fg-link-visited magenta)
+    (name red)
+    (keybind magenta)
+    (identifier red-warmer)
+    (fg-prompt red)
+
+    ;; oxocarbon.nvim roles: keywords purple, strings sky-blue, functions
+    ;; green, constants blue, classes pink, variables cyan.
+    (builtin green-cooler)
+    (comment fg-dim)
+    (constant blue)
+    (fnname green)
+    (fnname-call green)
+    (keyword magenta)
+    (preprocessor magenta-cooler)
+    (docstring blue-faint)
+    (string blue-warmer)
+    (type red)
+    (variable cyan)
+    (variable-use cyan)
+    (rx-backslash yellow)
+    (rx-construct cyan-cooler)
+
+    (accent-0 green)
+    (accent-1 red)
+    (accent-2 cyan)
+    (accent-3 magenta)
+
+    (date-common green)
+    (date-deadline red)
+    (date-deadline-subtle red-faint)
+    (date-event fg-alt)
+    (date-holiday red-warmer)
+    (date-now fg-main)
+    (date-range fg-alt)
+    (date-scheduled yellow)
+    (date-scheduled-subtle yellow-faint)
+    (date-weekday green-cooler)
+    (date-weekend red)
+
+    (fg-prose-code magenta)
+    (prose-done green)
+    (fg-prose-macro red-warmer)
+    (prose-metadata fg-dim)
+    (prose-metadata-value fg-alt)
+    (prose-table fg-alt)
+    (prose-table-formula info)
+    (prose-tag cyan)
+    (prose-todo yellow)
+    (fg-prose-verbatim blue-warmer)
+
+    (mail-cite-0 green-cooler)
+    (mail-cite-1 green)
+    (mail-cite-2 red)
+    (mail-cite-3 red-warmer)
+    (mail-part green)
+    (mail-recipient red-faint)
+    (mail-subject red)
+    (mail-other red-warmer)
+
+    (bg-search-static bg-warning)
+    (bg-search-current bg-yellow-intense)
+    (bg-search-lazy bg-blue-intense)
+    (bg-search-replace bg-red-intense)
+
+    (bg-search-rx-group-0 bg-magenta-intense)
+    (bg-search-rx-group-1 bg-green-intense)
+    (bg-search-rx-group-2 bg-red-subtle)
+    (bg-search-rx-group-3 bg-cyan-subtle)
+
+    (bg-space-err bg-yellow-intense)
+
+    (rainbow-0 green)
+    (rainbow-1 red-faint)
+    (rainbow-2 green-cooler)
+    (rainbow-3 yellow)
+    (rainbow-4 blue-warmer)
+    (rainbow-5 cyan-cooler)
+    (rainbow-6 magenta-cooler)
+    (rainbow-7 red-cooler)
+    (rainbow-8 cyan)))
+
+(defcustom oxocarbon-light-palette-overrides nil
+  "Overrides for the `oxocarbon-light' palette.
+
+Mirror the elements of the aforementioned palette, overriding their
+value.  For overrides shared across all Ef themes refer to
+`modus-themes-common-palette-overrides'."
+  :group 'ef-themes
+  :package-version '(ef-themes . "1.0.0")
+  :type '(repeat (list symbol (choice symbol string)))
+  :link '(info-link "(ef-themes) Palette overrides"))
+
+(defconst oxocarbon-light-palette
+  (modus-themes-generate-palette
+   oxocarbon-light-palette-partial
+   nil
+   nil
+   (append oxocarbon-light-palette-mappings-partial ef-themes-palette-common)))
+
+;;;###theme-autoload
+(modus-themes-theme
+ 'oxocarbon-light
+ 'ef-themes
+ "Oxocarbon — a light theme derived from the Ef themes with the IBM-Carbon-inspired oxocarbon.nvim palette."
+ 'light
+ 'oxocarbon-light-palette
+ nil
+ 'oxocarbon-light-palette-overrides)
+
+(provide 'oxocarbon-light-theme)
+
+;;; oxocarbon-light-theme.el ends here
+#+end_src
+
+
+
 default fonts
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
@@ -374,6 +884,14 @@ default fonts
   (setq doom-modeline-position-column-line-format '(""))
 
   :init (doom-modeline-mode 1))
+
+;; keycast: show the current key sequence in the mode line (great for
+;; teaching/learning your own bindings).  Toggle with C-c z (no F-keys;
+;; C-c z is free globally and in org).
+(use-package keycast
+  :config
+  (global-set-key (kbd "C-c z") #'keycast-mode)
+  (add-to-list 'global-mode-string '("" keycast-mode-line)))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -395,9 +913,9 @@ default fonts
   (setq theme-buffet-menu 'end-user)
 
   (setq theme-buffet-end-user
-        '( :night     (modus-vivendi ef-dark ef-winter ef-autumn ef-night ef-duo-dark ef-symbiosis)
-           :morning   (modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light)
-           :afternoon (modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
+        '( :night     (oxocarbon modus-vivendi ef-dark ef-winter ef-autumn ef-night ef-duo-dark ef-symbiosis)
+           :morning   (oxocarbon-light modus-operandi ef-light ef-cyprus ef-spring ef-frost ef-duo-light)
+           :afternoon (oxocarbon-light modus-operandi-tinted ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
            :evening   (modus-vivendi-tinted ef-rosa ef-elea-dark ef-maris-dark ef-melissa-dark ef-trio-dark ef-dream)))
 
 
@@ -495,6 +1013,28 @@ basic packages which extend core features in emacs
   (vc-follow-symlinks t)
   ;; Silence compiler warnings as they can be pretty disruptive
   (native-comp-async-report-warnings-errors nil)
+
+  ;; --- non-modal editing ergonomics ---
+  (kill-whole-line t)                     ; C-k kills the whole line
+  (sentence-end-double-space nil)
+  (require-final-newline t)
+  (indent-tabs-mode nil)
+  (word-wrap t)
+  (truncate-partial-width-windows 80)
+  (split-width-threshold 160)
+  (split-height-threshold 50)
+  (scroll-margin 3)
+  (scroll-conservatively 101)
+  (scroll-preserve-screen-position t)
+  (fast-but-imprecise-scrolling t)
+  (mouse-wheel-scroll-amount '(1 ((shift) . 5)))
+  (ring-bell-function #'ignore)
+  (highlight-nonselected-windows nil)
+  (idle-update-delay 1)
+  (set-mark-command-repeat-pop t)
+  (read-process-output-max (* 1024 1024))
+  (display-line-numbers-width-start t)
+  (show-paren-style 'parenthesis)
   :config
   ;; Only use ripgrep when it is actually available (e.g. in the Guix/Nix
   ;; profile); fall back to Emacs' defaults otherwise.
@@ -505,7 +1045,18 @@ basic packages which extend core features in emacs
   (recentf-mode 1)
   (repeat-mode 1)
   (savehist-mode 1)
-  (save-place-mode 1))
+  (save-place-mode 1)
+  ;; Modes that make a non-modal (no-evil) editing experience comfortable:
+  (delete-selection-mode 1)              ; typing over a selection replaces it
+  (electric-pair-mode 1)                 ; auto-pair delimiters
+  (show-paren-mode 1)
+  (global-display-line-numbers-mode 1)
+  (winner-mode 1)
+  ;; winner-mode defaults to the arrow keys (C-c <left>/<right>); this config
+  ;; is arrow-key-free, so undo/redo of the window layout live on C-c u / C-c r
+  ;; instead (both free, globally and in org).
+  (global-set-key (kbd "C-c u") #'winner-undo)
+  (global-set-key (kbd "C-c r") #'winner-redo))
 
 
 (use-package autorevert
@@ -700,7 +1251,8 @@ consult
          ;; Isearch integration
          ("M-s e" . consult-isearch-history)
          :map isearch-mode-map
-         ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
+         ;; Keep `M-e' = isearch-edit-string (edit the current search string);
+         ;; consult-isearch-history stays on `M-s e'.
          ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
          ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
          ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
@@ -736,7 +1288,7 @@ consult
   ;; is 'any, such that any key triggers the preview.
   ;; (setq consult-preview-key 'any)
   ;; (setq consult-preview-key "M-.")
-  ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
+  ;; (setq consult-preview-key '("C-n" "C-p"))   ; no arrow keys
   ;; For some commands and buffer sources it is useful to configure the
   ;; :preview-key on a per-command basis using the `consult-customize' macro.
   (consult-customize
@@ -761,7 +1313,7 @@ consult
   :bind (("C-x C-d" . consult-dir)
          :map vertico-map
          ("C-x C-d" . consult-dir)
-         ("C-x C-j" . consult-dir-jump-file)))
+         ("C-x j" . consult-dir-jump-file))) ; C-x C-j restored to dired-jump
 
 
 
@@ -770,7 +1322,9 @@ helpful
 #+begin_src emacs-lisp
 (use-package helpful
   :bind
-  ("C-c C-d" . helpful-at-point)
+  ;; `C-c C-d' is left free as a prefix (denote-dired uses C-c C-d C-*);
+  ;; helpful-at-point moves to C-h . ("help at point").
+  ("C-h ." . helpful-at-point)
   ("C-h f" . helpful-callable)
   ("C-h v" . helpful-variable)
   ("C-h k" . helpful-key)
@@ -888,6 +1442,12 @@ embark
   :bind
   ("M-o" . ace-window))
 
+;; winum: numbered windows — C-x w <n> to jump, numbers shown in the modeline.
+;; C-x w is unused elsewhere.
+(use-package winum
+  :config
+  (winum-mode 1))
+
 (use-package tramp
   :ensure nil
   :commands (sudo-find-file sudo-this-file)
@@ -924,8 +1484,9 @@ embark
 (use-package 0x0
   :ensure (:host codeberg :repo "pkal/0x0.el")
   :commands (0x0-upload 0x0-upload-file)
-  :custom (0x0-default-service 'x0)
-  :bind ("C-x M-u" . 0x0-upload))
+  :custom (0x0-default-service 'x0))
+  ;; Uploading stays reachable via Embark's context menus (M-u in the
+  ;; file/buffer/region maps); the global `C-x M-u' was redundant with them.
 #+end_src
 *** The =zfc-base.el= section for calling provide
 #+begin_src emacs-lisp
@@ -998,7 +1559,7 @@ embark
 (use-package cape
   ;; Bind prefix keymap providing all Cape commands under a mnemonic key.
   ;; Press C-c p ? to for help.
-  :bind ("C-c c" . cape-prefix-map) ;; Alternative key: M-<tab>, M-p, M-+
+  :bind ("C-c p" . cape-prefix-map) ;; cape's documented prefix (was C-c c, which collided with org-gtd's C-c c)
   ;; Alternatively bind Cape commands individually.
   ;; :bind (("C-c p d" . cape-dabbrev)
   ;;        ("C-c p h" . cape-history)
@@ -1185,7 +1746,7 @@ use built-in lsp client
   :ensure nil
   :bind
   ("C-c l" . org-store-link)
-  ("C-c o" . org-open-at-point-global)
+  ;; ("C-c o" . org-open-at-point-global)
   :custom
   ;; org-default-notes-file (concat org-directory "notes.org")
   ;; org-clock-in-switch-to-state "DOING"
@@ -1924,7 +2485,9 @@ email
   :hook
   (notmuch-hello-mode . notmuch-poll-and-refresh-this-buffer)
   :bind
-  ("C-c e" . notmuch)
+  ;; Not "C-c e": that's the edit prefix now.  "C-c m" is ready-player's
+  ;; prefix, so mail lives on C-c j ("jump to mail"), which is free.
+  ("C-c j" . notmuch)
   :config
   (setq notmuch-identities '("zfc <zhafacai@gmail.com>"))
   (setq notmuch-fcc-dirs nil)
@@ -2013,10 +2576,8 @@ email
   :commands (disaster)
   :init
   (setq disaster-assembly-mode #'nasm-mode))
-;; TODO use map like this
-;; (map! :localleader
-;;       :map (c++-mode-map c-mode-map)
-;;       :desc "Disaster" "d" #'disaster))
+;; (Disaster is only autoloaded; bind it per-mode with use-package :bind if
+;;  wanted.  The Doom `map!' macro is not used in this config anymore.)
 (use-package cmake-mode)
 #+end_src
 #+begin_src emacs-lisp
@@ -2085,15 +2646,11 @@ email
   #:use-module (guix channels)
   #:use-module (nongnu packages linux)
   #:use-module (nongnu system linux-initrd)
+  ;; NOTE: dae is currently disabled, so the modules that only served it are
+  ;; not imported: (zfc packages networking) [dae-bin], (rosenthal services
+  ;; child-error), (rosenthal utils file), (ice-9 popen), (rnrs io ports).
+  ;; Re-add them together with the dae section if you re-enable dae.
   ;; #:use-module (guixcn services networking)
-  #:use-module (zfc packages networking)
-  #:use-module (rosenthal services child-error)
-  #:use-module (rosenthal utils file)
-  ;; #:use-module (sops secrets)
-  ;; #:use-module (sops services sops)
-  #:use-module ((ice-9 popen) #:select (open-input-pipe close-pipe))
-  #:use-module ((rnrs io ports) #:select (get-string-all))
-  ;; #:use-module ((sops secrets) #:select (sanitize-sops-key))
   #:use-module (zfc home base))
 
 <<sys-def>>
@@ -2224,7 +2781,7 @@ here is =sops= secrets config for my dae config.
 				  (start #~(make-forkexec-constructor
 							(list #$(file-append (specification->package "mihomo") "/bin/mihomo")
 								  "-d" "/root/.config/mihomo"
-								  "-f" "/root/test.conf")
+								  "-f" "/root/.config/mihomo/config.yaml")
 							#:log-file "/var/log/mihomo.log"))
 				  (stop #~(make-kill-destructor)))))
 #+end_src
@@ -2525,11 +3082,6 @@ patch to use flypy
                 home-environment-variables-service-type
                 `(("EDITOR" . "emacsclient")))
 #+end_src
-*** The =base.scm= section about .dir-locals.el
-~hm-files~
-#+begin_src scheme :noweb-ref hm-files
-("Downloads/.dir-locals.el" ,(local-file "plain/Downloads.el"))
-#+end_src
 *** The =base.scm= section about bash
 ~hm-services~
 #+begin_src scheme :noweb-ref hm-services
@@ -2556,6 +3108,7 @@ patch to use flypy
 ~home-use~
 #+begin_src scheme :noweb-ref home-use
 #:use-module (gnu packages shells)
+#:use-module (zfc config common)  ; config-files-path, used by fish-fisher below
 #+end_src
 #+begin_src scheme :noweb-ref hm-services
 (service home-fish-service-type
@@ -2575,35 +3128,38 @@ patch to use flypy
                  (shepherd-service
                   (provision '(fish-fisher))
                   (one-shot? #t)
-                  (start
-                   #~(lambda ()
-                       (use-modules (guix build utils)
-                                    (zfc config common))
-                       (let* ((source (canonicalize-path (config-files-path "fish/fish_plugins")))
-                              (target (string-append (getenv "XDG_CONFIG_HOME") "/fish/fish_plugins"))
-                              (fish-bin #$(file-append fish "/bin/fish")))
-                         
-                         (format #t "Directly symlinking fish_plugins (~a) to ~a~%" source target)
-                         (when (false-if-exception (lstat target))
-                           (delete-file target))
-                         (symlink source target)
-                         
-                         (unless (file-exists? (string-append (getenv "XDG_CONFIG_HOME") "/fish/functions/fisher.fish"))
-                           (format #t "Installing fisher~%")
-                           ;; Non-fatal: a fresh machine may be offline during
-                           ;; the first activation.
-                           (false-if-exception
-                            (system (string-append fish-bin " -c \"curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | "
-                                                   "source && fisher install jorgebucaran/fisher\""))))
-                         
-                         (format #t "Updating fisher plugins~%")
-                         ;; Non-fatal: don't fail the whole reconfigure when the
-                         ;; network is unavailable or a plugin can't be fetched.
-                         (unless (zero? (or (false-if-exception
-                                             (system (string-append fish-bin " -c \"fisher update\"")))
-                                            -1))
-                           (format #t "Warning: `fisher update' failed (network error?)~%"))
-                         #t)))
+                   ;; Resolve the plugins path at *configure* time (it is fixed
+                   ;; once (zfc config common) loads) and splice it into the
+                   ;; activation script with #$.  The script then needs no
+                   ;; (use-modules (zfc config common)) and no load-path at
+                   ;; activation time.  getenv calls get a HOME fallback.
+                   (start
+                    (let ((plugins (config-files-path "fish/fish_plugins")))
+                      #~(lambda ()
+                          (let* ((xdg (or (getenv "XDG_CONFIG_HOME")
+                                          (string-append (getenv "HOME") "/.config")))
+                                 (source #$plugins)
+                                 (target (string-append xdg "/fish/fish_plugins"))
+                                 (fish-bin #$(file-append fish "/bin/fish")))
+                            (format #t "Directly symlinking fish_plugins (~a) to ~a~%" source target)
+                            (when (false-if-exception (lstat target))
+                              (delete-file target))
+                            (symlink source target)
+                            (unless (file-exists? (string-append xdg "/fish/functions/fisher.fish"))
+                              (format #t "Installing fisher~%")
+                              ;; Non-fatal: a fresh machine may be offline during
+                              ;; the first activation.
+                              (false-if-exception
+                               (system (string-append fish-bin " -c \"curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | "
+                                                      "source && fisher install jorgebucaran/fisher\""))))
+                            (format #t "Updating fisher plugins~%")
+                            ;; Non-fatal: don't fail the whole reconfigure when the
+                            ;; network is unavailable or a plugin can't be fetched.
+                            (unless (zero? (or (false-if-exception
+                                                (system (string-append fish-bin " -c \"fisher update\"")))
+                                               -1))
+                              (format #t "Warning: `fisher update' failed (network error?)~%"))
+                            #t))))
                   (documentation "Initialize and update Fish plugins via fisher."))))
 
 #+end_src
@@ -2699,17 +3255,6 @@ git config
 #+end_src
 ~hm-services~
 #+begin_src scheme :noweb-ref hm-services
-;; (service home-sops-secrets-service-type
-;;          (home-sops-service-configuration
-;;           (secrets
-;;            (list
-;;             (sops-secret
-;;              (key '("data"))
-;;              (output-type "binary")
-;;              (file (local-file "../../../secrets/elfeed.org"))
-;;              (permissions #o400))))))
-
-
 (service home-sops-secrets-service-type
   (home-sops-service-configuration
     (secrets

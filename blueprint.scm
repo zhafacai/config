@@ -1,5 +1,6 @@
 (use-modules
  (srfi srfi-2)
+ (guix build utils)          ; invoke — propagates failures
  (blue computation)
  (blue subprocess)
  (blue types blueprint)
@@ -8,7 +9,8 @@
  (blue types variable))
 
 (define ($ prog . args)
-  (popen prog args))
+  (apply invoke prog args)
+  #t)
 
 (define-command (update-guix-command args)
   ((invoke "udg")
@@ -18,10 +20,10 @@
   Update guix channels.
   "))
   ($ "guix" "pull" "-C" "channels.scm")
-  (system "guix describe -f channels > channels.lock")
-  ;; (with-output-to-file "channels.tmp"
-  ;; 	(lambda ()
-  ;; 	  ($ "guix" "describe" "-f" "channels")))
+  ;; `invoke' throws on a non-zero exit (unlike `popen'/`system'), so a failed
+  ;; `guix pull' stops here instead of silently writing a stale channels.lock.
+  (with-output-to-file "channels.lock"
+    (lambda () (invoke "guix" "describe" "-f" "channels")))
   )
 
 (define-command (upgrade-home-command args)
