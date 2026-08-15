@@ -61,7 +61,7 @@
 (use-package crux
   :bind
   (("C-S-o" . crux-smart-open-line-above)
-   ("C-k" . curx-smart-kill-line)))
+   ("C-k" . crux-smart-kill-line)))
 
 ;; symbol-overlay: highlight & jump between occurrences of the symbol at point.
 ;; Its own minor-mode keymap (M-i/M-n/M-p) only activates while a symbol is
