@@ -129,6 +129,7 @@
 
 (use-package sops
   ;; :ensure (:type git :host github :repo "djgoku/sops")
+  ;; BUG this is so laggy
   :init
   ;; (setq sops-before-encrypt-decrypt-hook 'sops-setup-env)
   (global-sops-mode 1))
@@ -344,8 +345,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :hook
   (notmuch-hello-mode . notmuch-poll-and-refresh-this-buffer)
   :bind
-  ;; Not "C-c e": that's the edit prefix now.  "C-c m" is ready-player's
-  ;; prefix, so mail lives on C-c j ("jump to mail"), which is free.
   ("C-c j" . notmuch)
   :config
   (setq notmuch-identities '("zfc <zhafacai@gmail.com>"))
@@ -365,30 +364,29 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
             :query "tag:inbox"
             :sort-order newest-first
             :key ,(kbd "i"))
-          ( :name "📭 all unread (inbox)"
+          ( :name "📬 all unread (inbox)"
             :query "tag:unread and tag:inbox"
             :sort-order newest-first
             :key ,(kbd "u"))
-          ( :name "🔥 unread crypto"
-            :query "tag:unread and tag:crypto"
-            :sort-order newest-first
-            :key ,(kbd "c"))
-          ( :name "🔖 unread dev"
+          ( :name "🐧 unread dev"
             :query "tag:unread and tag:dev"
             :sort-order newest-first
-            :key ,(kbd "d")))))
+            :key ,(kbd "d"))
+          ( :name "💸 unread crypto"
+            :query "tag:unread and tag:crypto"
+            :sort-order newest-first
+            :key ,(kbd "c")))))
 
-
-;; (setq browse-url-browser-function 'browse-url-generic
+  ;; (setq browse-url-browser-function 'browse-url-generic
 ;;       browse-url-generic-program "librewolf")
 
 
 (use-package notmuch-indicator
   :config
   (setq notmuch-indicator-args
-		'((:terms "tag:unread and tag:inbox" :label "📭" :label-face success)
-		  (:terms "tag:unread and tag:crypto" :label "🔥" :label-face warning :counter-face inherit)
-		  (:terms "tag:unread and tag:dev" :label "🔖" :label-face bold :counter-face error))
+		'((:terms "tag:unread and tag:inbox" :label "📬" :label-face success)
+		  (:terms "tag:unread and tag:dev" :label "🐧" :label-face warning :counter-face inherit)
+		  (:terms "tag:unread and tag:crypto" :label "💸" :label-face bold :counter-face error))
 
 		notmuch-indicator-refresh-count (* 60 3)
 		notmuch-indicator-hide-empty-counters t

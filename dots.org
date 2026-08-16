@@ -1679,6 +1679,7 @@ sops
 #+begin_src emacs-lisp
 (use-package sops
   ;; :ensure (:type git :host github :repo "djgoku/sops")
+  ;; BUG this is so laggy
   :init
   ;; (setq sops-before-encrypt-decrypt-hook 'sops-setup-env)
   (global-sops-mode 1))
@@ -1923,8 +1924,6 @@ email
   :hook
   (notmuch-hello-mode . notmuch-poll-and-refresh-this-buffer)
   :bind
-  ;; Not "C-c e": that's the edit prefix now.  "C-c m" is ready-player's
-  ;; prefix, so mail lives on C-c j ("jump to mail"), which is free.
   ("C-c j" . notmuch)
   :config
   (setq notmuch-identities '("zfc <zhafacai@gmail.com>"))
@@ -1944,30 +1943,29 @@ email
             :query "tag:inbox"
             :sort-order newest-first
             :key ,(kbd "i"))
-          ( :name "📭 all unread (inbox)"
+          ( :name "📬 all unread (inbox)"
             :query "tag:unread and tag:inbox"
             :sort-order newest-first
             :key ,(kbd "u"))
-          ( :name "🔥 unread crypto"
-            :query "tag:unread and tag:crypto"
-            :sort-order newest-first
-            :key ,(kbd "c"))
-          ( :name "🔖 unread dev"
+          ( :name "🐧 unread dev"
             :query "tag:unread and tag:dev"
             :sort-order newest-first
-            :key ,(kbd "d")))))
+            :key ,(kbd "d"))
+          ( :name "💸 unread crypto"
+            :query "tag:unread and tag:crypto"
+            :sort-order newest-first
+            :key ,(kbd "c")))))
 
-
-;; (setq browse-url-browser-function 'browse-url-generic
+  ;; (setq browse-url-browser-function 'browse-url-generic
 ;;       browse-url-generic-program "librewolf")
 
 
 (use-package notmuch-indicator
   :config
   (setq notmuch-indicator-args
-		'((:terms "tag:unread and tag:inbox" :label "📭" :label-face success)
-		  (:terms "tag:unread and tag:crypto" :label "🔥" :label-face warning :counter-face inherit)
-		  (:terms "tag:unread and tag:dev" :label "🔖" :label-face bold :counter-face error))
+		'((:terms "tag:unread and tag:inbox" :label "📬" :label-face success)
+		  (:terms "tag:unread and tag:dev" :label "🐧" :label-face warning :counter-face inherit)
+		  (:terms "tag:unread and tag:crypto" :label "💸" :label-face bold :counter-face error))
 
 		notmuch-indicator-refresh-count (* 60 3)
 		notmuch-indicator-hide-empty-counters t
@@ -2545,7 +2543,6 @@ patch to use flypy
            (config
             (list (plain-file "fish_greeting.fish" "set -g fish_greeting")
                   (plain-file "plugins.fish" (string-append "starship init fish | source\n"
-															"set -x GPG_TTY (tty)\n"
                                                             "zoxide init fish | source\n"
 															"fish_config theme choose catppuccin-mocha\n"
                                                             "direnv hook fish | source"))))))
@@ -2636,6 +2633,34 @@ git config
 #:use-module (gnu packages mail)
 #:use-module (gnu packages bash)
 #+end_src
+my mbsyncrc file
+#+begin_src conf :tangle ~/.mbsyncrc
+# ==================== GMAIL REMOTE ====================
+IMAPAccount gmail
+Host imap.gmail.com
+User zhafacai@gmail.com
+PassCmd "gpg -q --for-your-eyes-only --no-tty -d ~/.authinfo.gpg | awk '/machine gmail.com/ {print $6}'"
+TLSType IMAPS
+AuthMechs LOGIN
+
+IMAPStore gmail-remote
+Account gmail
+
+# ==================== LOCAL MAILDIR ====================
+MaildirStore gmail-local
+Subfolders Verbatim
+Path ~/Documents/Mail/
+Inbox ~/Documents/Mail/Inbox
+
+# ==================== CHANNEL SYNC ====================
+Channel gmail
+Far :gmail-remote:
+Near :gmail-local:
+Patterns "INBOX" "[Gmail]/Drafts" "[Gmail]/Sent Mail"
+Create Near
+SyncState *
+
+#+end_src
 ~hm-services~
 #+begin_src scheme :noweb-ref hm-services
 (simple-service 'mbsync-gmail-timer-service
@@ -2644,17 +2669,11 @@ git config
                  (shepherd-timer
                   '(mbsync-gmail)
                   "0 12 * * *"
-                  ;; mbsync first, then index new mail with notmuch, then
-                  ;; apply the tagging rules from plain/notmuch-tag-new
-                  ;; (see the section below).
                   #~(#$(file-append bash "/bin/bash")
                      #$(mixed-text-file
                         "mbsync-gmail"
-                        ;; NB: mixed-text-file takes plain strings and
-                        ;; file-like objects; no #$ splicing inside it.
                         "set -e\n"
                         "export NOTMUCH_DATABASE=\"${NOTMUCH_DATABASE:-$HOME/Documents/Mail}\"\n"
-                        "export PATH=\"" (file-append notmuch "/bin") ":$PATH\"\n"
                         (file-append isync "/bin/mbsync") " gmail\n"
                         (file-append notmuch "/bin/notmuch") " new\n"
                         (file-append bash "/bin/bash") " " (local-file "plain/notmuch-tag-new") "\n"))
@@ -2668,44 +2687,22 @@ git config
                  `(".config/notmuch/default/config"
                    ,(mixed-text-file "notmuch-config"
                                      "[user]\n"
-                                     "primary_email=zhafacai@gmail.com\n"
-                                     ;; the `new' tag lets the rules in
-                                     ;; plain/notmuch-tag-new target freshly
-                                     ;; indexed messages only
-                                     "[new]\n"
-                                     "tags=new;unread;inbox\n"))))
-
-;; cannot use getenv HOME in home-files-service-type
+                                     "primary_email=zhafacai@gmail.com\n"))))
 (simple-service 'notmuch-env-service
                 home-environment-variables-service-type
                 `(("NOTMUCH_DATABASE" . ,(string-append (getenv "HOME") "/Documents/Mail"))))
 
+
 #+end_src
-*** The notmuch tagging script
-Sample tagging rules applied by the =mbsync-gmail= shepherd timer above,
-after mbsync and =notmuch new=.  Add one =notmuch tag= line per rule; the
-query syntax is documented in notmuch-search-terms(7).  The script is
-deployed through a store path, so run =herd trigger mbsync-gmail= (or
-=guix home reconfigure=) to apply changes.
+tangle scripts
 #+begin_src sh :tangle mods/zfc/home/plain/notmuch-tag-new
 #!/bin/sh
-# notmuch-tag-new --- sample tagging rules for freshly indexed mail.
-# Run after `mbsync gmail' + `notmuch new' by the mbsync-gmail shepherd
-# timer.  Rules only touch `tag:new' messages (assigned by `notmuch new'
-# per the [new] tags in the notmuch config); the last command strips the
-# tag again so every message is processed only once.
 
-# Crypto newsletters/exchanges -> the "unread crypto" saved search.
-notmuch tag +crypto -- 'tag:new and (from:coindesk.com or from:cointelegraph.com or from:binance.com or from:okx.com or from:coinbase.com)'
+notmuch tag +crypto -- 'from:coindesk.com or from:cointelegraph.com or from:binance.com or from:okx.com or from:coinbase.com'
 
-# Development notifications -> the "unread dev" saved search.
-notmuch tag +dev -- 'tag:new and (from:github.com or from:gitlab.com or from:codeberg.org or subject:"pull request")'
 
-# Newsletters that only need archiving can skip the inbox:
-# notmuch tag -inbox -- 'tag:new and from:newsletter.example.com'
+notmuch tag +dev -- 'from:github.com or from:gitlab.com or from:codeberg.org'
 
-# Done: stop treating these as new.
-notmuch tag -new -- 'tag:new'
 #+end_src
 *** The =base.scm= section about theme
 ~home-use~

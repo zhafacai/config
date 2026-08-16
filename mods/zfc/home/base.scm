@@ -201,7 +201,6 @@
                          (config
                           (list (plain-file "fish_greeting.fish" "set -g fish_greeting")
                                 (plain-file "plugins.fish" (string-append "starship init fish | source\n"
-              															"set -x GPG_TTY (tty)\n"
                                                                           "zoxide init fish | source\n"
               															"fish_config theme choose catppuccin-mocha\n"
                                                                           "direnv hook fish | source"))))))
@@ -260,17 +259,11 @@
                                (shepherd-timer
                                 '(mbsync-gmail)
                                 "0 12 * * *"
-                                ;; mbsync first, then index new mail with notmuch, then
-                                ;; apply the tagging rules from plain/notmuch-tag-new
-                                ;; (see the section below).
                                 #~(#$(file-append bash "/bin/bash")
                                    #$(mixed-text-file
                                       "mbsync-gmail"
-                                      ;; NB: mixed-text-file takes plain strings and
-                                      ;; file-like objects; no #$ splicing inside it.
                                       "set -e\n"
                                       "export NOTMUCH_DATABASE=\"${NOTMUCH_DATABASE:-$HOME/Documents/Mail}\"\n"
-                                      "export PATH=\"" (file-append notmuch "/bin") ":$PATH\"\n"
                                       (file-append isync "/bin/mbsync") " gmail\n"
                                       (file-append notmuch "/bin/notmuch") " new\n"
                                       (file-append bash "/bin/bash") " " (local-file "plain/notmuch-tag-new") "\n"))
@@ -281,17 +274,11 @@
                                `(".config/notmuch/default/config"
                                  ,(mixed-text-file "notmuch-config"
                                                    "[user]\n"
-                                                   "primary_email=zhafacai@gmail.com\n"
-                                                   ;; the `new' tag lets the rules in
-                                                   ;; plain/notmuch-tag-new target freshly
-                                                   ;; indexed messages only
-                                                   "[new]\n"
-                                                   "tags=new;unread;inbox\n"))))
-              
-              ;; cannot use getenv HOME in home-files-service-type
+                                                   "primary_email=zhafacai@gmail.com\n"))))
               (simple-service 'notmuch-env-service
                               home-environment-variables-service-type
                               `(("NOTMUCH_DATABASE" . ,(string-append (getenv "HOME") "/Documents/Mail"))))
+              
               
               (service home-theme-service-type
                        (home-theme-configuration
