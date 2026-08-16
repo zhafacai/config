@@ -175,7 +175,7 @@
   :bind
   (:map dired-mode-map
               ("<tab>" . dired-subtree-toggle)
-              ("<C-tab>" . dired-subtree-cycle)
+              ("<C-return>" . dired-subtree-cycle)
               ("h" . fc/dired-subtree-up)))
 
 (use-package dired-filter
@@ -183,7 +183,15 @@
 
 (use-package dired-preview
   :after dired
+  :hook
+  (dired-mode . (lambda ()
+                  (when (string-match-p "Pictures" default-directory)
+                    (dired-preview-mode 1)) ))
+  :bind
+  (:map dired-mode-map
+        ("V" . dired-preview-mode))
   :config
+  (setq dired-preview-max-size (* (expt 2 20) 10))
   (setq dired-preview-delay 0.2))
 
 (use-package ready-player
