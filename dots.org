@@ -219,7 +219,7 @@ multicursors
 #+begin_src emacs-lisp
 (use-package multiple-cursors
   :bind
-  (("C-x c e" . mc/edit-lines)))
+  (("C-c e e" . mc/edit-lines)))
 #+end_src
 match number in modeline
 #+begin_src emacs-lisp

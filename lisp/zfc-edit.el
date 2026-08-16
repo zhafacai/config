@@ -71,7 +71,7 @@
 
 (use-package multiple-cursors
   :bind
-  (("C-x c e" . mc/edit-lines)))
+  (("C-c e e" . mc/edit-lines)))
 
 (use-package anzu
   :config
