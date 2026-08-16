@@ -188,6 +188,7 @@
 
 (use-package ready-player
   :config
+  (setq ready-player-my-media-collection-location "~/Music")
   (ready-player-mode +1))
 
 (use-package dired
