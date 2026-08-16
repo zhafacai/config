@@ -11,6 +11,24 @@
   :config
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
 
+(use-package cal-china-x
+  :demand t
+  :hook
+  (ef-themes-post-load . fc/cal-china-x-custom-faces)
+  :config
+  (defun fc/cal-china-x-custom-faces ()
+    "Customize faces using the current Ef theme's palette."
+    (ef-themes-with-colors
+      (custom-set-faces
+       `(cal-china-x-important-holiday-face ((t (:foreground ,red-warmer :weight bold)))))))
+  (fc/cal-china-x-custom-faces)
+  (setq calendar-mark-holidays-flag t)
+  (setq cal-china-x-important-holidays cal-china-x-chinese-holidays)
+  (setq cal-china-x-general-holidays '((holiday-lunar 1 15 "元宵节")))
+  (setq calendar-holidays
+        (append cal-china-x-important-holidays
+                cal-china-x-general-holidays)))
+
 (use-package elfeed
   :bind
   ("C-c f" . elfeed))

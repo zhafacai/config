@@ -74,7 +74,6 @@
   (save-place-mode 1)
   ;; Modes that make a non-modal (no-evil) editing experience comfortable:
   (delete-selection-mode 1)              ; typing over a selection replaces it
-  (electric-pair-mode 1)                 ; auto-pair delimiters
   (show-paren-mode 1))
 
 

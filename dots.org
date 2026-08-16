@@ -282,6 +282,9 @@ toggle alpha background
 (add-to-list 'custom-theme-load-path (expand-file-name "lisp" user-emacs-directory))
 
 (use-package ef-themes
+  :bind
+  ("C-c w d" . ef-themes-load-random-dark)
+  ("C-c w l" . ef-themes-load-random-light)
   :init
   (ef-themes-take-over-modus-themes-mode 1)
   (modus-themes-activate 'oxocarbon-light)
@@ -339,6 +342,17 @@ toggle alpha background
   :config
   (global-colorful-mode t)
   (add-to-list 'global-colorful-modes 'helpful-mode))
+
+(use-package emacs
+  :ensure nil
+  :bind
+  ("C-c w w" . fc/wallpaper-random)
+  :config
+  (defun fc/wallpaper-random ()
+    "Switch to a random wallpaper using noctalia-shell."
+    (interactive)
+    (call-process "noctalia" nil 0 nil "msg" "wallpaper-random")
+    (message "Wallpaper changed 😃")))
 #+end_src
 
 
@@ -538,7 +552,6 @@ basic packages which extend core features in emacs
   (save-place-mode 1)
   ;; Modes that make a non-modal (no-evil) editing experience comfortable:
   (delete-selection-mode 1)              ; typing over a selection replaces it
-  (electric-pair-mode 1)                 ; auto-pair delimiters
   (show-paren-mode 1))
 
 
@@ -1513,6 +1526,26 @@ nov
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
 #+end_src
 
+cal-china-x
+#+begin_src emacs-lisp
+(use-package cal-china-x
+  :demand t
+  :hook
+  (ef-themes-post-load . fc/cal-china-x-custom-faces)
+  :config
+  (defun fc/cal-china-x-custom-faces ()
+    "Customize faces using the current Ef theme's palette."
+    (ef-themes-with-colors
+      (custom-set-faces
+       `(cal-china-x-important-holiday-face ((t (:foreground ,red-warmer :weight bold)))))))
+  (fc/cal-china-x-custom-faces)
+  (setq calendar-mark-holidays-flag t)
+  (setq cal-china-x-important-holidays cal-china-x-chinese-holidays)
+  (setq cal-china-x-general-holidays '((holiday-lunar 1 15 "元宵节")))
+  (setq calendar-holidays
+        (append cal-china-x-important-holidays
+                cal-china-x-general-holidays)))
+#+end_src
 elfeed
 #+begin_src emacs-lisp
 (use-package elfeed

@@ -29,6 +29,9 @@
 (add-to-list 'custom-theme-load-path (expand-file-name "lisp" user-emacs-directory))
 
 (use-package ef-themes
+  :bind
+  ("C-c w d" . ef-themes-load-random-dark)
+  ("C-c w l" . ef-themes-load-random-light)
   :init
   (ef-themes-take-over-modus-themes-mode 1)
   (modus-themes-activate 'oxocarbon-light)
@@ -86,6 +89,17 @@
   :config
   (global-colorful-mode t)
   (add-to-list 'global-colorful-modes 'helpful-mode))
+
+(use-package emacs
+  :ensure nil
+  :bind
+  ("C-c w w" . fc/wallpaper-random)
+  :config
+  (defun fc/wallpaper-random ()
+    "Switch to a random wallpaper using noctalia-shell."
+    (interactive)
+    (call-process "noctalia" nil 0 nil "msg" "wallpaper-random")
+    (message "Wallpaper changed 😃")))
 
 (set-face-attribute 'default nil
                     :family "Iosevka SS17"
