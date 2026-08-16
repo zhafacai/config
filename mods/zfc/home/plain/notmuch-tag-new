@@ -1,6 +1,9 @@
 #!/bin/sh
 
-notmuch tag +crypto -- 'from:coindesk.com or from:cointelegraph.com or from:binance.com or from:okx.com or from:coinbase.com'
+notmuch tag +crypto -- 'from:coindesk.com or from:cointelegraph.com or from:binance.com or from:okx.com or from:coinbase.com or from:gmgn.ai or from:coingecko.com or from:tradingview.com'
 
 
-notmuch tag +dev -- 'from:github.com or from:gitlab.com or from:codeberg.org'
+notmuch tag +dev -- 'from:github.com or from:gitlab.com or from:codeberg.org or from:nixos.org or from:cloudflare.com'
+
+
+notmuch tag +ai -- 'from:openai.com or from:openrouter.ai or from:nvidia.com or from:x.ai'
