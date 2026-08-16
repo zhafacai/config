@@ -1236,7 +1236,7 @@ use built-in lsp client
   (org-insert-heading-respect-content t)
   (org-log-done 'time)
   (org-log-into-drawer t)
-  (org-tags-column -100)
+  (org-tags-column 0)
   (org-todo-keywords
    '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@/!)" "|" "DONE(d!)" "CNCL(c@)")))
   (org-todo-keyword-faces
@@ -1512,7 +1512,7 @@ elfeed
 ;; FIXME this file does not exist yet
 (use-package elfeed-org
   :custom
-  (rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed"))
+  (rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed.org"))
   :config
   (elfeed-org))
 #+end_src
@@ -2732,12 +2732,13 @@ notmuch tag -new -- 'tag:new'
 (service home-sops-secrets-service-type
          (home-sops-service-configuration
           (gnupg-home (in-vicinity (getenv "XDG_DATA_HOME") "sops"))
-          (shepherd-requirement '(graphical-session gpg-agent))
           (secrets
            (list
             (sops-secret
-             (key '("elfeed"))
-             (file (local-file "../../../secrets/zfc.yaml"))
+             (key '("data"))
+             (path "/run/user/1000/secrets/elfeed.org")
+             (output-type "binary")
+             (file (local-file "../../../secrets/elfeed.org"))
              (permissions #o400))))))
 #+end_src
 ** The =channels.scm= section

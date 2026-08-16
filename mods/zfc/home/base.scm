@@ -301,12 +301,13 @@
               (service home-sops-secrets-service-type
                        (home-sops-service-configuration
                         (gnupg-home (in-vicinity (getenv "XDG_DATA_HOME") "sops"))
-                        (shepherd-requirement '(graphical-session gpg-agent))
                         (secrets
                          (list
                           (sops-secret
-                           (key '("elfeed"))
-                           (file (local-file "../../../secrets/zfc.yaml"))
+                           (key '("data"))
+                           (path "/run/user/1000/secrets/elfeed.org")
+                           (output-type "binary")
+                           (file (local-file "../../../secrets/elfeed.org"))
                            (permissions #o400))))))
               )
              %base-home-services))))

@@ -17,7 +17,7 @@
 ;; FIXME this file does not exist yet
 (use-package elfeed-org
   :custom
-  (rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed"))
+  (rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed.org"))
   :config
   (elfeed-org))
 

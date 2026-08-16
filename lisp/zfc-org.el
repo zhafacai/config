@@ -19,7 +19,7 @@
   (org-insert-heading-respect-content t)
   (org-log-done 'time)
   (org-log-into-drawer t)
-  (org-tags-column -100)
+  (org-tags-column 0)
   (org-todo-keywords
    '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@/!)" "|" "DONE(d!)" "CNCL(c@)")))
   (org-todo-keyword-faces
