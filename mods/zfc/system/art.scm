@@ -48,6 +48,11 @@
  (keyboard-layout (keyboard-layout "us"
                                    #:options '("ctrl:nocaps")))
 
+ (sudoers-file
+  (plain-file "sudoers"
+              (string-append (plain-file-content %sudoers-specification)
+                             (format #f "~a ALL = NOPASSWD: ALL~%" "zfc"))))
+
  (bootloader (bootloader-configuration
               (bootloader grub-efi-bootloader)
               (targets '("/boot/efi"))

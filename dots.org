@@ -468,7 +468,7 @@ basic packages which extend core features in emacs
   :bind                                              ; NOTE: M-x describe-personal-bindings (for all use-packge binds)
   (
    ("C-x C-z" . nil)
-   ("M-j" . join-line)
+   ("M-j" . fc/join-line-vim-style)
    ([remap capitalize-word] . capitalize-dwim)       ; Make M-c work on regions
    ([remap downcase-word] . downcase-dwim)           ; Make M-l work on regions
    ([remap upcase-word] . upcase-dwim)               ; Make M-u work on regions
@@ -522,6 +522,10 @@ basic packages which extend core features in emacs
   (display-line-numbers-width-start t)
   (show-paren-style 'parenthesis)
   :config
+  (defun fc/join-line-vim-style ()
+    "Join the current line with the next line, like Vim's J."
+    (interactive)
+    (join-line 1))
   ;; Only use ripgrep when it is actually available (e.g. in the Guix/Nix
   ;; profile); fall back to Emacs' defaults otherwise.
   (when (executable-find "rg")
@@ -1824,11 +1828,10 @@ gptel
 			  z-ai/glm-5.2
 			  thinkingmachines/inkling))
 
-  (setq gptel-backend (gptel-get-backend "ByteDance"))
-  (setq gptel-model 'deepseek-v4-flash)
-  ;; (setq gptel-backend (gptel-get-backend "Nim"))
-  ;; (setq gptel-model 'nvidia/nemotron-3-ultra-550b-a55b)
-  )
+  ;; (setq gptel-backend (gptel-get-backend "ByteDance"))
+  ;; (setq gptel-model 'deepseek-v4-flash)
+  (setq gptel-backend (gptel-get-backend "Nim"))
+  (setq gptel-model 'nvidia/nemotron-3-ultra-550b-a55b))
 
 (use-package gptel-agent
   :config (gptel-agent-update))
@@ -2096,6 +2099,11 @@ email
 
  (keyboard-layout (keyboard-layout "us"
                                    #:options '("ctrl:nocaps")))
+
+ (sudoers-file
+  (plain-file "sudoers"
+              (string-append (plain-file-content %sudoers-specification)
+                             (format #f "~a ALL = NOPASSWD: ALL~%" "zfc"))))
 
  (bootloader (bootloader-configuration
               (bootloader grub-efi-bootloader)
@@ -2722,13 +2730,15 @@ notmuch tag -new -- 'tag:new'
 ~hm-services~
 #+begin_src scheme :noweb-ref hm-services
 (service home-sops-secrets-service-type
-  (home-sops-service-configuration
-    (secrets
-     (list
-      (sops-secret
-        (key '("elfeed"))
-        (file (local-file "../../../secrets/text.yaml"))
-        (permissions #o400))))))
+         (home-sops-service-configuration
+          (gnupg-home (in-vicinity (getenv "XDG_DATA_HOME") "sops"))
+          (shepherd-requirement '(graphical-session gpg-agent))
+          (secrets
+           (list
+            (sops-secret
+             (key '("elfeed"))
+             (file (local-file "../../../secrets/zfc.yaml"))
+             (permissions #o400))))))
 #+end_src
 ** The =channels.scm= section
 *** The inbox =channels.scm=

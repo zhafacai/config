@@ -259,11 +259,10 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 			  z-ai/glm-5.2
 			  thinkingmachines/inkling))
 
-  (setq gptel-backend (gptel-get-backend "ByteDance"))
-  (setq gptel-model 'deepseek-v4-flash)
-  ;; (setq gptel-backend (gptel-get-backend "Nim"))
-  ;; (setq gptel-model 'nvidia/nemotron-3-ultra-550b-a55b)
-  )
+  ;; (setq gptel-backend (gptel-get-backend "ByteDance"))
+  ;; (setq gptel-model 'deepseek-v4-flash)
+  (setq gptel-backend (gptel-get-backend "Nim"))
+  (setq gptel-model 'nvidia/nemotron-3-ultra-550b-a55b))
 
 (use-package gptel-agent
   :config (gptel-agent-update))

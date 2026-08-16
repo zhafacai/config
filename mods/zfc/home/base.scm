@@ -299,13 +299,15 @@
                         (icon-theme "Qogir")
                         (cursor-theme "Qogir")))
               (service home-sops-secrets-service-type
-                (home-sops-service-configuration
-                  (secrets
-                   (list
-                    (sops-secret
-                      (key '("elfeed"))
-                      (file (local-file "../../../secrets/text.yaml"))
-                      (permissions #o400))))))
+                       (home-sops-service-configuration
+                        (gnupg-home (in-vicinity (getenv "XDG_DATA_HOME") "sops"))
+                        (shepherd-requirement '(graphical-session gpg-agent))
+                        (secrets
+                         (list
+                          (sops-secret
+                           (key '("elfeed"))
+                           (file (local-file "../../../secrets/zfc.yaml"))
+                           (permissions #o400))))))
               )
              %base-home-services))))
 
