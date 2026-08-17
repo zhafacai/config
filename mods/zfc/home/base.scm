@@ -14,7 +14,6 @@
   ;; #:use-module (nongnu packages chrome)
   #:use-module (bluebox packages blue)
   #:use-module (rosenthal packages networking)
-  #:use-module (noctalia)
   #:use-module (gnu services)
   #:use-module (gnu home)
   #:use-module (gnu home services)
@@ -24,6 +23,7 @@
   #:use-module (gnu home services desktop)
   #:use-module (gnu home services sound)
   #:use-module (rosenthal home services desktop)
+  #:use-module (rosenthal packages wm)
   #:use-module (guix gexp)
   #:use-module (guix channels)
   #:use-module (guix transformations)
@@ -43,7 +43,6 @@
 	   ;; google-chrome-stable
 	   blue
 	   mihomo
-	   noctalia-git
 	   )
       (specifications->packages (list
                                  ;; emacs
@@ -64,6 +63,7 @@
                                  "isync"
                                  "msmtp"
                                  "emacs-next-pgtk"
+                                 "noctalia"
                                  ;; dev
                                  "rust"
                                  

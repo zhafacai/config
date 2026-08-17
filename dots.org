@@ -2351,6 +2351,7 @@ here is =sops= secrets config for my dae config.
   #:use-module (gnu home services desktop)
   #:use-module (gnu home services sound)
   #:use-module (rosenthal home services desktop)
+  #:use-module (rosenthal packages wm)
   #:use-module (guix gexp)
   #:use-module (guix channels)
   #:use-module (guix transformations)
@@ -2370,6 +2371,7 @@ here is =sops= secrets config for my dae config.
                                  ;; emacs
                                  <<epkgs>>
                                  "emacs-next-pgtk"
+                                 "noctalia"
                                  ;; dev
                                  "rust"
                                  
@@ -2796,7 +2798,8 @@ I just use sjtu mirror.
 #+begin_src scheme :noweb-ref channels
 (channel
  (name 'guix)
- (url "https://mirror.sjtu.edu.cn/git/guix.git")
+ ;; (url "https://mirror.sjtu.edu.cn/git/guix.git")
+ (url "https://git.guix.gnu.org/guix.git")
  (branch "master")
  (introduction
   (make-channel-introduction
@@ -2902,22 +2905,6 @@ ghostty
    "0bbaf1fdd25266c7df790f65640aaa01e6d2dbc9"
    (openpgp-fingerprint
     "8D10 60B9 6BB8 292E 829B  7249 AED4 1CC1 93B7 01E2"))))
-#+end_src
-*** The noctalia for =channels.scm=
-~chl~
-#+begin_src scheme :noweb-ref channels
-(channel
- (name 'noctalia)
- (url "https://github.com/noctalia-dev/noctalia-shell")
- (branch "v5"))
-#+end_src
-~home-use~
-#+begin_src scheme :noweb-ref home-use
-#:use-module (noctalia)
-#+end_src
-~home-pkgs~
-#+begin_src scheme :noweb-ref home-pkgs
-noctalia-git
 #+end_src
 *** COMMENT The guixcn for =channels.scm=
 ~chl~
