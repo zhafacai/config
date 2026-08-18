@@ -45,13 +45,10 @@
    ("C-c e c" . embrace-change)
    ("C-c e d" . embrace-delete)))
 
-(use-package iedit
-  :bind ("C-:" . iedit-mode))
-
 (use-package move-text
   :bind
-  (("C-c e n" . move-text-down)
-   ("C-c e p" . move-text-up)))
+  (("C-c e N" . move-text-down)
+   ("C-c e P" . move-text-up)))
 
 (use-package crux
   :bind
@@ -71,7 +68,10 @@
 
 (use-package multiple-cursors
   :bind
-  (("C-c e e" . mc/edit-lines)))
+  (("C-c e e" . mc/edit-lines)
+   ("C-c e o" . mc/mark-all-like-this-dwim)
+   ("C-c e n" . mc/mark-next-like-this-word)
+   ("C-c e p" . mc/mark-previous-like-this-word)))
 
 (use-package anzu
   :config

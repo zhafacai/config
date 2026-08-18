@@ -74,7 +74,7 @@
   
   (and-let* (((not (null? args)))
 			 (file (car args))
-			 (file-path (format #f "secrets/~a.yaml" file)))
+			 (file-path (format #f "secrets/~a" file)))
     
     ($ "sops" "edit" file-path)))
 
