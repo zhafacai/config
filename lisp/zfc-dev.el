@@ -183,8 +183,9 @@
 
 ;; (use-package qml-ts-mode
 ;;   :ensure (:host github :repo "xhcoding/qml-ts-mode"))
-
 (use-package markdown-ts-mode
-  :ensure nil)
+  :ensure nil
+  :config
+  (add-to-list 'major-mode-remap-alist '(markdown-mode . markdown-ts-mode)))
 
 (provide 'zfc-dev)

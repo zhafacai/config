@@ -699,7 +699,7 @@ dired
 
 #+begin_src emacs-lisp
 (use-package smartparens
-  :hook (prog-mode text-mode markdown-mode)
+  :hook (prog-mode text-mode markdown-ts-mode)
   :config
   (require 'smartparens-config))
 #+end_src
@@ -1222,9 +1222,10 @@ use built-in lsp client
 
 ;; (use-package qml-ts-mode
 ;;   :ensure (:host github :repo "xhcoding/qml-ts-mode"))
-
 (use-package markdown-ts-mode
-  :ensure nil)
+  :ensure nil
+  :config
+  (add-to-list 'major-mode-remap-alist '(markdown-mode . markdown-ts-mode)))
 #+end_src
 
 *** The =zfc-dev.el= section for calling provide

@@ -207,7 +207,7 @@
         "-l --almost-all --human-readable --group-directories-first --no-group"))
 
 (use-package smartparens
-  :hook (prog-mode text-mode markdown-mode)
+  :hook (prog-mode text-mode markdown-ts-mode)
   :config
   (require 'smartparens-config))
 
