@@ -60,6 +60,11 @@
   (("C-a" . mwim-beginning)
    ("C-e" . mwim-end)))
 
+;; (use-package flymake
+;;   :bind
+;;   ("M-g n" . flymake-goto-next-error)
+;;   ("M-g p" . flymake-goto-previous-error))
+
 (use-package undo-fu-session
   :hook ((prog-mode conf-mode text-mode tex-mode) . undo-fu-session-mode)
   :config

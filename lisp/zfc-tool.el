@@ -271,6 +271,13 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 	:request-params '(:thinking (:type "disabled"))
 	:models '(deepseek-v4-flash-ga-260731))
   
+  (gptel-make-openai "Dots"
+	:host "note3-prev-api.askdiandian.com"
+	:endpoint "/v1/chat/completions"
+	:key #'gptel-api-key-from-auth-source
+	:stream t
+	:models '(dots3-note-prev))
+  
   (gptel-make-openai-responses "ByteDance(response)"
 	:host "ark.cn-beijing.volces.com"
 	:endpoint "/api/coding/v3/responses"
