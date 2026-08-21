@@ -57,7 +57,6 @@
                                  "emacs-guix"
                                  
                                  "sdcv"
-                                 "direnv"
                                  "notmuch"
                                  "emacs-notmuch"
                                  "isync"
@@ -111,6 +110,7 @@
 								 "gcc-toolchain"
 								 "xwayland-satellite"
 								 "git"
+                                 "direnv"
 								 "file"
 								 "neovim"
 								 "neofetch"

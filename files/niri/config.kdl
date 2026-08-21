@@ -3,7 +3,7 @@ environment {
 }
 output "PNP(SAC) G72MAX P 0000000000000" {
     // off
-    mode "2560x1440@120"
+    mode "2560x1440@144"
     scale 1.2
     // transform "90"
     variable-refresh-rate // on-demand=true
@@ -297,16 +297,15 @@ window-rule {
     // block-out-from "screencast"
 }
 
-// Example: enable rounded corners for all windows.
-// (This example rule is commented out with a "/-" in front.)
 window-rule {
     geometry-corner-radius 12
     clip-to-geometry true
 }
 
 debug {
-  // Allows notification actions and window activation from Noctalia.
   honor-xdg-activation-with-invalid-serial
+  render-drm-device "/dev/dri/renderD129"
+
 }
 binds {
     XF86MonBrightnessUp   allow-when-locked=true        { spawn "noctalia" "msg" "brightness-up"              ; }

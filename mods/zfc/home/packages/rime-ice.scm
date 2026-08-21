@@ -15,7 +15,7 @@
   		             (url "https://github.com/iDvel/rime-ice")
   		             (commit "6810e8916d160498620a16fef2135956fecbd485")))
   	          (sha256
-  	           (base32 "1wj9dhz46wka0rj72dz4y97rbihrzh1kbik8cjj74qwg0bcy07yx"))))
+  	           (base32 "1jvnwaaykr78917y4sl8mg8f2f1yn1z0354xm4hxmpx1i0aq25qx"))))
       (build-system copy-build-system)
       (arguments
        '(#:install-plan '(("." "share/rime-data" #:exclude ("README.md" "LICENSE")))))

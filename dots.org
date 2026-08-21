@@ -12,7 +12,7 @@ more packages.
 * Emacs
 ** The =early-init.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle early-init.el
+:header-args:emacs-lisp: :tangle emacs/early-init.el
 :END:
 #+begin_src emacs-lisp
 ;;; -*- lexical-binding: t -*-
@@ -58,7 +58,7 @@ more packages.
 #+end_src
 ** The =init.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle init.el
+:header-args:emacs-lisp: :tangle emacs/init.el
 :END:
 *** The =init.el= section about setup elpaca
 lexical scope by default
@@ -130,7 +130,7 @@ setup elpaca using git
 #+end_src
 ** The =zfc-edit.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle lisp/zfc-edit.el
+:header-args:emacs-lisp: :tangle emacs/lisp/zfc-edit.el
 :END:
 *** The =zfc-edit.el= section about override mode
 #+begin_src emacs-lisp
@@ -252,7 +252,7 @@ toggle alpha background
 #+end_src
 ** The =zfc-ui.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle lisp/zfc-ui.el
+:header-args:emacs-lisp: :tangle emacs/lisp/zfc-ui.el
 :END:
 *** The =zfc-ui.el= section about themes
 #+begin_src emacs-lisp
@@ -476,7 +476,7 @@ default fonts
 #+end_src
 ** The =zfc-base.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle lisp/zfc-base.el
+:header-args:emacs-lisp: :tangle emacs/lisp/zfc-base.el
 :END:
 basic packages which extend core features in emacs
 *** The =zfc-base.el= section about internal packages
@@ -995,7 +995,7 @@ embark
 #+end_src
 ** The =zfc-dev.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle lisp/zfc-dev.el
+:header-args:emacs-lisp: :tangle emacs/lisp/zfc-dev.el
 :END:
 *** The =zfc-dev.el= section about completion
 #+begin_src emacs-lisp
@@ -1239,7 +1239,7 @@ use built-in lsp client
 #+end_src
 ** The =zfc-org.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle lisp/zfc-org.el
+:header-args:emacs-lisp: :tangle emacs/lisp/zfc-org.el
 :END:
 *** The =zfc-org.el= section about basic org
 #+begin_src emacs-lisp
@@ -1504,7 +1504,7 @@ use built-in lsp client
 
 ** The =zfc-tool.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle lisp/zfc-tool.el
+:header-args:emacs-lisp: :tangle emacs/lisp/zfc-tool.el
 :END:
 *** The =zfc-tool.el= section about documents
 reader
@@ -1812,10 +1812,6 @@ direnv
     :init
     (add-hook 'after-init-hook #'ben-global-mode 99))
 #+end_src
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
-"direnv"
-#+end_src
 
 *** The =zfc-tool.el= section about ai
 dwim
@@ -2066,7 +2062,7 @@ email
 #+end_src
 ** The =zfc-lang.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle lisp/zfc-lang.el
+:header-args:emacs-lisp: :tangle emacs/lisp/zfc-lang.el
 :END:
 
 #+begin_src emacs-lisp
@@ -2452,6 +2448,7 @@ here is =sops= secrets config for my dae config.
 								 "gcc-toolchain"
 								 "xwayland-satellite"
 								 "git"
+                                 "direnv"
 								 "file"
 								 "neovim"
 								 "neofetch"
@@ -2560,7 +2557,7 @@ patch to use flypy
   		             (url "https://github.com/iDvel/rime-ice")
   		             (commit "6810e8916d160498620a16fef2135956fecbd485")))
   	          (sha256
-  	           (base32 "1wj9dhz46wka0rj72dz4y97rbihrzh1kbik8cjj74qwg0bcy07yx"))))
+  	           (base32 "1jvnwaaykr78917y4sl8mg8f2f1yn1z0354xm4hxmpx1i0aq25qx"))))
       (build-system copy-build-system)
       (arguments
        '(#:install-plan '(("." "share/rime-data" #:exclude ("README.md" "LICENSE")))))
