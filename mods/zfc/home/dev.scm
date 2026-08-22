@@ -1,25 +1,29 @@
 (define-module (zfc home dev)
   #:use-module (gnu packages)
+  #:use-module (gnu services)
+  #:use-module (gnu home)
+  #:use-module (gnu home services)
+  #:use-module (zfc packages emacs-xyz)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu home services gnupg)
   #:use-module (gnu packages shells)
-  #:use-module (zfc config common)
+  #:use-module (gnu home services shells)
   #:use-module (gnu home services shepherd)
+  #:use-module (zfc config common)
   #:use-module (gnu packages mail)
   #:use-module (gnu packages bash)
   #:use-module (sops secrets)
   #:use-module (sops home services sops)
   #:use-module (bluebox packages blue)
-  #:use-module (gnu services)
-  #:use-module (gnu home)
-  #:use-module (gnu home services)
-  #:use-module (gnu home services shells)
-  #:use-module (gnu home services gnupg)
   #:use-module (guix gexp)
-  #:use-module (zfc home packages rime-ice)
-  #:use-module (zfc packages emacs-xyz)
   #:export (%zfc-dev-packages %zfc-dev-services))
 
-(define %zfc-dev-packages
+;; NOTE: %zfc-dev-packages is deliberately a *function*: calling it (instead
+;; of dereferencing a variable) keeps `specifications->packages' out of this
+;; module's load.  A specs call during module load triggers the package-module
+;; scan, which loads (zfc home base) from its file; base in turn consumes this
+;; module, and a half-loaded module would fail with "unbound variable".
+(define (%zfc-dev-packages)
   (append
    (list
     emacs-reader
@@ -29,7 +33,7 @@
                               "emacs-next-pgtk"
                               ;; core
                               "ripgrep"
-							  "fd"
+				  "fd"
                               ;; ready-player
                               "mpv"
                               "ffmpeg"
@@ -55,7 +59,7 @@
                               "starship"
                               "zoxide"
                               "fzf"
-							  ))))
+				  ))))
 
 (define %zfc-dev-services
   (append (list
@@ -120,11 +124,11 @@
            
              (simple-service 'cargo-config
              	home-files-service-type
-               `(( ".cargo/config.toml" ,(local-file "plain/cargo.toml"))))
+               `(( ".cargo/config.toml" ,(local-file "../../../files/plain/cargo.toml"))))
              (simple-service 'git-gpg-config
                  home-files-service-type
                (list `(".gitconfig"
-                       ,(local-file "plain/gitconfig"))))
+                       ,(local-file "../../../files/plain/gitconfig"))))
            (simple-service 'mbsync-gmail-timer-service
                            home-shepherd-service-type
                            (list
@@ -138,7 +142,7 @@
                                    "export NOTMUCH_DATABASE=\"${NOTMUCH_DATABASE:-$HOME/Documents/Mail}\"\n"
                                    (file-append isync "/bin/mbsync") " gmail\n"
                                    (file-append notmuch "/bin/notmuch") " new\n"
-                                   (file-append bash "/bin/bash") " " (local-file "plain/notmuch-tag-new") "\n"))
+                                   (file-append bash "/bin/bash") " " (local-file "../../../files/plain/notmuch-tag-new") "\n"))
                              #:documentation "Synchronize Gmail via mbsync, index it with notmuch and apply the tagging rules, daily at noon.")))
            (simple-service 'notmuch-config-service
                            home-files-service-type
@@ -168,7 +172,7 @@
 (define home-dev
   (home-environment
    (packages
-    %zfc-dev-packages)
+    (%zfc-dev-packages))
    (services
     %zfc-dev-services)))
 

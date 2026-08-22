@@ -27,8 +27,7 @@ more packages.
 (add-to-list 'default-frame-alist '(alpha-background . 90))
 (setq vc-handled-backends '(Git))
 
-(setq gc-cons-threshold most-positive-fixnum
-      use-short-answers t)
+(setq use-short-answers t)
 
 (setq frame-resize-pixelwise t
       frame-inhibit-implied-resize t
@@ -1149,8 +1148,8 @@ org-mode
 (epkgs "~emacs-packages~" n "#+begin_src scheme :noweb-ref emacs-packages" n r n "#+end_src" :post (org-edit-src-code))
 (hmpkgs "~home-pkgs~" n "#+begin_src scheme :noweb-ref home-pkgs" n r n "#+end_src" :post (org-edit-src-code))
 (hmuse "~home-use~" n "#+begin_src scheme :noweb-ref home-use" n "#:use-module " r n "#+end_src" :post (org-edit-src-code))
-(chl "~chl~" n "#+begin_src scheme :noweb-ref channels" n r n "#+end_src" :post (org-edit-src-code))
-(hmser "~hm-services~" n "#+begin_src scheme :noweb-ref hm-services" n r n "#+end_src" :post (org-edit-src-code))
+(chl "~channels~" n "#+begin_src scheme :noweb-ref channels" n r n "#+end_src" :post (org-edit-src-code))
+(hmser "~home-services~" n "#+begin_src scheme :noweb-ref home-services" n r n "#+end_src" :post (org-edit-src-code))
 (sysser "~sys-services~" n "#+begin_src scheme :noweb-ref sys-services" n r n "#+end_src" :post (org-edit-src-code))
 
 ;; Local Variables:
@@ -1531,6 +1530,10 @@ reader
                        (hl-line-mode 0)
                        (set-window-dedicated-p (selected-window) nil)
                        (delete-other-windows))))
+#+end_src
+~dev-use~
+#+begin_src scheme :noweb-ref dev-use
+#:use-module (zfc packages emacs-xyz)
 #+end_src
 ~dev-pkgs~
 #+begin_src scheme :noweb-ref dev-pkgs
@@ -2154,20 +2157,13 @@ email
   <<sys-use>>
   #:use-module (gnu system nss)
   #:use-module (gnu packages window-management)
-  #:use-module (gnu packages shells)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages vim)
   #:use-module (gnu services desktop)
   #:use-module (gnu services xorg)
-  #:use-module (gnu services nix)
-  #:use-module (gnu services virtualization)
   #:use-module (gnu services guix)
-  #:use-module (gnu services networking)
-  #:use-module (gnu services shepherd)
   #:use-module (gnu home)
   #:use-module (gnu home services)
-  #:use-module (guix packages)
-  #:use-module (guix channels)
   #:use-module (nongnu packages linux)
   #:use-module (nongnu system linux-initrd)
   #:use-module (rosenthal utils file)
@@ -2240,18 +2236,12 @@ email
                    %base-packages))
 
  (services (append (list
-                    (service bluetooth-service-type
-							 (bluetooth-configuration (auto-enable? #t)))
-                    (service libvirt-service-type
-							 (libvirt-configuration))
-                    (service virtlog-service-type
-							 (virtlog-configuration))
                     <<sys-services>>
                     (service guix-home-service-type
 							 `(("zfc" ,home-base)))
                     polkit-wheel-service)
                    (modify-services %desktop-services
-									<<modify-service>>
+									<<sys-modify>>
 									)))
 
  ;; Allow resolution of '.local' host names with mDNS.
@@ -2274,7 +2264,25 @@ here is =sops= secrets config for my dae config.
 			 (group "wheel")
 			 (permissions #o400))))))
 #+end_src
+*** The =art.scm= section about virtualization and bluetooth
+~sys-use~
+#+begin_src scheme :noweb-ref sys-use
+#:use-module (gnu services virtualization)
+#+end_src
+~sys-services~
+#+begin_src scheme :noweb-ref sys-services
+(service bluetooth-service-type
+         (bluetooth-configuration (auto-enable? #t)))
+(service libvirt-service-type
+         (libvirt-configuration))
+(service virtlog-service-type
+         (virtlog-configuration))
+#+end_src
 *** The =art.scm= section about nix
+~sys-use~
+#+begin_src scheme :noweb-ref sys-use
+#:use-module (gnu services nix)
+#+end_src
 ~sys-services~
 #+begin_src scheme :noweb-ref sys-services
 (service nix-service-type
@@ -2285,6 +2293,10 @@ here is =sops= secrets config for my dae config.
 	   "substituters =  https://mirrors.ustc.edu.cn/nix-channels/store/ https://cache.nixos.org/\n"))))
 #+end_src
 *** The =art.scm= section about mihomo
+~sys-use~
+#+begin_src scheme :noweb-ref sys-use
+#:use-module (gnu services shepherd)
+#+end_src
 ~sys-services~
 #+begin_src scheme :noweb-ref sys-services
 (simple-service 'mihomo
@@ -2302,6 +2314,10 @@ here is =sops= secrets config for my dae config.
 				  (stop #~(make-kill-destructor)))))
 #+end_src
 *** The =art.scm= section about NetworkManager
+~sys-use~
+#+begin_src scheme :noweb-ref sys-use
+#:use-module (gnu services networking)
+#+end_src
 ~sys-def~
 #+begin_src scheme :noweb-ref sys-def
 (define %network-manager-ipv6-privacy
@@ -2317,8 +2333,8 @@ here is =sops= secrets config for my dae config.
             ("ethernet.cloned-mac-address" . "stable")
             ("wifi.cloned-mac-address" . "stable"))))))
 #+end_src
-~modify-service~
-#+begin_src scheme :noweb-ref modify-service
+~sys-modify~
+#+begin_src scheme :noweb-ref sys-modify
 (network-manager-service-type
  config => (network-manager-configuration
 			 (inherit config)
@@ -2327,13 +2343,13 @@ here is =sops= secrets config for my dae config.
 					%network-manager-random-mac-address))))
 #+end_src
 *** The =art.scm= section about substitute
-#+begin_src scheme :noweb-ref modify-service
+#+begin_src scheme :noweb-ref sys-modify
 (guix-service-type
  config => (guix-configuration
             (inherit config)
             (authorized-keys
-             (append (list (local-file "./signing-key.pub")
-                           (local-file "./guix-moe.pub"))
+             (append (list (local-file "../../../files/system/signing-key.pub")
+                           (local-file "../../../files/system/guix-moe.pub"))
                      %default-authorized-guix-keys))
             (substitute-urls '("https://cache-cdn.guix.moe"
 							   "https://mirror.sjtu.edu.cn/guix/"
@@ -2376,35 +2392,22 @@ here is =sops= secrets config for my dae config.
         (use-modules (guix build utils))
         (mkdir-p "/etc/dae")
         (copy-file #$%dae-config-in-store "/etc/dae/config.dae")
-        (copy-file #$(local-file "plain/config.dae") "/etc/dae/base.dae")
+        (copy-file #$(local-file "../../../files/system/config.dae") "/etc/dae/base.dae")
         (chmod "/etc/dae/base.dae" #o600)
         (chmod "/etc/dae/config.dae" #o600)))
 #+end_src
 ** The Guix Home Section
-*** The =base.scm=
+*** The =base.scm= inbox
 #+begin_src scheme :tangle mods/zfc/home/base.scm :noweb yes
 (define-module (zfc home base)
   #:use-module (gnu packages)
-  #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages fcitx5)
   <<home-use>>
   #:use-module (gnu services)
   #:use-module (gnu home)
   #:use-module (gnu home services)
-  #:use-module (gnu home services shells)
-  #:use-module (gnu home services guix)
-  #:use-module (gnu home services gnupg)
-  #:use-module (gnu home services desktop)
-  #:use-module (gnu home services sound)
-  #:use-module (rosenthal home services desktop)
-  #:use-module (rosenthal packages wm)
   #:use-module (guix gexp)
-  #:use-module (guix channels)
-  #:use-module (guix transformations)
   #:use-module (zfc home packages rime-ice)
   #:use-module (zfc home dev)
-  #:use-module (zfc packages emacs-xyz)
-  #:use-module (zfc packages fonts)
   #:export (home-base))
 
 (define home-base
@@ -2414,106 +2417,108 @@ here is =sops= secrets config for my dae config.
      (list
 	  <<home-pkgs>>
 	  )
-     (specifications->packages (append
-                                (list
-                                 ;; wm
-                                 "noctalia"
-                                 ;; dev
-                                 "rust"
-                                 "rassumfrassum"
-
-						         ;; fonts
-						         "font-google-noto-emoji"
-						         "font-cormorant"
-								 "font-lxgw-markergothic"
-						         "font-iosevka-ss02"
-								 "font-iosevka-ss08"
-								 "font-iosevka-ss17"
-								 "font-iosevka-slab"
-								 "font-nerd-symbols"
-								 ;; "font-lxgw-wenkai"
-
-								 "librewolf"
-								 "qutebrowser"
-								 "qtwayland"
-								 "virt-manager"
-								 "wl-clipboard"
-
-								 ;; cli
-								 "brightnessctl"
-								 "bat"
-								 "telegram-desktop"
-								 "ddcutil"
-								 "github-cli"
-								 "tree-sitter-cli"
-								 "bluez"
-								 "openssh"
-								 "just"
-
-								 "make"
-								 "unzip"
-                                 "btop"
-								 "sops"
-								 "yt-dlp"
-								 "krdc"
-								 "alacritty"
-								 "gcc-toolchain"
-								 "xwayland-satellite"
-								 "git"
-								 "file"
-								 "neovim"
-								 "neofetch"
-								 "curl"
-								 ;; fennel
-								 "fnlfmt"
-
-
-								 
-								 "7zip"
-								 "imagemagick"
-								 "eza"
-
-								 "cryptsetup")
-                                %zfc-dev-packages))))
+     (specifications->packages
+      (list
+       <<home-specs>>
+       ))
+     ;; NOTE: %zfc-dev-packages is a function in (zfc home dev) so that its
+     ;; `specifications->packages' call stays out of dev's module load.  That
+     ;; way the package-module scan that `-L' triggers never finds a
+     ;; half-loaded dev module (see the NOTE in dev.scm).
+     (%zfc-dev-packages)))
 
    (services
     (append (list 
              (service home-pipewire-service-type)
              (service home-files-service-type
                       `(
-                        <<hm-files>>
+                        <<home-files>>
                         ))
-             <<hm-services>>
+             <<home-services>>
              )
             %zfc-dev-services
             %base-home-services))))
 
 home-base
 #+end_src
-*** The =dev.scm=
+*** The =base.scm= section about wm and apps
+~home-specs~
+#+begin_src scheme :noweb-ref home-specs
+;; wm
+"noctalia"
+"xwayland-satellite"
+;; apps
+"librewolf"
+"qutebrowser"
+"qtwayland"
+"virt-manager"
+"wl-clipboard"
+"telegram-desktop"
+"krdc"
+"alacritty"
+#+end_src
+*** The =base.scm= section about fonts
+~home-specs~
+#+begin_src scheme :noweb-ref home-specs
+"font-google-noto-emoji"
+"font-cormorant"
+"font-lxgw-markergothic"
+"font-iosevka-ss02"
+"font-iosevka-ss08"
+"font-iosevka-ss17"
+"font-iosevka-slab"
+"font-nerd-symbols"
+;; "font-lxgw-wenkai"
+#+end_src
+*** The =base.scm= section about cli tools
+~home-specs~
+#+begin_src scheme :noweb-ref home-specs
+;; dev
+"rust"
+"rassumfrassum"
+"fnlfmt"
+;; cli
+"brightnessctl"
+"bat"
+"ddcutil"
+"github-cli"
+"tree-sitter-cli"
+"bluez"
+"openssh"
+"just"
+"make"
+"unzip"
+"btop"
+"sops"
+"yt-dlp"
+"gcc-toolchain"
+"git"
+"file"
+"neovim"
+"neofetch"
+"curl"
+"7zip"
+"imagemagick"
+"eza"
+"cryptsetup"
+#+end_src
+*** The =dev.scm= inbox
 #+begin_src scheme :tangle mods/zfc/home/dev.scm :noweb yes
 (define-module (zfc home dev)
   #:use-module (gnu packages)
-  #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages shells)
-  #:use-module (zfc config common)
-  #:use-module (gnu home services shepherd)
-  #:use-module (gnu packages mail)
-  #:use-module (gnu packages bash)
-  #:use-module (sops secrets)
-  #:use-module (sops home services sops)
-  #:use-module (bluebox packages blue)
   #:use-module (gnu services)
   #:use-module (gnu home)
   #:use-module (gnu home services)
-  #:use-module (gnu home services shells)
-  #:use-module (gnu home services gnupg)
+  <<dev-use>>
   #:use-module (guix gexp)
-  #:use-module (zfc home packages rime-ice)
-  #:use-module (zfc packages emacs-xyz)
   #:export (%zfc-dev-packages %zfc-dev-services))
 
-(define %zfc-dev-packages
+;; NOTE: %zfc-dev-packages is deliberately a *function*: calling it (instead
+;; of dereferencing a variable) keeps `specifications->packages' out of this
+;; module's load.  A specs call during module load triggers the package-module
+;; scan, which loads (zfc home base) from its file; base in turn consumes this
+;; module, and a half-loaded module would fail with "unbound variable".
+(define (%zfc-dev-packages)
   (append
    (list
     <<dev-pkgs>>
@@ -2522,9 +2527,9 @@ home-base
                               "emacs-next-pgtk"
                               ;; core
                               "ripgrep"
-							  "fd"
+				  "fd"
                               <<emacs-packages>>
-							  ))))
+				  ))))
 
 (define %zfc-dev-services
   (append (list
@@ -2534,15 +2539,22 @@ home-base
 (define home-dev
   (home-environment
    (packages
-    %zfc-dev-packages)
+    (%zfc-dev-packages))
    (services
     %zfc-dev-services)))
 
 home-dev
 #+end_src
 *** The =base.scm= section about fcitx5
-~hm-files~
-#+begin_src scheme :noweb-ref hm-files
+~home-use~
+#+begin_src scheme :noweb-ref home-use
+#:use-module (gnu packages fcitx5)
+#:use-module (rosenthal services desktop)
+#:use-module (gnu home services desktop)
+#:use-module (gnu home services sound)
+#+end_src
+~home-files~
+#+begin_src scheme :noweb-ref home-files
 ;; NOTE on rime data: these entries symlink read-only store paths into the
 ;; rime user data dir.  rime reads them fine and keeps its writable state
 ;; (userdb, build/) in the user dir itself.  If you ever see rime failing to
@@ -2568,12 +2580,12 @@ home-dev
 (".local/share/fcitx5/rime/symbols_caps_v.yaml" 
  ,(file-append rime-ice "/share/rime-data/symbols_caps_v.yaml"))
 (".local/share/fcitx5/rime/default.custom.yaml"
- ,(local-file "packages/default.custom.yaml"))
+ ,(local-file "../../../files/plain/default.custom.yaml"))
 
 #+end_src
 
-~hm-services~
-#+begin_src scheme :noweb-ref hm-services
+~home-services~
+#+begin_src scheme :noweb-ref home-services
 (service home-dbus-service-type)
 (service home-graphical-session-service-type
          (home-graphical-session-configuration
@@ -2588,7 +2600,7 @@ home-dev
            (list fcitx5-rime))))
 #+end_src
 patch to use flypy
-#+begin_src yaml :tangle mods/zfc/home/packages/default.custom.yaml
+#+begin_src yaml :tangle files/plain/default.custom.yaml
   patch:
     __include: rime_ice_suggestion:/
     schema_list:
@@ -2622,7 +2634,12 @@ patch to use flypy
       (description "Rime 配置：雾凇拼音 | 长期维护的简体词库")
       (license license:gpl3+)))
 #+end_src
-*** The =base.scm= section about gpg
+*** The =dev.scm= section about gpg
+~dev-use~
+#+begin_src scheme :noweb-ref dev-use
+#:use-module (gnu packages gnupg)
+#:use-module (gnu home services gnupg)
+#+end_src
 ~dev-services~
 #+begin_src scheme :noweb-ref dev-services
 (service home-gpg-agent-service-type
@@ -2632,7 +2649,7 @@ patch to use flypy
           (extra-content "allow-loopback-pinentry")
           (ssh-support? #t)))
 #+end_src
-*** The =base.scm= section about env
+*** The =dev.scm= section about env
 ~dev-services~
 #+begin_src scheme :noweb-ref dev-services
 (simple-service 'base-env-vars-service
@@ -2640,16 +2657,20 @@ patch to use flypy
                 `(("EDITOR" . "emacsclient")))
 #+end_src
 *** The =base.scm= section about bash
-~hm-services~
-#+begin_src scheme :noweb-ref hm-services
+~home-use~
+#+begin_src scheme :noweb-ref home-use
+#:use-module (gnu home services shells)
+#+end_src
+~home-services~
+#+begin_src scheme :noweb-ref home-services
 (service home-bash-service-type
 		 (home-bash-configuration
 		   (aliases '(("em" . "emacsclient")
 					  ("e" . "nvim")))
 		   (environment-variables '())
-		   (bashrc (list (local-file "plain/.bashrc" "bashrc")))
+		   (bashrc (list (local-file "../../../files/plain/.bashrc" "bashrc")))
 		   (bash-profile (list (local-file
-								"plain/.bash_profile"
+								"../../../files/plain/.bash_profile"
 								"bash_profile")))))
 #+end_src
 *** COMMENT The =base.scm= section about openssh
@@ -2657,14 +2678,16 @@ patch to use flypy
 #+begin_src scheme :noweb-ref home-use
 #:use-module (gnu home services ssh)
 #+end_src
-#+begin_src scheme :noweb-ref hm-services
+#+begin_src scheme :noweb-ref home-services
 (service home-openssh-service-type
 		 (home-openssh-configuration))
 #+end_src
-*** The =base.scm= section about fish
-~home-use~
-#+begin_src scheme :noweb-ref home-use
+*** The =dev.scm= section about fish
+~dev-use~
+#+begin_src scheme :noweb-ref dev-use
 #:use-module (gnu packages shells)
+#:use-module (gnu home services shells)
+#:use-module (gnu home services shepherd)
 #:use-module (zfc config common)
 #+end_src
 #+begin_src scheme :noweb-ref dev-services
@@ -2726,15 +2749,15 @@ patch to use flypy
 "zoxide"
 "fzf"
 #+end_src
-*** The =base.scm= section about rustconfig
+*** The =dev.scm= section about rustconfig
 ~dev-services~
 #+begin_src scheme :noweb-ref dev-services
   (simple-service 'cargo-config
   	home-files-service-type
-    `(( ".cargo/config.toml" ,(local-file "plain/cargo.toml"))))
+    `(( ".cargo/config.toml" ,(local-file "../../../files/plain/cargo.toml"))))
 #+end_src
 crates mirror from [[https://rsproxy.cn/][rsproxy]]
-#+begin_src toml :tangle mods/zfc/home/plain/cargo.toml
+#+begin_src toml :tangle files/plain/cargo.toml
   [source.crates-io]
   replace-with = 'rsproxy-sparse'
   [source.rsproxy]
@@ -2746,16 +2769,16 @@ crates mirror from [[https://rsproxy.cn/][rsproxy]]
   [net]
   git-fetch-with-cli = true
 #+end_src
-*** The =base.scm= section about gitconfig
+*** The =dev.scm= section about gitconfig
 ~dev-services~
 #+begin_src scheme :noweb-ref dev-services
   (simple-service 'git-gpg-config
       home-files-service-type
     (list `(".gitconfig"
-            ,(local-file "plain/gitconfig"))))
+            ,(local-file "../../../files/plain/gitconfig"))))
 #+end_src
 git config
-#+begin_src gitconfig :tangle mods/zfc/home/plain/gitconfig
+#+begin_src gitconfig :tangle files/plain/gitconfig
   [user]
   	name = zhafacai
   	email = zhafacai@gmail.com
@@ -2763,10 +2786,9 @@ git config
   [commit]
   	gpgsign = true
 #+end_src
-*** The =base.scm= section about notmuch
-~home-use~
-#+begin_src scheme :noweb-ref home-use
-#:use-module (gnu home services shepherd)
+*** The =dev.scm= section about notmuch
+~dev-use~
+#+begin_src scheme :noweb-ref dev-use
 #:use-module (gnu packages mail)
 #:use-module (gnu packages bash)
 #+end_src
@@ -2813,7 +2835,7 @@ SyncState *
                         "export NOTMUCH_DATABASE=\"${NOTMUCH_DATABASE:-$HOME/Documents/Mail}\"\n"
                         (file-append isync "/bin/mbsync") " gmail\n"
                         (file-append notmuch "/bin/notmuch") " new\n"
-                        (file-append bash "/bin/bash") " " (local-file "plain/notmuch-tag-new") "\n"))
+                        (file-append bash "/bin/bash") " " (local-file "../../../files/plain/notmuch-tag-new") "\n"))
                   #:documentation "Synchronize Gmail via mbsync, index it with notmuch and apply the tagging rules, daily at noon.")))
 #+end_src
 ~dev-services~
@@ -2832,7 +2854,7 @@ SyncState *
 
 #+end_src
 tangle scripts
-#+begin_src sh :tangle mods/zfc/home/plain/notmuch-tag-new
+#+begin_src sh :tangle files/plain/notmuch-tag-new
 #!/bin/sh
 
 notmuch tag +crypto -- 'from:coindesk.com or from:cointelegraph.com or from:binance.com or from:okx.com or from:coinbase.com or from:gmgn.ai or from:coingecko.com or from:tradingview.com'
@@ -2847,20 +2869,20 @@ notmuch tag +ai -- 'from:openai.com or from:openrouter.ai or from:nvidia.com or 
 *** The =base.scm= section about theme
 ~home-use~
 #+begin_src scheme :noweb-ref home-use
-#:use-module (rosenthal services desktop)
+#:use-module (rosenthal home services desktop)
 #:use-module (gnu packages gnome-xyz)
 #+end_src
-~hm-services~
-#+begin_src scheme :noweb-ref hm-services
+~home-services~
+#+begin_src scheme :noweb-ref home-services
 (service home-theme-service-type
          (home-theme-configuration
           (packages (list qogir-icon-theme))
           (icon-theme "Qogir")
           (cursor-theme "Qogir")))
 #+end_src
-*** The =base.scm= section about elfeed
-~home-use~
-#+begin_src scheme :noweb-ref home-use
+*** The =dev.scm= section about elfeed
+~dev-use~
+#+begin_src scheme :noweb-ref dev-use
 #:use-module (sops secrets)
 #:use-module (sops home services sops)
 #+end_src
@@ -2887,7 +2909,7 @@ notmuch tag +ai -- 'from:openai.com or from:openrouter.ai or from:nvidia.com or 
 #+end_src
 *** The mirror for =channels.scm=
 I just use sjtu mirror. 
-~chl~
+~channels~
 #+begin_src scheme :noweb-ref channels
 (channel
  (name 'guix)
@@ -2901,7 +2923,7 @@ I just use sjtu mirror.
     "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
 #+end_src
 *** The nonguix for =channels.scm=
-~chl~
+~channels~
 #+begin_src scheme :noweb-ref channels
 (channel
  (name 'nonguix)
@@ -2922,7 +2944,7 @@ I just use sjtu mirror.
 ;; google-chrome-stable
 #+end_src
 *** The bluebox for =channels.scm=
-~chl~
+~channels~
 #+begin_src scheme :noweb-ref channels
 (channel
  (name 'bluebox)
@@ -2934,8 +2956,8 @@ I just use sjtu mirror.
    (openpgp-fingerprint
     "5132 3571 CEED 988F 52FC 467C 6F98 DBF3 EA7F 4B37"))))
 #+end_src
-~home-use~
-#+begin_src scheme :noweb-ref home-use
+~dev-use~
+#+begin_src scheme :noweb-ref dev-use
 #:use-module (bluebox packages blue)
 #+end_src
 ~dev-pkgs~
@@ -2943,7 +2965,7 @@ I just use sjtu mirror.
 blue
 #+end_src
 *** The rosenthal for =channels.scm=
-~chl~
+~channels~
 #+begin_src scheme :noweb-ref channels
 (channel
  (name 'rosenthal)
@@ -2964,7 +2986,7 @@ blue
 mihomo
 #+end_src
 *** The saayix for =channels.scm=
-~chl~
+~channels~
 #+begin_src scheme :noweb-ref channels
 (channel
  (name 'saayix)
@@ -2987,7 +3009,7 @@ ghostty
 ;; yazi
 #+end_src
 *** The sops for =channels.scm=
-~chl~
+~channels~
 #+begin_src scheme :noweb-ref channels
 (channel
  (name 'sops-guix)
@@ -3000,7 +3022,7 @@ ghostty
     "8D10 60B9 6BB8 292E 829B  7249 AED4 1CC1 93B7 01E2"))))
 #+end_src
 *** COMMENT The guixcn for =channels.scm=
-~chl~
+~channels~
 #+begin_src scheme :noweb-ref channels
 (channel
  (name 'guixcn)

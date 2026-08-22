@@ -8,8 +8,7 @@
 (add-to-list 'default-frame-alist '(alpha-background . 90))
 (setq vc-handled-backends '(Git))
 
-(setq gc-cons-threshold most-positive-fixnum
-      use-short-answers t)
+(setq use-short-answers t)
 
 (setq frame-resize-pixelwise t
       frame-inhibit-implied-resize t

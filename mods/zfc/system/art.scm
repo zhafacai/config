@@ -1,24 +1,21 @@
 ;; -*- mode: scheme; -*-
 (define-module (zfc system art)
   #:use-module (gnu)
+  #:use-module (gnu services virtualization)
+  #:use-module (gnu services nix)
+  #:use-module (gnu services shepherd)
+  #:use-module (gnu services networking)
   #:use-module (saayix packages terminals)
   #:use-module (saayix packages file-managers)
   #:use-module (gnu system nss)
   #:use-module (gnu packages window-management)
-  #:use-module (gnu packages shells)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages vim)
   #:use-module (gnu services desktop)
   #:use-module (gnu services xorg)
-  #:use-module (gnu services nix)
-  #:use-module (gnu services virtualization)
   #:use-module (gnu services guix)
-  #:use-module (gnu services networking)
-  #:use-module (gnu services shepherd)
   #:use-module (gnu home)
   #:use-module (gnu home services)
-  #:use-module (guix packages)
-  #:use-module (guix channels)
   #:use-module (nongnu packages linux)
   #:use-module (nongnu system linux-initrd)
   #:use-module (rosenthal utils file)
@@ -104,11 +101,11 @@
 
  (services (append (list
                     (service bluetooth-service-type
-							 (bluetooth-configuration (auto-enable? #t)))
+                             (bluetooth-configuration (auto-enable? #t)))
                     (service libvirt-service-type
-							 (libvirt-configuration))
+                             (libvirt-configuration))
                     (service virtlog-service-type
-							 (virtlog-configuration))
+                             (virtlog-configuration))
                     (service nix-service-type
                       (nix-configuration
                     	(extra-config
@@ -142,8 +139,8 @@
 									 config => (guix-configuration
 									            (inherit config)
 									            (authorized-keys
-									             (append (list (local-file "./signing-key.pub")
-									                           (local-file "./guix-moe.pub"))
+									             (append (list (local-file "../../../files/system/signing-key.pub")
+									                           (local-file "../../../files/system/guix-moe.pub"))
 									                     %default-authorized-guix-keys))
 									            (substitute-urls '("https://cache-cdn.guix.moe"
 																   "https://mirror.sjtu.edu.cn/guix/"

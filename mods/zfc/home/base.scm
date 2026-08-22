@@ -1,36 +1,20 @@
 (define-module (zfc home base)
   #:use-module (gnu packages)
-  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages fcitx5)
-  #:use-module (gnu packages shells)
-  #:use-module (zfc config common)
-  #:use-module (gnu home services shepherd)
-  #:use-module (gnu packages mail)
-  #:use-module (gnu packages bash)
   #:use-module (rosenthal services desktop)
+  #:use-module (gnu home services desktop)
+  #:use-module (gnu home services sound)
+  #:use-module (gnu home services shells)
+  #:use-module (rosenthal home services desktop)
   #:use-module (gnu packages gnome-xyz)
-  #:use-module (sops secrets)
-  #:use-module (sops home services sops)
   ;; #:use-module (nongnu packages chrome)
-  #:use-module (bluebox packages blue)
   #:use-module (rosenthal packages networking)
   #:use-module (gnu services)
   #:use-module (gnu home)
   #:use-module (gnu home services)
-  #:use-module (gnu home services shells)
-  #:use-module (gnu home services guix)
-  #:use-module (gnu home services gnupg)
-  #:use-module (gnu home services desktop)
-  #:use-module (gnu home services sound)
-  #:use-module (rosenthal home services desktop)
-  #:use-module (rosenthal packages wm)
   #:use-module (guix gexp)
-  #:use-module (guix channels)
-  #:use-module (guix transformations)
   #:use-module (zfc home packages rime-ice)
   #:use-module (zfc home dev)
-  #:use-module (zfc packages emacs-xyz)
-  #:use-module (zfc packages fonts)
   #:export (home-base))
 
 (define home-base
@@ -41,67 +25,63 @@
 	  ;; google-chrome-stable
 	  mihomo
 	  )
-     (specifications->packages (append
-                                (list
-                                 ;; wm
-                                 "noctalia"
-                                 ;; dev
-                                 "rust"
-                                 "rassumfrassum"
-
-						         ;; fonts
-						         "font-google-noto-emoji"
-						         "font-cormorant"
-								 "font-lxgw-markergothic"
-						         "font-iosevka-ss02"
-								 "font-iosevka-ss08"
-								 "font-iosevka-ss17"
-								 "font-iosevka-slab"
-								 "font-nerd-symbols"
-								 ;; "font-lxgw-wenkai"
-
-								 "librewolf"
-								 "qutebrowser"
-								 "qtwayland"
-								 "virt-manager"
-								 "wl-clipboard"
-
-								 ;; cli
-								 "brightnessctl"
-								 "bat"
-								 "telegram-desktop"
-								 "ddcutil"
-								 "github-cli"
-								 "tree-sitter-cli"
-								 "bluez"
-								 "openssh"
-								 "just"
-
-								 "make"
-								 "unzip"
-                                 "btop"
-								 "sops"
-								 "yt-dlp"
-								 "krdc"
-								 "alacritty"
-								 "gcc-toolchain"
-								 "xwayland-satellite"
-								 "git"
-								 "file"
-								 "neovim"
-								 "neofetch"
-								 "curl"
-								 ;; fennel
-								 "fnlfmt"
-
-
-								 
-								 "7zip"
-								 "imagemagick"
-								 "eza"
-
-								 "cryptsetup")
-                                %zfc-dev-packages))))
+     (specifications->packages
+      (list
+       ;; wm
+       "noctalia"
+       "xwayland-satellite"
+       ;; apps
+       "librewolf"
+       "qutebrowser"
+       "qtwayland"
+       "virt-manager"
+       "wl-clipboard"
+       "telegram-desktop"
+       "krdc"
+       "alacritty"
+       "font-google-noto-emoji"
+       "font-cormorant"
+       "font-lxgw-markergothic"
+       "font-iosevka-ss02"
+       "font-iosevka-ss08"
+       "font-iosevka-ss17"
+       "font-iosevka-slab"
+       "font-nerd-symbols"
+       ;; "font-lxgw-wenkai"
+       ;; dev
+       "rust"
+       "rassumfrassum"
+       "fnlfmt"
+       ;; cli
+       "brightnessctl"
+       "bat"
+       "ddcutil"
+       "github-cli"
+       "tree-sitter-cli"
+       "bluez"
+       "openssh"
+       "just"
+       "make"
+       "unzip"
+       "btop"
+       "sops"
+       "yt-dlp"
+       "gcc-toolchain"
+       "git"
+       "file"
+       "neovim"
+       "neofetch"
+       "curl"
+       "7zip"
+       "imagemagick"
+       "eza"
+       "cryptsetup"
+       ))
+     ;; NOTE: %zfc-dev-packages is a function in (zfc home dev) so that its
+     ;; `specifications->packages' call stays out of dev's module load.  That
+     ;; way the package-module scan that `-L' triggers never finds a
+     ;; half-loaded dev module (see the NOTE in dev.scm).
+     (%zfc-dev-packages)))
 
    (services
     (append (list 
@@ -133,7 +113,7 @@
                         (".local/share/fcitx5/rime/symbols_caps_v.yaml" 
                          ,(file-append rime-ice "/share/rime-data/symbols_caps_v.yaml"))
                         (".local/share/fcitx5/rime/default.custom.yaml"
-                         ,(local-file "packages/default.custom.yaml"))
+                         ,(local-file "../../../files/plain/default.custom.yaml"))
                         
                         ))
              (service home-dbus-service-type)
@@ -153,9 +133,9 @@
              		   (aliases '(("em" . "emacsclient")
              					  ("e" . "nvim")))
              		   (environment-variables '())
-             		   (bashrc (list (local-file "plain/.bashrc" "bashrc")))
+             		   (bashrc (list (local-file "../../../files/plain/.bashrc" "bashrc")))
              		   (bash-profile (list (local-file
-             								"plain/.bash_profile"
+             								"../../../files/plain/.bash_profile"
              								"bash_profile")))))
              (service home-theme-service-type
                       (home-theme-configuration
