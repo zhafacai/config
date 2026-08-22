@@ -55,6 +55,8 @@
                               "emacs-notmuch"
                               "isync"
                               "msmtp"
+                              "openssl"
+                              "nss-certs"
                               ;; fish plugins
                               "starship"
                               "zoxide"

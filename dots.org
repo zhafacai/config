@@ -2074,6 +2074,8 @@ email
 "emacs-notmuch"
 "isync"
 "msmtp"
+"openssl"
+"nss-certs"
 #+end_src
 
 *** The =zfc-tool.el= section for calling provide
