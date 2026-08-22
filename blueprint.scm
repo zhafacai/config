@@ -34,7 +34,7 @@
   Upgrade guix home.
   "))
   ($ "guix" "time-machine" "-C" "channels.lock" "--"
-     "home" "reconfigure" "mods/zfc/system/art.scm" "-L" "mods"))
+     "home" "reconfigure" "mods/zfc/home/dev.scm" "-L" "mods"))
 
 (define-command (upgrade-guix-command args)
   ((invoke "ugg")

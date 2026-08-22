@@ -173,9 +173,9 @@
   (setq dired-subtree-use-backgrounds nil)
   :bind
   (:map dired-mode-map
-              ("<tab>" . dired-subtree-toggle)
-              ("<C-return>" . dired-subtree-cycle)
-              ("h" . fc/dired-subtree-up)))
+        ("<tab>" . dired-subtree-toggle)
+        ("<C-return>" . dired-subtree-cycle)
+        ("h" . fc/dired-subtree-up)))
 
 (use-package dired-filter
   :after dired)

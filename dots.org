@@ -668,9 +668,9 @@ dired
   (setq dired-subtree-use-backgrounds nil)
   :bind
   (:map dired-mode-map
-              ("<tab>" . dired-subtree-toggle)
-              ("<C-return>" . dired-subtree-cycle)
-              ("h" . fc/dired-subtree-up)))
+        ("<tab>" . dired-subtree-toggle)
+        ("<C-return>" . dired-subtree-cycle)
+        ("h" . fc/dired-subtree-up)))
 
 (use-package dired-filter
   :after dired)
@@ -687,11 +687,25 @@ dired
   :config
   (setq dired-preview-max-size (* (expt 2 20) 10))
   (setq dired-preview-delay 0.2))
+#+end_src
+
+#+begin_src emacs-lisp
 
 (use-package ready-player
   :config
   (setq ready-player-my-media-collection-location "~/Music")
   (ready-player-mode +1))
+#+end_src
+
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+;; ready-player
+"mpv"
+"ffmpeg"
+"ffmpegthumbnailer"
+#+end_src
+
+#+begin_src emacs-lisp
 
 (use-package dired
   :ensure nil
@@ -1132,7 +1146,7 @@ prog-mode
 
 org-mode
 
-(epkgs "~epkgs~" n "#+begin_src scheme :noweb-ref epkgs" n r n "#+end_src" :post (org-edit-src-code))
+(epkgs "~emacs-packages~" n "#+begin_src scheme :noweb-ref emacs-packages" n r n "#+end_src" :post (org-edit-src-code))
 (hmpkgs "~home-pkgs~" n "#+begin_src scheme :noweb-ref home-pkgs" n r n "#+end_src" :post (org-edit-src-code))
 (hmuse "~home-use~" n "#+begin_src scheme :noweb-ref home-use" n "#:use-module " r n "#+end_src" :post (org-edit-src-code))
 (chl "~chl~" n "#+begin_src scheme :noweb-ref channels" n r n "#+end_src" :post (org-edit-src-code))
@@ -1518,11 +1532,9 @@ reader
                        (set-window-dedicated-p (selected-window) nil)
                        (delete-other-windows))))
 #+end_src
-~home-pkgs~
-#+begin_src scheme :noweb-ref home-pkgs
-
-  emacs-reader
-
+~dev-pkgs~
+#+begin_src scheme :noweb-ref dev-pkgs
+emacs-reader
 #+end_src
 
 nov
@@ -1605,11 +1617,10 @@ telegram
   (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
 #+end_src
 
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
-
-  "emacs-telega"
-
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+;; telega
+"emacs-telega"
 #+end_src
 
 *** The =zfc-tool.el= section about git
@@ -1662,8 +1673,9 @@ rime
   :config
   (setq rime-user-data-dir "~/.local/share/fcitx5/rime/"))
 #+end_src
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+;; rime
 "emacs-rime"
 #+end_src
 
@@ -1704,11 +1716,10 @@ emacs-everywhere
 		   :title window-title
 		   :geometry window-geometry))))))
 #+end_src
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
-
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+;; emacs-everywhere
 "wtype"
-
 #+end_src
 guix
 #+begin_src emacs-lisp
@@ -1718,11 +1729,10 @@ guix
   :bind
   ("C-x i" . guix))
 #+end_src
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
-
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+;; guix
 "emacs-guix"
-
 #+end_src
 
 translater
@@ -1738,8 +1748,9 @@ translater
   :bind
   ("C-x l" . gt-translate))
 #+end_src
-~epkgs~
-#+begin_src scheme :noweb-ref epkgs
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+;; gt
 "sdcv"
 #+end_src
 
@@ -1799,18 +1810,23 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 direnv
 #+begin_src emacs-lisp
-  ;; (use-package direnv
-  ;;   :config
-  ;;   (direnv-mode))
-  (use-package ben
-    :ensure (:host codeberg :repo "pastor/ben.el")
-    :bind
-    ("C-c E" . ben-command-map)
-    :config
-    (setq ben-indicator `(,(substring-no-properties (nerd-icons-faicon "nf-fa-cubes"))
-                          "[" (:eval (ben--status)) "]"))
-    :init
-    (add-hook 'after-init-hook #'ben-global-mode 99))
+;; (use-package direnv
+;;   :config
+;;   (direnv-mode))
+(use-package ben
+  :ensure (:host codeberg :repo "pastor/ben.el")
+  :bind
+  ("C-c E" . ben-command-map)
+  :config
+  (setq ben-indicator `(,(substring-no-properties (nerd-icons-faicon "nf-fa-cubes"))
+                        "[" (:eval (ben--status)) "]"))
+  :init
+  (add-hook 'after-init-hook #'ben-global-mode 99))
+#+end_src
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+;; ben
+"direnv"
 #+end_src
 
 *** The =zfc-tool.el= section about ai
@@ -2048,8 +2064,9 @@ email
   :after (notmuch org))
 
 #+end_src
-~epkgs~ for email
-#+begin_src scheme :noweb-ref epkgs
+~emacs-packages~ for email
+#+begin_src scheme :noweb-ref emacs-packages
+;; notmuch
 "notmuch"
 "emacs-notmuch"
 "isync"
@@ -2363,8 +2380,8 @@ here is =sops= secrets config for my dae config.
         (chmod "/etc/dae/base.dae" #o600)
         (chmod "/etc/dae/config.dae" #o600)))
 #+end_src
-** The =base.scm= section for Guix Home
-*** The inbox =base.scm=
+** The Guix Home Section
+*** The =base.scm=
 #+begin_src scheme :tangle mods/zfc/home/base.scm :noweb yes
 (define-module (zfc home base)
   #:use-module (gnu packages)
@@ -2385,25 +2402,24 @@ here is =sops= secrets config for my dae config.
   #:use-module (guix channels)
   #:use-module (guix transformations)
   #:use-module (zfc home packages rime-ice)
+  #:use-module (zfc home dev)
   #:use-module (zfc packages emacs-xyz)
   #:use-module (zfc packages fonts)
   #:export (home-base))
 
 (define home-base
   (home-environment
-	(packages
-     (append
-      (list
-	   <<home-pkgs>>
-	   )
-      (specifications->packages (list
-                                 ;; emacs
-                                 <<epkgs>>
-                                 "emacs-next-pgtk"
+   (packages
+    (append
+     (list
+	  <<home-pkgs>>
+	  )
+     (specifications->packages (append
+                                (list
+                                 ;; wm
                                  "noctalia"
                                  ;; dev
                                  "rust"
-                                 
                                  "rassumfrassum"
 
 						         ;; fonts
@@ -2432,23 +2448,18 @@ here is =sops= secrets config for my dae config.
 								 "tree-sitter-cli"
 								 "bluez"
 								 "openssh"
-								 "fzf"
 								 "just"
-								 "starship"
+
 								 "make"
 								 "unzip"
-								 "zoxide"
-								 "btop"
+                                 "btop"
 								 "sops"
 								 "yt-dlp"
 								 "krdc"
-								 "ripgrep"
-								 "fd"
 								 "alacritty"
 								 "gcc-toolchain"
 								 "xwayland-satellite"
 								 "git"
-                                 "direnv"
 								 "file"
 								 "neovim"
 								 "neofetch"
@@ -2457,32 +2468,77 @@ here is =sops= secrets config for my dae config.
 								 "fnlfmt"
 
 
-								 ;; ready-player
-                                 "mpv"
-                                 "ffmpeg"
-								 "ffmpegthumbnailer"
-								 "vips"
-								 "poppler"
-								 "epub-thumbnailer"
-								 "mediainfo"
+								 
 								 "7zip"
 								 "imagemagick"
 								 "eza"
 
-								 "cryptsetup"))))
+								 "cryptsetup")
+                                %zfc-dev-packages))))
 
-	(services
-     (append (list 
-              (service home-pipewire-service-type)
-              (service home-files-service-type
-                       `(
-                         <<hm-files>>
-                         ))
-              <<hm-services>>
-              )
-             %base-home-services))))
+   (services
+    (append (list 
+             (service home-pipewire-service-type)
+             (service home-files-service-type
+                      `(
+                        <<hm-files>>
+                        ))
+             <<hm-services>>
+             )
+            %zfc-dev-services
+            %base-home-services))))
 
 home-base
+#+end_src
+*** The =dev.scm=
+#+begin_src scheme :tangle mods/zfc/home/dev.scm :noweb yes
+(define-module (zfc home dev)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages shells)
+  #:use-module (zfc config common)
+  #:use-module (gnu home services shepherd)
+  #:use-module (gnu packages mail)
+  #:use-module (gnu packages bash)
+  #:use-module (sops secrets)
+  #:use-module (sops home services sops)
+  #:use-module (bluebox packages blue)
+  #:use-module (gnu services)
+  #:use-module (gnu home)
+  #:use-module (gnu home services)
+  #:use-module (gnu home services shells)
+  #:use-module (gnu home services gnupg)
+  #:use-module (guix gexp)
+  #:use-module (zfc home packages rime-ice)
+  #:use-module (zfc packages emacs-xyz)
+  #:export (%zfc-dev-packages %zfc-dev-services))
+
+(define %zfc-dev-packages
+  (append
+   (list
+    <<dev-pkgs>>
+    )
+   (specifications->packages (list
+                              "emacs-next-pgtk"
+                              ;; core
+                              "ripgrep"
+							  "fd"
+                              <<emacs-packages>>
+							  ))))
+
+(define %zfc-dev-services
+  (append (list
+           <<dev-services>>
+           )))
+
+(define home-dev
+  (home-environment
+   (packages
+    %zfc-dev-packages)
+   (services
+    %zfc-dev-services)))
+
+home-dev
 #+end_src
 *** The =base.scm= section about fcitx5
 ~hm-files~
@@ -2567,8 +2623,8 @@ patch to use flypy
       (license license:gpl3+)))
 #+end_src
 *** The =base.scm= section about gpg
-~hm-services~
-#+begin_src scheme :noweb-ref hm-services
+~dev-services~
+#+begin_src scheme :noweb-ref dev-services
 (service home-gpg-agent-service-type
          (home-gpg-agent-configuration
           (pinentry-program (file-append pinentry-qt "/bin/pinentry-qt"))
@@ -2577,8 +2633,8 @@ patch to use flypy
           (ssh-support? #t)))
 #+end_src
 *** The =base.scm= section about env
-~hm-services~
-#+begin_src scheme :noweb-ref hm-services
+~dev-services~
+#+begin_src scheme :noweb-ref dev-services
 (simple-service 'base-env-vars-service
                 home-environment-variables-service-type
                 `(("EDITOR" . "emacsclient")))
@@ -2611,7 +2667,7 @@ patch to use flypy
 #:use-module (gnu packages shells)
 #:use-module (zfc config common)
 #+end_src
-#+begin_src scheme :noweb-ref hm-services
+#+begin_src scheme :noweb-ref dev-services
 (service home-fish-service-type
          (home-fish-configuration
            (config
@@ -2663,9 +2719,16 @@ patch to use flypy
                   (documentation "Initialize and update Fish plugins via fisher."))))
 
 #+end_src
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+;; fish plugins
+"starship"
+"zoxide"
+"fzf"
+#+end_src
 *** The =base.scm= section about rustconfig
-~hm-services~
-#+begin_src scheme :noweb-ref hm-services
+~dev-services~
+#+begin_src scheme :noweb-ref dev-services
   (simple-service 'cargo-config
   	home-files-service-type
     `(( ".cargo/config.toml" ,(local-file "plain/cargo.toml"))))
@@ -2684,8 +2747,8 @@ crates mirror from [[https://rsproxy.cn/][rsproxy]]
   git-fetch-with-cli = true
 #+end_src
 *** The =base.scm= section about gitconfig
-~hm-services~
-#+begin_src scheme :noweb-ref hm-services
+~dev-services~
+#+begin_src scheme :noweb-ref dev-services
   (simple-service 'git-gpg-config
       home-files-service-type
     (list `(".gitconfig"
@@ -2735,8 +2798,8 @@ Create Near
 SyncState *
 
 #+end_src
-~hm-services~
-#+begin_src scheme :noweb-ref hm-services
+~dev-services~
+#+begin_src scheme :noweb-ref dev-services
 (simple-service 'mbsync-gmail-timer-service
                 home-shepherd-service-type
                 (list
@@ -2753,8 +2816,8 @@ SyncState *
                         (file-append bash "/bin/bash") " " (local-file "plain/notmuch-tag-new") "\n"))
                   #:documentation "Synchronize Gmail via mbsync, index it with notmuch and apply the tagging rules, daily at noon.")))
 #+end_src
-~hm-services~
-#+begin_src scheme :noweb-ref hm-services
+~dev-services~
+#+begin_src scheme :noweb-ref dev-services
 (simple-service 'notmuch-config-service
                 home-files-service-type
                 (list
@@ -2801,8 +2864,8 @@ notmuch tag +ai -- 'from:openai.com or from:openrouter.ai or from:nvidia.com or 
 #:use-module (sops secrets)
 #:use-module (sops home services sops)
 #+end_src
-~hm-services~
-#+begin_src scheme :noweb-ref hm-services
+~dev-services~
+#+begin_src scheme :noweb-ref dev-services
 (service home-sops-secrets-service-type
          (home-sops-service-configuration
           (gnupg-home (in-vicinity (getenv "XDG_DATA_HOME") "sops"))
@@ -2875,8 +2938,8 @@ I just use sjtu mirror.
 #+begin_src scheme :noweb-ref home-use
 #:use-module (bluebox packages blue)
 #+end_src
-~home-pkgs~
-#+begin_src scheme :noweb-ref home-pkgs
+~dev-pkgs~
+#+begin_src scheme :noweb-ref dev-pkgs
 blue
 #+end_src
 *** The rosenthal for =channels.scm=

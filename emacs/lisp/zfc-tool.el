@@ -210,18 +210,18 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (add-to-list 'project-switch-commands '(ghostel-project-list-buffers "Ghostel buffers") t)
   (add-to-list 'ghostel-eval-cmds '("magit-status-setup-buffer" magit-status-setup-buffer)))
 
-  ;; (use-package direnv
-  ;;   :config
-  ;;   (direnv-mode))
-  (use-package ben
-    :ensure (:host codeberg :repo "pastor/ben.el")
-    :bind
-    ("C-c E" . ben-command-map)
-    :config
-    (setq ben-indicator `(,(substring-no-properties (nerd-icons-faicon "nf-fa-cubes"))
-                          "[" (:eval (ben--status)) "]"))
-    :init
-    (add-hook 'after-init-hook #'ben-global-mode 99))
+;; (use-package direnv
+;;   :config
+;;   (direnv-mode))
+(use-package ben
+  :ensure (:host codeberg :repo "pastor/ben.el")
+  :bind
+  ("C-c E" . ben-command-map)
+  :config
+  (setq ben-indicator `(,(substring-no-properties (nerd-icons-faicon "nf-fa-cubes"))
+                        "[" (:eval (ben--status)) "]"))
+  :init
+  (add-hook 'after-init-hook #'ben-global-mode 99))
 
 (use-package dwim-shell-command
   :custom
