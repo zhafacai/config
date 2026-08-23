@@ -2910,13 +2910,12 @@ notmuch tag +ai -- 'from:openai.com or from:openrouter.ai or from:nvidia.com or 
       )
 #+end_src
 *** The mirror for =channels.scm=
-I just use sjtu mirror. 
 ~channels~
 #+begin_src scheme :noweb-ref channels
 (channel
  (name 'guix)
- ;; (url "https://mirror.sjtu.edu.cn/git/guix.git")
- (url "https://git.guix.gnu.org/guix.git")
+ (url "https://mirror.nju.edu.cn/git/guix.git")
+ ;; (url "https://git.guix.gnu.org/guix.git")
  (branch "master")
  (introduction
   (make-channel-introduction

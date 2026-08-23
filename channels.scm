@@ -1,8 +1,8 @@
 (list
  (channel
   (name 'guix)
-  ;; (url "https://mirror.sjtu.edu.cn/git/guix.git")
-  (url "https://git.guix.gnu.org/guix.git")
+  (url "https://mirror.nju.edu.cn/git/guix.git")
+  ;; (url "https://git.guix.gnu.org/guix.git")
   (branch "master")
   (introduction
    (make-channel-introduction
