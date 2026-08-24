@@ -216,6 +216,12 @@ undo
   (setq undo-fu-session-directory
         (expand-file-name "cache/undo-fu-session" user-emacs-directory)))
 #+end_src
+vundo: visualise the undo tree (~M-x vundo~)
+#+begin_src emacs-lisp
+(use-package vundo
+  :custom
+  (vundo-glyph-alist vundo-unicode-symbols))
+#+end_src
 multicursors
 #+begin_src emacs-lisp
 (use-package multiple-cursors
@@ -256,33 +262,6 @@ toggle alpha background
 *** The =zfc-ui.el= section about themes
 #+begin_src emacs-lisp
 ;;; -*- lexical-binding: t -*-
-(use-package modus-themes
-  :init
-  (modus-themes-include-derivatives-mode 1)
-  :config
-  (setq modus-themes-to-toggle '(modus-operandi modus-vivendi)
-        modus-themes-to-rotate modus-themes-items
-        modus-themes-mixed-fonts t
-        modus-themes-variable-pitch-ui t
-        modus-themes-italic-constructs t
-        modus-themes-bold-constructs t
-        modus-themes-completions '((t . (bold)))
-        modus-themes-prompts '(bold)
-        modus-themes-headings
-        '((0 . (variable-pitch 1.6))
-          (1 . (variable-pitch semibold 1.55))
-          (2 . (variable-pitch regular 1.5))
-          (3 . (variable-pitch regular 1.45))
-          (4 . (variable-pitch regular 1.4))
-          (5 . (variable-pitch light 1.35))
-          (6 . (variable-pitch light 1.3))
-          (7 . (variable-pitch light 1.25))
-          (agenda-date . (semilight 1.5))
-          (agenda-structure . (variable-pitch light 1.9))
-          (t . (variable-pitch semilight 1.2))))
-
-  (setq modus-themes-common-palette-overrides nil))
-
 (add-to-list 'custom-theme-load-path (expand-file-name "lisp" user-emacs-directory))
 
 (use-package ef-themes
@@ -290,9 +269,18 @@ toggle alpha background
   ("C-c w d" . ef-themes-load-random-dark)
   ("C-c w l" . ef-themes-load-random-light)
   :init
-  (ef-themes-take-over-modus-themes-mode 1)
-  (modus-themes-activate 'oxocarbon-light)
-  (ef-themes-load-theme 'oxocarbon))
+  ;; oxocarbon lives in emacs/lisp (see `custom-theme-load-path' above)
+  (load-theme 'oxocarbon :no-confirm))
+
+(use-package spacious-padding
+  :custom
+  (spacious-padding-widths
+   '(:internal-border-width 10
+     :header-line-width 4
+     :mode-line-width 6
+     :tab-bar-width 4))
+  :config
+  (spacious-padding-mode 1))
 
 (use-package logos
   :config
@@ -861,6 +849,12 @@ helpful
   :after helpful
   :config
   (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
+
+;; offline docs (Rust/TS/Nix/Guile...), M-x devdocs-browser-open
+(use-package devdocs-browser
+  :custom
+  (devdocs-browser-cache-directory
+   (expand-file-name "cache/devdocs" user-emacs-directory)))
 #+end_src
 vertico
 #+begin_src emacs-lisp
@@ -1209,6 +1203,13 @@ use built-in lsp client
 
 (use-package consult-eglot
   :after eglot)
+
+;; DAP debugger for eglot (rust/python/ts...).  Each language needs its
+;; debug-adapter binary configured in `dape-adapters'; M-x dape to start.
+(use-package dape
+  :config
+  ;; Save breakpoints across sessions
+  (add-hook 'kill-emacs-hook #'dape-breakpoint-save))
 #+end_src
 #+begin_src emacs-lisp
 (use-package eldoc
@@ -1230,6 +1231,20 @@ use built-in lsp client
   :custom
   (flymake-show-diagnostics-at-end-of-line 'fancy))
 #+end_src
+*** The =zfc-dev.el= section about elisp development
+#+begin_src emacs-lisp
+(use-package eros
+  :hook (emacs-lisp-mode . eros-mode))
+
+;; step through macro expansions: M-x macrostep-expand
+(use-package macrostep)
+#+end_src
+
+#+begin_src emacs-lisp
+;; inspector for any elisp object: M-x inspector-inspect-expression
+(use-package inspector)
+#+end_src
+
 *** The =zfc-dev.el= section about treesitter
 #+begin_src emacs-lisp
 (use-package treesit
@@ -1337,6 +1352,12 @@ use built-in lsp client
   (org-download-method 'attach)
   :config
   (org-download-enable))
+
+(use-package verb
+  :after org
+  :config
+  (define-key org-mode-map (kbd "C-c C-r") verb-command-map)
+  (add-to-list 'org-babel-load-languages '(verb . t)))
 #+end_src
 
 
@@ -1510,6 +1531,25 @@ use built-in lsp client
    :map org-agenda-mode-map
    ("C-c ." . org-gtd-agenda-transient)))
 #+end_src
+
+#+begin_src emacs-lisp
+;; group the agenda by GTD context (matches org-todo-keywords above)
+(use-package org-super-agenda
+  :after org-agenda
+  :config
+  (setq org-super-agenda-groups
+        '((:name "Scheduled" :time-grid t)
+          (:name "Next" :todo "NEXT")
+          (:name "Waiting" :todo "WAIT")
+          (:name "Important" :priority "A")))
+  (org-super-agenda-mode 1))
+
+;; structured agenda searches: M-x org-ql-search / org-ql-view
+(use-package org-ql)
+
+;; countdown timers (Prot): M-x tmr
+;; (use-package tmr)
+#+end_src
 *** The =zfc-org.el= section for calling provide
 #+begin_src emacs-lisp
 (provide 'zfc-org)
@@ -1634,6 +1674,18 @@ telegram
   :custom
   (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 
+;; syntax-aware diffs inside magit: M-x magit-difftastic-dwim
+
+(use-package magit-difftastic
+  :ensure (:host github :repo "rschmukler/magit-difftastic")
+  :after magit
+  :config
+  (magit-difftastic-mode +1))
+#+end_src
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+;; magit-difftastic
+"difftastic"
 #+end_src
 diff-hl
 #+begin_src emacs-lisp
@@ -2504,6 +2556,14 @@ home-base
 "eza"
 "cryptsetup"
 #+end_src
+*** The =base.scm= section about system tools
+~home-specs~
+#+begin_src scheme :noweb-ref home-specs
+;; shell history (atuin takes over C-r in fish; fzf.fish keeps the rest)
+"atuin"
+;; git diff pager (see gitconfig section)
+"delta"
+#+end_src
 *** The =dev.scm= inbox
 #+begin_src scheme :tangle mods/zfc/home/dev.scm :noweb yes
 (define-module (zfc home dev)
@@ -2700,7 +2760,9 @@ patch to use flypy
                   (plain-file "plugins.fish" (string-append "starship init fish | source\n"
                                                             "zoxide init fish | source\n"
 															"fish_config theme choose catppuccin-mocha\n"
-                                                            "direnv hook fish | source"))))))
+                                                            "direnv hook fish | source\n"
+                                                            ;; atuin takes C-r; up-arrow keeps default
+                                                            "atuin init fish --disable-up-arrow | source\n"))))))
 
 
 (simple-service 'fish-fisher-service
@@ -2787,6 +2849,15 @@ git config
   	signingkey = 5ABCBDEC900FD06A!
   [commit]
   	gpgsign = true
+  [core]
+  	pager = delta
+  [interactive]
+  	diffFilter = delta --color-only
+  [delta]
+  	navigate = true
+  	side-by-side = true
+  [merge]
+  	conflictstyle = zdiff3
 #+end_src
 *** The =dev.scm= section about notmuch
 ~dev-use~
@@ -2902,7 +2973,22 @@ notmuch tag +ai -- 'from:openai.com or from:openrouter.ai or from:nvidia.com or 
              (file (local-file "../../../secrets/elfeed.org"))
              (permissions #o400))))))
 #+end_src
-** The =channels.scm= section
+*** COMMENT The =dev.scm= section about guix maintenance
+~dev-services~
+#+begin_src scheme :noweb-ref dev-services
+;; Weekly garbage collection, keep 50G free (bcachefs store keeps growing).
+(simple-service 'guix-gc-timer
+                home-shepherd-service-type
+                (list
+                 (shepherd-timer
+                  '(guix-weekly-gc)
+                  "0 4 * * 0"
+                  #~(#$(file-append bash "/bin/bash")
+                     #$(mixed-text-file
+                        "guix-gc"
+                        "exec guix gc -F 50G\n"))
+                  #:documentation "Run 'guix gc -F 50G' every Sunday at 04:00.")))
+#+end_src
 *** The inbox =channels.scm=
 #+begin_src scheme :tangle channels.scm :noweb yes
 (list

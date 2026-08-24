@@ -1,31 +1,4 @@
 ;;; -*- lexical-binding: t -*-
-(use-package modus-themes
-  :init
-  (modus-themes-include-derivatives-mode 1)
-  :config
-  (setq modus-themes-to-toggle '(modus-operandi modus-vivendi)
-        modus-themes-to-rotate modus-themes-items
-        modus-themes-mixed-fonts t
-        modus-themes-variable-pitch-ui t
-        modus-themes-italic-constructs t
-        modus-themes-bold-constructs t
-        modus-themes-completions '((t . (bold)))
-        modus-themes-prompts '(bold)
-        modus-themes-headings
-        '((0 . (variable-pitch 1.6))
-          (1 . (variable-pitch semibold 1.55))
-          (2 . (variable-pitch regular 1.5))
-          (3 . (variable-pitch regular 1.45))
-          (4 . (variable-pitch regular 1.4))
-          (5 . (variable-pitch light 1.35))
-          (6 . (variable-pitch light 1.3))
-          (7 . (variable-pitch light 1.25))
-          (agenda-date . (semilight 1.5))
-          (agenda-structure . (variable-pitch light 1.9))
-          (t . (variable-pitch semilight 1.2))))
-
-  (setq modus-themes-common-palette-overrides nil))
-
 (add-to-list 'custom-theme-load-path (expand-file-name "lisp" user-emacs-directory))
 
 (use-package ef-themes
@@ -33,9 +6,18 @@
   ("C-c w d" . ef-themes-load-random-dark)
   ("C-c w l" . ef-themes-load-random-light)
   :init
-  (ef-themes-take-over-modus-themes-mode 1)
-  (modus-themes-activate 'oxocarbon-light)
-  (ef-themes-load-theme 'oxocarbon))
+  ;; oxocarbon lives in emacs/lisp (see `custom-theme-load-path' above)
+  (load-theme 'oxocarbon :no-confirm))
+
+(use-package spacious-padding
+  :custom
+  (spacious-padding-widths
+   '(:internal-border-width 10
+     :header-line-width 4
+     :mode-line-width 6
+     :tab-bar-width 4))
+  :config
+  (spacious-padding-mode 1))
 
 (use-package logos
   :config

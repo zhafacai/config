@@ -82,6 +82,14 @@
   :custom
   (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 
+;; syntax-aware diffs inside magit: M-x magit-difftastic-dwim
+
+(use-package magit-difftastic
+  :ensure (:host github :repo "rschmukler/magit-difftastic")
+  :after magit
+  :config
+  (magit-difftastic-mode +1))
+
 (use-package diff-hl
   :init
   (global-diff-hl-mode)

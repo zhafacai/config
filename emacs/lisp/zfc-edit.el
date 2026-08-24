@@ -71,6 +71,10 @@
   (setq undo-fu-session-directory
         (expand-file-name "cache/undo-fu-session" user-emacs-directory)))
 
+(use-package vundo
+  :custom
+  (vundo-glyph-alist vundo-unicode-symbols))
+
 (use-package multiple-cursors
   :bind
   (("C-c e e" . mc/edit-lines)

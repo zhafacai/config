@@ -76,6 +76,10 @@
        "imagemagick"
        "eza"
        "cryptsetup"
+       ;; shell history (atuin takes over C-r in fish; fzf.fish keeps the rest)
+       "atuin"
+       ;; git diff pager (see gitconfig section)
+       "delta"
        ))
      ;; NOTE: %zfc-dev-packages is a function in (zfc home dev) so that its
      ;; `specifications->packages' call stays out of dev's module load.  That

@@ -345,6 +345,12 @@
   :config
   (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
 
+;; offline docs (Rust/TS/Nix/Guile...), M-x devdocs-browser-open
+(use-package devdocs-browser
+  :custom
+  (devdocs-browser-cache-directory
+   (expand-file-name "cache/devdocs" user-emacs-directory)))
+
 (use-package vertico
   :hook (rfn-eshadow-update-overlay . vertico-directory-tidy)
   :custom

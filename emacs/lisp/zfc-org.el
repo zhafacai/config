@@ -78,6 +78,12 @@
   :config
   (org-download-enable))
 
+(use-package verb
+  :after org
+  :config
+  (define-key org-mode-map (kbd "C-c C-r") verb-command-map)
+  (add-to-list 'org-babel-load-languages '(verb . t)))
+
 (defun fc/org-insert-link-dwim ()
   "Like `org-insert-link' but with personal dwim preferences."
   (interactive)
@@ -227,5 +233,22 @@
    ;; Quick actions on tasks in agenda views (optional but recommended)
    :map org-agenda-mode-map
    ("C-c ." . org-gtd-agenda-transient)))
+
+;; group the agenda by GTD context (matches org-todo-keywords above)
+(use-package org-super-agenda
+  :after org-agenda
+  :config
+  (setq org-super-agenda-groups
+        '((:name "Scheduled" :time-grid t)
+          (:name "Next" :todo "NEXT")
+          (:name "Waiting" :todo "WAIT")
+          (:name "Important" :priority "A")))
+  (org-super-agenda-mode 1))
+
+;; structured agenda searches: M-x org-ql-search / org-ql-view
+(use-package org-ql)
+
+;; countdown timers (Prot): M-x tmr
+;; (use-package tmr)
 
 (provide 'zfc-org)

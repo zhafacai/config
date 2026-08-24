@@ -40,6 +40,8 @@
                               "ffmpegthumbnailer"
                               ;; telega
                               "emacs-telega"
+                              ;; magit-difftastic
+                              "difftastic"
                               ;; rime
                               "emacs-rime"
                               ;; emacs-everywhere
@@ -81,7 +83,9 @@
                              (plain-file "plugins.fish" (string-append "starship init fish | source\n"
                                                                        "zoxide init fish | source\n"
            															"fish_config theme choose catppuccin-mocha\n"
-                                                                       "direnv hook fish | source"))))))
+                                                                       "direnv hook fish | source\n"
+                                                                       ;; atuin takes C-r; up-arrow keeps default
+                                                                       "atuin init fish --disable-up-arrow | source\n"))))))
            
            
            (simple-service 'fish-fisher-service

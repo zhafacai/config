@@ -157,6 +157,13 @@
 (use-package consult-eglot
   :after eglot)
 
+;; DAP debugger for eglot (rust/python/ts...).  Each language needs its
+;; debug-adapter binary configured in `dape-adapters'; M-x dape to start.
+(use-package dape
+  :config
+  ;; Save breakpoints across sessions
+  (add-hook 'kill-emacs-hook #'dape-breakpoint-save))
+
 (use-package eldoc
   :ensure nil
   :custom
@@ -174,6 +181,15 @@
   (prog-mode . flymake-mode)
   :custom
   (flymake-show-diagnostics-at-end-of-line 'fancy))
+
+(use-package eros
+  :hook (emacs-lisp-mode . eros-mode))
+
+;; step through macro expansions: M-x macrostep-expand
+(use-package macrostep)
+
+;; inspector for any elisp object: M-x inspector-inspect-expression
+(use-package inspector)
 
 (use-package treesit
   :ensure nil

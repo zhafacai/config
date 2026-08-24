@@ -3,21 +3,13 @@ environment {
 }
 output "PNP(SAC) G72MAX P 0000000000000" {
     // off
-    mode "2560x1440@144"
+    mode "2560x1440@119.989"
     scale 1.2
     // transform "90"
     variable-refresh-rate // on-demand=true
     focus-at-startup
 }
 
-output "Samsung Display Corp. 0x419F Unknown" {
-    // off
-    mode "2880x1800@120"
-    scale 2
-    // transform "90"
-    variable-refresh-rate // on-demand=true
-    focus-at-startup
-}
 cursor {
     xcursor-theme "Bibata-Modern-Ice"
     xcursor-size 15
@@ -303,7 +295,7 @@ window-rule {
 }
 
 debug {
-  honor-xdg-activation-with-invalid-serial
+  //honor-xdg-activation-with-invalid-serial
   render-drm-device "/dev/dri/renderD129"
 
 }
