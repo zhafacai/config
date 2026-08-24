@@ -2589,7 +2589,7 @@ home-base
 ;; shell history (atuin takes over C-r in fish; fzf.fish keeps the rest)
 "atuin"
 ;; git diff pager (see gitconfig section)
-"delta"
+"git-delta"
 #+end_src
 *** The =dev.scm= inbox
 #+begin_src scheme :tangle mods/zfc/home/dev.scm :noweb yes
