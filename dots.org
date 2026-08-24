@@ -2696,14 +2696,14 @@ patch to use flypy
       (description "Rime 配置：雾凇拼音 | 长期维护的简体词库")
       (license license:gpl3+)))
 #+end_src
-*** The =dev.scm= section about gpg
+*** The =base.scm= section about gpg
 ~dev-use~
-#+begin_src scheme :noweb-ref dev-use
+#+begin_src scheme :noweb-ref home-use
 #:use-module (gnu packages gnupg)
 #:use-module (gnu home services gnupg)
 #+end_src
 ~dev-services~
-#+begin_src scheme :noweb-ref dev-services
+#+begin_src scheme :noweb-ref home-services
 (service home-gpg-agent-service-type
          (home-gpg-agent-configuration
           (pinentry-program (file-append pinentry-qt "/bin/pinentry-qt"))
@@ -2757,6 +2757,7 @@ patch to use flypy
          (home-fish-configuration
            (config
             (list (plain-file "fish_greeting.fish" "set -g fish_greeting")
+                  (plain-file "gpg_nonguix.fish" "export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/gnupg/S.gpg-agent.ssh")
                   (plain-file "plugins.fish" (string-append "starship init fish | source\n"
                                                             "zoxide init fish | source\n"
 															"fish_config theme choose catppuccin-mocha\n"

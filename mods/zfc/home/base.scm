@@ -4,6 +4,8 @@
   #:use-module (rosenthal services desktop)
   #:use-module (gnu home services desktop)
   #:use-module (gnu home services sound)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu home services gnupg)
   #:use-module (gnu home services shells)
   #:use-module (rosenthal home services desktop)
   #:use-module (gnu packages gnome-xyz)
@@ -132,6 +134,12 @@
                         (list fcitx5-material-color-theme))
                        (input-method-editors
                         (list fcitx5-rime))))
+             (service home-gpg-agent-service-type
+                      (home-gpg-agent-configuration
+                       (pinentry-program (file-append pinentry-qt "/bin/pinentry-qt"))
+                       (default-cache-ttl 1800)
+                       (extra-content "allow-loopback-pinentry")
+                       (ssh-support? #t)))
              (service home-bash-service-type
              		 (home-bash-configuration
              		   (aliases '(("em" . "emacsclient")

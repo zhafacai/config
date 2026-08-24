@@ -4,8 +4,6 @@
   #:use-module (gnu home)
   #:use-module (gnu home services)
   #:use-module (zfc packages emacs-xyz)
-  #:use-module (gnu packages gnupg)
-  #:use-module (gnu home services gnupg)
   #:use-module (gnu packages shells)
   #:use-module (gnu home services shells)
   #:use-module (gnu home services shepherd)
@@ -67,12 +65,6 @@
 
 (define %zfc-dev-services
   (append (list
-           (service home-gpg-agent-service-type
-                    (home-gpg-agent-configuration
-                     (pinentry-program (file-append pinentry-qt "/bin/pinentry-qt"))
-                     (default-cache-ttl 1800)
-                     (extra-content "allow-loopback-pinentry")
-                     (ssh-support? #t)))
            (simple-service 'base-env-vars-service
                            home-environment-variables-service-type
                            `(("EDITOR" . "emacsclient")))
@@ -80,6 +72,7 @@
                     (home-fish-configuration
                       (config
                        (list (plain-file "fish_greeting.fish" "set -g fish_greeting")
+                             (plain-file "gpg_nonguix.fish" "export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/gnupg/S.gpg-agent.ssh")
                              (plain-file "plugins.fish" (string-append "starship init fish | source\n"
                                                                        "zoxide init fish | source\n"
            															"fish_config theme choose catppuccin-mocha\n"
