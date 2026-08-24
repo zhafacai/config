@@ -48,6 +48,7 @@
        "font-iosevka-ss08"
        "font-iosevka-ss17"
        "font-iosevka-slab"
+       "font-fira-code"
        "font-nerd-symbols"
        ;; "font-lxgw-wenkai"
        ;; dev

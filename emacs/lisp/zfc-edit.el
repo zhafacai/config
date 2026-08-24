@@ -72,8 +72,15 @@
         (expand-file-name "cache/undo-fu-session" user-emacs-directory)))
 
 (use-package vundo
+  :bind
+  ("C-x u" . vundo)
+  :hook
+  ((prog-mode text-mode) . vundo-popup-mode)
   :custom
-  (vundo-glyph-alist vundo-unicode-symbols))
+  (vundo-glyph-alist vundo-unicode-symbols)
+  :config
+  (set-face-attribute 'vundo-default nil
+                      :font "Fira Code"))
 
 (use-package multiple-cursors
   :bind

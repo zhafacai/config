@@ -216,11 +216,17 @@ undo
   (setq undo-fu-session-directory
         (expand-file-name "cache/undo-fu-session" user-emacs-directory)))
 #+end_src
-vundo: visualise the undo tree (~M-x vundo~)
 #+begin_src emacs-lisp
 (use-package vundo
+  :bind
+  ("C-x u" . vundo)
+  :hook
+  ((prog-mode text-mode) . vundo-popup-mode)
   :custom
-  (vundo-glyph-alist vundo-unicode-symbols))
+  (vundo-glyph-alist vundo-unicode-symbols)
+  :config
+  (set-face-attribute 'vundo-default nil
+                      :font "Fira Code"))
 #+end_src
 multicursors
 #+begin_src emacs-lisp
@@ -2548,6 +2554,7 @@ home-base
 "font-iosevka-ss08"
 "font-iosevka-ss17"
 "font-iosevka-slab"
+"font-fira-code"
 "font-nerd-symbols"
 ;; "font-lxgw-wenkai"
 #+end_src
