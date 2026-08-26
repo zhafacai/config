@@ -379,8 +379,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (agent-shell-preferred-agent-config '(preselect . opencode))
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
-  ;; (agent-shell-opencode-default-model-id "nim/nvidia/nemotron-3-ultra-550b-a55b")
-  )
+  (agent-shell-opencode-default-model-id "opencode/x-preview-f-free"))
 
 
 (use-package agent-shell-dashboard
