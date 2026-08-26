@@ -1,6 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 (use-package emacs
   :ensure nil
+  :bind-keymap
+  ("M-r" . ctl-x-r-map)
   :bind                                              ; NOTE: M-x describe-personal-bindings (for all use-packge binds)
   (
    ("C-x C-z" . nil)
@@ -69,13 +71,23 @@
           grep-command "rg -nS --no-heading "))
   :init
   (recentf-mode 1)
-  (repeat-mode 1)
   (savehist-mode 1)
   (save-place-mode 1)
   ;; Modes that make a non-modal (no-evil) editing experience comfortable:
   (delete-selection-mode 1)              ; typing over a selection replaces it
   (show-paren-mode 1))
 
+(use-package repeat
+  :ensure nil
+  :hook
+  (after-init . repeat-mode))
+  
+(use-package repeat-help
+  :ensure (:host github :repo "karthink/repeat-help")
+  :custom
+  (repeat-help-auto t)
+  :config
+  (repeat-help-mode 1))
 
 (use-package autorevert
   :ensure nil
@@ -103,6 +115,21 @@
   :config
   (unless (or (server-running-p) (daemonp))
     (server-start)))
+
+
+(use-package ibuffer
+  :ensure nil
+  :bind
+  ("C-x C-b" . ibuffer))
+
+(use-package ibuffer-project
+  :after (ibuffer project)
+  :hook ((ibuffer ibuffer-mode) . fc/ibuffer-project-generate-filter-groups)
+  :config
+  (setq ibuffer-project-use-cache t)
+  (defun fc/ibuffer-project-generate-filter-groups ()
+    (setq ibuffer-filter-groups
+          (ibuffer-project-generate-filter-groups))))
 
 (use-package gcmh
   :config
@@ -208,8 +235,59 @@
 
 (use-package smartparens
   :hook (prog-mode text-mode markdown-ts-mode)
+  :bind
+  (:map smartparens-mode-map
+        ("M-["           . sp-backward-slurp-sexp)
+        ("M-]"           . sp-forward-slurp-sexp)
+        ("M-{"           . sp-backward-barf-sexp)
+        ("M-}"           . sp-forward-barf-sexp)
+        ("M-U"           . sp-raise-sexp)
+        ("M-R"           . raise-sexp)
+        ("M-C"           . sp-convolute-sexp)
+        ("M-D"           . sp-copy-sexp)
+        ("M-J"           . sp-join-sexp)
+        ("M-S"           . sp-split-sexp)
+        ("M-K"           . sp-kill-hybrid-sexp)
+        ("C-x C-t"       . sp-transpose-hybrid-sexp)
+        ("C-M-n"         . sp-next-sexp)
+        ;; ("C-M-a"         . sp-beginning-of-sexp)
+        ;; ("C-M-e"         . sp-end-of-sexp)
+        ("C-M-p"         . sp-previous-sexp)
+        ("C-<backspace>" . sp-backward-kill-word))
   :config
-  (require 'smartparens-config))
+  (require 'smartparens-config)
+  (defvar lisp-navigation-map
+    (let ((map (make-sparse-keymap)))
+      (pcase-dolist (`(,k . ,f)
+                     '(("u" . backward-up-list)
+                       ("f" . forward-sexp)
+                       ("b" . backward-sexp)
+                       ("d" . down-list)
+                       ("n" . sp-next-sexp)
+                       ("p" . sp-previous-sexp)
+                       ("k" . sp-kill-sexp)
+                       ("K" . sp-kill-hybrid-sexp)
+                       ("]" . sp-forward-slurp-sexp)
+                       ("[" . sp-backward-slurp-sexp)
+                       ("}" . sp-forward-barf-sexp)
+                       ("{" . sp-backward-barf-sexp)
+                       ("r" . raise-sexp)
+                       ("C" . sp-convolute-sexp)
+                       ("D" . sp-copy-sexp)
+                       ("J" . sp-join-sexp)
+                       ("S" . sp-split-sexp)
+                       ("R" . sp-raise-sexp)
+                       ("\\" . indent-region)
+                       ;; ("e" . eval-sexp-maybe-pp)
+                       ("t" . transpose-sexps)))
+        (define-key map (kbd k) f))
+      (dolist (n (number-sequence 48 57))
+        (define-key map `[,n] 'digit-argument))
+      map))
+  (map-keymap
+   (lambda (_ cmd)
+     (put cmd 'repeat-map 'lisp-navigation-map))
+   lisp-navigation-map))
 
 (defcustom fc/books-directory "~/Documents/books"
   "Directory containing books for `fc/consult-books'."

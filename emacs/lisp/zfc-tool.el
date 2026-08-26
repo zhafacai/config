@@ -107,9 +107,7 @@
 (use-package browse-at-remote)
 
 (use-package forge
-  :after magit
-  :custom
-  (forge-add-default-bindings nil))
+  :after magit)
 
 (use-package git-timemachine)
 
@@ -223,7 +221,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 ;;   (direnv-mode))
 (use-package ben
   :ensure (:host codeberg :repo "pastor/ben.el")
-  :bind
+  :bind-keymap
   ("C-c E" . ben-command-map)
   :config
   (setq ben-indicator `(,(substring-no-properties (nerd-icons-faicon "nf-fa-cubes"))
@@ -269,6 +267,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 	:key #'gptel-api-key-from-auth-source
 	:stream t
 	:models '(poolside/laguna-s-2.1:free
+              stealth/ox-alpha
 			  nvidia/nemotron-3-ultra-550b-a55b:free))
 
   (gptel-make-openai "Flash"
@@ -312,11 +311,20 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 	:models '(nvidia/nemotron-3-ultra-550b-a55b
 			  z-ai/glm-5.2
 			  thinkingmachines/inkling))
+  
+  (gptel-make-openai "SenseNova"
+	:host "token.sensenova.cn"
+	:endpoint "/v1/chat/completions"
+	:key #'gptel-api-key-from-auth-source
+	:stream t
+	:models '(sensenova-6.8-flash-lite
+			  glm-5.2
+			  deepseek-v4-flash))
 
   ;; (setq gptel-backend (gptel-get-backend "ByteDance"))
   ;; (setq gptel-model 'deepseek-v4-flash)
-  (setq gptel-backend (gptel-get-backend "Nim"))
-  (setq gptel-model 'nvidia/nemotron-3-ultra-550b-a55b))
+  (setq gptel-backend (gptel-get-backend "SenseNova"))
+  (setq gptel-model 'sensenova-6.8-flash-lite))
 
 (use-package gptel-agent
   :config (gptel-agent-update))
@@ -356,11 +364,11 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (gptel-quick-model 'deepseek-v4-flash-ga-260731)
   :bind (:map embark-region-map
               ("?" . gptel-quick)
-         :map embark-identifier-map
-         ("?" . gptel-quick))
+              :map embark-identifier-map
+              ("?" . gptel-quick))
   :config
   (setq gptel-quick-system-message (lambda (count)
-								(format "Explain in %d words or fewer in Chinese." count))))
+								     (format "Explain in %d words or fewer in Chinese." count))))
 
 (use-package agent-shell
   :bind

@@ -1,15 +1,16 @@
-  [user]
-  	name = zhafacai
-  	email = zhafacai@gmail.com
-  	signingkey = 5ABCBDEC900FD06A!
-  [commit]
-  	gpgsign = true
-  [core]
-  	pager = delta
-  [interactive]
-  	diffFilter = delta --color-only
-  [delta]
-  	navigate = true
-  	side-by-side = true
-  [merge]
-  	conflictstyle = zdiff3
+[user]
+	name = zhafacai
+	email = zhafacai@gmail.com
+	signingkey = 5ABCBDEC900FD06A!
+[commit]
+	gpgsign = true
+[core]
+	pager = delta
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+[merge]
+	conflictstyle = zdiff3
+[github]
+	user = zhafacai

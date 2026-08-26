@@ -359,14 +359,8 @@ toggle alpha background
   :config
   (setq-default olivetti-body-width 0.5))
 
-(use-package colorful-mode
-  :custom
-  (colorful-use-prefix t)
-  (colorful-only-strings 'only-prog)
-  (css-fontify-colors nil)
-  :config
-  (global-colorful-mode t)
-  (add-to-list 'global-colorful-modes 'helpful-mode))
+(use-package rainbow-mode
+  :commands rainbow-mode)
 
 (use-package emacs
   :ensure nil
@@ -504,6 +498,8 @@ basic packages which extend core features in emacs
 ;;; -*- lexical-binding: t -*-
 (use-package emacs
   :ensure nil
+  :bind-keymap
+  ("M-r" . ctl-x-r-map)
   :bind                                              ; NOTE: M-x describe-personal-bindings (for all use-packge binds)
   (
    ("C-x C-z" . nil)
@@ -572,13 +568,23 @@ basic packages which extend core features in emacs
           grep-command "rg -nS --no-heading "))
   :init
   (recentf-mode 1)
-  (repeat-mode 1)
   (savehist-mode 1)
   (save-place-mode 1)
   ;; Modes that make a non-modal (no-evil) editing experience comfortable:
   (delete-selection-mode 1)              ; typing over a selection replaces it
   (show-paren-mode 1))
 
+(use-package repeat
+  :ensure nil
+  :hook
+  (after-init . repeat-mode))
+  
+(use-package repeat-help
+  :ensure (:host github :repo "karthink/repeat-help")
+  :custom
+  (repeat-help-auto t)
+  :config
+  (repeat-help-mode 1))
 
 (use-package autorevert
   :ensure nil
@@ -607,6 +613,20 @@ basic packages which extend core features in emacs
   (unless (or (server-running-p) (daemonp))
     (server-start)))
 
+
+(use-package ibuffer
+  :ensure nil
+  :bind
+  ("C-x C-b" . ibuffer))
+
+(use-package ibuffer-project
+  :after (ibuffer project)
+  :hook ((ibuffer ibuffer-mode) . fc/ibuffer-project-generate-filter-groups)
+  :config
+  (setq ibuffer-project-use-cache t)
+  (defun fc/ibuffer-project-generate-filter-groups ()
+    (setq ibuffer-filter-groups
+          (ibuffer-project-generate-filter-groups))))
 #+end_src
 *** The =zfc-base.el= section about extending builtin features
 #+begin_src emacs-lisp
@@ -739,8 +759,59 @@ dired
 #+begin_src emacs-lisp
 (use-package smartparens
   :hook (prog-mode text-mode markdown-ts-mode)
+  :bind
+  (:map smartparens-mode-map
+        ("M-["           . sp-backward-slurp-sexp)
+        ("M-]"           . sp-forward-slurp-sexp)
+        ("M-{"           . sp-backward-barf-sexp)
+        ("M-}"           . sp-forward-barf-sexp)
+        ("M-U"           . sp-raise-sexp)
+        ("M-R"           . raise-sexp)
+        ("M-C"           . sp-convolute-sexp)
+        ("M-D"           . sp-copy-sexp)
+        ("M-J"           . sp-join-sexp)
+        ("M-S"           . sp-split-sexp)
+        ("M-K"           . sp-kill-hybrid-sexp)
+        ("C-x C-t"       . sp-transpose-hybrid-sexp)
+        ("C-M-n"         . sp-next-sexp)
+        ;; ("C-M-a"         . sp-beginning-of-sexp)
+        ;; ("C-M-e"         . sp-end-of-sexp)
+        ("C-M-p"         . sp-previous-sexp)
+        ("C-<backspace>" . sp-backward-kill-word))
   :config
-  (require 'smartparens-config))
+  (require 'smartparens-config)
+  (defvar lisp-navigation-map
+    (let ((map (make-sparse-keymap)))
+      (pcase-dolist (`(,k . ,f)
+                     '(("u" . backward-up-list)
+                       ("f" . forward-sexp)
+                       ("b" . backward-sexp)
+                       ("d" . down-list)
+                       ("n" . sp-next-sexp)
+                       ("p" . sp-previous-sexp)
+                       ("k" . sp-kill-sexp)
+                       ("K" . sp-kill-hybrid-sexp)
+                       ("]" . sp-forward-slurp-sexp)
+                       ("[" . sp-backward-slurp-sexp)
+                       ("}" . sp-forward-barf-sexp)
+                       ("{" . sp-backward-barf-sexp)
+                       ("r" . raise-sexp)
+                       ("C" . sp-convolute-sexp)
+                       ("D" . sp-copy-sexp)
+                       ("J" . sp-join-sexp)
+                       ("S" . sp-split-sexp)
+                       ("R" . sp-raise-sexp)
+                       ("\\" . indent-region)
+                       ;; ("e" . eval-sexp-maybe-pp)
+                       ("t" . transpose-sexps)))
+        (define-key map (kbd k) f))
+      (dolist (n (number-sequence 48 57))
+        (define-key map `[,n] 'digit-argument))
+      map))
+  (map-keymap
+   (lambda (_ cmd)
+     (put cmd 'repeat-map 'lisp-navigation-map))
+   lisp-navigation-map))
 #+end_src
 consult
 #+begin_src emacs-lisp
@@ -1741,9 +1812,7 @@ diff-hl
 #+end_src
 #+begin_src emacs-lisp
 (use-package forge
-  :after magit
-  :custom
-  (forge-add-default-bindings nil))
+  :after magit)
 #+end_src
 #+begin_src emacs-lisp
 (use-package git-timemachine)
@@ -1903,7 +1972,7 @@ direnv
 ;;   (direnv-mode))
 (use-package ben
   :ensure (:host codeberg :repo "pastor/ben.el")
-  :bind
+  :bind-keymap
   ("C-c E" . ben-command-map)
   :config
   (setq ben-indicator `(,(substring-no-properties (nerd-icons-faicon "nf-fa-cubes"))
@@ -1960,6 +2029,7 @@ gptel
 	:key #'gptel-api-key-from-auth-source
 	:stream t
 	:models '(poolside/laguna-s-2.1:free
+              stealth/ox-alpha
 			  nvidia/nemotron-3-ultra-550b-a55b:free))
 
   (gptel-make-openai "Flash"
@@ -2003,11 +2073,20 @@ gptel
 	:models '(nvidia/nemotron-3-ultra-550b-a55b
 			  z-ai/glm-5.2
 			  thinkingmachines/inkling))
+  
+  (gptel-make-openai "SenseNova"
+	:host "token.sensenova.cn"
+	:endpoint "/v1/chat/completions"
+	:key #'gptel-api-key-from-auth-source
+	:stream t
+	:models '(sensenova-6.8-flash-lite
+			  glm-5.2
+			  deepseek-v4-flash))
 
   ;; (setq gptel-backend (gptel-get-backend "ByteDance"))
   ;; (setq gptel-model 'deepseek-v4-flash)
-  (setq gptel-backend (gptel-get-backend "Nim"))
-  (setq gptel-model 'nvidia/nemotron-3-ultra-550b-a55b))
+  (setq gptel-backend (gptel-get-backend "SenseNova"))
+  (setq gptel-model 'sensenova-6.8-flash-lite))
 
 (use-package gptel-agent
   :config (gptel-agent-update))
@@ -2047,11 +2126,11 @@ gptel
   (gptel-quick-model 'deepseek-v4-flash-ga-260731)
   :bind (:map embark-region-map
               ("?" . gptel-quick)
-         :map embark-identifier-map
-         ("?" . gptel-quick))
+              :map embark-identifier-map
+              ("?" . gptel-quick))
   :config
   (setq gptel-quick-system-message (lambda (count)
-								(format "Explain in %d words or fewer in Chinese." count))))
+								     (format "Explain in %d words or fewer in Chinese." count))))
 #+end_src
 agent-shell
 #+begin_src emacs-lisp
@@ -2878,21 +2957,22 @@ crates mirror from [[https://rsproxy.cn/][rsproxy]]
 #+end_src
 git config
 #+begin_src gitconfig :tangle files/plain/gitconfig
-  [user]
-  	name = zhafacai
-  	email = zhafacai@gmail.com
-  	signingkey = 5ABCBDEC900FD06A!
-  [commit]
-  	gpgsign = true
-  [core]
-  	pager = delta
-  [interactive]
-  	diffFilter = delta --color-only
-  [delta]
-  	navigate = true
-  	side-by-side = true
-  [merge]
-  	conflictstyle = zdiff3
+[user]
+	name = zhafacai
+	email = zhafacai@gmail.com
+	signingkey = 5ABCBDEC900FD06A!
+[commit]
+	gpgsign = true
+[core]
+	pager = delta
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+[merge]
+	conflictstyle = zdiff3
+[github]
+	user = zhafacai
 #+end_src
 *** The =dev.scm= section about notmuch
 ~dev-use~
