@@ -198,7 +198,7 @@
   (treesit-enabled-modes t))
 
 ;; (use-package qml-ts-mode
-;;   :ensure (:host github :repo "xhcoding/qml-ts-mode"))
+;;   :vc (:url "https://github.com/xhcoding/qml-ts-mode"))
 (use-package markdown-ts-mode
   :ensure nil
   :config

@@ -5,6 +5,6 @@
 
 (packages->manifest
  (list blue
-	   gnupg
+	   ;; gnupg
 	   sops
 	   neovim))

@@ -148,7 +148,6 @@
   (pulsar-global-mode 1))
 
 (use-package theme-buffet
-  :ensure (:wait t)
   :config
   (setq theme-buffet-menu 'end-user)
 
@@ -174,6 +173,7 @@
   (nyan-mode))
 
 (use-package which-key
+  :ensure nil
   :custom
   (which-key-idle-delay 0.5)
   :init

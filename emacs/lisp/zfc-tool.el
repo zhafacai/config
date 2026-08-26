@@ -85,7 +85,7 @@
 ;; syntax-aware diffs inside magit: M-x magit-difftastic-dwim
 
 (use-package magit-difftastic
-  :ensure (:host github :repo "rschmukler/magit-difftastic")
+  :vc (:url "https://github.com/rschmukler/magit-difftastic")
   :after magit
   :config
   (magit-difftastic-mode +1))
@@ -220,12 +220,14 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 ;;   :config
 ;;   (direnv-mode))
 (use-package ben
-  :ensure (:host codeberg :repo "pastor/ben.el")
+  :vc (:url "https://codeberg.org/pastor/ben.el")
   :bind-keymap
   ("C-c E" . ben-command-map)
   :config
   (setq ben-indicator `(,(substring-no-properties (nerd-icons-faicon "nf-fa-cubes"))
-                        "[" (:eval (ben--status)) "]"))
+                        " [" (:eval (ben--status)) "]")
+        ben-status-frames
+        '("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏"))
   :init
   (add-hook 'after-init-hook #'ben-global-mode 99))
 
@@ -330,7 +332,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :config (gptel-agent-update))
 
 (use-package ob-gptel
-  :ensure (:host github :repo "jwiegley/ob-gptel")
+  :vc (:url "https://github.com/jwiegley/ob-gptel")
   :config
   (add-to-list 'org-babel-load-languages '(gptel . t))
   (defun ob-gptel-setup-completions ()
@@ -339,7 +341,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :hook (org-mode . ob-gptel-setup-completions))
 
 (use-package gptel-prompts
-  :ensure (:host github :repo "jwiegley/gptel-prompts")
+  :vc (:url "https://github.com/jwiegley/gptel-prompts")
   :after (gptel)
   :demand t
   :custom
@@ -352,12 +354,12 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 
 (use-package gptel-magit
-  :ensure (:host github :repo "roife/gptel-magit")
+  :vc (:url "https://github.com/roife/gptel-magit")
   :hook (magit-mode . gptel-magit-install))
 
 
 (use-package gptel-quick
-  :ensure (:host github :repo "karthink/gptel-quick")
+  :vc (:url "https://github.com/karthink/gptel-quick")
   :after embark
   :custom
   (gptel-quick-backend (gptel-get-backend "Flash"))
@@ -377,11 +379,12 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (agent-shell-preferred-agent-config '(preselect . opencode))
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
-  (agent-shell-opencode-default-model-id "nim/nvidia/nemotron-3-ultra-550b-a55b"))
+  ;; (agent-shell-opencode-default-model-id "nim/nvidia/nemotron-3-ultra-550b-a55b")
+  )
 
 
 (use-package agent-shell-dashboard
-  :ensure (:host github :repo "wandersoncferreira/agent-shell-dashboard")
+  :vc (:url "https://github.com/wandersoncferreira/agent-shell-dashboard")
   :bind
   ("C-c a d" . agent-shell-dashboard)
   :custom

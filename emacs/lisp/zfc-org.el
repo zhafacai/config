@@ -62,7 +62,7 @@
   (org-mode . org-appear-mode))
 
 (use-package org-modern-indent
-  :ensure (:host github :repo "jdtsmith/org-modern-indent")
+  :vc (:url "https://github.com/jdtsmith/org-modern-indent")
   :config
   (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
 

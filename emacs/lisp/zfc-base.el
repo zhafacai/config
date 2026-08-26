@@ -83,7 +83,7 @@
   (after-init . repeat-mode))
   
 (use-package repeat-help
-  :ensure (:host github :repo "karthink/repeat-help")
+  :vc (:url "https://github.com/karthink/repeat-help")
   :custom
   (repeat-help-auto t)
   :config
@@ -160,7 +160,7 @@
 
 (use-package project-x
   :demand
-  :ensure (:host github :repo "vmargb/project-x")
+  :vc (:url "https://github.com/vmargb/project-x")
   :custom
   (project-x-window-list-file (expand-file-name "cache/project-window-list" user-emacs-directory))
   :bind
@@ -561,7 +561,7 @@
     (sudo-find-file (file-truename buffer-file-name))))
 
 (use-package 0x0
-  :ensure (:host codeberg :repo "pkal/0x0.el")
+  :vc (:url "https://codeberg.org/pkal/0x0.el")
   :commands (0x0-upload 0x0-upload-file)
   :custom (0x0-default-service 'x0))
 
