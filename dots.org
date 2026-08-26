@@ -1194,7 +1194,7 @@ embark
 #+end_src
 
 templates
-#+begin_src lisp-data :tangle ~/.config/emacs/templates
+#+begin_src lisp-data :tangle files/plain/emacs-templates
 fundamental-mode ;; Available everywhere
 
 (today (format-time-string "%Y-%m-%d")
@@ -1221,6 +1221,14 @@ org-mode
 ;; mode: lisp-data
 ;; outline-regexp: "[a-z]"
 ;; End:
+#+end_src
+
+install the templates file via guix home instead of tangling to $HOME
+#+begin_src scheme :noweb-ref dev-services
+(simple-service 'tempel-templates-service
+                home-files-service-type
+                `((".config/emacs/templates"
+                   ,(local-file "../../../files/plain/emacs-templates"))))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -2302,7 +2310,8 @@ email
   #:use-module (nongnu packages linux)
   #:use-module (nongnu system linux-initrd)
   #:use-module (rosenthal utils file)
-  #:use-module (zfc home base))
+  #:use-module (zfc home base)
+  #:use-module (zfc home dev))
 
 <<sys-def>>
 
@@ -2373,7 +2382,11 @@ email
  (services (append (list
                     <<sys-services>>
                     (service guix-home-service-type
-							 `(("zfc" ,home-base)))
+							 `(("zfc" ,(home-environment
+										(packages (append (home-base-packages)
+														  (%zfc-dev-packages)))
+										(services (append home-base-services
+														  %zfc-dev-services))))))
                     polkit-wheel-service)
                    (modify-services %desktop-services
 									<<sys-modify>>
@@ -2542,39 +2555,35 @@ here is =sops= secrets config for my dae config.
   #:use-module (gnu home services)
   #:use-module (guix gexp)
   #:use-module (zfc home packages rime-ice)
-  #:use-module (zfc home dev)
-  #:export (home-base))
+  #:export (home-base-packages home-base-services))
 
-(define home-base
-  (home-environment
-   (packages
-    (append
-     (list
-	  <<home-pkgs>>
-	  )
-     (specifications->packages
-      (list
-       <<home-specs>>
-       ))
-     ;; NOTE: %zfc-dev-packages is a function in (zfc home dev) so that its
-     ;; `specifications->packages' call stays out of dev's module load.  That
-     ;; way the package-module scan that `-L' triggers never finds a
-     ;; half-loaded dev module (see the NOTE in dev.scm).
-     (%zfc-dev-packages)))
+;; Package/service *components*.  Home assembly (base + dev) happens in the
+;; caller: art.scm for the system-provided home, blueprint.scm's `ugh' for
+;; a standalone `guix home' deploy.  This module neither builds a
+;; home-environment of its own nor references `(zfc home dev)', so loading
+;; it — even in the middle of a package-module scan — can never observe a
+;; half-loaded dev module.
+(define (home-base-packages)
+  (append
+   (list
+    <<home-pkgs>>
+    )
+   (specifications->packages
+    (list
+     <<home-specs>>
+     ))))
 
-   (services
-    (append (list 
-             (service home-pipewire-service-type)
-             (service home-files-service-type
-                      `(
-                        <<home-files>>
-                        ))
-             <<home-services>>
-             )
-            %zfc-dev-services
-            %base-home-services))))
-
-home-base
+(define home-base-services
+  (append
+   (list
+    (service home-pipewire-service-type)
+    (service home-files-service-type
+             `(
+               <<home-files>>
+               ))
+    <<home-services>>
+    )
+   %base-home-services))
 #+end_src
 *** The =base.scm= section about wm and apps
 ~home-specs~
@@ -2659,9 +2668,11 @@ home-base
 
 ;; NOTE: %zfc-dev-packages is deliberately a *function*: calling it (instead
 ;; of dereferencing a variable) keeps `specifications->packages' out of this
-;; module's load.  A specs call during module load triggers the package-module
-;; scan, which loads (zfc home base) from its file; base in turn consumes this
-;; module, and a half-loaded module would fail with "unbound variable".
+;; module's load.  A specs call during module load triggers the
+;; package-module scan, which loads every module under the `-L' search
+;; path; keeping the specs call out of load means no module can ever be
+;; observed half-loaded, no matter who loads what.  Home assembly happens
+;; in the caller (art.scm / blueprint `ugh').
 (define (%zfc-dev-packages)
   (append
    (list
@@ -2680,14 +2691,20 @@ home-base
            <<dev-services>>
            )))
 
-(define home-dev
+;; `home-dev' is the *value* of this file: `guix home reconfigure
+;; mods/zfc/home/dev.scm' evaluates the file and uses the last top-level
+;; form's value as the home environment.  This is the deploy target for
+;; non-Guix systems: ugh points here so the dev environment can be
+;; recovered on another distro, while the Guix machine's own home is the
+;; full base+dev assembly defined in art.scm.
+(define (home-dev)
   (home-environment
    (packages
     (%zfc-dev-packages))
    (services
     %zfc-dev-services)))
 
-home-dev
+(home-dev)
 #+end_src
 *** The =base.scm= section about fcitx5
 ~home-use~
@@ -2950,7 +2967,7 @@ git config
 #:use-module (gnu packages bash)
 #+end_src
 my mbsyncrc file
-#+begin_src conf :tangle ~/.mbsyncrc
+#+begin_src conf :tangle files/plain/mbsyncrc
 # ==================== GMAIL REMOTE ====================
 IMAPAccount gmail
 Host imap.gmail.com
@@ -2976,6 +2993,15 @@ Patterns "INBOX" "[Gmail]/Drafts" "[Gmail]/Sent Mail"
 Create Near
 SyncState *
 
+#+end_src
+install mbsyncrc via guix home instead of tangling to $HOME
+~dev-services~
+#+begin_src scheme :noweb-ref dev-services
+(simple-service 'mbsync-config-service
+                home-files-service-type
+                (list
+                 `(".mbsyncrc"
+                   ,(local-file "../../../files/plain/mbsyncrc"))))
 #+end_src
 ~dev-services~
 #+begin_src scheme :noweb-ref dev-services

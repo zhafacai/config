@@ -1,0 +1,26 @@
+fundamental-mode ;; Available everywhere
+
+(today (format-time-string "%Y-%m-%d")
+       :ann "Today's date"
+       :doc "Insert today's date")
+
+prog-mode
+
+(fixme (if (derived-mode-p 'emacs-lisp-mode) ";; " comment-start) "FIXME ")
+(todo (if (derived-mode-p 'emacs-lisp-mode) ";; " comment-start) "TODO ")
+(bug (if (derived-mode-p 'emacs-lisp-mode) ";; " comment-start) "BUG ")
+(hack (if (derived-mode-p 'emacs-lisp-mode) ";; " comment-start) "HACK ")
+
+org-mode
+
+(epkgs "~emacs-packages~" n "#+begin_src scheme :noweb-ref emacs-packages" n r n "#+end_src" :post (org-edit-src-code))
+(hmpkgs "~home-pkgs~" n "#+begin_src scheme :noweb-ref home-pkgs" n r n "#+end_src" :post (org-edit-src-code))
+(hmuse "~home-use~" n "#+begin_src scheme :noweb-ref home-use" n "#:use-module " r n "#+end_src" :post (org-edit-src-code))
+(chl "~channels~" n "#+begin_src scheme :noweb-ref channels" n r n "#+end_src" :post (org-edit-src-code))
+(hmser "~home-services~" n "#+begin_src scheme :noweb-ref home-services" n r n "#+end_src" :post (org-edit-src-code))
+(sysser "~sys-services~" n "#+begin_src scheme :noweb-ref sys-services" n r n "#+end_src" :post (org-edit-src-code))
+
+;; Local Variables:
+;; mode: lisp-data
+;; outline-regexp: "[a-z]"
+;; End:

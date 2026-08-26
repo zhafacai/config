@@ -18,9 +18,11 @@
 
 ;; NOTE: %zfc-dev-packages is deliberately a *function*: calling it (instead
 ;; of dereferencing a variable) keeps `specifications->packages' out of this
-;; module's load.  A specs call during module load triggers the package-module
-;; scan, which loads (zfc home base) from its file; base in turn consumes this
-;; module, and a half-loaded module would fail with "unbound variable".
+;; module's load.  A specs call during module load triggers the
+;; package-module scan, which loads every module under the `-L' search
+;; path; keeping the specs call out of load means no module can ever be
+;; observed half-loaded, no matter who loads what.  Home assembly happens
+;; in the caller (art.scm / blueprint `ugh').
 (define (%zfc-dev-packages)
   (append
    (list
@@ -65,6 +67,10 @@
 
 (define %zfc-dev-services
   (append (list
+           (simple-service 'tempel-templates-service
+                           home-files-service-type
+                           `((".config/emacs/templates"
+                              ,(local-file "../../../files/plain/emacs-templates"))))
            (simple-service 'base-env-vars-service
                            home-environment-variables-service-type
                            `(("EDITOR" . "emacsclient")))
@@ -121,13 +127,18 @@
                                        #t))))
                              (documentation "Initialize and update Fish plugins via fisher."))))
            
-             (simple-service 'cargo-config
-             	home-files-service-type
-               `(( ".cargo/config.toml" ,(local-file "../../../files/plain/cargo.toml"))))
-             (simple-service 'git-gpg-config
-                 home-files-service-type
-               (list `(".gitconfig"
-                       ,(local-file "../../../files/plain/gitconfig"))))
+           (simple-service 'cargo-config
+           	home-files-service-type
+             `(( ".cargo/config.toml" ,(local-file "../../../files/plain/cargo.toml"))))
+           (simple-service 'git-gpg-config
+               home-files-service-type
+             (list `(".gitconfig"
+                     ,(local-file "../../../files/plain/gitconfig"))))
+           (simple-service 'mbsync-config-service
+                           home-files-service-type
+                           (list
+                            `(".mbsyncrc"
+                              ,(local-file "../../../files/plain/mbsyncrc"))))
            (simple-service 'mbsync-gmail-timer-service
                            home-shepherd-service-type
                            (list
@@ -168,11 +179,17 @@
                         (permissions #o400))))))
            )))
 
-(define home-dev
+;; `home-dev' is the *value* of this file: `guix home reconfigure
+;; mods/zfc/home/dev.scm' evaluates the file and uses the last top-level
+;; form's value as the home environment.  This is the deploy target for
+;; non-Guix systems: ugh points here so the dev environment can be
+;; recovered on another distro, while the Guix machine's own home is the
+;; full base+dev assembly defined in art.scm.
+(define (home-dev)
   (home-environment
    (packages
     (%zfc-dev-packages))
    (services
     %zfc-dev-services)))
 
-home-dev
+(home-dev)

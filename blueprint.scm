@@ -29,16 +29,17 @@
 (define-command (upgrade-home-command args)
   ((invoke "ugh")
    (category 'system)
-   (synopsis "Upgrade guix home")
+   (synopsis "Deploy dev home environment")
    (help "
-  Upgrade guix home.
+  Deploy the dev home environment (dev-only, no Guix-specific base).
+  Used to recover the dev environment on non-Guix systems.
   "))
   ;; Smoke test: lower the whole home first, fail fast before switching
   ;; generations (catches broken modules, empty tangles, bad derivations).
   ($ "guix" "time-machine" "-C" "channels.lock" "--"
      "home" "build" "--dry-run" "-L" "mods" "mods/zfc/home/dev.scm")
   ($ "guix" "time-machine" "-C" "channels.lock" "--"
-     "home" "reconfigure" "mods/zfc/home/dev.scm" "-L" "mods"))
+     "home" "reconfigure" "-L" "mods" "mods/zfc/home/dev.scm"))
 
 (define-command (upgrade-guix-command args)
   ((invoke "ugg")

@@ -19,7 +19,8 @@
   #:use-module (nongnu packages linux)
   #:use-module (nongnu system linux-initrd)
   #:use-module (rosenthal utils file)
-  #:use-module (zfc home base))
+  #:use-module (zfc home base)
+  #:use-module (zfc home dev))
 
 (define %network-manager-ipv6-privacy
   `("ip6-privacy.conf"
@@ -126,7 +127,11 @@
                     							#:log-file "/var/log/mihomo.log"))
                     				  (stop #~(make-kill-destructor)))))
                     (service guix-home-service-type
-							 `(("zfc" ,home-base)))
+							 `(("zfc" ,(home-environment
+										(packages (append (home-base-packages)
+														  (%zfc-dev-packages)))
+										(services (append home-base-services
+														  %zfc-dev-services))))))
                     polkit-wheel-service)
                    (modify-services %desktop-services
 									(network-manager-service-type
