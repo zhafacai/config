@@ -128,12 +128,12 @@
                              (documentation "Initialize and update Fish plugins via fisher."))))
            
            (simple-service 'cargo-config
-           	home-files-service-type
-             `(( ".cargo/config.toml" ,(local-file "../../../files/plain/cargo.toml"))))
-           (simple-service 'git-gpg-config
-               home-files-service-type
-             (list `(".gitconfig"
-                     ,(local-file "../../../files/plain/gitconfig"))))
+             	            home-files-service-type
+                           `(( ".cargo/config.toml" ,(local-file "../../../files/plain/cargo.toml"))))
+             (simple-service 'git-gpg-config
+                 home-files-service-type
+               (list `(".gitconfig"
+                       ,(local-file "../../../files/plain/gitconfig"))))
            (simple-service 'mbsync-config-service
                            home-files-service-type
                            (list

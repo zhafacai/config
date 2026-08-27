@@ -118,7 +118,8 @@
   :custom
   (default-input-method "rime")
   :config
-  (setq rime-user-data-dir "~/.local/share/fcitx5/rime/"))
+  (setq rime-user-data-dir "~/.local/share/fcitx5/rime/")
+  (setq rime-share-data-dir "/usr/share/rime-data/"))
 
 (use-package emacs-everywhere
   :config
@@ -263,13 +264,20 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
    ("C-c a m" . gptel-menu))
   :config
   (define-key fc/override-mode-map (kbd "C-c C-<return>") 'gptel-send)
+  
+  (gptel-make-openai "BigModel"
+	:host "open.bigmodel.cn"
+	:endpoint "/api/paas/v4/chat/completions"
+	:key #'gptel-api-key-from-auth-source
+	:stream t
+	:models '(glm-5.3-flash))
+  
   (gptel-make-openai "OpenRouter"
 	:host "openrouter.ai"
 	:endpoint "/api/v1/chat/completions"
 	:key #'gptel-api-key-from-auth-source
 	:stream t
 	:models '(poolside/laguna-s-2.1:free
-              stealth/ox-alpha
 			  nvidia/nemotron-3-ultra-550b-a55b:free))
 
   (gptel-make-openai "Flash"
@@ -323,10 +331,11 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 			  glm-5.2
 			  deepseek-v4-flash))
 
-  ;; (setq gptel-backend (gptel-get-backend "ByteDance"))
-  ;; (setq gptel-model 'deepseek-v4-flash)
-  (setq gptel-backend (gptel-get-backend "SenseNova"))
-  (setq gptel-model 'sensenova-6.8-flash-lite))
+  (setq gptel-backend (gptel-get-backend "BigModel"))
+  (setq gptel-model 'glm-5.3-flash)
+  ;; (setq gptel-backend (gptel-get-backend "SenseNova"))
+  ;; (setq gptel-model 'sensenova-6.8-flash-lite)
+  )
 
 (use-package gptel-agent
   :config (gptel-agent-update))
