@@ -278,6 +278,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 	:key #'gptel-api-key-from-auth-source
 	:stream t
 	:models '(poolside/laguna-s-2.1:free
+              z-ai/glm-5.2:free
 			  nvidia/nemotron-3-ultra-550b-a55b:free))
 
   (gptel-make-openai "Flash"
