@@ -389,7 +389,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (agent-shell-preferred-agent-config '(preselect . opencode))
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
-  (agent-shell-opencode-default-model-id "opencode/x-preview-f-free"))
+  (agent-shell-opencode-default-model-id "sensenova/deepseek-v4-flash"))
 
 
 (use-package agent-shell-dashboard
