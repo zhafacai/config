@@ -74,6 +74,7 @@
      "yt-dlp"
      "gcc-toolchain"
      "git"
+     "jujutsu"
      "file"
      "neovim"
      "neofetch"

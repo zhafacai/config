@@ -85,6 +85,16 @@
   :custom
   (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 
+(use-package majutsu
+  :vc (:url "https://github.com/0WD0/majutsu" :rev :newest)
+  :bind
+  ("C-x j" . majutsu)
+  :custom
+  (majutsu-display-buffer-function #'majutsu-display-buffer-fullcolumn-most-v1)
+  :config
+  (require 'majutsu-forge)
+  (majutsu-forge-mode 1))
+
 (use-package diff-hl
   :init
   (global-diff-hl-mode)
