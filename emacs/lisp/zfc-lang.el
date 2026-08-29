@@ -45,5 +45,6 @@
 
 ;; (use-package justl)
 (use-package just-ts-mode)
+(use-package meson-mode)
 
 (provide 'zfc-lang)

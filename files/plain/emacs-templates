@@ -20,6 +20,15 @@ org-mode
 (hmser "~home-services~" n "#+begin_src scheme :noweb-ref home-services" n r n "#+end_src" :post (org-edit-src-code))
 (sysser "~sys-services~" n "#+begin_src scheme :noweb-ref sys-services" n r n "#+end_src" :post (org-edit-src-code))
 
+text-mode
+
+(box "┌─" (make-string (length str) ?─) "─┐" n
+     "│ " (s str)                       " │" n
+     "└─" (make-string (length str) ?─) "─┘" n :doc "UNICODE BOX")
+(abox "+-" (make-string (length str) ?-) "-+" n
+      "| " (s str)                       " |" n
+      "+-" (make-string (length str) ?-) "-+" n :doc "ASCII BOX")
+
 ;; Local Variables:
 ;; mode: lisp-data
 ;; outline-regexp: "[a-z]"

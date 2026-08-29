@@ -2,7 +2,8 @@
 (use-package org
   :ensure nil
   :bind
-  ("C-c l" . org-store-link)
+  (:map text-mode-map
+        ("C-c l" . org-store-link))
   ;; ("C-c o" . org-open-at-point-global)
   :custom
   ;; org-default-notes-file (concat org-directory "notes.org")

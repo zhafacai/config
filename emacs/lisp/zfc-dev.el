@@ -124,6 +124,13 @@
 
 (use-package eglot
   :ensure nil
+  :bind
+  (:map eglot-mode-map
+        ("C-c l a" . eglot-code-actions)
+        ("C-c l o" . eglot-code-action-organize-imports)
+        ("C-c l r" . eglot-rename)
+        ("C-c l i" . eglot-inlay-hints-mode)
+        ("C-c l f" . eglot-format))
   :hook
   ((python-ts-mode       . eglot-ensure)
    (rustic-mode           . eglot-ensure)
@@ -167,13 +174,20 @@
 (use-package eldoc
   :ensure nil
   :custom
+  (eldoc-help-at-pt t)
   (eldoc-echo-area-use-multiline-p nil)
-  ;; (eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+  (eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
   (eldoc-echo-area-prefer-doc-buffer nil))
 
 (use-package eldoc-box
+  :bind
+  (:map eglot-mode-map
+        ("C-c l n" . eldoc-box-scroll-down)
+        ("C-c l p" . eldoc-box-scroll-up)
+        ("C-c l d" . eldoc-box-help-at-point))
+  
   :hook
-  (eglot-managed-mode . eldoc-box-hover-mode))
+  (eglot-managed-mode . eldoc-box-hover-at-point-mode))
 
 (use-package flymake
   :ensure nil

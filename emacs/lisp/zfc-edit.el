@@ -89,10 +89,6 @@
    ("C-c e n" . mc/mark-next-like-this-word)
    ("C-c e p" . mc/mark-previous-like-this-word)))
 
-(use-package anzu
-  :config
-  (global-anzu-mode +1))
-
 (defun fc/toggle-alpha-background ()
   "toggle tranparency of background"
   (interactive)

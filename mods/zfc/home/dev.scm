@@ -40,8 +40,6 @@
                               "ffmpegthumbnailer"
                               ;; telega
                               "emacs-telega"
-                              ;; magit-difftastic
-                              "difftastic"
                               ;; rime
                               "emacs-rime"
                               ;; emacs-everywhere

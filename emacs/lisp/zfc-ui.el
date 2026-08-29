@@ -34,15 +34,15 @@
   ("C-c w l" . ef-themes-load-random-light)
   :config
   (load-theme 'oxocarbon :no-confirm))
-  
+
 
 (use-package spacious-padding
   :custom
   (spacious-padding-widths
-   '(:internal-border-width 10
-     :header-line-width 4
-     :mode-line-width 6
-     :tab-bar-width 4))
+   '( :internal-border-width 10
+      :header-line-width 4
+      :mode-line-width 6
+      :tab-bar-width 4))
   :config
   (spacious-padding-mode 1))
 
@@ -81,7 +81,7 @@
 				 (setq-local olivetti-minimum-body-width fill-column)
 				 (setq-local olivetti-body-width 0.3)
 				 (olivetti-mode)))
-  (nov-mode . olivetti-mode)
+  ((nov-mode elfeed-show-mode) . olivetti-mode)
   :bind
   ("C-c O" . olivetti-mode)
   :custom

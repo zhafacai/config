@@ -94,6 +94,11 @@
   :config
   (global-auto-revert-mode 1))
 
+(use-package compile
+  :ensure nil
+  :custom
+  (compilation-scroll-output t))
+
 (use-package isearch
   :ensure nil
   :custom
@@ -229,9 +234,18 @@
   :ensure nil
   :custom
   (dired-dwim-target t)
+  (dired-omit-files "^\\.")
+  (dired-hide-details-hide-absolute-location t)
   :config
   (setq dired-listing-switches
         "-l --almost-all --human-readable --group-directories-first --no-group"))
+
+(use-package proced
+  :ensure nil
+  :commands proced
+  :custom
+  (proced-enable-color-flag t)
+  (proced-tree-flag t))
 
 (use-package smartparens
   :hook (prog-mode text-mode markdown-ts-mode)

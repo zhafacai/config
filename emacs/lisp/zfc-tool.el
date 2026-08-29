@@ -51,7 +51,10 @@
 
 (use-package elfeed
   :bind
-  ("C-c f" . elfeed))
+  ("C-c f" . elfeed)
+  (:map elfeed-search-mode-map
+        ("g" . elfeed-update)
+        ("G" . revert-buffer)))
 ;; FIXME this file does not exist yet
 (use-package elfeed-org
   :custom
@@ -81,14 +84,6 @@
   (add-hook 'magit-process-find-password-functions 'magit-process-password-auth-source)
   :custom
   (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
-
-;; syntax-aware diffs inside magit: M-x magit-difftastic-dwim
-
-(use-package magit-difftastic
-  :vc (:url "https://github.com/rschmukler/magit-difftastic")
-  :after magit
-  :config
-  (magit-difftastic-mode +1))
 
 (use-package diff-hl
   :init

@@ -79,7 +79,7 @@ with =:ensure nil=; git-only packages use the =:vc= keyword.
 (unless package-archive-contents
   (package-refresh-contents))
 #+end_src
-*** The =init.el= section about loading zfc pacakges
+*** The =init.el= section about loading zfc packages
 #+begin_src emacs-lisp
 
 ;; Add the folder to the search path
@@ -204,13 +204,6 @@ multicursors
    ("C-c e n" . mc/mark-next-like-this-word)
    ("C-c e p" . mc/mark-previous-like-this-word)))
 #+end_src
-match number in modeline
-#+begin_src emacs-lisp
-(use-package anzu
-  :config
-  (global-anzu-mode +1))
-
-#+end_src
 
 toggle alpha background
 #+begin_src emacs-lisp
@@ -270,15 +263,15 @@ toggle alpha background
   ("C-c w l" . ef-themes-load-random-light)
   :config
   (load-theme 'oxocarbon :no-confirm))
-  
+
 
 (use-package spacious-padding
   :custom
   (spacious-padding-widths
-   '(:internal-border-width 10
-     :header-line-width 4
-     :mode-line-width 6
-     :tab-bar-width 4))
+   '( :internal-border-width 10
+      :header-line-width 4
+      :mode-line-width 6
+      :tab-bar-width 4))
   :config
   (spacious-padding-mode 1))
 
@@ -317,7 +310,7 @@ toggle alpha background
 				 (setq-local olivetti-minimum-body-width fill-column)
 				 (setq-local olivetti-body-width 0.3)
 				 (olivetti-mode)))
-  (nov-mode . olivetti-mode)
+  ((nov-mode elfeed-show-mode) . olivetti-mode)
   :bind
   ("C-c O" . olivetti-mode)
   :custom
@@ -558,6 +551,11 @@ basic packages which extend core features in emacs
   :config
   (global-auto-revert-mode 1))
 
+(use-package compile
+  :ensure nil
+  :custom
+  (compilation-scroll-output t))
+
 (use-package isearch
   :ensure nil
   :custom
@@ -718,9 +716,19 @@ dired
   :ensure nil
   :custom
   (dired-dwim-target t)
+  (dired-omit-files "^\\.")
+  (dired-hide-details-hide-absolute-location t)
   :config
   (setq dired-listing-switches
         "-l --almost-all --human-readable --group-directories-first --no-group"))
+
+(use-package proced
+  :ensure nil
+  :commands proced
+  :custom
+  (proced-enable-color-flag t)
+  (proced-tree-flag t))
+
 #+end_src
 
 #+begin_src emacs-lisp
@@ -1217,6 +1225,15 @@ org-mode
 (hmser "~home-services~" n "#+begin_src scheme :noweb-ref home-services" n r n "#+end_src" :post (org-edit-src-code))
 (sysser "~sys-services~" n "#+begin_src scheme :noweb-ref sys-services" n r n "#+end_src" :post (org-edit-src-code))
 
+text-mode
+
+(box "┌─" (make-string (length str) ?─) "─┐" n
+     "│ " (s str)                       " │" n
+     "└─" (make-string (length str) ?─) "─┘" n :doc "UNICODE BOX")
+(abox "+-" (make-string (length str) ?-) "-+" n
+      "| " (s str)                       " |" n
+      "+-" (make-string (length str) ?-) "-+" n :doc "ASCII BOX")
+
 ;; Local Variables:
 ;; mode: lisp-data
 ;; outline-regexp: "[a-z]"
@@ -1250,6 +1267,13 @@ use built-in lsp client
 #+begin_src emacs-lisp
 (use-package eglot
   :ensure nil
+  :bind
+  (:map eglot-mode-map
+        ("C-c l a" . eglot-code-actions)
+        ("C-c l o" . eglot-code-action-organize-imports)
+        ("C-c l r" . eglot-rename)
+        ("C-c l i" . eglot-inlay-hints-mode)
+        ("C-c l f" . eglot-format))
   :hook
   ((python-ts-mode       . eglot-ensure)
    (rustic-mode           . eglot-ensure)
@@ -1294,13 +1318,20 @@ use built-in lsp client
 (use-package eldoc
   :ensure nil
   :custom
+  (eldoc-help-at-pt t)
   (eldoc-echo-area-use-multiline-p nil)
-  ;; (eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+  (eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
   (eldoc-echo-area-prefer-doc-buffer nil))
 
 (use-package eldoc-box
+  :bind
+  (:map eglot-mode-map
+        ("C-c l n" . eldoc-box-scroll-down)
+        ("C-c l p" . eldoc-box-scroll-up)
+        ("C-c l d" . eldoc-box-help-at-point))
+  
   :hook
-  (eglot-managed-mode . eldoc-box-hover-mode))
+  (eglot-managed-mode . eldoc-box-hover-at-point-mode))
 #+end_src
 #+begin_src emacs-lisp
 (use-package flymake
@@ -1354,7 +1385,8 @@ use built-in lsp client
 (use-package org
   :ensure nil
   :bind
-  ("C-c l" . org-store-link)
+  (:map text-mode-map
+        ("C-c l" . org-store-link))
   ;; ("C-c o" . org-open-at-point-global)
   :custom
   ;; org-default-notes-file (concat org-directory "notes.org")
@@ -1710,7 +1742,10 @@ elfeed
 #+begin_src emacs-lisp
 (use-package elfeed
   :bind
-  ("C-c f" . elfeed))
+  ("C-c f" . elfeed)
+  (:map elfeed-search-mode-map
+        ("g" . elfeed-update)
+        ("G" . revert-buffer)))
 ;; FIXME this file does not exist yet
 (use-package elfeed-org
   :custom
@@ -1753,18 +1788,6 @@ telegram
   :custom
   (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 
-;; syntax-aware diffs inside magit: M-x magit-difftastic-dwim
-
-(use-package magit-difftastic
-  :vc (:url "https://github.com/rschmukler/magit-difftastic")
-  :after magit
-  :config
-  (magit-difftastic-mode +1))
-#+end_src
-~emacs-packages~
-#+begin_src scheme :noweb-ref emacs-packages
-;; magit-difftastic
-"difftastic"
 #+end_src
 diff-hl
 #+begin_src emacs-lisp
@@ -2294,6 +2317,7 @@ email
 #+begin_src emacs-lisp
 ;; (use-package justl)
 (use-package just-ts-mode)
+(use-package meson-mode)
 #+end_src
 
 *** The =zfc-lang.el= section for calling provide
@@ -2965,6 +2989,7 @@ git config
 	diffFilter = delta --color-only
 [delta]
 	navigate = true
+	side-by-side = true
 [merge]
 	conflictstyle = zdiff3
 [github]
