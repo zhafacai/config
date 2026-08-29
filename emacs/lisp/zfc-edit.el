@@ -74,8 +74,8 @@
 (use-package vundo
   :bind
   ("C-x u" . vundo)
-  :hook
-  ((prog-mode text-mode) . vundo-popup-mode)
+  ;; :hook
+  ;; ((prog-mode text-mode) . vundo-popup-mode)
   :custom
   (vundo-glyph-alist vundo-unicode-symbols)
   :config

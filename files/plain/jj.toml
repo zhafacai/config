@@ -1,0 +1,7 @@
+[signing]
+behavior = "own"
+backend = "gpg"
+[user]
+name = "zhafacai"
+email = "zhafacai@gmail.com"
+key = "5ABCBDEC900FD06A"

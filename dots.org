@@ -187,8 +187,8 @@ undo
 (use-package vundo
   :bind
   ("C-x u" . vundo)
-  :hook
-  ((prog-mode text-mode) . vundo-popup-mode)
+  ;; :hook
+  ;; ((prog-mode text-mode) . vundo-popup-mode)
   :custom
   (vundo-glyph-alist vundo-unicode-symbols)
   :config
@@ -1808,6 +1808,7 @@ diff-hl
   :config
   (diff-hl-flydiff-mode 1)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+  (add-hook 'majutsu-refresh-buffer-hook 'diff-hl-magit-post-refresh)
   (advice-add 'diff-hl-next-hunk :after
 			  (defun fc/diff-hl-recenter (&optional _)
 				(when (derived-mode-p 'org-mode)
@@ -2980,10 +2981,24 @@ git-fetch-with-cli = true
 *** The =dev.scm= section about gitconfig
 ~dev-services~
 #+begin_src scheme :noweb-ref dev-services
-  (simple-service 'git-gpg-config
-      home-files-service-type
-    (list `(".gitconfig"
-            ,(local-file "../../../files/plain/gitconfig"))))
+(simple-service 'git-gpg-config
+                home-files-service-type
+                (list `(".gitconfig"
+                        ,(local-file "../../../files/plain/gitconfig"))))
+(simple-service 'jj-gpg-config
+                home-files-service-type
+                (list `(".config/jj/config.toml"
+                        ,(local-file "../../../files/plain/jj.toml"))))
+#+end_src
+jj config
+#+begin_src gitconfig :tangle files/plain/jj.toml
+[signing]
+behavior = "own"
+backend = "gpg"
+[user]
+name = "zhafacai"
+email = "zhafacai@gmail.com"
+key = "5ABCBDEC900FD06A"
 #+end_src
 git config
 #+begin_src gitconfig :tangle files/plain/gitconfig

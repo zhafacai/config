@@ -128,10 +128,14 @@
            (simple-service 'cargo-config
              	            home-files-service-type
                            `(( ".cargo/config.toml" ,(local-file "../../../files/plain/cargo.toml"))))
-             (simple-service 'git-gpg-config
-                 home-files-service-type
-               (list `(".gitconfig"
-                       ,(local-file "../../../files/plain/gitconfig"))))
+           (simple-service 'git-gpg-config
+                           home-files-service-type
+                           (list `(".gitconfig"
+                                   ,(local-file "../../../files/plain/gitconfig"))))
+           (simple-service 'jj-gpg-config
+                           home-files-service-type
+                           (list `(".config/jj/config.toml"
+                                   ,(local-file "../../../files/plain/jj.toml"))))
            (simple-service 'mbsync-config-service
                            home-files-service-type
                            (list

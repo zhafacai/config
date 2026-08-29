@@ -103,6 +103,7 @@
   :config
   (diff-hl-flydiff-mode 1)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+  (add-hook 'majutsu-refresh-buffer-hook 'diff-hl-magit-post-refresh)
   (advice-add 'diff-hl-next-hunk :after
 			  (defun fc/diff-hl-recenter (&optional _)
 				(when (derived-mode-p 'org-mode)
