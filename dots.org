@@ -3011,6 +3011,8 @@ email = "zhafacai@gmail.com"
 key = "5ABCBDEC900FD06A"
 [ui]
 show-cryptographic-signatures = true
+[git]
+private-commits = "description('wip:*') | description('private:*')"
 #+end_src
 git config
 #+begin_src gitconfig :tangle files/plain/gitconfig
