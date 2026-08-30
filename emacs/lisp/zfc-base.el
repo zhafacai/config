@@ -85,7 +85,7 @@
 (use-package repeat-help
   :vc (:url "https://github.com/karthink/repeat-help")
   :custom
-  (repeat-help-auto t)
+  (repeat-help-auto nil)
   :config
   (repeat-help-mode 1))
 

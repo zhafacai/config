@@ -5,3 +5,5 @@ backend = "gpg"
 name = "zhafacai"
 email = "zhafacai@gmail.com"
 key = "5ABCBDEC900FD06A"
+[ui]
+show-cryptographic-signatures = true

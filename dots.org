@@ -542,7 +542,7 @@ basic packages which extend core features in emacs
 (use-package repeat-help
   :vc (:url "https://github.com/karthink/repeat-help")
   :custom
-  (repeat-help-auto t)
+  (repeat-help-auto nil)
   :config
   (repeat-help-mode 1))
 
@@ -1796,7 +1796,17 @@ telegram
   (majutsu-display-buffer-function #'majutsu-display-buffer-fullcolumn-most-v1)
   :config
   (require 'majutsu-forge)
-  (majutsu-forge-mode 1))
+  (majutsu-forge-mode 1)
+  (unless (cl-find 'signature majutsu-log-commit-columns
+                           :key (lambda (c) (plist-get c :field)))
+            (setopt majutsu-log-commit-columns
+                    (let* ((cols majutsu-log-commit-columns)
+                           (pos (cl-position-if
+                                 (lambda (c) (eq (plist-get c :field) 'bookmarks))
+                                 cols)))
+                      (append (seq-take cols pos)
+                              '((:field signature :module heading :template majutsu-log-template-signature))
+                              (seq-drop cols pos))))))
 #+end_src
 diff-hl
 #+begin_src emacs-lisp
@@ -2991,7 +3001,7 @@ git-fetch-with-cli = true
                         ,(local-file "../../../files/plain/jj.toml"))))
 #+end_src
 jj config
-#+begin_src gitconfig :tangle files/plain/jj.toml
+#+begin_src toml :tangle files/plain/jj.toml
 [signing]
 behavior = "own"
 backend = "gpg"
@@ -2999,6 +3009,8 @@ backend = "gpg"
 name = "zhafacai"
 email = "zhafacai@gmail.com"
 key = "5ABCBDEC900FD06A"
+[ui]
+show-cryptographic-signatures = true
 #+end_src
 git config
 #+begin_src gitconfig :tangle files/plain/gitconfig

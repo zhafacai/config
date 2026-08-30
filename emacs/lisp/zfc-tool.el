@@ -93,7 +93,17 @@
   (majutsu-display-buffer-function #'majutsu-display-buffer-fullcolumn-most-v1)
   :config
   (require 'majutsu-forge)
-  (majutsu-forge-mode 1))
+  (majutsu-forge-mode 1)
+  (unless (cl-find 'signature majutsu-log-commit-columns
+                           :key (lambda (c) (plist-get c :field)))
+            (setopt majutsu-log-commit-columns
+                    (let* ((cols majutsu-log-commit-columns)
+                           (pos (cl-position-if
+                                 (lambda (c) (eq (plist-get c :field) 'bookmarks))
+                                 cols)))
+                      (append (seq-take cols pos)
+                              '((:field signature :module heading :template majutsu-log-template-signature))
+                              (seq-drop cols pos))))))
 
 (use-package diff-hl
   :init
