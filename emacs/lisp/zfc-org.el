@@ -4,6 +4,8 @@
   :bind
   (:map text-mode-map
         ("C-c l" . org-store-link))
+  (:map org-mode-map
+        ("C-c C-M-l" . org-toggle-link-display))
   ;; ("C-c o" . org-open-at-point-global)
   :custom
   ;; org-default-notes-file (concat org-directory "notes.org")
@@ -118,8 +120,8 @@
 
 (use-package denote
   :hook
-  ((text-mode . denote-fontify-links-mode-maybe)
-   (dired-mode . denote-dired-mode))
+  (text-mode . denote-fontify-links-mode-maybe)
+  (dired-mode . denote-dired-mode)
   :bind
   (("C-c n n" . denote)
    ("C-c n d" . denote-dired)

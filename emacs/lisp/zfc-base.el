@@ -104,6 +104,13 @@
   :custom
   (isearch-lazy-count t))
 
+(use-package diff
+  :ensure
+  :config
+  ;; You cannot expect the syntax highlighting of themes to look
+  ;; equally readabable against what typically are red and green
+  ;; backgrounds.  This should be opt-in by default, not opt-out.
+  (setq diff-font-lock-syntax nil))
 
 (use-package ediff
   :ensure nil
@@ -182,7 +189,9 @@
   :hook
   (dired-mode . nerd-icons-dired-mode))
 
+;; BUG this package does not compatiable with denote.
 (use-package diredfl
+  :disabled
   :hook
   (dired-mode . hl-line-mode)
   (dired-mode . diredfl-mode))
@@ -236,6 +245,11 @@
   (dired-dwim-target t)
   (dired-omit-files "^\\.")
   (dired-hide-details-hide-absolute-location t)
+  (dired-auto-revert-buffer #'dired-directory-changed-p)
+  (dired-recursive-copies 'always)
+  (dired-recursive-deletes 'always)
+  :hook
+  (dired-mode . dired-hide-details-mode)
   :config
   (setq dired-listing-switches
         "-l --almost-all --human-readable --group-directories-first --no-group"))
