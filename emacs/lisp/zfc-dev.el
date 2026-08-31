@@ -215,12 +215,19 @@
 (use-package eldoc-box
   :bind
   (:map eglot-mode-map
-        ("C-c l n" . eldoc-box-scroll-down)
-        ("C-c l p" . eldoc-box-scroll-up)
+        ("C-c l p" . eldoc-box-scroll-down)
+        ("C-c l n" . eldoc-box-scroll-up)
         ("C-c l d" . eldoc-box-help-at-point))
-  
   :hook
-  (eglot-managed-mode . eldoc-box-hover-at-point-mode))
+  (eglot-managed-mode . eldoc-box-hover-mode)
+  :config
+  (defvar-keymap eldoc-box-repeat-map
+    :repeat t
+    "n" #'eldoc-box-scroll-up
+    "p" #'eldoc-box-scroll-down)
+  
+  (put 'eldoc-box-scroll-down 'repeat-map 'eldoc-box-repeat-map)
+  (put 'eldoc-box-scroll-up 'repeat-map 'eldoc-box-repeat-map))
 
 (use-package flymake
   :ensure nil
