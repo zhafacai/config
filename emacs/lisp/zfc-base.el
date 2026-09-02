@@ -134,6 +134,9 @@
   :bind
   ("C-x C-b" . ibuffer))
 
+(use-package nerd-icons-ibuffer
+  :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
+
 (use-package ibuffer-project
   :after (ibuffer project)
   :hook ((ibuffer ibuffer-mode) . fc/ibuffer-project-generate-filter-groups)

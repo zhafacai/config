@@ -24,7 +24,7 @@ more packages.
 #+begin_src emacs-lisp
 ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-(add-to-list 'default-frame-alist '(alpha-background . 90))
+(add-to-list 'default-frame-alist '(alpha-background . 88))
 (setq vc-handled-backends '(Git))
 
 (setq use-short-answers t)
@@ -590,6 +590,9 @@ basic packages which extend core features in emacs
   :ensure nil
   :bind
   ("C-x C-b" . ibuffer))
+
+(use-package nerd-icons-ibuffer
+  :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
 
 (use-package ibuffer-project
   :after (ibuffer project)
@@ -1394,7 +1397,20 @@ use built-in lsp client
   (prog-mode . flymake-mode)
   :custom
   (flymake-show-diagnostics-at-end-of-line 'fancy))
+
+(use-package jinx
+  :ensure nil
+  :hook (emacs-startup . global-jinx-mode)
+  :bind (("M-$" . jinx-correct)
+         ("C-M-$" . jinx-languages)))
 #+end_src
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+;; jinx
+"emacs-jinx"
+"hunspell-dict-en-us"
+#+end_src
+
 *** The =zfc-dev.el= section about elisp development
 #+begin_src emacs-lisp
 (use-package eros

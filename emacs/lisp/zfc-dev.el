@@ -236,6 +236,12 @@
   :custom
   (flymake-show-diagnostics-at-end-of-line 'fancy))
 
+(use-package jinx
+  :ensure nil
+  :hook (emacs-startup . global-jinx-mode)
+  :bind (("M-$" . jinx-correct)
+         ("C-M-$" . jinx-languages)))
+
 (use-package eros
   :hook (emacs-lisp-mode . eros-mode))
 

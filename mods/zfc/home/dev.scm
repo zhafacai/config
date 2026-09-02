@@ -38,6 +38,9 @@
                               "mpv"
                               "ffmpeg"
                               "ffmpegthumbnailer"
+                              ;; jinx
+                              "emacs-jinx"
+                              "hunspell-dict-en-us"
                               ;; telega
                               "emacs-telega"
                               ;; rime

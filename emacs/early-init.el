@@ -5,7 +5,7 @@
 
 ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-(add-to-list 'default-frame-alist '(alpha-background . 90))
+(add-to-list 'default-frame-alist '(alpha-background . 88))
 (setq vc-handled-backends '(Git))
 
 (setq use-short-answers t)
