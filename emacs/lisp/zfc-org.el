@@ -167,7 +167,9 @@
 (use-package denote-journal
   :bind
   ("C-c n j" . denote-journal-new-or-existing-entry)
-  :hook (calendar-mode . denote-journal-calendar-mode)
+  :hook
+  (calendar-mode . denote-journal-calendar-mode)
+  (ef-themes-post-load . fc/denote-journal-custom-faces)
   :config
   ;; Use the "journal" subdirectory of the `denote-directory'.  Set this
   ;; to nil to use the `denote-directory' instead.
@@ -177,7 +179,14 @@
   ;; strings.
   (setq denote-journal-keyword "journal")
   ;; Read the doc string of `denote-journal-title-format'.
-  (setq denote-journal-title-format 'day-date-month-year))
+  (setq denote-journal-title-format 'day-date-month-year)
+  (defun fc/denote-journal-custom-faces ()
+    (ef-themes-with-colors
+      (custom-set-faces
+       `(denote-journal-calendar
+         ((t (:background ,bg-added
+                          :box (:line-width 1 :color ,fg-added))))))))
+  (fc/denote-journal-custom-faces))
 
 (use-package denote-sequence
   :after denote
