@@ -3,9 +3,11 @@
 (when (file-exists-p custom-file)
   (load custom-file nil t))
 
-;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
+(if (getenv "WSL_DISTRO_NAME")
+    (setq select-active-regions nil))
 
-(add-to-list 'default-frame-alist '(alpha-background . 88))
+(add-to-list 'default-frame-alist '(fullscreen . fullboth))
+(add-to-list 'default-frame-alist '(alpha-background . 98))
 (setq vc-handled-backends '(Git))
 
 (setq use-short-answers t)

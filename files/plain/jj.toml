@@ -4,7 +4,8 @@ backend = "gpg"
 [user]
 name = "zhafacai"
 email = "zhafacai@gmail.com"
-key = "5ABCBDEC900FD06A"
+# key = "5ABCBDEC900FD06A"
+key = "ED968D008768C653"
 [ui]
 show-cryptographic-signatures = true
 [git]

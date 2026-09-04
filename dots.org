@@ -20,11 +20,15 @@ more packages.
 (when (file-exists-p custom-file)
   (load custom-file nil t))
 #+end_src
+wsl
+#+begin_src emacs-lisp
+(if (getenv "WSL_DISTRO_NAME")
+    (setq select-active-regions nil))
+#+end_src
 
 #+begin_src emacs-lisp
-;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
-
-(add-to-list 'default-frame-alist '(alpha-background . 88))
+(add-to-list 'default-frame-alist '(fullscreen . fullboth))
+(add-to-list 'default-frame-alist '(alpha-background . 98))
 (setq vc-handled-backends '(Git))
 
 (setq use-short-answers t)
@@ -339,7 +343,7 @@ default fonts
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
                     :family "Iosevka SS17"
-                    :height 150)
+                    :height 200)
 
 (set-face-attribute 'variable-pitch nil
                     :family "Iosevka Slab")
@@ -540,7 +544,6 @@ basic packages which extend core features in emacs
   (after-init . repeat-mode))
   
 (use-package repeat-help
-  :vc (:url "https://github.com/karthink/repeat-help")
   :custom
   (repeat-help-auto nil)
   :config
@@ -3089,7 +3092,8 @@ backend = "gpg"
 [user]
 name = "zhafacai"
 email = "zhafacai@gmail.com"
-key = "5ABCBDEC900FD06A"
+# key = "5ABCBDEC900FD06A"
+key = "ED968D008768C653"
 [ui]
 show-cryptographic-signatures = true
 [git]
@@ -3100,7 +3104,8 @@ git config
 [user]
 	name = zhafacai
 	email = zhafacai@gmail.com
-	signingkey = 5ABCBDEC900FD06A!
+	# signingkey = 5ABCBDEC900FD06A!
+	signingkey = ED968D008768C653
 [commit]
 	gpgsign = true
 [core]
