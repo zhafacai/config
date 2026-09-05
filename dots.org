@@ -342,7 +342,7 @@ toggle alpha background
 default fonts
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
-                    :family "Iosevka SS17"
+                    :family "Iosevka Fixed SS17"
                     :height 200)
 
 (set-face-attribute 'variable-pitch nil
@@ -365,8 +365,8 @@ default fonts
   :hook (prog-mode . hl-todo-mode)
   :bind
   (:map prog-mode-map
-	("M-g t" . hl-todo-next)
-	("M-g T" . hl-todo-previous)))
+	    ("M-g t" . hl-todo-next)
+	    ("M-g T" . hl-todo-previous)))
 #+end_src
 
 #+begin_src emacs-lisp

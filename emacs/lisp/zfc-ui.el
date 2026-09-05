@@ -105,7 +105,7 @@
     (message "Wallpaper changed 😃")))
 
 (set-face-attribute 'default nil
-                    :family "Iosevka SS17"
+                    :family "Iosevka Fixed SS17"
                     :height 200)
 
 (set-face-attribute 'variable-pitch nil
@@ -124,8 +124,8 @@
   :hook (prog-mode . hl-todo-mode)
   :bind
   (:map prog-mode-map
-	("M-g t" . hl-todo-next)
-	("M-g T" . hl-todo-previous)))
+	    ("M-g t" . hl-todo-next)
+	    ("M-g T" . hl-todo-previous)))
 
 (use-package doom-modeline
   :config
