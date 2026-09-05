@@ -41,15 +41,7 @@
   (org-startup-indented t)
   (org-edit-src-content-indentation 0))
 
-(use-package mixed-pitch
-  :hook
-  (org-mode . mixed-pitch-mode))
-
 (use-package org-tree-slide)
-
-(use-package valign
-  :hook
-  (org-mode . valign-mode))
 
 (use-package org-modern
   :after org
