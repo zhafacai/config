@@ -27,7 +27,7 @@ wsl
 #+end_src
 
 #+begin_src emacs-lisp
-(add-to-list 'default-frame-alist '(fullscreen . fullboth))
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'default-frame-alist '(alpha-background . 98))
 (setq vc-handled-backends '(Git))
 
@@ -1328,23 +1328,25 @@ use built-in lsp client
         ("C-c l i" . eglot-inlay-hints-mode)
         ("C-c l f" . eglot-format))
   :hook
-  ((python-ts-mode       . eglot-ensure)
-   (rustic-mode           . eglot-ensure)
-   (typescript-ts-mode     . eglot-ensure)
-   (tsx-ts-mode     . eglot-ensure)
-   (nix-ts-mode     . eglot-ensure)
-   (js-ts-mode             . eglot-ensure)
-   (astro-ts-mode             . eglot-ensure)
-   (c-mode         . eglot-ensure)
-   (bash-ts-mode           . eglot-ensure))
-
+  ((python-ts-mode     . eglot-ensure)
+   (rustic-mode        . eglot-ensure)
+   (typescript-ts-mode . eglot-ensure)
+   (tsx-ts-mode        . eglot-ensure)
+   (nix-ts-mode        . eglot-ensure)
+   (js-ts-mode         . eglot-ensure)
+   (astro-ts-mode      . eglot-ensure)
+   (c-mode             . eglot-ensure)
+   (sol-mode           . eglot-ensure)
+   (bash-ts-mode       . eglot-ensure))
   :custom
-  (eglot-autoshutdown         t)
+  (eglot-autoshutdown t)
   (eglot-send-changes-idle-time 0.5)
 
   :config
   (add-to-list 'eglot-server-programs
                '((python-mode python-ts-mode) . ("rass" "python")))
+
+  (add-to-list 'eglot-server-programs '(sol-mode . ("nomicfoundation-solidity-language-server" "--stdio")))
 
   (add-to-list 'eglot-server-programs
                '(((typescript-ts-mode :language-id "typescript")
@@ -1411,6 +1413,7 @@ use built-in lsp client
 #+begin_src scheme :noweb-ref emacs-packages
 ;; jinx
 "emacs-jinx"
+"hunspell"
 "hunspell-dict-en-us"
 #+end_src
 
@@ -2111,6 +2114,7 @@ gptel
 (use-package gptel
   :custom
   (gptel-default-mode #'org-mode)
+  (gptel-expert-commands t)
   :hook (gptel-mode . gptel-highlight-mode)
   :bind
   (("C-c a p" . gptel)
@@ -2364,6 +2368,8 @@ email
 #+end_src
 #+begin_src emacs-lisp
 (use-package sol-mode
+  :init
+  (add-to-list 'treesit-language-source-alist '(solidity "https://github.com/JoranHonig/tree-sitter-solidity"))
   :mode "\\.sol\\'")
 
 (use-package nix-ts-mode

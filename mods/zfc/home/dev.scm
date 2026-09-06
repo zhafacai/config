@@ -40,6 +40,7 @@
                               "ffmpegthumbnailer"
                               ;; jinx
                               "emacs-jinx"
+                              "hunspell"
                               "hunspell-dict-en-us"
                               ;; telega
                               "emacs-telega"

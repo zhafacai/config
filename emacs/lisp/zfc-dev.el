@@ -165,23 +165,25 @@
         ("C-c l i" . eglot-inlay-hints-mode)
         ("C-c l f" . eglot-format))
   :hook
-  ((python-ts-mode       . eglot-ensure)
-   (rustic-mode           . eglot-ensure)
-   (typescript-ts-mode     . eglot-ensure)
-   (tsx-ts-mode     . eglot-ensure)
-   (nix-ts-mode     . eglot-ensure)
-   (js-ts-mode             . eglot-ensure)
-   (astro-ts-mode             . eglot-ensure)
-   (c-mode         . eglot-ensure)
-   (bash-ts-mode           . eglot-ensure))
-
+  ((python-ts-mode     . eglot-ensure)
+   (rustic-mode        . eglot-ensure)
+   (typescript-ts-mode . eglot-ensure)
+   (tsx-ts-mode        . eglot-ensure)
+   (nix-ts-mode        . eglot-ensure)
+   (js-ts-mode         . eglot-ensure)
+   (astro-ts-mode      . eglot-ensure)
+   (c-mode             . eglot-ensure)
+   (sol-mode           . eglot-ensure)
+   (bash-ts-mode       . eglot-ensure))
   :custom
-  (eglot-autoshutdown         t)
+  (eglot-autoshutdown t)
   (eglot-send-changes-idle-time 0.5)
 
   :config
   (add-to-list 'eglot-server-programs
                '((python-mode python-ts-mode) . ("rass" "python")))
+
+  (add-to-list 'eglot-server-programs '(sol-mode . ("nomicfoundation-solidity-language-server" "--stdio")))
 
   (add-to-list 'eglot-server-programs
                '(((typescript-ts-mode :language-id "typescript")

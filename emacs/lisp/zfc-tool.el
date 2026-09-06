@@ -271,6 +271,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 (use-package gptel
   :custom
   (gptel-default-mode #'org-mode)
+  (gptel-expert-commands t)
   :hook (gptel-mode . gptel-highlight-mode)
   :bind
   (("C-c a p" . gptel)

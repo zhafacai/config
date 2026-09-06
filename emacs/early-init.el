@@ -6,7 +6,7 @@
 (if (getenv "WSL_DISTRO_NAME")
     (setq select-active-regions nil))
 
-(add-to-list 'default-frame-alist '(fullscreen . fullboth))
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'default-frame-alist '(alpha-background . 98))
 (setq vc-handled-backends '(Git))
 
