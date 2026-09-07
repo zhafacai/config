@@ -14,6 +14,7 @@
   ;; org-agenda-files `(,org-default-notes-file)
   ;; org-agenda-start-with-log-mode t
   (org-attach-directory "orgments/")
+  (org-confirm-babel-evaluate nil)
 
   (org-src-window-setup 'current-window)
   (org-src-preserve-indentation t)
@@ -41,7 +42,31 @@
   (org-startup-indented t)
   (org-edit-src-content-indentation 0))
 
+
 (use-package org-tree-slide)
+
+(defmacro fc/ob-autoload (lang-list)
+  "Create autoloads for languages in LANG-LIST."
+  (declare (indent 1))
+  `(progn
+     ,@(mapcar
+        (lambda (lang)
+          (let ((name (symbol-name lang)))
+            `(use-package ,(intern (concat "ob-" name))
+               :ensure nil
+               :autoload
+               (,(intern (concat "org-babel-execute:" name))
+                ,(intern (concat "org-babel-expand-body:" name))
+                ,(intern (concat "org-babel-" name "-initiate-session"))))))
+        (cadr lang-list))))
+
+(fc/ob-autoload '(rust lua python shell))
+
+(use-package ob-C
+  :ensure nil
+  :autoload
+  (org-babel-execute:cpp
+   org-babel-expand-body:cpp))
 
 (use-package org-modern
   :after org

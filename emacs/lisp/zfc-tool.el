@@ -359,7 +359,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :config (gptel-agent-update))
 
 (use-package ob-gptel
-  :vc (:url "https://github.com/jwiegley/ob-gptel")
+  :vc (:url "https://github.com/jwiegley/ob-gptel" :rev :newest)
   :config
   (add-to-list 'org-babel-load-languages '(gptel . t))
   (defun ob-gptel-setup-completions ()

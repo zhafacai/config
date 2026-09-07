@@ -1473,6 +1473,7 @@ use built-in lsp client
   ;; org-agenda-files `(,org-default-notes-file)
   ;; org-agenda-start-with-log-mode t
   (org-attach-directory "orgments/")
+  (org-confirm-babel-evaluate nil)
 
   (org-src-window-setup 'current-window)
   (org-src-preserve-indentation t)
@@ -1500,7 +1501,33 @@ use built-in lsp client
   (org-startup-indented t)
   (org-edit-src-content-indentation 0))
 
+
 (use-package org-tree-slide)
+#+end_src
+org babel
+#+begin_src emacs-lisp
+(defmacro fc/ob-autoload (lang-list)
+  "Create autoloads for languages in LANG-LIST."
+  (declare (indent 1))
+  `(progn
+     ,@(mapcar
+        (lambda (lang)
+          (let ((name (symbol-name lang)))
+            `(use-package ,(intern (concat "ob-" name))
+               :ensure nil
+               :autoload
+               (,(intern (concat "org-babel-execute:" name))
+                ,(intern (concat "org-babel-expand-body:" name))
+                ,(intern (concat "org-babel-" name "-initiate-session"))))))
+        (cadr lang-list))))
+
+(fc/ob-autoload '(rust lua python shell))
+
+(use-package ob-C
+  :ensure nil
+  :autoload
+  (org-babel-execute:cpp
+   org-babel-expand-body:cpp))
 #+end_src
 #+begin_src emacs-lisp
 (use-package org-modern
@@ -2202,7 +2229,7 @@ gptel
   :config (gptel-agent-update))
 
 (use-package ob-gptel
-  :vc (:url "https://github.com/jwiegley/ob-gptel")
+  :vc (:url "https://github.com/jwiegley/ob-gptel" :rev :newest)
   :config
   (add-to-list 'org-babel-load-languages '(gptel . t))
   (defun ob-gptel-setup-completions ()
