@@ -263,6 +263,12 @@
    :map org-agenda-mode-map
    ("C-c ." . org-gtd-agenda-transient)))
 
+
+(use-package org-timegrid
+  :disabled
+  :vc (:url "https://github.com/Gleek/org-timegrid" :rev :newest)
+  :commands (org-timegrid-week))
+
 ;; group the agenda by GTD context (matches org-todo-keywords above)
 (use-package org-super-agenda
   :after org-agenda

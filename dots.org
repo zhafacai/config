@@ -478,6 +478,7 @@ basic packages which extend core features in emacs
   (completions-detailed t)
   (help-window-select t)
   (history-length 300)
+  (save-interprogram-paste-before-kill t)
   (inhibit-startup-message t)
   (initial-scratch-message "")
   (kill-do-not-save-duplicates t)
@@ -520,6 +521,7 @@ basic packages which extend core features in emacs
   (read-process-output-max (* 1024 1024))
   (display-line-numbers-width-start t)
   (show-paren-style 'parenthesis)
+  (view-read-only t)
   :config
   (defun fc/join-line-vim-style ()
     "Join the current line with the next line, like Vim's J."
@@ -594,8 +596,16 @@ basic packages which extend core features in emacs
   :bind
   ("C-x C-b" . ibuffer))
 
-(use-package nerd-icons-ibuffer
-  :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
+;; (use-package nerd-icons-ibuffer
+;;   :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
+
+(use-package material-icons
+  :vc (:url "https://github.com/zHaOdANiuu/material-icons.el" :rev :newest)
+  :hook
+  (dired-mode . material-icons-dired-icons-mode)
+  (ibuffer-mode . material-icons-ibuffer-icons-mode)
+  :init
+  (setq material-icons-size 22))
 
 (use-package ibuffer-project
   :after (ibuffer project)
@@ -659,9 +669,9 @@ project
 #+end_src
 dired
 #+begin_src emacs-lisp
-(use-package nerd-icons-dired
-  :hook
-  (dired-mode . nerd-icons-dired-mode))
+;; (use-package nerd-icons-dired
+;;   :hook
+;;   (dired-mode . nerd-icons-dired-mode))
 
 ;; BUG this package does not compatiable with denote.
 (use-package diredfl
@@ -1747,6 +1757,12 @@ org babel
    ;; Quick actions on tasks in agenda views (optional but recommended)
    :map org-agenda-mode-map
    ("C-c ." . org-gtd-agenda-transient)))
+
+
+(use-package org-timegrid
+  :disabled
+  :vc (:url "https://github.com/Gleek/org-timegrid" :rev :newest)
+  :commands (org-timegrid-week))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -1893,6 +1909,16 @@ telegram
   (add-hook 'magit-process-find-password-functions 'magit-process-password-auth-source)
   :custom
   (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
+
+(use-package nix3
+  :vc (:url "https://github.com/emacs-twist/nix3.el" :rev :newest))
+
+(use-package magit-nix3
+  :ensure nil
+  :load-path "~/.config/emacs/elpa/nix3/extra"
+  :after magit
+  :config
+  (magit-nix3-flake-mode t))
 
 (use-package majutsu
   :vc (:url "https://github.com/0WD0/majutsu" :rev :newest)

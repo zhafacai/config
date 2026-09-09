@@ -17,6 +17,7 @@
   (completions-detailed t)
   (help-window-select t)
   (history-length 300)
+  (save-interprogram-paste-before-kill t)
   (inhibit-startup-message t)
   (initial-scratch-message "")
   (kill-do-not-save-duplicates t)
@@ -59,6 +60,7 @@
   (read-process-output-max (* 1024 1024))
   (display-line-numbers-width-start t)
   (show-paren-style 'parenthesis)
+  (view-read-only t)
   :config
   (defun fc/join-line-vim-style ()
     "Join the current line with the next line, like Vim's J."
@@ -133,8 +135,16 @@
   :bind
   ("C-x C-b" . ibuffer))
 
-(use-package nerd-icons-ibuffer
-  :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
+;; (use-package nerd-icons-ibuffer
+;;   :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
+
+(use-package material-icons
+  :vc (:url "https://github.com/zHaOdANiuu/material-icons.el" :rev :newest)
+  :hook
+  (dired-mode . material-icons-dired-icons-mode)
+  (ibuffer-mode . material-icons-ibuffer-icons-mode)
+  :init
+  (setq material-icons-size 22))
 
 (use-package ibuffer-project
   :after (ibuffer project)
@@ -187,9 +197,9 @@
   (setq project-prompter #'project-x--project-prompt)
   (project-x-mode 1))
 
-(use-package nerd-icons-dired
-  :hook
-  (dired-mode . nerd-icons-dired-mode))
+;; (use-package nerd-icons-dired
+;;   :hook
+;;   (dired-mode . nerd-icons-dired-mode))
 
 ;; BUG this package does not compatiable with denote.
 (use-package diredfl
