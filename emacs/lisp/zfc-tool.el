@@ -214,22 +214,19 @@
   ;; and comint buffers.
   (blue-prettify-compilation-mode 1))
 
-(use-package ghostel-ime
-  :ensure nil
-  :hook (ghostel-mode . ghostel-ime-mode))
-
 (use-package ghostel
   :custom
   (ghostel-shell "fish")
   :hook
   (after-init . ghostel-comint-global-mode)
-  ;; (ghostel-mode . ghostel-ime-mode)
-  :bind (("C-x m" . ghostel)
+  (after-init . ghostel-compile-global-mode)
+  (ghostel-mode . ghostel-ime-mode)
+  :bind (;; ("C-x m" . ghostel)
          :map ghostel-semi-char-mode-map
          ("C-s"  . consult-line)
          ("C-k"  . my/ghostel-send-C-k-and-kill)
          :map project-prefix-map
-         ("m" . ghostel-project)
+         ;; ("m" . ghostel-project)
          ("M" . ghostel-project-list-buffers))
   :config
   (defun my/ghostel-send-C-k-and-kill ()
@@ -242,6 +239,18 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (add-to-list 'project-switch-commands '(ghostel-project "Ghostel") t)
   (add-to-list 'project-switch-commands '(ghostel-project-list-buffers "Ghostel buffers") t)
   (add-to-list 'ghostel-eval-cmds '("magit-status-setup-buffer" magit-status-setup-buffer)))
+
+(use-package consult-ghostel
+  :vc (:url "https://github.com/dakra/ghostel"
+            :lisp-dir "extensions/consult-ghostel"
+            :rev :newest)
+  :after (ghostel consult)
+  :demand t
+  :bind (("C-x m" . consult-ghostel)
+         :map project-prefix-map
+         ("m" . consult-ghostel-project)
+         :map ghostel-semi-char-mode-map
+         ("C-c h" . consult-ghostel-history)))
 
 ;; (use-package direnv
 ;;   :config

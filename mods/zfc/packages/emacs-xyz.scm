@@ -23,7 +23,7 @@
     (origin
      (method git-fetch)
      (uri (git-reference
-           (url "https://codeberg.org/divyaranjan/emacs-reader")
+           (url "https://codeberg.org/MonadicSheep/emacs-reader")
            (commit "87b193d6996093530ab01cb0314c4d23b9777057")))
      (file-name (git-file-name name version))
      (sha256
