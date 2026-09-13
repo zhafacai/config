@@ -20,12 +20,22 @@
     "Customize faces using the current Ef theme's palette."
     (ef-themes-with-colors
       (custom-set-faces
+       `(holiday ((t (:foreground ,fg-removed :background ,bg-removed))))
        `(cal-china-x-general-holiday-face ((t (:foreground ,green-warmer))))
        `(cal-china-x-important-holiday-face ((t (:foreground ,red-warmer :weight bold)))))))
   (fc/cal-china-x-custom-faces)
   (setq calendar-mark-holidays-flag t)
   (setq cal-china-x-important-holidays cal-china-x-chinese-holidays)
 
+  ;; TODO add custom face here.
+  (setq fc/holidays
+        '((holiday-lunar 10 19 "lcb")
+          (holiday-lunar 5 10 "zjy")
+          (holiday-lunar 6 21 "ll")
+          (holiday-lunar 10 20 "hkk")
+          (holiday-lunar 10 22 "ljx")
+          (holiday-lunar 8 6 "lsh")))
+  
   (setq cal-china-x-general-holidays
         (append
          '((holiday-lunar 1 15 "元宵节")
@@ -47,7 +57,8 @@
   
   (setq calendar-holidays
         (append cal-china-x-important-holidays
-                cal-china-x-general-holidays)))
+                cal-china-x-general-holidays
+                fc/holidays)))
 
 (use-package elfeed
   :bind

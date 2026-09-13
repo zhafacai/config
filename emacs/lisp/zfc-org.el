@@ -201,8 +201,7 @@
     (ef-themes-with-colors
       (custom-set-faces
        `(denote-journal-calendar
-         ((t (:background ,bg-added
-                          :box (:line-width 1 :color ,fg-added))))))))
+         ((t (:box (:line-width 1 :color ,fg-added))))))))
   (fc/denote-journal-custom-faces))
 
 (use-package denote-sequence

@@ -468,6 +468,7 @@ basic packages which extend core features in emacs
   (
    ("C-x C-z" . nil)
    ("M-j" . fc/join-line-vim-style)
+   ([remap zap-to-char] . zap-up-to-char)
    ([remap capitalize-word] . capitalize-dwim)       ; Make M-c work on regions
    ([remap downcase-word] . downcase-dwim)           ; Make M-l work on regions
    ([remap upcase-word] . upcase-dwim)               ; Make M-u work on regions
@@ -750,7 +751,7 @@ dired
   (dired-mode . dired-hide-details-mode)
   :config
   (setq dired-listing-switches
-        "-l --almost-all --human-readable --group-directories-first --no-group"))
+        "-l --almost-all --human-readable --group-directories-first"))
 
 (use-package proced
   :ensure nil
@@ -763,7 +764,10 @@ dired
 
 #+begin_src emacs-lisp
 (use-package smartparens
-  :hook (prog-mode text-mode markdown-ts-mode)
+  :hook (prog-mode
+         text-mode
+         markdown-ts-mode
+         eval-expression-minibuffer-setup)
   :bind
   (:map smartparens-mode-map
         ("M-["           . sp-backward-slurp-sexp)
@@ -1687,8 +1691,7 @@ org babel
     (ef-themes-with-colors
       (custom-set-faces
        `(denote-journal-calendar
-         ((t (:background ,bg-added
-                          :box (:line-width 1 :color ,fg-added))))))))
+         ((t (:box (:line-width 1 :color ,fg-added))))))))
   (fc/denote-journal-custom-faces))
 #+end_src
 
@@ -1831,12 +1834,22 @@ cal-china-x
     "Customize faces using the current Ef theme's palette."
     (ef-themes-with-colors
       (custom-set-faces
+       `(holiday ((t (:foreground ,fg-removed :background ,bg-removed))))
        `(cal-china-x-general-holiday-face ((t (:foreground ,green-warmer))))
        `(cal-china-x-important-holiday-face ((t (:foreground ,red-warmer :weight bold)))))))
   (fc/cal-china-x-custom-faces)
   (setq calendar-mark-holidays-flag t)
   (setq cal-china-x-important-holidays cal-china-x-chinese-holidays)
 
+  ;; TODO add custom face here.
+  (setq fc/holidays
+        '((holiday-lunar 10 19 "lcb")
+          (holiday-lunar 5 10 "zjy")
+          (holiday-lunar 6 21 "ll")
+          (holiday-lunar 10 20 "hkk")
+          (holiday-lunar 10 22 "ljx")
+          (holiday-lunar 8 6 "lsh")))
+  
   (setq cal-china-x-general-holidays
         (append
          '((holiday-lunar 1 15 "元宵节")
@@ -1858,7 +1871,8 @@ cal-china-x
   
   (setq calendar-holidays
         (append cal-china-x-important-holidays
-                cal-china-x-general-holidays)))
+                cal-china-x-general-holidays
+                fc/holidays)))
 #+end_src
 elfeed
 #+begin_src emacs-lisp

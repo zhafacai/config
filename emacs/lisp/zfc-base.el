@@ -7,6 +7,7 @@
   (
    ("C-x C-z" . nil)
    ("M-j" . fc/join-line-vim-style)
+   ([remap zap-to-char] . zap-up-to-char)
    ([remap capitalize-word] . capitalize-dwim)       ; Make M-c work on regions
    ([remap downcase-word] . downcase-dwim)           ; Make M-l work on regions
    ([remap upcase-word] . upcase-dwim)               ; Make M-u work on regions
@@ -264,7 +265,7 @@
   (dired-mode . dired-hide-details-mode)
   :config
   (setq dired-listing-switches
-        "-l --almost-all --human-readable --group-directories-first --no-group"))
+        "-l --almost-all --human-readable --group-directories-first"))
 
 (use-package proced
   :ensure nil
@@ -274,7 +275,10 @@
   (proced-tree-flag t))
 
 (use-package smartparens
-  :hook (prog-mode text-mode markdown-ts-mode)
+  :hook (prog-mode
+         text-mode
+         markdown-ts-mode
+         eval-expression-minibuffer-setup)
   :bind
   (:map smartparens-mode-map
         ("M-["           . sp-backward-slurp-sexp)
