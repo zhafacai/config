@@ -232,15 +232,22 @@
   (after-init . ghostel-comint-global-mode)
   (after-init . ghostel-compile-global-mode)
   (ghostel-mode . ghostel-ime-mode)
-  :bind (;; ("C-x m" . ghostel)
+  :bind (("C-x m" . fc/ghostel)
          :map ghostel-semi-char-mode-map
          ("C-s"  . consult-line)
-         ("C-k"  . my/ghostel-send-C-k-and-kill)
+         ("C-k"  . fc/ghostel-send-C-k-and-kill)
          :map project-prefix-map
          ;; ("m" . ghostel-project)
          ("M" . ghostel-project-list-buffers))
   :config
-  (defun my/ghostel-send-C-k-and-kill ()
+  (defun fc/ghostel ()
+    "Run `ghostel' normally, consult-ghostel with prefix."
+    (interactive)
+    (if current-prefix-arg
+        (consult-ghostel)
+      (ghostel)))
+  
+  (defun fc/ghostel-send-C-k-and-kill ()
     "Send `C-k' to ghostel.
 Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
     (interactive)
@@ -257,8 +264,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
             :rev :newest)
   :after (ghostel consult)
   :demand t
-  :bind (("C-x m" . consult-ghostel)
-         :map project-prefix-map
+  :bind (:map project-prefix-map
          ("m" . consult-ghostel-project)
          :map ghostel-semi-char-mode-map
          ("C-c h" . consult-ghostel-history)))
