@@ -2,9 +2,13 @@
 (use-package org
   :ensure nil
   :bind
+  ("C-c c" . org-capture)
+  ("C-c C-a" . org-agenda)
   (:map text-mode-map
         ("C-c l" . org-store-link))
   (:map org-mode-map
+        ("C-c A" . org-attach)
+        ("C-c C-a" . org-agenda)
         ("C-c C-M-l" . org-toggle-link-display))
   ;; ("C-c o" . org-open-at-point-global)
   :custom
@@ -32,11 +36,12 @@
      ("WAIT"   . +org-todo-onhold)
      ("DONE"   . org-done)
      ("CNCL" . +org-todo-cancel)))
-  (org-tag-alist
-   '(("@work" . ?w)
-     ("@life" . ?l)))
   (org-agenda-window-setup 'only-window)
-  (org-directory (file-truename "~/share/notes/eorg/"))
+  (org-directory (file-truename "~/Documents/org/agenda/"))
+  (org-default-notes-file (concat org-directory "task.org"))
+  (org-agenda-files (list org-directory))
+  (org-refile-targets
+   '((org-agenda-files :maxlevel . 3)))
   (org-agenda-restore-windows-after-quit t)
   (org-startup-with-inline-images t)
   (org-startup-indented t)
@@ -44,6 +49,41 @@
 
 
 (use-package org-tree-slide)
+
+;; org-capture-templates
+(use-package org
+  :ensure nil
+  :config
+  (let ((with-time (concat ":PROPERTIES:\n"
+                           ":CAPTURED: %U\n"
+                           ":END:\n\n"
+                           "%a\n%?")))
+    (setq org-capture-templates `(("t" "Task" entry
+                                   (file "task.org")
+                                   ,(concat "* TODO %^{Title}\n" with-time)
+                                   :prepend t
+                                   :empty-lines-after 1)
+                                  ("d" "Task with deadline" entry
+                                   (file "task.org")
+                                   ,(concat "* TODO %^{Title}\n" "DEADLINE: %^t\n" with-time)
+                                   :prepend t
+                                   :empty-lines-after 1)
+                                  ("s" "Task with schedule" entry
+                                   (file "task.org")
+                                   ,(concat "* TODO %^{Title}\n" "SCHEDULE: %^t\n" with-time)
+                                   :prepend t
+                                   :empty-lines-after 1))))
+  (setq org-agenda-custom-commands '(
+                                     ("d" "Tasks DONE is last week" todo "DONE"
+                                      ((org-agenda-overriding-header "Tasks are DONE in the last week\n")
+                                       (org-agenda-start-day "-7d")))
+                                     ("t" "Tasks need to clarity" todo "TODO"
+                                      ((org-agenda-overriding-header "Tasks to be clarify\n")))
+                                     ("n" "Tasks to do" todo "NEXT"
+                                      ((org-agenda-overriding-header "Tasks to be DONE\n")))
+                                     ("w" "Tasks are waiting" todo "WAIT"
+                                      ((org-agenda-overriding-header "Tasks to WAIT\n")))))
+  )
 
 (defmacro fc/ob-autoload (lang-list)
   "Create autoloads for languages in LANG-LIST."
@@ -155,7 +195,7 @@
    ("C-c C-d C-k" . denote-dired-rename-marked-files-with-keywords)
    ("C-c C-d C-R" . denote-dired-rename-marked-files-using-front-matter))
   :config
-  (setq denote-directory (concat org-directory "denote"))
+  (setq denote-directory "~/Documents/org/notes")
   (setq denote-save-buffers nil)
   (setq denote-known-keywords '("emacs" "linux" "hack" "trade"))
   (setq denote-infer-keywords t)
@@ -219,57 +259,12 @@
   :config
   (consult-denote-mode 1))
 
-(use-package org-gtd
-  :after (org transient)
-  :demand
-  :init
-  ;; Suppress upgrade warnings (must be set before package loads)
-  (setq org-gtd-update-ack "4.0.0")
-  ;; Set GTD directory before package loads
-  (setq org-gtd-directory (concat org-directory "gtd"))
-
-  :custom
-  (org-gtd-keyword-mapping '((todo . "TODO")
-                             (next . "NEXT")
-                             (wait . "WAIT")
-                             (done . "DONE")
-                             (canceled . "CNCL")))
-  ;; Enable per-type refile prompting (recommended)
-  ;; Without this, all items auto-refile to first target without prompting
-  (org-gtd-refile-to-any-target nil)
-  (org-gtd-save-after-organize t)
-
-  :config
-  (org-edna-mode)
-  ;; Add org-gtd files to your agenda (in :config so org-gtd-directory is defined)
-  (setq org-agenda-files (list org-gtd-directory))
-
-  
-  
-  :bind
-  (
-   ("C-c d c" . org-gtd-capture)
-   ("C-c d e" . org-gtd-engage)
-   ("C-c d p" . org-gtd-process-inbox)
-   ("C-c d n" . org-gtd-show-all-next)
-   ("C-c d s" . org-gtd-reflect-stuck-projects)
-
-   ;; Keybinding for organizing items (only works in clarify buffers)
-   :map org-gtd-clarify-mode-map
-   ("C-c c" . org-gtd-organize)
-
-   ;; Quick actions on tasks in agenda views (optional but recommended)
-   :map org-agenda-mode-map
-   ("C-c ." . org-gtd-agenda-transient)))
-
-
 (use-package org-timegrid
-  :disabled
   :vc (:url "https://github.com/Gleek/org-timegrid" :rev :newest)
   :commands (org-timegrid-week))
 
-;; group the agenda by GTD context (matches org-todo-keywords above)
 (use-package org-super-agenda
+  :disabled
   :after org-agenda
   :config
   (setq org-super-agenda-groups
