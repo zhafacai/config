@@ -29,13 +29,7 @@
   (org-log-into-drawer t)
   (org-tags-column 0)
   (org-todo-keywords
-   '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@/!)" "|" "DONE(d!)" "CNCL(c@)")))
-  (org-todo-keyword-faces
-   '(("TODO"   . org-todo)
-     ("NEXT"   . +org-todo-active)
-     ("WAIT"   . +org-todo-onhold)
-     ("DONE"   . org-done)
-     ("CNCL" . +org-todo-cancel)))
+   '((sequence "WISH(w)" "TODO(t)" "HOLD(h@/!)" "|" "DONE(d!)" "CNCL(c@)")))
   (org-agenda-window-setup 'only-window)
   (org-directory (file-truename "~/Documents/org/agenda/"))
   (org-default-notes-file (concat org-directory "task.org"))
@@ -50,7 +44,6 @@
 
 (use-package org-tree-slide)
 
-;; org-capture-templates
 (use-package org
   :ensure nil
   :config
@@ -63,6 +56,11 @@
                                    ,(concat "* TODO %^{Title}\n" with-time)
                                    :prepend t
                                    :empty-lines-after 1)
+                                  ("w" "Task with wish" entry
+                                   (file "task.org")
+                                   ,(concat "* WISH %^{Title}\n" with-time)
+                                   :prepend t
+                                   :empty-lines-after 1)
                                   ("d" "Task with deadline" entry
                                    (file "task.org")
                                    ,(concat "* TODO %^{Title}\n" "DEADLINE: %^t\n" with-time)
@@ -73,17 +71,15 @@
                                    ,(concat "* TODO %^{Title}\n" "SCHEDULE: %^t\n" with-time)
                                    :prepend t
                                    :empty-lines-after 1))))
-  (setq org-agenda-custom-commands '(
-                                     ("d" "Tasks DONE is last week" todo "DONE"
+  (setq org-agenda-custom-commands '(("d" "Tasks DONE in last week" todo "DONE"
                                       ((org-agenda-overriding-header "Tasks are DONE in the last week\n")
                                        (org-agenda-start-day "-7d")))
-                                     ("t" "Tasks need to clarity" todo "TODO"
+                                     ("w" "Tasks to clarity" todo "WISH"
                                       ((org-agenda-overriding-header "Tasks to be clarify\n")))
-                                     ("n" "Tasks to do" todo "NEXT"
+                                     ("t" "Tasks to do" todo "TODO"
                                       ((org-agenda-overriding-header "Tasks to be DONE\n")))
-                                     ("w" "Tasks are waiting" todo "WAIT"
-                                      ((org-agenda-overriding-header "Tasks to WAIT\n")))))
-  )
+                                     ("h" "Tasks are HOLD" todo "HOLD"
+                                      ((org-agenda-overriding-header "Tasks to HOLD\n"))))))
 
 (defmacro fc/ob-autoload (lang-list)
   "Create autoloads for languages in LANG-LIST."
@@ -110,11 +106,22 @@
 
 (use-package org-modern
   :after org
+  :demand t
+  ;; :hook
+  ;; (ef-themes-post-load . fc/org-modern-custom-faces)
   :custom
   (org-modern-hide-stars nil)
   (org-modern-star '("◉" "○" "◈" "◇"))
   (org-modern-block-name nil)
   :config
+  ;; (defun fc/org-modern-custom-faces ()
+  ;;     (ef-themes-with-colors
+  ;;       (setq org-modern-todo-faces `(
+  ;;                                     ("WISH" :foreground "white" :background ,bg-removed)
+  ;;                                     ("HOLD" :foreground "white" :background ,yellow-warmer)
+  ;;                                     ("CNCL" :foreground "white" :background ,bg-removed)))))
+  ;; (fc/org-modern-custom-faces)
+  
   (global-org-modern-mode))
 
 (use-package org-appear
@@ -270,7 +277,7 @@
   (setq org-super-agenda-groups
         '((:name "Scheduled" :time-grid t)
           (:name "Next" :todo "NEXT")
-          (:name "Waiting" :todo "WAIT")
+          (:name "Waiting" :todo "HOLD")
           (:name "Important" :priority "A")))
   (org-super-agenda-mode 1))
 
