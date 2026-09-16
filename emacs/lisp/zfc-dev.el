@@ -159,11 +159,11 @@
   :ensure nil
   :bind
   (:map eglot-mode-map
-        ("C-c l a" . eglot-code-actions)
-        ("C-c l o" . eglot-code-action-organize-imports)
-        ("C-c l r" . eglot-rename)
-        ("C-c l i" . eglot-inlay-hints-mode)
-        ("C-c l f" . eglot-format))
+        ("C-c SPC a" . eglot-code-actions)
+        ("C-c SPC o" . eglot-code-action-organize-imports)
+        ("C-c SPC r" . eglot-rename)
+        ("C-c SPC i" . eglot-inlay-hints-mode)
+        ("C-c SPC f" . eglot-format))
   :hook
   ((python-ts-mode     . eglot-ensure)
    (rustic-mode        . eglot-ensure)

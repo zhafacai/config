@@ -4,21 +4,20 @@
   :bind
   ("C-c c" . org-capture)
   ("C-c C-a" . org-agenda)
-  (:map text-mode-map
-        ("C-c l" . org-store-link))
+  ("C-c l" . org-store-link)
   (:map org-mode-map
         ("C-c A" . org-attach)
         ("C-c C-a" . org-agenda)
         ("C-c C-M-l" . org-toggle-link-display))
   ;; ("C-c o" . org-open-at-point-global)
   :custom
-  ;; org-default-notes-file (concat org-directory "notes.org")
   ;; org-clock-in-switch-to-state "DOING"
-  ;; org-clock-out-when-done '("DONE" "CANCEL" "WAIT")
-  ;; org-agenda-files `(,org-default-notes-file)
-  ;; org-agenda-start-with-log-mode t
+  ;; org-clock-out-when-done '("DONE" "CNCL")
   (org-attach-directory "orgments/")
   (org-confirm-babel-evaluate nil)
+  (org-footnote-auto-label 'confirm)
+  (org-agenda-start-with-log-mode t)
+  (org-agenda-start-with-clockreport-mode t)
 
   (org-src-window-setup 'current-window)
   (org-src-preserve-indentation t)
