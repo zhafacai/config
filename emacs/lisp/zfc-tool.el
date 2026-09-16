@@ -25,6 +25,7 @@
        `(cal-china-x-important-holiday-face ((t (:foreground ,red-warmer :weight bold)))))))
   (fc/cal-china-x-custom-faces)
   (setq calendar-mark-holidays-flag t)
+  (setq calendar-week-start-day 1)
   (setq cal-china-x-important-holidays cal-china-x-chinese-holidays)
 
   ;; TODO add custom face here.
