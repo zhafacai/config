@@ -334,6 +334,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 	:stream t
 	:models '(poolside/laguna-s-2.1:free
               z-ai/glm-5.2:free
+              stealth/union-alpha
 			  nvidia/nemotron-3-ultra-550b-a55b:free))
 
   (gptel-make-openai "Flash"
@@ -387,8 +388,8 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 			  glm-5.2
 			  deepseek-v4-flash))
 
-  (setq gptel-backend (gptel-get-backend "BigModel"))
-  (setq gptel-model 'glm-5.3-flash)
+  (setq gptel-backend (gptel-get-backend "OpenRouter"))
+  (setq gptel-model 'stealth/union-alpha)
   ;; (setq gptel-backend (gptel-get-backend "SenseNova"))
   ;; (setq gptel-model 'sensenova-6.8-flash-lite)
   )
@@ -444,7 +445,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (agent-shell-preferred-agent-config '(preselect . opencode))
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
-  (agent-shell-opencode-default-model-id "sensenova/deepseek-v4-flash"))
+  (agent-shell-opencode-default-model-id "opencode/union-alpha"))
 
 
 (use-package agent-shell-dashboard
