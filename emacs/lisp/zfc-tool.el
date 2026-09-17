@@ -463,6 +463,23 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
       user-full-name "zhafacai"
       user-mail-address "zhafacai@gmail.com")
 
+(use-package auth-source-pass
+  :ensure nil
+  :config
+  (auth-source-pass-enable))
+
+(use-package pass
+  :bind
+  (("C-c a k" . pass)
+   :map pass-mode-map
+   ("q" . fc/pass-easy-quit))
+  :config
+  (defun fc/pass-easy-quit ()
+    "Quit pass without confirm."
+    (interactive)
+    (let ((pass-suppress-confirmations t))
+      (pass-quit))))
+
 (setq smtpmail-smtp-server "smtp.gmail.com"
       smtpmail-smtp-service 587
       smtpmail-stream-type 'starttls)
