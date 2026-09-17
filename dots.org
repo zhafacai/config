@@ -266,6 +266,8 @@ toggle alpha background
   ("C-c w d" . ef-themes-load-random-dark)
   ("C-c w l" . ef-themes-load-random-light)
   :config
+  (add-to-list 'ef-themes-dark-themes 'oxocarbon)
+  (add-to-list 'ef-themes-light-themes 'oxocarbon-light)
   (load-theme 'oxocarbon :no-confirm))
 
 
@@ -441,6 +443,7 @@ default fonts
 #+end_src
 #+begin_src emacs-lisp
 (use-package theme-buffet
+  :disabled
   :config
   (setq theme-buffet-menu 'end-user)
 
@@ -1536,7 +1539,8 @@ use built-in lsp client
   (org-confirm-babel-evaluate nil)
   (org-footnote-auto-label 'confirm)
   (org-agenda-start-with-log-mode t)
-  (org-agenda-start-with-clockreport-mode t)
+  ;; too much spaces
+  (org-agenda-start-with-clockreport-mode nil)
 
   (org-src-window-setup 'current-window)
   (org-src-preserve-indentation t)

@@ -33,6 +33,8 @@
   ("C-c w d" . ef-themes-load-random-dark)
   ("C-c w l" . ef-themes-load-random-light)
   :config
+  (add-to-list 'ef-themes-dark-themes 'oxocarbon)
+  (add-to-list 'ef-themes-light-themes 'oxocarbon-light)
   (load-theme 'oxocarbon :no-confirm))
 
 
@@ -192,6 +194,7 @@
   (pulsar-global-mode 1))
 
 (use-package theme-buffet
+  :disabled
   :config
   (setq theme-buffet-menu 'end-user)
 

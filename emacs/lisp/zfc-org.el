@@ -17,7 +17,8 @@
   (org-confirm-babel-evaluate nil)
   (org-footnote-auto-label 'confirm)
   (org-agenda-start-with-log-mode t)
-  (org-agenda-start-with-clockreport-mode t)
+  ;; too much spaces
+  (org-agenda-start-with-clockreport-mode nil)
 
   (org-src-window-setup 'current-window)
   (org-src-preserve-indentation t)
