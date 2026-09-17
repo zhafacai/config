@@ -268,23 +268,11 @@
 
 (use-package org-timegrid
   :vc (:url "https://github.com/Gleek/org-timegrid" :rev :newest)
-  :commands (org-timegrid-week))
-
-(use-package org-super-agenda
-  :disabled
   :after org-agenda
   :config
-  (setq org-super-agenda-groups
-        '((:name "Scheduled" :time-grid t)
-          (:name "Next" :todo "NEXT")
-          (:name "Waiting" :todo "HOLD")
-          (:name "Important" :priority "A")))
-  (org-super-agenda-mode 1))
+  (add-to-list 'org-agenda-custom-commands
+               '("g" "TimeGrid week" org-timegrid-week)))
 
-;; structured agenda searches: M-x org-ql-search / org-ql-view
 (use-package org-ql)
-
-;; countdown timers (Prot): M-x tmr
-;; (use-package tmr)
 
 (provide 'zfc-org)

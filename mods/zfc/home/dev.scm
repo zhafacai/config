@@ -52,7 +52,6 @@
                               "emacs-guix"
                               ;; gt
                               "sdcv"
-                              ;; ben
                               "direnv"
                               ;; notmuch
                               "notmuch"

@@ -193,20 +193,6 @@
         pulsar-highlight-face 'pulsar-magenta)
   (pulsar-global-mode 1))
 
-(use-package theme-buffet
-  :disabled
-  :config
-  (setq theme-buffet-menu 'end-user)
-
-  (setq theme-buffet-end-user
-        '( :night     (oxocarbon ef-dark ef-winter ef-autumn ef-night ef-duo-dark ef-symbiosis)
-           :morning   (oxocarbon-light ef-light ef-cyprus ef-spring ef-frost ef-duo-light)
-           :afternoon (oxocarbon-light ef-arbutus ef-day ef-kassio ef-summer ef-elea-light ef-maris-light ef-melissa-light ef-trio-light ef-reverie)
-           :evening   (oxocarbon ef-rosa ef-elea-dark ef-maris-dark ef-melissa-dark ef-trio-dark ef-dream)))
-
-
-  (theme-buffet-timer-hours 1))
-
 (use-package rainbow-delimiters
   :hook
   (prog-mode . rainbow-delimiters-mode))

@@ -247,11 +247,18 @@
 (use-package eros
   :hook (emacs-lisp-mode . eros-mode))
 
-;; step through macro expansions: M-x macrostep-expand
-(use-package macrostep)
+(use-package macrostep
+  :bind
+  (:map emacs-lisp-mode-map
+        ("C-c C-m" . macrostep-expand)
+        :map lisp-interaction-mode-map
+        ("C-c C-m" . macrostep-expand)))
 
-;; inspector for any elisp object: M-x inspector-inspect-expression
-(use-package inspector)
+(use-package inspector
+  :bind
+  (("M-I" . inspector-inspect-expression)
+   :map lisp-mode-shared-map
+   ("C-c C-i" . inspector-inspect-last-sexp)))
 
 (use-package treesit
   :ensure nil

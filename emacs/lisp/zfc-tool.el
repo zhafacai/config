@@ -210,6 +210,14 @@
   :bind
   ("C-x l" . gt-translate))
 
+(use-package tmr
+  :bind
+  ("C-c a t" . tmr-prefix-map)
+  :custom
+  (tmr-sound-file "/usr/share/sounds/freedesktop/stereo/message-new-instant.oga")
+  :config
+  (tmr-mode-line-mode))
+
 (use-package sops
   ;; :ensure (:type git :host github :repo "djgoku/sops")
   ;; BUG this is so laggy
@@ -270,9 +278,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
          :map ghostel-semi-char-mode-map
          ("C-c h" . consult-ghostel-history)))
 
-;; (use-package direnv
-;;   :config
-;;   (direnv-mode))
 (use-package ben
   :vc (:url "https://codeberg.org/pastor/ben.el")
   :bind-keymap
@@ -313,10 +318,10 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :hook (gptel-mode . gptel-highlight-mode)
   :bind
   (("C-c a p" . gptel)
-   ("C-c a r" . gptel-rewrite)
+   ("C-c a m" . gptel-menu)
+   ;; TODO remove these two if needed
    ("C-c a a" . gptel-add)
-   ("C-c a f" . gptel-add-file)
-   ("C-c a m" . gptel-menu))
+   ("C-c a f" . gptel-add-file))
   :config
   (define-key fc/override-mode-map (kbd "C-c C-<return>") 'gptel-send)
   
