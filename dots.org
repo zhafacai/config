@@ -514,7 +514,6 @@ basic packages which extend core features in emacs
   (history-length 300)
   (save-interprogram-paste-before-kill t)
   (inhibit-startup-message t)
-  (initial-scratch-message "")
   (kill-do-not-save-duplicates t)
   (create-lockfiles nil)   ; No lock files
   (make-backup-files nil)  ; No backup files
@@ -1232,7 +1231,7 @@ embark
 (use-package cape
   ;; Bind prefix keymap providing all Cape commands under a mnemonic key.
   ;; Press C-c p ? to for help.
-  :bind ("C-c p" . cape-prefix-map) ;; cape's documented prefix (was C-c c, which collided with org-gtd's C-c c)
+  :bind ("C-c p" . cape-prefix-map)
   ;; Alternatively bind Cape commands individually.
   ;; :bind (("C-c p d" . cape-dabbrev)
   ;;        ("C-c p h" . cape-history)
@@ -1414,9 +1413,9 @@ use built-in lsp client
 (use-package eldoc-box
   :bind
   (:map eglot-mode-map
-        ("C-c l p" . eldoc-box-scroll-down)
-        ("C-c l n" . eldoc-box-scroll-up)
-        ("C-c l d" . eldoc-box-help-at-point))
+        ("C-c SPC p" . eldoc-box-scroll-down)
+        ("C-c SPC n" . eldoc-box-scroll-up)
+        ("C-c SPC d" . eldoc-box-help-at-point))
   :hook
   (eglot-managed-mode . eldoc-box-hover-mode)
   :config
@@ -2240,7 +2239,6 @@ gptel
 	:stream t
 	:models '(poolside/laguna-s-2.1:free
               z-ai/glm-5.2:free
-              stealth/union-alpha
 			  nvidia/nemotron-3-ultra-550b-a55b:free))
 
   (gptel-make-openai "Flash"
@@ -2295,7 +2293,7 @@ gptel
 			  deepseek-v4-flash))
 
   (setq gptel-backend (gptel-get-backend "OpenRouter"))
-  (setq gptel-model 'stealth/union-alpha)
+  (setq gptel-model 'z-ai/glm-5.2:free)
   ;; (setq gptel-backend (gptel-get-backend "SenseNova"))
   ;; (setq gptel-model 'sensenova-6.8-flash-lite)
   )
@@ -2489,6 +2487,7 @@ email
 (use-package sol-mode
   :init
   (add-to-list 'treesit-language-source-alist '(solidity "https://github.com/JoranHonig/tree-sitter-solidity"))
+  (add-to-list 'treesit-language-source-alist '(compact "https://github.com/midnightntwrk/compact-tree-sitter"))
   :mode "\\.sol\\'")
 
 (use-package nix-ts-mode

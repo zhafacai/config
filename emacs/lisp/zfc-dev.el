@@ -91,7 +91,7 @@
 (use-package cape
   ;; Bind prefix keymap providing all Cape commands under a mnemonic key.
   ;; Press C-c p ? to for help.
-  :bind ("C-c p" . cape-prefix-map) ;; cape's documented prefix (was C-c c, which collided with org-gtd's C-c c)
+  :bind ("C-c p" . cape-prefix-map)
   ;; Alternatively bind Cape commands individually.
   ;; :bind (("C-c p d" . cape-dabbrev)
   ;;        ("C-c p h" . cape-history)
@@ -217,9 +217,9 @@
 (use-package eldoc-box
   :bind
   (:map eglot-mode-map
-        ("C-c l p" . eldoc-box-scroll-down)
-        ("C-c l n" . eldoc-box-scroll-up)
-        ("C-c l d" . eldoc-box-help-at-point))
+        ("C-c SPC p" . eldoc-box-scroll-down)
+        ("C-c SPC n" . eldoc-box-scroll-up)
+        ("C-c SPC d" . eldoc-box-help-at-point))
   :hook
   (eglot-managed-mode . eldoc-box-hover-mode)
   :config

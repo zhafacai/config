@@ -5,6 +5,7 @@
 (use-package sol-mode
   :init
   (add-to-list 'treesit-language-source-alist '(solidity "https://github.com/JoranHonig/tree-sitter-solidity"))
+  (add-to-list 'treesit-language-source-alist '(compact "https://github.com/midnightntwrk/compact-tree-sitter"))
   :mode "\\.sol\\'")
 
 (use-package nix-ts-mode

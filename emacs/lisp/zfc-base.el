@@ -20,7 +20,6 @@
   (history-length 300)
   (save-interprogram-paste-before-kill t)
   (inhibit-startup-message t)
-  (initial-scratch-message "")
   (kill-do-not-save-duplicates t)
   (create-lockfiles nil)   ; No lock files
   (make-backup-files nil)  ; No backup files
