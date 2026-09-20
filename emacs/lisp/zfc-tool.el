@@ -243,7 +243,7 @@
   (ghostel-mode . ghostel-ime-mode)
   :bind (("C-x m" . fc/ghostel)
          :map ghostel-semi-char-mode-map
-         ("C-s"  . consult-line)
+         ("M-o"  . ace-window)
          ("C-k"  . fc/ghostel-send-C-k-and-kill)
          :map project-prefix-map
          ;; ("m" . ghostel-project)
@@ -263,6 +263,10 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
     (kill-ring-save (point) (line-end-position))
     (ghostel-send-key "k" "ctrl"))
 
+  (add-to-list 'ghostel-keymap-exceptions "M-s")
+  (add-to-list 'ghostel-keymap-exceptions "M-o")
+
+  (bind-key "M-s" search-map ghostel-semi-char-mode-map)
   (add-to-list 'project-switch-commands '(ghostel-project "Ghostel") t)
   (add-to-list 'project-switch-commands '(ghostel-project-list-buffers "Ghostel buffers") t)
   (add-to-list 'ghostel-eval-cmds '("magit-status-setup-buffer" magit-status-setup-buffer)))

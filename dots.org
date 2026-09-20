@@ -1793,6 +1793,11 @@ org babel
   :config
   (add-to-list 'org-agenda-custom-commands
                '("g" "TimeGrid week" org-timegrid-week)))
+
+(use-package org-habit-stats
+  :bind
+  (:map org-agenda-mode-map
+        ("H" . org-habit-stats-view-habit-at-point-agenda)))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -2130,7 +2135,7 @@ ghostel
   (ghostel-mode . ghostel-ime-mode)
   :bind (("C-x m" . fc/ghostel)
          :map ghostel-semi-char-mode-map
-         ("C-s"  . consult-line)
+         ("M-o"  . ace-window)
          ("C-k"  . fc/ghostel-send-C-k-and-kill)
          :map project-prefix-map
          ;; ("m" . ghostel-project)
@@ -2150,6 +2155,10 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
     (kill-ring-save (point) (line-end-position))
     (ghostel-send-key "k" "ctrl"))
 
+  (add-to-list 'ghostel-keymap-exceptions "M-s")
+  (add-to-list 'ghostel-keymap-exceptions "M-o")
+
+  (bind-key "M-s" search-map ghostel-semi-char-mode-map)
   (add-to-list 'project-switch-commands '(ghostel-project "Ghostel") t)
   (add-to-list 'project-switch-commands '(ghostel-project-list-buffers "Ghostel buffers") t)
   (add-to-list 'ghostel-eval-cmds '("magit-status-setup-buffer" magit-status-setup-buffer)))
@@ -2570,7 +2579,7 @@ email
 <<sys-def>>
 
 (operating-system
- (kernel linux-7.1)
+ (kernel linux-7.2)
  (initrd microcode-initrd)
  (firmware (list linux-firmware))
  (host-name "art")
@@ -2934,12 +2943,12 @@ here is =sops= secrets config for my dae config.
     <<dev-pkgs>>
     )
    (specifications->packages (list
-                              "emacs-next-pgtk"
+                              "emacs-pgtk"
                               ;; core
                               "ripgrep"
-				  "fd"
+				              "fd"
                               <<emacs-packages>>
-				  ))))
+				              ))))
 
 (define %zfc-dev-services
   (append (list
@@ -3386,8 +3395,8 @@ notmuch tag +ai -- 'from:openai.com or from:openrouter.ai or from:nvidia.com or 
 #+begin_src scheme :noweb-ref channels
 (channel
  (name 'guix)
- (url "https://mirror.nju.edu.cn/git/guix.git")
- ;; (url "https://git.guix.gnu.org/guix.git")
+ ;;(url "https://mirror.nju.edu.cn/git/guix.git")
+ (url "https://git.guix.gnu.org/guix.git")
  (branch "master")
  (introduction
   (make-channel-introduction

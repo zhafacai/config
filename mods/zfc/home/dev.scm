@@ -30,10 +30,10 @@
     blue
     )
    (specifications->packages (list
-                              "emacs-next-pgtk"
+                              "emacs-pgtk"
                               ;; core
                               "ripgrep"
-				  "fd"
+				              "fd"
                               ;; ready-player
                               "mpv"
                               "ffmpeg"
@@ -64,7 +64,7 @@
                               "starship"
                               "zoxide"
                               "fzf"
-				  ))))
+				              ))))
 
 (define %zfc-dev-services
   (append (list

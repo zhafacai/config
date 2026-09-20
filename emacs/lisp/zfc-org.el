@@ -273,6 +273,11 @@
   (add-to-list 'org-agenda-custom-commands
                '("g" "TimeGrid week" org-timegrid-week)))
 
+(use-package org-habit-stats
+  :bind
+  (:map org-agenda-mode-map
+        ("H" . org-habit-stats-view-habit-at-point-agenda)))
+
 (use-package org-ql)
 
 (provide 'zfc-org)
