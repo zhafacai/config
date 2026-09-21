@@ -151,9 +151,12 @@
   (cursory-mode 1))
 
 (if fc/androidp
-    (set-face-attribute 'default nil
-                        :family "Iosevka Slab"
-                        :height 100)
+    (progn
+      (set-face-attribute 'default nil
+                          :family "Iosevka Slab"
+                          :height 100)
+      (set-face-attribute 'variable-pitch nil
+                          :family "Iosevka Slab"))
   (progn
     (dolist (charset '(kana han cjk-misc symbol bopomofo))
       (set-fontset-font t charset (font-spec :family "LXGW Marker Gothic")))
