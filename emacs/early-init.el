@@ -6,6 +6,14 @@
 (if (getenv "WSL_DISTRO_NAME")
     (setq select-active-regions nil))
 
+(defvar fc/androidp (eq system-type 'android))
+(when fc/androidp
+  (setenv "PATH"
+          (format "%s:%s"
+                  "/data/data/com.termux/files/usr/bin"
+                  (getenv "PATH")))
+  (push "/data/data/com.termux/files/usr/bin" exec-path))
+
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'default-frame-alist '(alpha-background . 98))
 (setq vc-handled-backends '(Git))
