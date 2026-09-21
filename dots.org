@@ -1942,16 +1942,6 @@ telegram
   :custom
   (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 
-(use-package nix3
-  :vc (:url "https://github.com/emacs-twist/nix3.el" :rev :newest))
-
-(use-package magit-nix3
-  :ensure nil
-  :load-path "~/.config/emacs/elpa/nix3/extra"
-  :after magit
-  :config
-  (magit-nix3-flake-mode t))
-
 (use-package majutsu
   :vc (:url "https://github.com/0WD0/majutsu" :rev :newest)
   :bind
