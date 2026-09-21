@@ -154,13 +154,14 @@
     (progn
       (set-face-attribute 'default nil
                           :family "Iosevka Slab"
-                          :height 100)
+                          :height 180)
       (set-face-attribute 'variable-pitch nil
+                          :family "Iosevka Slab")
+      (set-face-attribute 'fixed-pitch nil
+                          :family "Iosevka Slab")
+      (set-face-attribute 'fixed-pitch-serif nil
                           :family "Iosevka Slab"))
   (progn
-    (dolist (charset '(kana han cjk-misc symbol bopomofo))
-      (set-fontset-font t charset (font-spec :family "LXGW Marker Gothic")))
-
     (set-face-attribute 'default nil
                         :family "Iosevka Fixed SS17"
                         :height 200)
@@ -173,6 +174,9 @@
 
     (set-face-attribute 'fixed-pitch-serif nil
                         :family "Iosevka SS08")))
+
+(dolist (charset '(kana han cjk-misc symbol bopomofo))
+  (set-fontset-font t charset (font-spec :family "LXGW Marker Gothic")))
 
 (use-package hl-todo
   :hook (prog-mode . hl-todo-mode)
@@ -225,11 +229,7 @@
   (setopt lin-face 'lin-blue) ; check doc string for alternative styles
   
   (global-hl-line-mode 1)
-  (lin-global-mode 1)
-
-  ;; If you are using the GNOME desktop and want to synchronise the
-  ;; `lin-face' with GNOME's accent colour:
-  (lin-gnome-accent-color-mode 1))
+  (lin-global-mode 1))
 
 (use-package idle-highlight-mode
   :config (setq idle-highlight-idle-time 0.2)

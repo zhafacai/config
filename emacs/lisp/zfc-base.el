@@ -3,7 +3,7 @@
   :ensure nil
   :bind-keymap
   ("M-r" . ctl-x-r-map)
-  :bind                                              ; NOTE: M-x describe-personal-bindings (for all use-packge binds)
+  :bind
   (
    ("C-x C-z" . nil)
    ("M-j" . fc/join-line-vim-style)
@@ -12,7 +12,9 @@
    ([remap downcase-word] . downcase-dwim)           ; Make M-l work on regions
    ([remap upcase-word] . upcase-dwim)               ; Make M-u work on regions
    ([remap kill-buffer] . kill-current-buffer)       ; C-x k stops prompting for buffer to kill
-   ([remap delete-horizontal-space] . cycle-spacing))
+   ([remap delete-horizontal-space] . cycle-spacing)
+   :map ctl-x-x-map
+         ("l" . visual-line-mode))
   :custom
   (completion-ignore-case t)
   (completions-detailed t)

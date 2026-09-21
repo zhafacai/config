@@ -27,6 +27,9 @@ os probe
 
 (defvar fc/androidp (eq system-type 'android))
 (when fc/androidp
+  (setq epg-pinentry-mode 'loopback)
+  (setq android-intercept-control-space nil)
+  (setq with-editor-emacsclient-executable "/data/data/org.gnu.emacs/lib/libemacsclient.so")
   (setenv "PATH"
           (format "%s:%s"
                   "/data/data/com.termux/files/usr/bin"
@@ -44,7 +47,10 @@ wget https://github.com/notofonts/symbols/releases/download/NotoSansSymbols2-v2.
 wget https://github.com/lxgw/LxgwMarkerGothic/releases/download/v1.003/LxgwMarkerGothic-v1.003.zip
 #+end_src
 #+begin_src emacs-lisp
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
+(if fc/androidp 
+    (add-to-list 'default-frame-alist '(fullscreen . fullboth))
+  (add-to-list 'default-frame-alist '(fullscreen . maximized)))
+
 (add-to-list 'default-frame-alist '(alpha-background . 98))
 (setq vc-handled-backends '(Git))
 
@@ -410,13 +416,14 @@ default fonts
     (progn
       (set-face-attribute 'default nil
                           :family "Iosevka Slab"
-                          :height 100)
+                          :height 180)
       (set-face-attribute 'variable-pitch nil
+                          :family "Iosevka Slab")
+      (set-face-attribute 'fixed-pitch nil
+                          :family "Iosevka Slab")
+      (set-face-attribute 'fixed-pitch-serif nil
                           :family "Iosevka Slab"))
   (progn
-    (dolist (charset '(kana han cjk-misc symbol bopomofo))
-      (set-fontset-font t charset (font-spec :family "LXGW Marker Gothic")))
-
     (set-face-attribute 'default nil
                         :family "Iosevka Fixed SS17"
                         :height 200)
@@ -429,6 +436,9 @@ default fonts
 
     (set-face-attribute 'fixed-pitch-serif nil
                         :family "Iosevka SS08")))
+
+(dolist (charset '(kana han cjk-misc symbol bopomofo))
+  (set-fontset-font t charset (font-spec :family "LXGW Marker Gothic")))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -493,11 +503,7 @@ default fonts
   (setopt lin-face 'lin-blue) ; check doc string for alternative styles
   
   (global-hl-line-mode 1)
-  (lin-global-mode 1)
-
-  ;; If you are using the GNOME desktop and want to synchronise the
-  ;; `lin-face' with GNOME's accent colour:
-  (lin-gnome-accent-color-mode 1))
+  (lin-global-mode 1))
 #+end_src
 #+begin_src emacs-lisp
 (use-package idle-highlight-mode
@@ -520,7 +526,7 @@ basic packages which extend core features in emacs
   :ensure nil
   :bind-keymap
   ("M-r" . ctl-x-r-map)
-  :bind                                              ; NOTE: M-x describe-personal-bindings (for all use-packge binds)
+  :bind
   (
    ("C-x C-z" . nil)
    ("M-j" . fc/join-line-vim-style)
@@ -529,7 +535,9 @@ basic packages which extend core features in emacs
    ([remap downcase-word] . downcase-dwim)           ; Make M-l work on regions
    ([remap upcase-word] . upcase-dwim)               ; Make M-u work on regions
    ([remap kill-buffer] . kill-current-buffer)       ; C-x k stops prompting for buffer to kill
-   ([remap delete-horizontal-space] . cycle-spacing))
+   ([remap delete-horizontal-space] . cycle-spacing)
+   :map ctl-x-x-map
+         ("l" . visual-line-mode))
   :custom
   (completion-ignore-case t)
   (completions-detailed t)
@@ -1459,6 +1467,7 @@ use built-in lsp client
   (flymake-show-diagnostics-at-end-of-line 'fancy))
 
 (use-package jinx
+  :if (not fc/androidp)
   :ensure nil
   :hook (emacs-startup . global-jinx-mode)
   :bind (("M-$" . jinx-correct)
@@ -1840,6 +1849,7 @@ reader
 #+begin_src emacs-lisp
 ;;; -*- lexical-binding: t -*-
 (use-package reader
+  :if (not fc/androidp)
   :ensure nil
   :hook (reader-mode .
 					 (lambda ()
@@ -1918,16 +1928,18 @@ cal-china-x
 elfeed
 #+begin_src emacs-lisp
 (use-package elfeed
+  :hook
+  (elfeed-show-mode . visual-line-mode)
   :bind
   ("C-c f" . elfeed)
   (:map elfeed-search-mode-map
-        ("g" . elfeed-update)
-        ("G" . revert-buffer)))
-;; FIXME this file does not exist yet
+        ("G" . elfeed-update)))
+
 (use-package elfeed-org
-  :custom
-  (rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed.org"))
   :config
+  (if fc/androidp
+      (setq rmh-elfeed-org-files '("~/Documents/elfeed.org"))
+    (setq rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed.org")))
   (elfeed-org))
 #+end_src
 *** The =zfc-tool.el= section about social media
@@ -2019,6 +2031,7 @@ diff-hl
 rime
 #+begin_src emacs-lisp
 (use-package rime
+  :if (not fc/androidp)
   :ensure nil
   :custom
   (default-input-method "rime")
@@ -2390,6 +2403,11 @@ epa
 #+begin_src emacs-lisp
 ;; (setq epg-pinentry-mode 'loopback) 
 (setq epa-file-encrypt-to '("zhafacai@gmail.com"))
+
+(use-package pinentry
+  :if fc/androidp
+  :config
+  (pinentry-start))
 #+end_src
 email
 #+begin_src emacs-lisp
@@ -2459,8 +2477,11 @@ email
             :sort-order newest-first
             :key ,(kbd "c")))))
 
-  ;; (setq browse-url-browser-function 'browse-url-generic
-;;       browse-url-generic-program "librewolf")
+(use-package browse-url
+  :ensure nil
+  :custom
+  (browse-url-browser-function 'eww-browse-url))
+
 
 
 (use-package notmuch-indicator

@@ -1,5 +1,6 @@
 ;;; -*- lexical-binding: t -*-
 (use-package reader
+  :if (not fc/androidp)
   :ensure nil
   :hook (reader-mode .
 					 (lambda ()
@@ -62,16 +63,18 @@
                 fc/holidays)))
 
 (use-package elfeed
+  :hook
+  (elfeed-show-mode . visual-line-mode)
   :bind
   ("C-c f" . elfeed)
   (:map elfeed-search-mode-map
-        ("g" . elfeed-update)
-        ("G" . revert-buffer)))
-;; FIXME this file does not exist yet
+        ("G" . elfeed-update)))
+
 (use-package elfeed-org
-  :custom
-  (rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed.org"))
   :config
+  (if fc/androidp
+      (setq rmh-elfeed-org-files '("~/Documents/elfeed.org"))
+    (setq rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed.org")))
   (elfeed-org))
 
 (use-package telega
@@ -142,6 +145,7 @@
 (use-package git-modes)
 
 (use-package rime
+  :if (not fc/androidp)
   :ensure nil
   :custom
   (default-input-method "rime")
@@ -457,6 +461,11 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 ;; (setq epg-pinentry-mode 'loopback) 
 (setq epa-file-encrypt-to '("zhafacai@gmail.com"))
 
+(use-package pinentry
+  :if fc/androidp
+  :config
+  (pinentry-start))
+
 (setq auth-sources '("~/.authinfo.gpg")
       user-full-name "zhafacai"
       user-mail-address "zhafacai@gmail.com")
@@ -521,8 +530,11 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
             :sort-order newest-first
             :key ,(kbd "c")))))
 
-  ;; (setq browse-url-browser-function 'browse-url-generic
-;;       browse-url-generic-program "librewolf")
+(use-package browse-url
+  :ensure nil
+  :custom
+  (browse-url-browser-function 'eww-browse-url))
+
 
 
 (use-package notmuch-indicator
