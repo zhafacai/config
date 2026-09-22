@@ -313,7 +313,9 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (gptel-default-mode #'org-mode)
   (gptel-expert-commands t)
   (gptel-track-media t)
-  :hook (gptel-mode . gptel-highlight-mode)
+  :hook
+  (gptel-mode . gptel-highlight-mode)
+  (gptel-mode . visual-line-mode)
   :bind
   (("C-c a p" . gptel)
    ("C-c a m" . gptel-menu)
@@ -335,8 +337,8 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 	:endpoint "/api/v1/chat/completions"
 	:key #'gptel-api-key-from-auth-source
 	:stream t
-	:models '(poolside/laguna-s-2.1:free
-              z-ai/glm-5.2:free
+	:models '(inclusionai/ling-3.0-flash-vl:free
+              qwen/qwen3.8-27b:free
 			  nvidia/nemotron-3-ultra-550b-a55b:free))
 
   (gptel-make-openai "Flash"
@@ -391,7 +393,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 			  deepseek-v4-flash))
 
   (setq gptel-backend (gptel-get-backend "OpenRouter"))
-  (setq gptel-model 'z-ai/glm-5.2:free)
+  (setq gptel-model 'inclusionai/ling-3.0-flash-vl:free)
   ;; (setq gptel-backend (gptel-get-backend "SenseNova"))
   ;; (setq gptel-model 'sensenova-6.8-flash-lite)
   )
