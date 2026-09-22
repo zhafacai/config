@@ -2253,6 +2253,8 @@ gptel
   :hook
   (gptel-mode . gptel-highlight-mode)
   (gptel-mode . visual-line-mode)
+  (gptel-mode . (lambda ()
+                  (setq-local gptel-cache t)))
   :bind
   (("C-c a p" . gptel)
    ("C-c a m" . gptel-menu)
@@ -2261,13 +2263,6 @@ gptel
    ("C-c a f" . gptel-add-file))
   :config
   (define-key fc/override-mode-map (kbd "C-c C-<return>") 'gptel-send)
-  
-  (gptel-make-openai "BigModel"
-	:host "open.bigmodel.cn"
-	:endpoint "/api/paas/v4/chat/completions"
-	:key #'gptel-api-key-from-auth-source
-	:stream t
-	:models '(glm-5.3-flash))
   
   (gptel-make-openai "OpenRouter"
 	:host "openrouter.ai"
@@ -2278,14 +2273,6 @@ gptel
               qwen/qwen3.8-27b:free
 			  nvidia/nemotron-3-ultra-550b-a55b:free))
 
-  (gptel-make-openai "Flash"
-	:host "ark.cn-beijing.volces.com"
-	:endpoint "/api/coding/v3/chat/completions"
-	:key #'gptel-api-key-from-auth-source
-	:stream t
-	:request-params '(:thinking (:type "disabled"))
-	:models '(deepseek-v4-flash-ga-260731))
-  
   (gptel-make-openai "Dots"
 	:host "note3-prev-api.askdiandian.com"
 	:endpoint "/v1/chat/completions"
@@ -2293,31 +2280,16 @@ gptel
 	:stream t
 	:models '(dots3-note-prev))
   
-  (gptel-make-openai-responses "ByteDance(response)"
-	:host "ark.cn-beijing.volces.com"
-	:endpoint "/api/coding/v3/responses"
-	:key #'gptel-api-key-from-auth-source
-	:stream t
-	:models '(deepseek-v4-flash
-			  deepseek-v4-flash-ga-260731
-			  doubao-seed-evolving))
-
-  (gptel-make-openai "ByteDance"
-	:host "ark.cn-beijing.volces.com"
-	:endpoint "/api/coding/v3/chat/completions"
-	:key #'gptel-api-key-from-auth-source
-	:stream t
-	:models '(deepseek-v4-flash
-			  deepseek-v4-flash-ga-260731
-			  doubao-seed-evolving))
-
   (gptel-make-openai "Nim"
 	:host "integrate.api.nvidia.com"
 	:endpoint "/v1/chat/completions"
 	:key #'gptel-api-key-from-auth-source
 	:stream t
 	:models '(nvidia/nemotron-3-ultra-550b-a55b
-			  z-ai/glm-5.2
+              nvidia/nemotron-parse-2.0
+              moonshotai/kimi-k3
+			  z-ai/glm-5.3
+			  z-ai/glm-5.3-flash
 			  thinkingmachines/inkling))
   
   (gptel-make-openai "SenseNova"
