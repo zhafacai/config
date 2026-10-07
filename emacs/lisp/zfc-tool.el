@@ -1,6 +1,9 @@
 ;;; -*- lexical-binding: t -*-
 (use-package reader
   :if (not fc/androidp)
+  :bind
+  (:map reader-mode-map
+        ("d" . reader-dark-mode))
   :ensure nil
   :hook (reader-mode .
 					 (lambda ()
