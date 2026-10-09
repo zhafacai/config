@@ -335,17 +335,12 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 	:endpoint "/api/v1/chat/completions"
 	:key #'gptel-api-key-from-auth-source
 	:stream t
-	:models '(inclusionai/ling-3.0-flash-vl:free
-              qwen/qwen3.8-27b:free
+	:models '(apodex/apodex-1.1-mini:free
+              google/gemma-4-31b-it:free
+              google/gemma-4-26b-a4b-it:free
+              dots-studio/dots-3-note-preview:free
 			  nvidia/nemotron-3-ultra-550b-a55b:free))
 
-  (gptel-make-openai "Dots"
-	:host "note3-prev-api.askdiandian.com"
-	:endpoint "/v1/chat/completions"
-	:key #'gptel-api-key-from-auth-source
-	:stream t
-	:models '(dots3-note-prev))
-  
   (gptel-make-openai "Nim"
 	:host "integrate.api.nvidia.com"
 	:endpoint "/v1/chat/completions"
@@ -424,7 +419,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (agent-shell-preferred-agent-config '(preselect . opencode))
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
-  (agent-shell-opencode-default-model-id "opencode/union-alpha"))
+  (agent-shell-opencode-default-model-id "opencode/step-5-preview-free"))
 
 
 (use-package agent-shell-dashboard
