@@ -24,10 +24,10 @@
      (method git-fetch)
      (uri (git-reference
            (url "https://codeberg.org/MonadicSheep/emacs-reader")
-           (commit "87b193d6996093530ab01cb0314c4d23b9777057")))
+           (commit "d835fee5f86447ccd510d31aed0adc73c3011abd")))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "0s9hs1rmgqa68mpjv8lq754sfbl04wrmpkkclwl4ljy8xra9r6by"))))
+      (base32 "1xqhifwinwgs7f3lcg8hchnm8910n4sl77vssy9fyq51fm8nnax3"))))
    (build-system emacs-build-system)
    (arguments
     (list
