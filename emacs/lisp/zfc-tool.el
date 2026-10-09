@@ -249,9 +249,9 @@
   (defun fc/ghostel ()
     "Run `ghostel' normally, consult-ghostel with prefix."
     (interactive)
-    (if current-prefix-arg
+    (if (equal current-prefix-arg '(4))
         (consult-ghostel)
-      (ghostel)))
+      (call-interactively #'ghostel)))
   
   (defun fc/ghostel-send-C-k-and-kill ()
     "Send `C-k' to ghostel.
