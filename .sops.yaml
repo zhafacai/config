@@ -1,19 +1,19 @@
 keys:
-  - &sops 1ABA8CFA2215CB4618B9A28597FA1A788D2D0AAA
+  - &sops BB7D6D0FEF95AC1BF9427771486F2CB107C9270C
   - &zfc 5951D4A7EB3C9613C0A0960C1692CD30A0869FD6
 
 creation_rules:
-    - path_regex: secrets/sub\.yaml
-      key_groups:
-          - pgp:
-                - *sops
+  - path_regex: secrets/sub\.yaml
+    key_groups:
+      - pgp:
+          - *sops
 
-    - path_regex: secrets/.*\.org$
-      key_groups:
-          - pgp:
-                - *sops
-        
-    - path_regex: secrets/.*\.yaml
-      key_groups:
-          - pgp:
-                - *zfc
+  - path_regex: secrets/.*\.org$
+    key_groups:
+      - pgp:
+          - *sops
+
+  - path_regex: secrets/.*\.yaml
+    key_groups:
+      - pgp:
+          - *zfc

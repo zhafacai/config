@@ -75,9 +75,10 @@
 
 (use-package elfeed-org
   :config
-  (if fc/androidp
-      (setq rmh-elfeed-org-files '("~/Documents/elfeed.org"))
-    (setq rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed.org")))
+  ;; (if fc/androidp
+  ;;     (setq rmh-elfeed-org-files '("~/Documents/elfeed.org"))
+  ;;   (setq rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed.org")))
+  (setq rmh-elfeed-org-files '("~/Documents/elfeed.org"))
   (elfeed-org))
 
 (use-package telega
