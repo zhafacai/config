@@ -250,6 +250,7 @@
   (dired-recursive-deletes 'always)
   :hook
   (dired-mode . dired-hide-details-mode)
+  (dired-mode . dired-omit-mode)
   :config
   (setq dired-listing-switches
         "-l --almost-all --human-readable --group-directories-first"))
