@@ -236,7 +236,7 @@
 
 (use-package ready-player
   :config
-  (setq ready-player-my-media-collection-location "~/Music")
+  (setq ready-player-my-media-collection-location "~/Windows/Music")
   (ready-player-mode +1))
 
 (use-package dired
@@ -321,7 +321,7 @@
      (put cmd 'repeat-map 'lisp-navigation-map))
    lisp-navigation-map))
 
-(defcustom fc/books-directory "~/Documents/books"
+(defcustom fc/books-directory "~/Windows/books"
   "Directory containing books for `fc/consult-books'."
   :type 'directory)
 

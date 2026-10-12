@@ -554,4 +554,6 @@ overview {
   }
 }
 
+// include "noctalia.kdl"
+
 include "noctalia.kdl"

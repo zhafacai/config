@@ -49,7 +49,7 @@ wget https://github.com/lxgw/LxgwMarkerGothic/releases/download/v1.003/LxgwMarke
 #+begin_src emacs-lisp
 (if fc/androidp 
     (add-to-list 'default-frame-alist '(fullscreen . fullboth))
-  (add-to-list 'default-frame-alist '(fullscreen . maximized)))
+  (add-to-list 'default-frame-alist '(fullscreen)))
 
 (add-to-list 'default-frame-alist '(alpha-background . 98))
 (setq vc-handled-backends '(Git))
@@ -773,7 +773,7 @@ dired
 
 (use-package ready-player
   :config
-  (setq ready-player-my-media-collection-location "~/Music")
+  (setq ready-player-my-media-collection-location "~/Windows/Music")
   (ready-player-mode +1))
 #+end_src
 
@@ -874,7 +874,7 @@ dired
 #+end_src
 consult
 #+begin_src emacs-lisp
-(defcustom fc/books-directory "~/Documents/books"
+(defcustom fc/books-directory "~/Windows/books"
   "Directory containing books for `fc/consult-books'."
   :type 'directory)
 
@@ -1559,7 +1559,7 @@ use built-in lsp client
   (org-todo-keywords
    '((sequence "WISH(w)" "TODO(t)" "HOLD(h@/!)" "|" "DONE(d!)" "CNCL(c@)")))
   (org-agenda-window-setup 'only-window)
-  (org-directory (file-truename "~/Documents/org/agenda/"))
+  (org-directory (file-truename "~/Windows/org/agenda/"))
   (org-default-notes-file (concat org-directory "task.org"))
   (org-agenda-files (list org-directory))
   (org-refile-targets
@@ -1741,7 +1741,7 @@ org babel
    ("C-c C-d C-k" . denote-dired-rename-marked-files-with-keywords)
    ("C-c C-d C-R" . denote-dired-rename-marked-files-using-front-matter))
   :config
-  (setq denote-directory "~/Documents/org/notes")
+  (setq denote-directory "~/Windows/org/notes")
   (setq denote-save-buffers nil)
   (setq denote-known-keywords '("emacs" "linux" "hack" "trade"))
   (setq denote-infer-keywords t)
@@ -2277,6 +2277,7 @@ gptel
 	:models '(apodex/apodex-1.1-mini:free
               google/gemma-4-31b-it:free
               google/gemma-4-26b-a4b-it:free
+              nvidia/nemotron-3.5-lightning:free
               dots-studio/dots-3-note-preview:free
 			  nvidia/nemotron-3-ultra-550b-a55b:free))
 
@@ -3403,8 +3404,8 @@ notmuch tag +ai -- 'from:openai.com or from:openrouter.ai or from:nvidia.com or 
 #+begin_src scheme :noweb-ref channels
 (channel
  (name 'guix)
- ;;(url "https://mirror.nju.edu.cn/git/guix.git")
- (url "https://git.guix.gnu.org/guix.git")
+ (url "https://mirror.sjtu.edu.cn/git/guix.git")
+ ;; (url "https://git.guix.gnu.org/guix.git")
  (branch "master")
  (introduction
   (make-channel-introduction
@@ -3491,7 +3492,6 @@ mihomo
 ~sys-use~
 #+begin_src scheme :noweb-ref sys-use
 #:use-module (saayix packages terminals)
-#:use-module (saayix packages file-managers)
 #+end_src
 ~sys-pkgs~
 #+begin_src scheme :noweb-ref sys-pkgs

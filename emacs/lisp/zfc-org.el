@@ -31,7 +31,7 @@
   (org-todo-keywords
    '((sequence "WISH(w)" "TODO(t)" "HOLD(h@/!)" "|" "DONE(d!)" "CNCL(c@)")))
   (org-agenda-window-setup 'only-window)
-  (org-directory (file-truename "~/Documents/org/agenda/"))
+  (org-directory (file-truename "~/Windows/org/agenda/"))
   (org-default-notes-file (concat org-directory "task.org"))
   (org-agenda-files (list org-directory))
   (org-refile-targets
@@ -202,7 +202,7 @@
    ("C-c C-d C-k" . denote-dired-rename-marked-files-with-keywords)
    ("C-c C-d C-R" . denote-dired-rename-marked-files-using-front-matter))
   :config
-  (setq denote-directory "~/Documents/org/notes")
+  (setq denote-directory "~/Windows/org/notes")
   (setq denote-save-buffers nil)
   (setq denote-known-keywords '("emacs" "linux" "hack" "trade"))
   (setq denote-infer-keywords t)

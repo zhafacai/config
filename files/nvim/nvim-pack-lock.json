@@ -25,7 +25,7 @@
       "src": "https://github.com/moyiz/blink-emoji.nvim"
     },
     "blink-ripgrep.nvim": {
-      "rev": "18c2f7560fb0eac29c3a93dd613321180655bf56",
+      "rev": "911cce0b9a827196492e8d2229cb16a4c8a7d4cf",
       "src": "https://github.com/mikavilpas/blink-ripgrep.nvim"
     },
     "blink.cmp": {
@@ -70,7 +70,7 @@
       "src": "https://github.com/stevearc/conform.nvim"
     },
     "conjure": {
-      "rev": "9842bf38464df071f72546f65fa6ec44942ca7b2",
+      "rev": "b23c76a8c874fe7ac5ad95255efc66173b049088",
       "src": "https://github.com/Olical/conjure"
     },
     "dial.nvim": {
@@ -222,7 +222,7 @@
       "src": "https://github.com/marilari88/neotest-vitest"
     },
     "nfnl": {
-      "rev": "abf41f588ee6e3612816ec70402a4b182ddbbd51",
+      "rev": "7a4ba217167fee57e9bf175405636ced49aa9f83",
       "src": "https://github.com/Olical/nfnl"
     },
     "nordic.nvim": {
@@ -234,7 +234,7 @@
       "src": "https://github.com/nacro90/numb.nvim"
     },
     "nvim-autopairs": {
-      "rev": "430522f95fe4fb7c511ec64f8c1a90cc6a66c05c",
+      "rev": "3172f40c16563db871a58f20d205c710ad782311",
       "src": "https://github.com/windwp/nvim-autopairs"
     },
     "nvim-bqf": {
@@ -246,7 +246,7 @@
       "src": "https://github.com/mfussenegger/nvim-lint"
     },
     "nvim-lspconfig": {
-      "rev": "db68de3575fff9dd9bb78b34c8371759ed35fe34",
+      "rev": "6d27c288ff951e1e94cb5f91c800adeddf0dc0c2",
       "src": "https://github.com/neovim/nvim-lspconfig"
     },
     "nvim-nio": {
@@ -270,19 +270,15 @@
       "src": "https://github.com/kylechui/nvim-surround"
     },
     "nvim-treesitter": {
-      "rev": "e289100ff98969e118c702199d88b764ce9e7fdf",
+      "rev": "1a4f47b03dfe92d28de7d5654c67327ef008c9e6",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter"
     },
     "nvim-ts-autotag": {
       "rev": "d7220b55e16ed3c04e88086256def5d282429493",
       "src": "https://github.com/windwp/nvim-ts-autotag"
     },
-    "octo.nvim": {
-      "rev": "5faf92a4112e7a0be23fe41045ed0a78ca209c50",
-      "src": "https://github.com/pwntester/octo.nvim"
-    },
     "oil.nvim": {
-      "rev": "b73018b75affd13fa38e2fc94ef753b465f770d7",
+      "rev": "d3733d933833a0e59b813ecec99341527adf0c28",
       "src": "https://github.com/stevearc/oil.nvim"
     },
     "origami": {
@@ -310,7 +306,7 @@
       "src": "https://github.com/lewis6991/satellite.nvim"
     },
     "schemastore.nvim": {
-      "rev": "31626d9d0a95418bf12a8b3f0e8f9f42e73e1f35",
+      "rev": "a470cbcd112e717a8955efee3929bd59f7473c7b",
       "src": "https://github.com/b0o/schemastore.nvim"
     },
     "snacks.nvim": {
@@ -374,7 +370,7 @@
       "src": "https://github.com/folke/which-key.nvim"
     },
     "yazi.nvim": {
-      "rev": "ad984001db0216b8534d56d49323c91abb734b7e",
+      "rev": "8e7fdabab02f69005b22d8886c2367a4148e287d",
       "src": "https://github.com/mikavilpas/yazi.nvim"
     }
   }
