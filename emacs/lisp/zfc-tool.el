@@ -527,4 +527,47 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 (use-package ol-notmuch
   :after (notmuch org))
 
+(use-package ewm
+  :ensure nil
+  :custom
+  (ewm-output-config '(("DP-1" :width 2560 :height 1440)))
+  :bind (:map ewm-mode-map
+              ("s-h" .	ewm-focus-left)
+              ("s-l" .	ewm-focus-right)
+              ("s-k" .	ewm-focus-up)
+              ("s-j" .	ewm-focus-down)
+
+              ("s-S-h" .	ewm-frame-left)
+              ("s-S-l" .	ewm-frame-right)
+              ("s-o" .	ewm-overview-toggle)
+              ("s-w" .	ewm-frame-new)
+              ("s-q" .	ewm-frame-close)
+              
+              ("s-S-f" .	ewm-floating-toggle)
+              
+              )
+  :config
+  (add-to-list 'default-frame-alist '(alpha-background . 95))
+  (add-to-list 'default-frame-alist '(blur-background . t))
+
+  (setopt ewm-surface-emulate-keys
+          '((kill-ring-save . "C-c") (yank . "C-v")
+            ("C-n" . "<down>") ("C-p" . "<up>")))
+
+  (add-hook 'ewm-update-app-hook
+            (lambda ()
+              (when (equal ewm-surface-app "firefox")
+                (setq-local ewm-surface-emulate-keys
+                            '(("C-s" . "C-f") ("C-w" . "C-x"))))))
+
+  (setopt ewm-input-config
+          '((touchpad :natural-scroll t :tap t :dwt t)
+            (mouse :accel-profile "flat")
+            (trackpoint :accel-speed 0.5)
+            (keyboard :repeat-delay 200 :repeat-rate 60
+                      :xkb-options "ctrl:nocaps")))
+
+  (setopt ewm-output-config
+          '(("DP-5" :width 2560 :height 1440 :scale 1.2 :refresh 144))))
+
 (provide 'zfc-tool)
