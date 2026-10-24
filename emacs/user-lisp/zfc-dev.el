@@ -233,14 +233,12 @@
 
 (use-package flymake
   :ensure nil
-  :hook
-  (prog-mode . flymake-mode)
   :custom
   (flymake-show-diagnostics-at-end-of-line 'fancy))
 
 (use-package jinx
   :ensure nil
-  :hook (emacs-startup . global-jinx-mode)
+  ;; :hook (emacs-startup . global-jinx-mode)
   :bind (("M-$" . jinx-correct)
          ("C-M-$" . jinx-languages)))
 

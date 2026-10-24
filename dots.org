@@ -34,7 +34,6 @@ This file contains guix and emacs configuration which use templates.
   :keymap fc/override-mode-map)
 
 (fc/override-mode)
-
 #+end_src
 
 avy: jump / select / copy / move
@@ -1346,14 +1345,12 @@ use built-in lsp client
 #+begin_src emacs-lisp
 (use-package flymake
   :ensure nil
-  :hook
-  (prog-mode . flymake-mode)
   :custom
   (flymake-show-diagnostics-at-end-of-line 'fancy))
 
 (use-package jinx
   :ensure nil
-  :hook (emacs-startup . global-jinx-mode)
+  ;; :hook (emacs-startup . global-jinx-mode)
   :bind (("M-$" . jinx-correct)
          ("C-M-$" . jinx-languages)))
 #+end_src
