@@ -24,32 +24,9 @@ os probe
 #+begin_src emacs-lisp
 (if (getenv "WSL_DISTRO_NAME")
     (setq select-active-regions nil))
-
-(defvar fc/androidp (eq system-type 'android))
-(when fc/androidp
-  (setq epg-pinentry-mode 'loopback)
-  (setq android-intercept-control-space nil)
-  (setq with-editor-emacsclient-executable "/data/data/org.gnu.emacs/lib/libemacsclient.so")
-  (setenv "PATH"
-          (format "%s:%s"
-                  "/data/data/com.termux/files/usr/bin"
-                  (getenv "PATH")))
-  (push "/data/data/com.termux/files/usr/bin" exec-path))
-#+end_src
-download fonts in android
-#+begin_src shell
-wget https://github.com/be5invis/Iosevka/releases/download/v34.8.1/PkgTTC-SGr-IosevkaSlab-34.8.1.zip
-
-wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.5.1/NerdFontsSymbolsOnly.zip
-
-wget https://github.com/notofonts/symbols/releases/download/NotoSansSymbols2-v2.008/NotoSansSymbols2-v2.008.zip
-
-wget https://github.com/lxgw/LxgwMarkerGothic/releases/download/v1.003/LxgwMarkerGothic-v1.003.zip
 #+end_src
 #+begin_src emacs-lisp
-(if fc/androidp 
-    (add-to-list 'default-frame-alist '(fullscreen . fullboth))
-  (add-to-list 'default-frame-alist '(fullscreen)))
+(add-to-list 'default-frame-alist '(fullscreen))
 
 (add-to-list 'default-frame-alist '(alpha-background . 98))
 (setq vc-handled-backends '(Git))
@@ -58,13 +35,6 @@ wget https://github.com/lxgw/LxgwMarkerGothic/releases/download/v1.003/LxgwMarke
 
 (setq frame-resize-pixelwise t
       frame-inhibit-implied-resize t)
-      ;; frame-title-format
-      ;; '(:eval
-      ;;   (let ((project (project-current)))
-      ;;     (if project
-      ;;         (concat "[p] " (project-name project))
-      ;;       (buffer-name)))))
-
 
 (setq inhibit-compacting-font-caches t)
 
@@ -412,30 +382,18 @@ nice cursor
 
 default fonts
 #+begin_src emacs-lisp
-(if fc/androidp
-    (progn
-      (set-face-attribute 'default nil
-                          :family "Iosevka Slab"
-                          :height 180)
-      (set-face-attribute 'variable-pitch nil
-                          :family "Iosevka Slab")
-      (set-face-attribute 'fixed-pitch nil
-                          :family "Iosevka Slab")
-      (set-face-attribute 'fixed-pitch-serif nil
-                          :family "Iosevka Slab"))
-  (progn
-    (set-face-attribute 'default nil
-                        :family "Iosevka Fixed SS17"
-                        :height 200)
+(set-face-attribute 'default nil
+                    :family "Iosevka Fixed SS17"
+                    :height 200)
 
-    (set-face-attribute 'variable-pitch nil
-                        :family "Iosevka Slab")
+(set-face-attribute 'variable-pitch nil
+                    :family "Iosevka Slab")
 
-    (set-face-attribute 'fixed-pitch nil
-                        :family "Iosevka SS02")
+(set-face-attribute 'fixed-pitch nil
+                    :family "Iosevka SS02")
 
-    (set-face-attribute 'fixed-pitch-serif nil
-                        :family "Iosevka SS08")))
+(set-face-attribute 'fixed-pitch-serif nil
+                    :family "Iosevka SS08")
 
 (dolist (charset '(kana han cjk-misc symbol bopomofo))
   (set-fontset-font t charset (font-spec :family "LXGW Marker Gothic")))
@@ -1468,7 +1426,6 @@ use built-in lsp client
   (flymake-show-diagnostics-at-end-of-line 'fancy))
 
 (use-package jinx
-  :if (not fc/androidp)
   :ensure nil
   :hook (emacs-startup . global-jinx-mode)
   :bind (("M-$" . jinx-correct)
@@ -1850,7 +1807,6 @@ reader
 #+begin_src emacs-lisp
 ;;; -*- lexical-binding: t -*-
 (use-package reader
-  :if (not fc/androidp)
   :bind
   (:map reader-mode-map
         ("d" . reader-dark-mode))
@@ -1941,7 +1897,6 @@ elfeed
 
 (use-package elfeed-org
   :config
-  ;; (if fc/androidp
   ;;     (setq rmh-elfeed-org-files '("~/Documents/elfeed.org"))
   ;;   (setq rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed.org")))
   (setq rmh-elfeed-org-files '("~/Documents/elfeed.org"))
@@ -2036,10 +1991,10 @@ diff-hl
 rime
 #+begin_src emacs-lisp
 (use-package rime
-  :if (not fc/androidp)
   :custom
   (default-input-method "rime")
   :config
+  ;; TODO update these variables when in guix
   (setq rime-user-data-dir "~/.local/share/fcitx5/rime/")
   (setq rime-share-data-dir "/usr/share/rime-data/"))
 #+end_src
@@ -2378,11 +2333,6 @@ epa
 #+begin_src emacs-lisp
 ;; (setq epg-pinentry-mode 'loopback) 
 (setq epa-file-encrypt-to '("zhafacai@gmail.com"))
-
-(use-package pinentry
-  :if fc/androidp
-  :config
-  (pinentry-start))
 #+end_src
 email
 #+begin_src emacs-lisp

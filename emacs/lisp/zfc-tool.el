@@ -1,6 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 (use-package reader
-  :if (not fc/androidp)
   :bind
   (:map reader-mode-map
         ("d" . reader-dark-mode))
@@ -75,7 +74,6 @@
 
 (use-package elfeed-org
   :config
-  ;; (if fc/androidp
   ;;     (setq rmh-elfeed-org-files '("~/Documents/elfeed.org"))
   ;;   (setq rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed.org")))
   (setq rmh-elfeed-org-files '("~/Documents/elfeed.org"))
@@ -149,10 +147,10 @@
 (use-package git-modes)
 
 (use-package rime
-  :if (not fc/androidp)
   :custom
   (default-input-method "rime")
   :config
+  ;; TODO update these variables when in guix
   (setq rime-user-data-dir "~/.local/share/fcitx5/rime/")
   (setq rime-share-data-dir "/usr/share/rime-data/"))
 
@@ -434,11 +432,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 ;; (setq epg-pinentry-mode 'loopback) 
 (setq epa-file-encrypt-to '("zhafacai@gmail.com"))
-
-(use-package pinentry
-  :if fc/androidp
-  :config
-  (pinentry-start))
 
 (setq auth-sources '("~/.authinfo.gpg")
       user-full-name "zhafacai"

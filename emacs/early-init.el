@@ -6,20 +6,7 @@
 (if (getenv "WSL_DISTRO_NAME")
     (setq select-active-regions nil))
 
-(defvar fc/androidp (eq system-type 'android))
-(when fc/androidp
-  (setq epg-pinentry-mode 'loopback)
-  (setq android-intercept-control-space nil)
-  (setq with-editor-emacsclient-executable "/data/data/org.gnu.emacs/lib/libemacsclient.so")
-  (setenv "PATH"
-          (format "%s:%s"
-                  "/data/data/com.termux/files/usr/bin"
-                  (getenv "PATH")))
-  (push "/data/data/com.termux/files/usr/bin" exec-path))
-
-(if fc/androidp 
-    (add-to-list 'default-frame-alist '(fullscreen . fullboth))
-  (add-to-list 'default-frame-alist '(fullscreen)))
+(add-to-list 'default-frame-alist '(fullscreen))
 
 (add-to-list 'default-frame-alist '(alpha-background . 98))
 (setq vc-handled-backends '(Git))
@@ -28,13 +15,6 @@
 
 (setq frame-resize-pixelwise t
       frame-inhibit-implied-resize t)
-      ;; frame-title-format
-      ;; '(:eval
-      ;;   (let ((project (project-current)))
-      ;;     (if project
-      ;;         (concat "[p] " (project-name project))
-      ;;       (buffer-name)))))
-
 
 (setq inhibit-compacting-font-caches t)
 

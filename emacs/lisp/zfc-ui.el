@@ -150,30 +150,18 @@
   (cursory-set-preset (or (cursory-restore-latest-preset) 'bar))
   (cursory-mode 1))
 
-(if fc/androidp
-    (progn
-      (set-face-attribute 'default nil
-                          :family "Iosevka Slab"
-                          :height 180)
-      (set-face-attribute 'variable-pitch nil
-                          :family "Iosevka Slab")
-      (set-face-attribute 'fixed-pitch nil
-                          :family "Iosevka Slab")
-      (set-face-attribute 'fixed-pitch-serif nil
-                          :family "Iosevka Slab"))
-  (progn
-    (set-face-attribute 'default nil
-                        :family "Iosevka Fixed SS17"
-                        :height 200)
+(set-face-attribute 'default nil
+                    :family "Iosevka Fixed SS17"
+                    :height 200)
 
-    (set-face-attribute 'variable-pitch nil
-                        :family "Iosevka Slab")
+(set-face-attribute 'variable-pitch nil
+                    :family "Iosevka Slab")
 
-    (set-face-attribute 'fixed-pitch nil
-                        :family "Iosevka SS02")
+(set-face-attribute 'fixed-pitch nil
+                    :family "Iosevka SS02")
 
-    (set-face-attribute 'fixed-pitch-serif nil
-                        :family "Iosevka SS08")))
+(set-face-attribute 'fixed-pitch-serif nil
+                    :family "Iosevka SS08")
 
 (dolist (charset '(kana han cjk-misc symbol bopomofo))
   (set-fontset-font t charset (font-spec :family "LXGW Marker Gothic")))

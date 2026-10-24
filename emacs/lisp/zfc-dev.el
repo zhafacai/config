@@ -239,7 +239,6 @@
   (flymake-show-diagnostics-at-end-of-line 'fancy))
 
 (use-package jinx
-  :if (not fc/androidp)
   :ensure nil
   :hook (emacs-startup . global-jinx-mode)
   :bind (("M-$" . jinx-correct)
