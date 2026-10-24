@@ -3164,7 +3164,6 @@ patch:
 #+begin_src scheme :noweb-ref dev-use
 #:use-module (gnu packages shells)
 #:use-module (gnu home services shells)
-#:use-module (gnu home services shepherd)
 #:use-module (zfc config common)
 #+end_src
 #+begin_src scheme :noweb-ref dev-services
@@ -3175,51 +3174,12 @@ patch:
                   (plain-file "gpg_nonguix.fish" "export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/gnupg/S.gpg-agent.ssh")
                   (plain-file "plugins.fish" (string-append "starship init fish | source\n"
                                                             "zoxide init fish | source\n"
-															"fish_config theme choose catppuccin-mocha\n"
+                                                            ;; TODO refer to fish plugins in rosenthal
+															;; "fish_config theme choose catppuccin-mocha\n"
                                                             "direnv hook fish | source\n"
                                                             ;; atuin takes C-r; up-arrow keeps default
                                                             "atuin init fish --disable-up-arrow | source\n"))))))
 
-
-(simple-service 'fish-fisher-service
-                home-shepherd-service-type
-                (list
-                 (shepherd-service
-                  (provision '(fish-fisher))
-                  (one-shot? #t)
-                   ;; Resolve the plugins path at *configure* time (it is fixed
-                   ;; once (zfc config common) loads) and splice it into the
-                   ;; activation script with #$.  The script then needs no
-                   ;; (use-modules (zfc config common)) and no load-path at
-                   ;; activation time.  getenv calls get a HOME fallback.
-                   (start
-                    (let ((plugins (config-files-path "fish/fish_plugins")))
-                      #~(lambda ()
-                          (let* ((xdg (or (getenv "XDG_CONFIG_HOME")
-                                          (string-append (getenv "HOME") "/.config")))
-                                 (source #$plugins)
-                                 (target (string-append xdg "/fish/fish_plugins"))
-                                 (fish-bin #$(file-append fish "/bin/fish")))
-                            (format #t "Directly symlinking fish_plugins (~a) to ~a~%" source target)
-                            (when (false-if-exception (lstat target))
-                              (delete-file target))
-                            (symlink source target)
-                            (unless (file-exists? (string-append xdg "/fish/functions/fisher.fish"))
-                              (format #t "Installing fisher~%")
-                              ;; Non-fatal: a fresh machine may be offline during
-                              ;; the first activation.
-                              (false-if-exception
-                               (system (string-append fish-bin " -c \"curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | "
-                                                      "source && fisher install jorgebucaran/fisher\""))))
-                            (format #t "Updating fisher plugins~%")
-                            ;; Non-fatal: don't fail the whole reconfigure when the
-                            ;; network is unavailable or a plugin can't be fetched.
-                            (unless (zero? (or (false-if-exception
-                                                (system (string-append fish-bin " -c \"fisher update\"")))
-                                               -1))
-                              (format #t "Warning: `fisher update' failed (network error?)~%"))
-                            #t))))
-                  (documentation "Initialize and update Fish plugins via fisher."))))
 
 #+end_src
 ~emacs-packages~
