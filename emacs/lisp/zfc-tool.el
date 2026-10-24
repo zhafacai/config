@@ -150,7 +150,6 @@
 
 (use-package rime
   :if (not fc/androidp)
-  :ensure nil
   :custom
   (default-input-method "rime")
   :config
@@ -340,6 +339,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
               google/gemma-4-31b-it:free
               google/gemma-4-26b-a4b-it:free
               nvidia/nemotron-3.5-lightning:free
+              nvidia/nemotron-3.5-super-vl:free
               dots-studio/dots-3-note-preview:free
 			  nvidia/nemotron-3-ultra-550b-a55b:free))
 
@@ -421,7 +421,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (agent-shell-preferred-agent-config '(preselect . opencode))
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
-  (agent-shell-opencode-default-model-id "opencode/step-5-preview-free"))
+  (agent-shell-opencode-default-model-id "opencode/deepseek-v4.1-flash-free"))
 
 
 (use-package agent-shell-dashboard
@@ -529,13 +529,12 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 (use-package ewm
   :ensure nil
-  :custom
-  (ewm-output-config '(("DP-1" :width 2560 :height 1440)))
   :bind (:map ewm-mode-map
               ("s-h" .	ewm-focus-left)
               ("s-l" .	ewm-focus-right)
               ("s-k" .	ewm-focus-up)
               ("s-j" .	ewm-focus-down)
+              ("s-d" .  ewm-launch-app)
 
               ("s-S-h" .	ewm-frame-left)
               ("s-S-l" .	ewm-frame-right)

@@ -61,7 +61,7 @@
  (mapped-devices
   (list (mapped-device
          (source (uuid "7a3e1a89-474c-4efb-8826-2470162e7a66"))
-         (target "root")
+         (target "cryptroot")
          (type luks-device-mapping))))
 
  (file-systems (append
@@ -71,7 +71,7 @@
                        (type "ext4")
                        (dependencies mapped-devices))
                       (file-system
-                       (device (uuid "558B-E023" 'fat))
+                       (device (file-system-label "boot"))
                        (mount-point "/boot/efi")
                        (type "vfat")))
                 %base-file-systems))

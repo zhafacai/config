@@ -27,13 +27,13 @@
 (setq use-short-answers t)
 
 (setq frame-resize-pixelwise t
-      frame-inhibit-implied-resize t
-      frame-title-format
-      '(:eval
-        (let ((project (project-current)))
-          (if project
-              (concat "[p] " (project-name project))
-            (buffer-name)))))
+      frame-inhibit-implied-resize t)
+      ;; frame-title-format
+      ;; '(:eval
+      ;;   (let ((project (project-current)))
+      ;;     (if project
+      ;;         (concat "[p] " (project-name project))
+      ;;       (buffer-name)))))
 
 
 (setq inhibit-compacting-font-caches t)
