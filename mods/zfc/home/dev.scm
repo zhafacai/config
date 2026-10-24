@@ -78,7 +78,7 @@
                     (home-fish-configuration
                       (config
                        (list (plain-file "fish_greeting.fish" "set -g fish_greeting")
-                             (plain-file "gpg_nonguix.fish" "export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/gnupg/S.gpg-agent.ssh")
+                             ;; (plain-file "gpg_nonguix.fish" "export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/gnupg/S.gpg-agent.ssh")
                              (plain-file "plugins.fish" (string-append "starship init fish | source\n"
                                                                        "zoxide init fish | source\n"
                                                                        ;; TODO refer to fish plugins in rosenthal
