@@ -5,84 +5,10 @@
 #+PROPERTY: header-args:emacs-lisp :tangle yes
 
 * Intro
-This repo contains guix and emacs configuration.
-My personal laptop runs guix which should be as FOSS as possible,
-while the server I prefer to use is based on nixos which has more recent and
-more packages.
+This file contains guix and emacs configuration which use templates.
 * Emacs
-** The =early-init.el= section
-:PROPERTIES:
-:header-args:emacs-lisp: :tangle emacs/early-init.el
-:END:
-#+begin_src emacs-lisp
-;;; -*- lexical-binding: t -*-
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(when (file-exists-p custom-file)
-  (load custom-file nil t))
-#+end_src
-os probe
-#+begin_src emacs-lisp
-(if (getenv "WSL_DISTRO_NAME")
-    (setq select-active-regions nil))
-#+end_src
-#+begin_src emacs-lisp
-(add-to-list 'default-frame-alist '(fullscreen))
-
-(add-to-list 'default-frame-alist '(alpha-background . 98))
-(setq vc-handled-backends '(Git))
-
-(setq use-short-answers t)
-
-(setq frame-resize-pixelwise t
-      frame-inhibit-implied-resize t)
-
-(setq inhibit-compacting-font-caches t)
-
-
-;; Disables unused UI Elements
-(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(if (fboundp 'tooltip-mode) (tooltip-mode -1))
-
-;; Avoid raising the *Messages* buffer if anything is still without
-;; lexical bindings
-(setq warning-minimum-level :error)
-;; (setq warning-suppress-types '((lexical-binding)))
-
-(setq package-enable-at-startup t)
-#+end_src
-** The =init.el= section
-:PROPERTIES:
-:header-args:emacs-lisp: :tangle emacs/init.el
-:END:
-*** The =init.el= section about setup package.el
-lexical scope by default
-#+begin_src emacs-lisp
-;;; -*- lexical-binding: t -*-
-(set-default-toplevel-value 'lexical-binding t)
-#+end_src
-
-use the default package.el / package-vc.el, with cernet mirrors.
-Packages that are either built-in or managed by guix home are marked
-with =:ensure nil=; git-only packages use the =:vc= keyword.
-#+begin_src emacs-lisp
-;; setup package.el
-(setq package-archives '(("gnu"    . "https://mirrors.cernet.edu.cn/elpa/gnu/")
-                         ("nongnu" . "https://mirrors.cernet.edu.cn/elpa/nongnu/")
-                         ("melpa"  . "https://mirrors.cernet.edu.cn/elpa/melpa/")))
-
-(package-initialize)
-(unless package-archive-contents
-  (package-refresh-contents))
-#+end_src
-*** The =init.el= section about loading zfc packages
-#+begin_src emacs-lisp
-
-;; Add the folder to the search path
-(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-(setq use-package-always-ensure t)
-
+** The =zfc-loader.el= section
+#+begin_src emacs-lisp :tangle emacs/user-lisp/zfc-loader.el
 (require 'zfc-edit)
 (require 'zfc-ui)
 (require 'zfc-base)
@@ -93,7 +19,7 @@ with =:ensure nil=; git-only packages use the =:vc= keyword.
 #+end_src
 ** The =zfc-edit.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle emacs/lisp/zfc-edit.el
+:header-args:emacs-lisp: :tangle emacs/user-lisp/zfc-edit.el
 :END:
 *** The =zfc-edit.el= section about override mode
 #+begin_src emacs-lisp
@@ -220,7 +146,7 @@ toggle alpha background
 #+end_src
 ** The =zfc-ui.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle emacs/lisp/zfc-ui.el
+:header-args:emacs-lisp: :tangle emacs/user-lisp/zfc-ui.el
 :END:
 *** The =zfc-ui.el= section about themes
 #+begin_src emacs-lisp
@@ -474,7 +400,7 @@ default fonts
 #+end_src
 ** The =zfc-base.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle emacs/lisp/zfc-base.el
+:header-args:emacs-lisp: :tangle emacs/user-lisp/zfc-base.el
 :END:
 basic packages which extend core features in emacs
 *** The =zfc-base.el= section about internal packages
@@ -1123,7 +1049,7 @@ embark
 #+end_src
 ** The =zfc-dev.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle emacs/lisp/zfc-dev.el
+:header-args:emacs-lisp: :tangle emacs/user-lisp/zfc-dev.el
 :END:
 *** The =zfc-dev.el= section about completion
 #+begin_src emacs-lisp
@@ -1479,7 +1405,7 @@ use built-in lsp client
 #+end_src
 ** The =zfc-org.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle emacs/lisp/zfc-org.el
+:header-args:emacs-lisp: :tangle emacs/user-lisp/zfc-org.el
 :END:
 *** The =zfc-org.el= section about basic org
 #+begin_src emacs-lisp
@@ -1800,7 +1726,7 @@ org babel
 
 ** The =zfc-tool.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle emacs/lisp/zfc-tool.el
+:header-args:emacs-lisp: :tangle emacs/user-lisp/zfc-tool.el
 :END:
 *** The =zfc-tool.el= section about documents
 reader
@@ -2486,7 +2412,7 @@ email
 #+end_src
 ** The =zfc-lang.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle emacs/lisp/zfc-lang.el
+:header-args:emacs-lisp: :tangle emacs/user-lisp/zfc-lang.el
 :END:
 
 #+begin_src emacs-lisp

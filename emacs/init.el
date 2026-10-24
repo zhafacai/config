@@ -9,10 +9,9 @@
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
+;; (setq use-package-always-ensure t)
 
-;; Add the folder to the search path
-(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-(setq use-package-always-ensure t)
+(require 'zfc-loader)
 
 (require 'zfc-edit)
 (require 'zfc-ui)
