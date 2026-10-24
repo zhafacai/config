@@ -3519,7 +3519,7 @@ blue
 #+begin_src scheme :noweb-ref home-pkgs
 mihomo
 #+end_src
-*** The saayix for =channels.scm=
+*** COMMENT The saayix for =channels.scm=
 ~channels~
 #+begin_src scheme :noweb-ref channels
 (channel

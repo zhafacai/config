@@ -5,7 +5,6 @@
   #:use-module (gnu services nix)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services networking)
-  #:use-module (saayix packages terminals)
   #:use-module (gnu system nss)
   #:use-module (gnu packages window-management)
   #:use-module (gnu packages gnome)
@@ -94,8 +93,7 @@
                     neovim
                     niri
                     xdg-desktop-portal-gnome
-					ghostty
-					;; yazi
+					
                     gvfs)
                    %base-packages))
 

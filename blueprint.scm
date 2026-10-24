@@ -12,6 +12,17 @@
   (apply invoke prog args)
   #t)
 
+(define-command (install-system-command args)
+  ((invoke "ins")
+   (category 'system)
+   (synopsis "Install system")
+   (help "
+  Install Guix system.
+  "))
+  
+  ($ "guix" "time-machine" "-C" "channels.lock" "--"
+     "system" "init" "-L" "mods" "mods/zfc/system/art.scm"))
+
 (define-command (update-guix-command args)
   ((invoke "udg")
    (category 'system)
