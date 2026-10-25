@@ -1,0 +1,9 @@
+# Emacs 编译生成的文件
+*.elc
+*.eln
+
+# 自动生成的 autoload 文件
+.*-autoloads.el
+
+# 自动生成的 loaddefs 文件
+*-loaddefs.el

@@ -1,5 +1,5 @@
 ;;; -*- lexical-binding: t -*-
-(add-to-list 'custom-theme-load-path (expand-file-name "lisp" user-emacs-directory))
+(add-to-list 'custom-theme-load-path (expand-file-name "user-lisp" user-emacs-directory))
 
 (use-package modus-themes
   :init

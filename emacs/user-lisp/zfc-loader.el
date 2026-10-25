@@ -5,3 +5,5 @@
 (require 'zfc-org)
 (require 'zfc-tool)
 (require 'zfc-lang)
+
+(provide 'zfc-loader)

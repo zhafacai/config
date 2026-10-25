@@ -16,6 +16,8 @@ This file contains guix and emacs configuration which use templates.
 (require 'zfc-org)
 (require 'zfc-tool)
 (require 'zfc-lang)
+
+(provide 'zfc-loader)
 #+end_src
 ** The =zfc-edit.el= section
 :PROPERTIES:
@@ -150,7 +152,7 @@ toggle alpha background
 *** The =zfc-ui.el= section about themes
 #+begin_src emacs-lisp
 ;;; -*- lexical-binding: t -*-
-(add-to-list 'custom-theme-load-path (expand-file-name "lisp" user-emacs-directory))
+(add-to-list 'custom-theme-load-path (expand-file-name "user-lisp" user-emacs-directory))
 
 (use-package modus-themes
   :init
@@ -2359,10 +2361,9 @@ email
 "openssl"
 "nss-certs"
 #+end_src
-*** The =zfc-tool.el= section about ewm
+*** COMMENT The =zfc-tool.el= section about ewm
 #+begin_src emacs-lisp
 (use-package ewm
-  :ensure nil
   :bind (:map ewm-mode-map
               ("s-h" .	ewm-focus-left)
               ("s-l" .	ewm-focus-right)
@@ -2479,7 +2480,7 @@ email
 (provide 'zfc-lang)
 #+end_src
 * Guix
-** The =art.scm= section for Lenovo AHP9 System
+** The =art.scm= section for system
 *** The inbox =art.scm=
 #+begin_src scheme :tangle mods/zfc/system/art.scm :noweb yes
 ;; -*- mode: scheme; -*-
@@ -2504,7 +2505,7 @@ email
 <<sys-def>>
 
 (operating-system
- (kernel linux-7.2)
+ (kernel linux)
  (initrd microcode-initrd)
  (firmware (list linux-firmware))
  (host-name "art")
