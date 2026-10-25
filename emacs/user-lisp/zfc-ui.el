@@ -152,7 +152,7 @@
 
 (set-face-attribute 'default nil
                     :family "Iosevka Fixed SS17"
-                    :height 200)
+                    :height 160)
 
 (set-face-attribute 'variable-pitch nil
                     :family "Iosevka Slab")
