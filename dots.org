@@ -3098,7 +3098,7 @@ git-fetch-with-cli = true
 jj config
 #+begin_src toml :tangle files/plain/jj.toml
 [signing]
-behavior = "own"
+behavior = "drop"
 backend = "gpg"
 [user]
 name = "zhafacai"
@@ -3108,7 +3108,8 @@ key = "ED968D008768C653"
 [ui]
 show-cryptographic-signatures = true
 [git]
-private-commits = "description('wip:*') | description('private:*')"
+private-commits = "description('\\[wip\\] *')"
+sign-on-push = true
 #+end_src
 git config
 #+begin_src gitconfig :tangle files/plain/gitconfig

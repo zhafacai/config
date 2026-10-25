@@ -1,5 +1,5 @@
 [signing]
-behavior = "own"
+behavior = "drop"
 backend = "gpg"
 [user]
 name = "zhafacai"
@@ -9,4 +9,5 @@ key = "ED968D008768C653"
 [ui]
 show-cryptographic-signatures = true
 [git]
-private-commits = "description('wip:*') | description('private:*')"
+private-commits = "description('\\[wip\\] *')"
+sign-on-push = true
