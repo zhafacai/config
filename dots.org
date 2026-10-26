@@ -3271,7 +3271,7 @@ notmuch tag +ai -- 'from:openai.com or from:openrouter.ai or from:nvidia.com or 
                         "exec guix gc -F 50G\n"))
                   #:documentation "Run 'guix gc -F 50G' every Sunday at 04:00.")))
 #+end_src
-*** The inbox =channels.scm=
+** The inbox =channels.scm=
 #+begin_src scheme :tangle channels.scm :noweb yes
 (list
  <<channels>>
