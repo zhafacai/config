@@ -1941,9 +1941,7 @@ rime
   :custom
   (default-input-method "rime")
   :config
-  ;; TODO update these variables when in guix
-  (setq rime-user-data-dir "~/.local/share/fcitx5/rime/")
-  (setq rime-share-data-dir "/usr/share/rime-data/"))
+  (setq rime-user-data-dir "~/.local/share/fcitx5/rime/"))
 #+end_src
 
 *** The =zfc-tool.el= section about dev tools
@@ -2397,10 +2395,11 @@ email
 ~dev-use~
 #+begin_src scheme :noweb-ref dev-use
 #:use-module (rosenthal packages emacs-xyz)
+#:use-module (zfc home packages rime-ice)
 #+end_src
 ~dev-pkgs~
 #+begin_src scheme :noweb-ref dev-pkgs
-;; emacs-reader
+emacs-rime-zfc
 #+end_src
 ~emacs-packages~
 #+begin_src scheme :noweb-ref emacs-packages
@@ -2416,8 +2415,7 @@ email
 "emacs-browse-at-remote"
 "emacs-forge"
 "emacs-git-modes"
-"emacs-rime"
-;; emacs-everywhere
+
 "wtype"
 "emacs-guix"
 "emacs-gt"
@@ -2525,115 +2523,108 @@ email
 ** The =art.scm= section for system
 *** The inbox =art.scm=
 #+begin_src scheme :tangle mods/zfc/system/art.scm :noweb yes
-  ;; -*- mode: scheme; -*-
-  (define-module (zfc system art)
-    #:use-module (gnu)
-    <<sys-use>>
-    #:use-module (gnu system nss)
-    #:use-module (gnu packages window-management)
-    #:use-module (gnu packages gnome)
-    #:use-module (gnu packages vim)
-    #:use-module (gnu services desktop)
-    #:use-module (gnu services xorg)
-    #:use-module (gnu services sddm)
-    #:use-module (gnu services guix)
-    #:use-module (gnu home)
-    #:use-module (gnu home services)
-    #:use-module (nongnu packages linux)
-    #:use-module (nongnu system linux-initrd)
-    #:use-module (nongnu packages nvidia)
-    #:use-module (nonguix transformations)
-    #:use-module (rosenthal utils file)
-    #:use-module (zfc home base)
-    #:use-module (zfc home dev))
+;; -*- mode: scheme; -*-
+(define-module (zfc system art)
+  #:use-module (gnu)
+  <<sys-use>>
+  #:use-module (gnu system nss)
+  #:use-module (gnu packages window-management)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages vim)
+  #:use-module (gnu services sddm)
+  #:use-module (gnu services desktop)
+  #:use-module (gnu services xorg)
+  #:use-module (gnu services guix)
+  #:use-module (gnu home)
+  #:use-module (gnu home services)
+  #:use-module (nongnu packages linux)
+  #:use-module (nongnu system linux-initrd)
+  #:use-module (rosenthal utils file)
+  #:use-module (zfc home base)
+  #:use-module (zfc home dev))
 
   <<sys-def>>
 
-  (define nvidia-transform
-    (nonguix-transformation-nvidia #:driver nvda-580))
+(operating-system
+ (kernel linux)
+ (initrd microcode-initrd)
+ (firmware (list linux-firmware))
+ (host-name "art")
+ (timezone "Asia/Shanghai")
+ (locale "en_US.utf8")
 
-  (define %my-os 
-    (operating-system
-     (kernel linux)
-     (initrd microcode-initrd)
-     (firmware (list linux-firmware))
-     (host-name "art")
-     (timezone "Asia/Shanghai")
-     (locale "en_US.utf8")
+ (keyboard-layout (keyboard-layout "us"
+                                   #:options '("ctrl:nocaps")))
 
-     (keyboard-layout (keyboard-layout "us"
-                                       #:options '("ctrl:nocaps")))
+ (sudoers-file
+  (plain-file "sudoers"
+              (string-append (plain-file-content %sudoers-specification)
+                             (format #f "~a ALL = NOPASSWD: ALL~%" "zfc"))))
 
-     (sudoers-file
-      (plain-file "sudoers"
-                  (string-append (plain-file-content %sudoers-specification)
-                                 (format #f "~a ALL = NOPASSWD: ALL~%" "zfc"))))
+ (bootloader (bootloader-configuration
+              (bootloader grub-efi-bootloader)
+              (targets '("/boot/efi"))
+              (keyboard-layout keyboard-layout)))
 
-     (bootloader (bootloader-configuration
-                  (bootloader grub-efi-bootloader)
-                  (targets '("/boot/efi"))
-                  (keyboard-layout keyboard-layout)))
+ (mapped-devices
+  (list (mapped-device
+         (source (uuid "e4498dc2-0360-4844-9328-9da4ea9d32b9"))
+         (target "cryptroot")
+         (type luks-device-mapping))))
 
-     (mapped-devices
-      (list (mapped-device
-             (source (uuid "e4498dc2-0360-4844-9328-9da4ea9d32b9"))
-             (target "cryptroot")
-             (type luks-device-mapping))))
+ (file-systems (append
+                (list (file-system
+                       (device (file-system-label "root"))
+                       (mount-point "/")
+                       (type "ext4")
+                       (dependencies mapped-devices))
+                      (file-system
+                       (device (uuid "30E7-C51B" 'fat))
+                       (mount-point "/boot/efi")
+                       (type "vfat")))
+                %base-file-systems))
 
-     (file-systems (append
-                    (list (file-system
-                           (device (file-system-label "root"))
-                           (mount-point "/")
-                           (type "ext4")
-                           (dependencies mapped-devices))
-                          (file-system
-                           (device (uuid "30E7-C51B" 'fat))
-                           (mount-point "/boot/efi")
-                           (type "vfat")))
-                    %base-file-systems))
+ (swap-devices (list (swap-space
+                      (target "/swapfile"))))
 
-     (swap-devices (list (swap-space
-                          (target "/swapfile"))))
-
-     (users (cons (user-account
-                   (name "zfc")
-                   (comment "zhafacai")
-                   (group "users")
-                   (password "$6$RHK3ZQYo7KixPw/f$Wz1cc8nIU.AlQ7UuFQ/mPYQGa4.jt0vzZ8UeHlpS0znTEM7qg3ael8RJbCczYMp.I8YqIP0x7Nrg9A6opT1TU0")
-                   (supplementary-groups '("wheel" "netdev"
-                                           "libvirt"
-                                           "audio" "video")))
-                  %base-user-accounts))
+ (users (cons (user-account
+               (name "zfc")
+               (comment "zhafacai")
+               (group "users")
+               (password "$6$RHK3ZQYo7KixPw/f$Wz1cc8nIU.AlQ7UuFQ/mPYQGa4.jt0vzZ8UeHlpS0znTEM7qg3ael8RJbCczYMp.I8YqIP0x7Nrg9A6opT1TU0")
+               (supplementary-groups '("wheel" "netdev"
+                                       "libvirt"
+                                       "audio" "video")))
+              %base-user-accounts))
 
 
-     (packages (append (list
-                        neovim
-                        niri
-                        xdg-desktop-portal-gnome
-  					  <<sys-pkgs>>
-                        gvfs)
-                       %base-packages))
+ (packages (append (list
+                    neovim
+                    niri
+                    xdg-desktop-portal-gnome
+  					<<sys-pkgs>>
+                    gvfs)
+                   %base-packages))
 
-     (services (append (list
-                        <<sys-services>>
-                        (service plasma-desktop-service-type)
-  		      (service sddm-service-type)
-                        (service guix-home-service-type
-  							   `(("zfc" ,(home-environment
-  										  (packages (append (home-base-packages)
-  														    (%zfc-dev-packages)))
-  										  (services (append home-base-services
-  														    %zfc-dev-services))))))
-                        polkit-wheel-service)
-                       (modify-services %desktop-services
-                                        (delete  gdm-service-type)
-  									  <<sys-modify>>
-  									  )))
+ (services (append (list
+                    <<sys-services>>
+  		            (service sddm-service-type)
+                    (service guix-home-service-type
+  							 `(("zfc" ,(home-environment
+  										(packages (append (home-base-packages)
+  														  (%zfc-dev-packages)))
+  										(services (append home-base-services
+  														  %zfc-dev-services))))))
+                    polkit-wheel-service)
+                   (modify-services %desktop-services
+                                    (delete gdm-service-type)
+  									<<sys-modify>>
+  									)))
 
-     ;; Allow resolution of '.local' host names with mDNS.
-     (name-service-switch %mdns-host-lookup-nss)))
+ ;; Allow resolution of '.local' host names with mDNS.
+ (name-service-switch %mdns-host-lookup-nss))
 
-  (nvidia-transform %my-os)
+
 #+end_src
 *** COMMENT The =art.scm= section about sops.
 ~sys-services~
@@ -2739,8 +2730,8 @@ here is =sops= secrets config for my dae config.
              (append (list (local-file "../../../files/system/signing-key.pub")
                            (local-file "../../../files/system/guix-moe.pub"))
                      %default-authorized-guix-keys))
-            (substitute-urls '("https://cache-cdn.guix.moe"
-							   "https://mirror.sjtu.edu.cn/guix/"
+            (substitute-urls '("https://mirror.sjtu.edu.cn/guix/"
+							   "https://cache-cdn.guix.moe"
                                "https://substitutes.nonguix.org"
                                "https://ci.guix.gnu.org"))))
 #+end_src
@@ -2794,7 +2785,6 @@ here is =sops= secrets config for my dae config.
   #:use-module (gnu home)
   #:use-module (gnu home services)
   #:use-module (guix gexp)
-  #:use-module (zfc home packages rime-ice)
   #:export (home-base-packages home-base-services))
 
 ;; Package/service *components*.  Home assembly (base + dev) happens in the
@@ -2833,12 +2823,9 @@ here is =sops= secrets config for my dae config.
 "xwayland-satellite"
 ;; apps
 "firefox"
-"qutebrowser"
-"qtwayland"
 "virt-manager"
 "wl-clipboard"
 "telegram-desktop"
-"krdc"
 "alacritty"
 #+end_src
 *** The =base.scm= section about fonts
@@ -2958,33 +2945,8 @@ here is =sops= secrets config for my dae config.
 #+end_src
 ~home-files~
 #+begin_src scheme :noweb-ref home-files
-;; NOTE on rime data: these entries symlink read-only store paths into the
-;; rime user data dir.  rime reads them fine and keeps its writable state
-;; (userdb, build/) in the user dir itself.  If you ever see rime failing to
-;; write user dictionaries, convert the *directory* links below (cn_dicts /
-;; en_dicts / opencc / lua) to file-level links or a writable copy.
-;; 1. Link the heavy data directories
-(".local/share/fcitx5/rime/en_dicts" ,(file-append rime-ice "/share/rime-data/en_dicts"))
-(".local/share/fcitx5/rime/cn_dicts" ,(file-append rime-ice "/share/rime-data/cn_dicts"))
-(".local/share/fcitx5/rime/opencc" ,(file-append rime-ice "/share/rime-data/opencc"))
-(".local/share/fcitx5/rime/lua"    ,(file-append rime-ice "/share/rime-data/lua"))
-
-;; 2. Link the essential schema files for Xiaohe
-(".local/share/fcitx5/rime/double_pinyin_flypy.schema.yaml" 
- ,(file-append rime-ice "/share/rime-data/double_pinyin_flypy.schema.yaml"))
-(".local/share/fcitx5/rime/rime_ice.schema.yaml" 
- ,(file-append rime-ice "/share/rime-data/rime_ice.schema.yaml"))
-(".local/share/fcitx5/rime/default.yaml" 
- ,(file-append rime-ice "/share/rime-data/default.yaml"))
-(".local/share/fcitx5/rime/rime_ice.dict.yaml" 
- ,(file-append rime-ice "/share/rime-data/rime_ice.dict.yaml"))
-(".local/share/fcitx5/rime/symbols_v.yaml" 
- ,(file-append rime-ice "/share/rime-data/symbols_v.yaml"))
-(".local/share/fcitx5/rime/symbols_caps_v.yaml" 
- ,(file-append rime-ice "/share/rime-data/symbols_caps_v.yaml"))
 (".local/share/fcitx5/rime/default.custom.yaml"
  ,(local-file "../../../files/plain/default.custom.yaml"))
-
 #+end_src
 
 ~home-services~
@@ -3009,34 +2971,6 @@ patch:
   schema_list:
     - schema: double_pinyin_flypy
 #+end_src
-=rime-ice= module for guix home
-#+begin_src scheme :tangle mods/zfc/home/packages/rime-ice.scm
-(define-module (zfc home packages rime-ice)
-  #:use-module (guix packages)
-  #:use-module (guix git-download)
-  #:use-module (guix build-system copy)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:export (rime-ice))
-
-(define rime-ice
-  (package
-   (name "rime-ice")
-   (version "2026.06.30")
-   (source (origin
-  	        (method git-fetch)
-  	        (uri (git-reference
-  		          (url "https://github.com/iDvel/rime-ice")
-  		          (commit "6810e8916d160498620a16fef2135956fecbd485")))
-  	        (sha256
-  	         (base32 "1jvnwaaykr78917y4sl8mg8f2f1yn1z0354xm4hxmpx1i0aq25qx"))))
-   (build-system copy-build-system)
-   (arguments
-    '(#:install-plan '(("." "share/rime-data" #:exclude ("README.md" "LICENSE")))))
-   (home-page "https://github.com")
-   (synopsis "Rime 雾凇拼音")
-   (description "Rime 配置：雾凇拼音 | 长期维护的简体词库")
-   (license license:gpl3+)))
-#+end_src
 *** The =base.scm= section about GnuPG
 ~dev-use~
 #+begin_src scheme :noweb-ref home-use
@@ -3051,6 +2985,9 @@ patch:
           (default-cache-ttl 1800)
           (extra-content "allow-loopback-pinentry")
           (ssh-support? #t)))
+#+end_src
+#+begin_src scheme :noweb-ref home-specs
+"gnupg"
 #+end_src
 *** The =dev.scm= section about environment variable
 ~dev-services~

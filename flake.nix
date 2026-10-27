@@ -4,6 +4,7 @@
   };
   nixConfig = {
     extra-substituters = [
+      "https://mirrors.ustc.edu.cn/nix-channels/store"
       "https://nix-community.cachix.org"
     ];
     extra-trusted-public-keys = [
@@ -24,39 +25,12 @@
     in
     {
       packages."${system}".default = pkgs.buildEnv {
-        name = "dev-pkgs";
+        name = "nix-pkgs";
         paths = with pkgs; [
-          # web
-          nodejs
-          pnpm
-          bun
-          tailwindcss-language-server
-          typescript-go
-
-          # python
-          ty
-          ruff
-          black
-
-          # lua
-          stylua
-          lua-language-server
-          luajit
-
-          vscode-json-languageserver
-          shfmt
-
-          # nix
-          nixd
-          nixfmt
-
           # cli
           opencode
           codex
-          yazi
-          jq
           neovim
-
         ];
       };
     };

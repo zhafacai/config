@@ -145,9 +145,7 @@
   :custom
   (default-input-method "rime")
   :config
-  ;; TODO update these variables when in guix
-  (setq rime-user-data-dir "~/.local/share/fcitx5/rime/")
-  (setq rime-share-data-dir "/usr/share/rime-data/"))
+  (setq rime-user-data-dir "~/.local/share/fcitx5/rime/"))
 
 (use-package emacs-everywhere
   :disabled

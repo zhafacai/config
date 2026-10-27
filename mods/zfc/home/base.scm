@@ -15,7 +15,6 @@
   #:use-module (gnu home)
   #:use-module (gnu home services)
   #:use-module (guix gexp)
-  #:use-module (zfc home packages rime-ice)
   #:export (home-base-packages home-base-services))
 
 ;; Package/service *components*.  Home assembly (base + dev) happens in the
@@ -37,12 +36,9 @@
      "xwayland-satellite"
      ;; apps
      "firefox"
-     "qutebrowser"
-     "qtwayland"
      "virt-manager"
      "wl-clipboard"
      "telegram-desktop"
-     "krdc"
      "alacritty"
      "font-google-noto-emoji"
      "font-cormorant"
@@ -87,6 +83,7 @@
      "atuin"
      ;; git diff pager (see gitconfig section)
      "git-delta"
+     "gnupg"
      ))))
 
 (define home-base-services
@@ -95,33 +92,8 @@
     (service home-pipewire-service-type)
     (service home-files-service-type
              `(
-               ;; NOTE on rime data: these entries symlink read-only store paths into the
-               ;; rime user data dir.  rime reads them fine and keeps its writable state
-               ;; (userdb, build/) in the user dir itself.  If you ever see rime failing to
-               ;; write user dictionaries, convert the *directory* links below (cn_dicts /
-               ;; en_dicts / opencc / lua) to file-level links or a writable copy.
-               ;; 1. Link the heavy data directories
-               (".local/share/fcitx5/rime/en_dicts" ,(file-append rime-ice "/share/rime-data/en_dicts"))
-               (".local/share/fcitx5/rime/cn_dicts" ,(file-append rime-ice "/share/rime-data/cn_dicts"))
-               (".local/share/fcitx5/rime/opencc" ,(file-append rime-ice "/share/rime-data/opencc"))
-               (".local/share/fcitx5/rime/lua"    ,(file-append rime-ice "/share/rime-data/lua"))
-               
-               ;; 2. Link the essential schema files for Xiaohe
-               (".local/share/fcitx5/rime/double_pinyin_flypy.schema.yaml" 
-                ,(file-append rime-ice "/share/rime-data/double_pinyin_flypy.schema.yaml"))
-               (".local/share/fcitx5/rime/rime_ice.schema.yaml" 
-                ,(file-append rime-ice "/share/rime-data/rime_ice.schema.yaml"))
-               (".local/share/fcitx5/rime/default.yaml" 
-                ,(file-append rime-ice "/share/rime-data/default.yaml"))
-               (".local/share/fcitx5/rime/rime_ice.dict.yaml" 
-                ,(file-append rime-ice "/share/rime-data/rime_ice.dict.yaml"))
-               (".local/share/fcitx5/rime/symbols_v.yaml" 
-                ,(file-append rime-ice "/share/rime-data/symbols_v.yaml"))
-               (".local/share/fcitx5/rime/symbols_caps_v.yaml" 
-                ,(file-append rime-ice "/share/rime-data/symbols_caps_v.yaml"))
                (".local/share/fcitx5/rime/default.custom.yaml"
                 ,(local-file "../../../files/plain/default.custom.yaml"))
-               
                ))
     (service home-dbus-service-type)
     (service home-graphical-session-service-type

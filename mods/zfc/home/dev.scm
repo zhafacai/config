@@ -5,6 +5,7 @@
   #:use-module (gnu home services)
   #:use-module (gnu home services shepherd)
   #:use-module (rosenthal packages emacs-xyz)
+  #:use-module (zfc home packages rime-ice)
   #:use-module (gnu packages shells)
   #:use-module (gnu home services shells)
   #:use-module (zfc config common)
@@ -26,7 +27,7 @@
 (define (%zfc-dev-packages)
   (append
    (list
-    ;; emacs-reader
+    emacs-rime-zfc
     blue
     )
    (specifications->packages (list
@@ -135,8 +136,7 @@
                               "emacs-browse-at-remote"
                               "emacs-forge"
                               "emacs-git-modes"
-                              "emacs-rime"
-                              ;; emacs-everywhere
+                              
                               "wtype"
                               "emacs-guix"
                               "emacs-gt"
