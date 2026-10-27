@@ -1,8 +1,10 @@
 ;;; -*- lexical-binding: t -*-
 (use-package uiua-mode
+  :ensure t
   :mode "\\.ua\\'")
 
 (use-package sol-mode
+  :ensure t
   :init
   (add-to-list 'treesit-language-source-alist '(solidity "https://github.com/JoranHonig/tree-sitter-solidity"))
   (add-to-list 'treesit-language-source-alist '(compact "https://github.com/midnightntwrk/compact-tree-sitter"))
@@ -13,6 +15,7 @@
 
 ;; NOTE https://github.com/liblit/demangle-mode this one might be helpful
 (use-package disaster
+  :disabled
   :commands (disaster)
   :init
   (setq disaster-assembly-mode #'nasm-mode))
@@ -21,6 +24,7 @@
 (use-package cmake-mode)
 
 (use-package uv-mode
+  :ensure t
   :hook (python-ts-mode . uv-mode-auto-activate-hook))
 
 (add-to-list 'major-mode-remap-alist
@@ -34,11 +38,6 @@
   :custom
   (rustic-lsp-client 'eglot)
   (rustic-format-on-save t))
-
-;; (use-package lsp-tailwindcss
-;;   :init
-;;   (setq lsp-tailwindcss-add-on-mode t)
-;;   :after lsp-mode)
 
 (use-package fennel-mode
   :mode "\\.fnl\\'")

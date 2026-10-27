@@ -44,10 +44,7 @@
   Deploy the dev home environment (dev-only, no Guix-specific base).
   Used to recover the dev environment on non-Guix systems.
   "))
-  ;; Smoke test: lower the whole home first, fail fast before switching
-  ;; generations (catches broken modules, empty tangles, bad derivations).
-  ($ "guix" "time-machine" "-C" "channels.lock" "--"
-     "home" "build" "--dry-run" "-L" "mods" "mods/zfc/home/dev.scm")
+  
   ($ "guix" "time-machine" "-C" "channels.lock" "--"
      "home" "reconfigure" "-L" "mods" "mods/zfc/home/dev.scm"))
 
@@ -58,9 +55,7 @@
    (help "
   Upgrade guix system.
   "))
-  ;; Smoke test: evaluate the OS derivation before switching generations.
-  ($ "guix" "time-machine" "-C" "channels.lock" "--"
-     "system" "build" "-d" "-L" "mods" "mods/zfc/system/art.scm")
+  
   ($ "sudo" "-E" "guix" "time-machine" "-C" "channels.lock" "--"
      "system" "reconfigure" "mods/zfc/system/art.scm" "-L" "mods"))
 

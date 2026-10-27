@@ -9,7 +9,9 @@
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
-;; (setq use-package-always-ensure t)
+
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(add-to-list 'custom-theme-load-path (expand-file-name "lisp" user-emacs-directory))
 
 (require 'zfc-loader)
 

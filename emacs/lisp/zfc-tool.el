@@ -3,7 +3,6 @@
   :bind
   (:map reader-mode-map
         ("d" . reader-dark-mode))
-  :ensure nil
   :hook (reader-mode .
 					 (lambda ()
                        (hl-line-mode 0)
@@ -80,7 +79,6 @@
   (elfeed-org))
 
 (use-package telega
-  :ensure nil
   :bind
   ("C-c t" . telega)
   :commands telega
@@ -103,7 +101,6 @@
   (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 
 (use-package majutsu
-  :vc (:url "https://github.com/0WD0/majutsu" :rev :newest)
   :bind
   ("C-x j" . majutsu)
   :custom
@@ -142,8 +139,6 @@
 (use-package forge
   :after magit)
 
-(use-package git-timemachine)
-
 (use-package git-modes)
 
 (use-package rime
@@ -155,6 +150,7 @@
   (setq rime-share-data-dir "/usr/share/rime-data/"))
 
 (use-package emacs-everywhere
+  :disabled
   :config
   (setq emacs-everywhere-system-configs
 		(append emacs-everywhere-system-configs
@@ -189,7 +185,6 @@
 		   :geometry window-geometry))))))
 
 (use-package guix
-  :ensure nil
   ;; override insert-file in emacs
   :bind
   ("C-x i" . guix))
@@ -214,7 +209,6 @@
   (tmr-mode-line-mode))
 
 (use-package sops
-  ;; :ensure (:type git :host github :repo "djgoku/sops")
   ;; BUG this is so laggy
   :init
   ;; (setq sops-before-encrypt-decrypt-hook 'sops-setup-env)
@@ -224,12 +218,14 @@
   :mode ("\\.yaml\\'" . yaml-mode))
 
 (use-package blue
+  :ensure t
   :init
   ;; Enable custom filters to handle different escape sequences in compilation
   ;; and comint buffers.
   (blue-prettify-compilation-mode 1))
 
 (use-package ghostel
+  :ensure t
   :custom
   (ghostel-shell "fish")
   :hook
@@ -267,9 +263,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (add-to-list 'ghostel-eval-cmds '("magit-status-setup-buffer" magit-status-setup-buffer)))
 
 (use-package consult-ghostel
-  :vc (:url "https://github.com/dakra/ghostel"
-            :lisp-dir "extensions/consult-ghostel"
-            :rev :newest)
   :after (ghostel consult)
   :demand t
   :bind (:map project-prefix-map
@@ -278,7 +271,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
          ("C-c h" . consult-ghostel-history)))
 
 (use-package ben
-  :vc (:url "https://codeberg.org/pastor/ben.el")
   :bind-keymap
   ("C-c E" . ben-command-map)
   :config
@@ -306,8 +298,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
      "ffmpeg -i '<<f>>' -c:v libx264 -c:a aac -movflags +faststart '<<fne>>'.mp4"
      :utils "ffmpeg"))
   (require 'dwim-shell-commands))
-
-(use-package transient :ensure t)
 
 (use-package gptel
   :custom
@@ -372,7 +362,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :config (gptel-agent-update))
 
 (use-package ob-gptel
-  :vc (:url "https://github.com/jwiegley/ob-gptel" :rev :newest)
   :config
   (add-to-list 'org-babel-load-languages '(gptel . t))
   (defun ob-gptel-setup-completions ()
@@ -381,7 +370,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :hook (org-mode . ob-gptel-setup-completions))
 
 (use-package gptel-prompts
-  :vc (:url "https://github.com/jwiegley/gptel-prompts")
   :after (gptel)
   :demand t
   :custom
@@ -393,13 +381,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   )
 
 
-(use-package gptel-magit
-  :vc (:url "https://github.com/roife/gptel-magit")
-  :hook (magit-mode . gptel-magit-install))
-
-
 (use-package gptel-quick
-  :vc (:url "https://github.com/karthink/gptel-quick")
   :after embark
   :custom
   (gptel-quick-backend (gptel-get-backend "Flash"))
@@ -438,7 +420,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
       user-mail-address "zhafacai@gmail.com")
 
 (use-package auth-source-pass
-  :ensure nil
   :config
   (auth-source-pass-enable))
 
@@ -461,7 +442,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 (setq message-send-mail-function 'smtpmail-send-it)
 
 (use-package notmuch
-  :ensure nil
   :hook
   (notmuch-hello-mode . notmuch-poll-and-refresh-this-buffer)
   :bind
@@ -498,7 +478,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
             :key ,(kbd "c")))))
 
 (use-package browse-url
-  :ensure nil
   :custom
   (browse-url-browser-function 'eww-browse-url))
 
@@ -519,5 +498,46 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 (use-package ol-notmuch
   :after (notmuch org))
+
+(use-package ewm
+  :bind (:map ewm-mode-map
+              ("s-h" .	ewm-focus-left)
+              ("s-l" .	ewm-focus-right)
+              ("s-k" .	ewm-focus-up)
+              ("s-j" .	ewm-focus-down)
+              ("s-d" .  ewm-launch-app)
+
+              ("s-S-h" .	ewm-frame-left)
+              ("s-S-l" .	ewm-frame-right)
+              ("s-o" .	ewm-overview-toggle)
+              ("s-w" .	ewm-frame-new)
+              ("s-q" .	ewm-frame-close)
+              
+              ("s-S-f" .	ewm-floating-toggle)
+              
+              )
+  :config
+  (add-to-list 'default-frame-alist '(alpha-background . 95))
+  (add-to-list 'default-frame-alist '(blur-background . t))
+
+  (setopt ewm-surface-emulate-keys
+          '((kill-ring-save . "C-c") (yank . "C-v")
+            ("C-n" . "<down>") ("C-p" . "<up>")))
+
+  (add-hook 'ewm-update-app-hook
+            (lambda ()
+              (when (equal ewm-surface-app "firefox")
+                (setq-local ewm-surface-emulate-keys
+                            '(("C-s" . "C-f") ("C-w" . "C-x"))))))
+
+  (setopt ewm-input-config
+          '((touchpad :natural-scroll t :tap t :dwt t)
+            (mouse :accel-profile "flat")
+            (trackpoint :accel-speed 0.5)
+            (keyboard :repeat-delay 200 :repeat-rate 60
+                      :xkb-options "ctrl:nocaps")))
+
+  (setopt ewm-output-config
+          '(("DP-5" :width 2560 :height 1440 :scale 1.2 :refresh 144))))
 
 (provide 'zfc-tool)

@@ -2,4 +2,4 @@
 !.gitignore
 !init.el
 !early-init.el
-!user-lisp/
+!lisp/

@@ -1,7 +1,6 @@
 ;;; -*- lexical-binding: t -*-
 
 (use-package completion-preview
-  :ensure nil
   :demand t
   :bind
   ( :map completion-preview-active-mode-map
@@ -17,7 +16,6 @@
   (global-completion-preview-mode 1))
 
 (use-package minibuffer
-  :ensure nil
   :demand t
   :bind
   ( :map completion-in-region-mode-map
@@ -67,7 +65,6 @@
 
 ;; A few more useful configurations...
 (use-package emacs
-  :ensure nil
   :custom
   ;; TAB cycle if there are only few candidates
   ;; (completion-cycle-threshold 3)
@@ -156,7 +153,6 @@
   (apheleia-global-mode +1))
 
 (use-package eglot
-  :ensure nil
   :bind
   (:map eglot-mode-map
         ("C-c SPC a" . eglot-code-actions)
@@ -207,7 +203,6 @@
   (add-hook 'kill-emacs-hook #'dape-breakpoint-save))
 
 (use-package eldoc
-  :ensure nil
   :custom
   (eldoc-help-at-pt t)
   (eldoc-echo-area-use-multiline-p nil)
@@ -232,12 +227,10 @@
   (put 'eldoc-box-scroll-up 'repeat-map 'eldoc-box-repeat-map))
 
 (use-package flymake
-  :ensure nil
   :custom
   (flymake-show-diagnostics-at-end-of-line 'fancy))
 
 (use-package jinx
-  :ensure nil
   ;; :hook (emacs-startup . global-jinx-mode)
   :bind (("M-$" . jinx-correct)
          ("C-M-$" . jinx-languages)))
@@ -259,15 +252,11 @@
    ("C-c C-i" . inspector-inspect-last-sexp)))
 
 (use-package treesit
-  :ensure nil
   :custom
   (treesit-auto-install-grammar 'always)
   (treesit-enabled-modes t))
 
-;; (use-package qml-ts-mode
-;;   :vc (:url "https://github.com/xhcoding/qml-ts-mode"))
 (use-package markdown-ts-mode
-  :ensure nil
   :config
   (add-to-list 'major-mode-remap-alist '(markdown-mode . markdown-ts-mode)))
 

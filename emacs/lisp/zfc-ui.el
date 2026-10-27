@@ -1,5 +1,5 @@
 ;;; -*- lexical-binding: t -*-
-(add-to-list 'custom-theme-load-path (expand-file-name "user-lisp" user-emacs-directory))
+(add-to-list 'custom-theme-load-path (expand-file-name "lisp" user-emacs-directory))
 
 (use-package modus-themes
   :init
@@ -96,7 +96,6 @@
   :commands rainbow-mode)
 
 (use-package emacs
-  :ensure nil
   :bind
   ("C-c w w" . fc/wallpaper-random)
   :config
@@ -107,6 +106,7 @@
     (message "Wallpaper changed 😃")))
 
 (use-package cursory
+  :ensure t
   :demand t
   :init
   (setq cursory-presets
@@ -206,7 +206,6 @@
   (nyan-mode))
 
 (use-package which-key
-  :ensure nil
   :custom
   (which-key-idle-delay 0.5)
   :init
@@ -218,9 +217,5 @@
   
   (global-hl-line-mode 1)
   (lin-global-mode 1))
-
-(use-package idle-highlight-mode
-  :config (setq idle-highlight-idle-time 0.2)
-  :hook (eglot--managed-mode . idle-highlight-mode))
 
 (provide 'zfc-ui)

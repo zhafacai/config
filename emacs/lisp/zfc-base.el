@@ -1,6 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 (use-package emacs
-  :ensure nil
   :bind-keymap
   ("M-r" . ctl-x-r-map)
   :bind
@@ -82,33 +81,29 @@
   (show-paren-mode 1))
 
 (use-package repeat
-  :ensure nil
   :hook
   (after-init . repeat-mode))
   
 (use-package repeat-help
+  :ensure t
   :custom
   (repeat-help-auto nil)
   :config
   (repeat-help-mode 1))
 
 (use-package autorevert
-  :ensure nil
   :config
   (global-auto-revert-mode 1))
 
 (use-package compile
-  :ensure nil
   :custom
   (compilation-scroll-output t))
 
 (use-package isearch
-  :ensure nil
   :custom
   (isearch-lazy-count t))
 
 (use-package diff
-  :ensure
   :config
   ;; You cannot expect the syntax highlighting of themes to look
   ;; equally readabable against what typically are red and green
@@ -116,7 +111,6 @@
   (setq diff-font-lock-syntax nil))
 
 (use-package ediff
-  :ensure nil
   :custom
   (ediff-split-window-function 'split-window-horizontally)
   (ediff-window-setup-function 'ediff-setup-windows-plain)
@@ -126,14 +120,12 @@
   (ediff-show-clashes-only t))
 
 (use-package server
-  :ensure nil
   :config
   (unless (or (server-running-p) (daemonp))
     (server-start)))
 
 
 (use-package ibuffer
-  :ensure nil
   :bind
   ("C-x C-b" . ibuffer))
 
@@ -162,7 +154,6 @@
 (use-package wgrep)
 
 (use-package project
-  :ensure nil
   :custom
   (project-list-file (expand-file-name "cache/projects" user-emacs-directory))
   (project-vc-extra-root-markers '("Cargo.toml" "package.json" "go.mod" ".dir-locals.el"))
@@ -174,8 +165,6 @@
   (add-to-list 'project-switch-commands '(magit-project-status "Magit") t))
 
 (use-package project-x
-  :demand
-  :vc (:url "https://github.com/vmargb/project-x")
   :custom
   (project-x-window-list-file (expand-file-name "cache/project-window-list" user-emacs-directory))
   :bind
@@ -189,6 +178,7 @@
   (project-x-mode 1))
 
 (use-package material-icons
+  ;; TODO package this 
   :vc (:url "https://github.com/zHaOdANiuu/material-icons.el" :rev :newest)
   :hook
   (dired-mode . material-icons-dired-icons-mode)
@@ -198,13 +188,13 @@
 
 (use-package wdired
   :after dired
-  :ensure nil
   :commands wdired-change-to-wdired-mode
   :config
   (setq wdired-allow-to-change-permissions t)
   (setq wdired-create-parent-directories t))
 
 (use-package dired-subtree
+  :ensure t
   :after dired
   :config
   (defun fc/dired-subtree-up (&optional arg)
@@ -219,6 +209,7 @@
         ("h" . fc/dired-subtree-up)))
 
 (use-package dired-filter
+  :ensure t
   :after dired)
 
 (use-package dired-preview
@@ -235,12 +226,12 @@
   (setq dired-preview-delay 0.2))
 
 (use-package ready-player
+  :ensure t
   :config
   (setq ready-player-my-media-collection-location "~/Windows/Music")
   (ready-player-mode +1))
 
 (use-package dired
-  :ensure nil
   :custom
   (dired-dwim-target t)
   (dired-omit-files "^\\.")
@@ -256,7 +247,6 @@
         "-l --almost-all --human-readable --group-directories-first"))
 
 (use-package proced
-  :ensure nil
   :commands proced
   :custom
   (proced-enable-color-flag t)
@@ -455,11 +445,9 @@
   :config
   (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
 
-;; offline docs (Rust/TS/Nix/Guile...), M-x devdocs-browser-open
-(use-package devdocs-browser
-  :custom
-  (devdocs-browser-cache-directory
-   (expand-file-name "cache/devdocs" user-emacs-directory)))
+(use-package devdocs
+  :bind
+  ("C-h D" . devdocs-lookup))
 
 (use-package vertico
   :hook (rfn-eshadow-update-overlay . vertico-directory-tidy)
@@ -472,7 +460,6 @@
   (vertico-mode))
 
 (use-package emacs
-  :ensure nil
   :custom
   ;; Enable context menu. `vertico-multiform-mode' adds a menu in the minibuffer
   ;; to switch display modes.
@@ -549,7 +536,8 @@
                  nil
                  (window-parameters (mode-line-format . none)))))
 
-(use-package embark-consult)
+(use-package embark-consult
+  :ensure t)
 
 (use-package ace-window
   :custom
@@ -560,7 +548,6 @@
 
 
 (use-package tramp
-  :ensure nil
   :commands (sudo-find-file sudo-this-file)
   :bind ("C-x C-S-f" . sudo-find-file)
   :config
@@ -593,7 +580,6 @@
     (sudo-find-file (file-truename buffer-file-name))))
 
 (use-package 0x0
-  :vc (:url "https://codeberg.org/pkal/0x0.el")
   :commands (0x0-upload 0x0-upload-file)
   :custom (0x0-default-service 'x0))
 

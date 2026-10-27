@@ -33,10 +33,10 @@
    (specifications->packages
     (list
      ;; wm
-     "noctalia"
+     "noctalia-shell"
      "xwayland-satellite"
      ;; apps
-     "librewolf"
+     "firefox"
      "qutebrowser"
      "qtwayland"
      "virt-manager"

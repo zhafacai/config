@@ -40,6 +40,7 @@
   (add-to-list 'expand-region-exclude-text-mode-expansions 'org-mode))
 
 (use-package embrace
+  :ensure t
   :bind
   (("C-c e a" . embrace-add)
    ("C-c e c" . embrace-change)

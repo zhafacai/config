@@ -1,6 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 (use-package org
-  :ensure nil
   :bind
   ("C-c c" . org-capture)
   ("C-c C-a" . org-agenda)
@@ -45,7 +44,6 @@
 (use-package org-tree-slide)
 
 (use-package org
-  :ensure nil
   :config
   (let ((with-time (concat ":PROPERTIES:\n"
                            ":CAPTURED: %U\n"
@@ -89,7 +87,6 @@
         (lambda (lang)
           (let ((name (symbol-name lang)))
             `(use-package ,(intern (concat "ob-" name))
-               :ensure nil
                :autoload
                (,(intern (concat "org-babel-execute:" name))
                 ,(intern (concat "org-babel-expand-body:" name))
@@ -99,7 +96,6 @@
 (fc/ob-autoload '(rust lua python shell))
 
 (use-package ob-C
-  :ensure nil
   :autoload
   (org-babel-execute:cpp
    org-babel-expand-body:cpp))
@@ -129,7 +125,6 @@
   (org-mode . org-appear-mode))
 
 (use-package org-modern-indent
-  :vc (:url "https://github.com/jdtsmith/org-modern-indent")
   :config
   (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
 
@@ -146,6 +141,7 @@
   (org-download-enable))
 
 (use-package verb
+  :disabled
   :after org
   :config
   (define-key org-mode-map (kbd "C-c C-r") verb-command-map)
@@ -177,7 +173,6 @@
            (call-interactively 'org-insert-link)))))
 
 (use-package org
-  :ensure nil
   :bind
   (:map org-mode-map
    ("C-c C-l" . fc/org-insert-link-dwim)))
@@ -267,17 +262,18 @@
   (consult-denote-mode 1))
 
 (use-package org-timegrid
-  :vc (:url "https://github.com/Gleek/org-timegrid" :rev :newest)
   :after org-agenda
   :config
   (add-to-list 'org-agenda-custom-commands
                '("g" "TimeGrid week" org-timegrid-week)))
 
 (use-package org-habit-stats
+  :ensure t
   :bind
   (:map org-agenda-mode-map
         ("H" . org-habit-stats-view-habit-at-point-agenda)))
 
-(use-package org-ql)
+(use-package org-ql
+  :ensure t)
 
 (provide 'zfc-org)

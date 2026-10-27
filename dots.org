@@ -8,7 +8,7 @@
 This file contains guix and emacs configuration which use templates.
 * Emacs
 ** The =zfc-loader.el= section
-#+begin_src emacs-lisp :tangle emacs/user-lisp/zfc-loader.el
+#+begin_src emacs-lisp :tangle emacs/lisp/zfc-loader.el
 (require 'zfc-edit)
 (require 'zfc-ui)
 (require 'zfc-base)
@@ -21,7 +21,7 @@ This file contains guix and emacs configuration which use templates.
 #+end_src
 ** The =zfc-edit.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle emacs/user-lisp/zfc-edit.el
+:header-args:emacs-lisp: :tangle emacs/lisp/zfc-edit.el
 :END:
 *** The =zfc-edit.el= section about override mode
 #+begin_src emacs-lisp
@@ -73,6 +73,7 @@ surround / expand region
   (add-to-list 'expand-region-exclude-text-mode-expansions 'org-mode))
 
 (use-package embrace
+  :ensure t
   :bind
   (("C-c e a" . embrace-add)
    ("C-c e c" . embrace-change)
@@ -140,19 +141,29 @@ toggle alpha background
                              90
                            100))))
 #+end_src
-
 *** The =zfc-edit.el= section for calling provide
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+"emacs-avy"
+"emacs-expand-region"
+"emacs-move-text"
+"emacs-crux"
+"emacs-mwim"
+"emacs-undo-fu-session"
+"emacs-vundo"
+"emacs-multiple-cursors"
+#+end_src
 #+begin_src emacs-lisp
 (provide 'zfc-edit)
 #+end_src
 ** The =zfc-ui.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle emacs/user-lisp/zfc-ui.el
+:header-args:emacs-lisp: :tangle emacs/lisp/zfc-ui.el
 :END:
 *** The =zfc-ui.el= section about themes
 #+begin_src emacs-lisp
 ;;; -*- lexical-binding: t -*-
-(add-to-list 'custom-theme-load-path (expand-file-name "user-lisp" user-emacs-directory))
+(add-to-list 'custom-theme-load-path (expand-file-name "lisp" user-emacs-directory))
 
 (use-package modus-themes
   :init
@@ -249,7 +260,6 @@ toggle alpha background
   :commands rainbow-mode)
 
 (use-package emacs
-  :ensure nil
   :bind
   ("C-c w w" . fc/wallpaper-random)
   :config
@@ -262,6 +272,7 @@ toggle alpha background
 nice cursor
 #+begin_src emacs-lisp
 (use-package cursory
+  :ensure t
   :demand t
   :init
   (setq cursory-presets
@@ -376,7 +387,6 @@ default fonts
 #+end_src
 #+begin_src emacs-lisp
 (use-package which-key
-  :ensure nil
   :custom
   (which-key-idle-delay 0.5)
   :init
@@ -390,25 +400,34 @@ default fonts
   (global-hl-line-mode 1)
   (lin-global-mode 1))
 #+end_src
-#+begin_src emacs-lisp
-(use-package idle-highlight-mode
-  :config (setq idle-highlight-idle-time 0.2)
-  :hook (eglot--managed-mode . idle-highlight-mode))
-#+end_src
 *** The =zfc-ui.el= section for calling provide
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+"emacs-modus-themes"
+"emacs-ef-themes"
+"emacs-spacious-padding"
+"emacs-logos"
+"emacs-olivetti"
+"emacs-rainbow-mode"
+"emacs-hl-todo"
+"emacs-doom-modeline"
+"emacs-pulsar"
+"emacs-rainbow-delimiters"
+"emacs-nyan-mode"
+"emacs-lin"
+#+end_src
 #+begin_src emacs-lisp
 (provide 'zfc-ui)
 #+end_src
 ** The =zfc-base.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle emacs/user-lisp/zfc-base.el
+:header-args:emacs-lisp: :tangle emacs/lisp/zfc-base.el
 :END:
 basic packages which extend core features in emacs
 *** The =zfc-base.el= section about internal packages
 #+begin_src emacs-lisp
 ;;; -*- lexical-binding: t -*-
 (use-package emacs
-  :ensure nil
   :bind-keymap
   ("M-r" . ctl-x-r-map)
   :bind
@@ -490,33 +509,29 @@ basic packages which extend core features in emacs
   (show-paren-mode 1))
 
 (use-package repeat
-  :ensure nil
   :hook
   (after-init . repeat-mode))
   
 (use-package repeat-help
+  :ensure t
   :custom
   (repeat-help-auto nil)
   :config
   (repeat-help-mode 1))
 
 (use-package autorevert
-  :ensure nil
   :config
   (global-auto-revert-mode 1))
 
 (use-package compile
-  :ensure nil
   :custom
   (compilation-scroll-output t))
 
 (use-package isearch
-  :ensure nil
   :custom
   (isearch-lazy-count t))
 
 (use-package diff
-  :ensure
   :config
   ;; You cannot expect the syntax highlighting of themes to look
   ;; equally readabable against what typically are red and green
@@ -524,7 +539,6 @@ basic packages which extend core features in emacs
   (setq diff-font-lock-syntax nil))
 
 (use-package ediff
-  :ensure nil
   :custom
   (ediff-split-window-function 'split-window-horizontally)
   (ediff-window-setup-function 'ediff-setup-windows-plain)
@@ -534,14 +548,12 @@ basic packages which extend core features in emacs
   (ediff-show-clashes-only t))
 
 (use-package server
-  :ensure nil
   :config
   (unless (or (server-running-p) (daemonp))
     (server-start)))
 
 
 (use-package ibuffer
-  :ensure nil
   :bind
   ("C-x C-b" . ibuffer))
 
@@ -579,7 +591,6 @@ $SHELL has to be POSIX one
 project
 #+begin_src emacs-lisp
 (use-package project
-  :ensure nil
   :custom
   (project-list-file (expand-file-name "cache/projects" user-emacs-directory))
   (project-vc-extra-root-markers '("Cargo.toml" "package.json" "go.mod" ".dir-locals.el"))
@@ -591,8 +602,6 @@ project
   (add-to-list 'project-switch-commands '(magit-project-status "Magit") t))
 
 (use-package project-x
-  :demand
-  :vc (:url "https://github.com/vmargb/project-x")
   :custom
   (project-x-window-list-file (expand-file-name "cache/project-window-list" user-emacs-directory))
   :bind
@@ -608,6 +617,7 @@ project
 dired
 #+begin_src emacs-lisp
 (use-package material-icons
+  ;; TODO package this 
   :vc (:url "https://github.com/zHaOdANiuu/material-icons.el" :rev :newest)
   :hook
   (dired-mode . material-icons-dired-icons-mode)
@@ -617,13 +627,13 @@ dired
 
 (use-package wdired
   :after dired
-  :ensure nil
   :commands wdired-change-to-wdired-mode
   :config
   (setq wdired-allow-to-change-permissions t)
   (setq wdired-create-parent-directories t))
 
 (use-package dired-subtree
+  :ensure t
   :after dired
   :config
   (defun fc/dired-subtree-up (&optional arg)
@@ -638,6 +648,7 @@ dired
         ("h" . fc/dired-subtree-up)))
 
 (use-package dired-filter
+  :ensure t
   :after dired)
 
 (use-package dired-preview
@@ -655,25 +666,15 @@ dired
 #+end_src
 
 #+begin_src emacs-lisp
-
 (use-package ready-player
+  :ensure t
   :config
   (setq ready-player-my-media-collection-location "~/Windows/Music")
   (ready-player-mode +1))
 #+end_src
 
-~emacs-packages~
-#+begin_src scheme :noweb-ref emacs-packages
-;; ready-player
-"mpv"
-"ffmpeg"
-"ffmpegthumbnailer"
-#+end_src
-
 #+begin_src emacs-lisp
-
 (use-package dired
-  :ensure nil
   :custom
   (dired-dwim-target t)
   (dired-omit-files "^\\.")
@@ -689,7 +690,6 @@ dired
         "-l --almost-all --human-readable --group-directories-first"))
 
 (use-package proced
-  :ensure nil
   :commands proced
   :custom
   (proced-enable-color-flag t)
@@ -898,11 +898,9 @@ helpful
   :config
   (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
 
-;; offline docs (Rust/TS/Nix/Guile...), M-x devdocs-browser-open
-(use-package devdocs-browser
-  :custom
-  (devdocs-browser-cache-directory
-   (expand-file-name "cache/devdocs" user-emacs-directory)))
+(use-package devdocs
+  :bind
+  ("C-h D" . devdocs-lookup))
 #+end_src
 vertico
 #+begin_src emacs-lisp
@@ -917,7 +915,6 @@ vertico
   (vertico-mode))
 
 (use-package emacs
-  :ensure nil
   :custom
   ;; Enable context menu. `vertico-multiform-mode' adds a menu in the minibuffer
   ;; to switch display modes.
@@ -996,7 +993,8 @@ embark
                  nil
                  (window-parameters (mode-line-format . none)))))
 
-(use-package embark-consult)
+(use-package embark-consult
+  :ensure t)
 
 (use-package ace-window
   :custom
@@ -1007,7 +1005,6 @@ embark
 
 
 (use-package tramp
-  :ensure nil
   :commands (sudo-find-file sudo-this-file)
   :bind ("C-x C-S-f" . sudo-find-file)
   :config
@@ -1040,24 +1037,50 @@ embark
     (sudo-find-file (file-truename buffer-file-name))))
 
 (use-package 0x0
-  :vc (:url "https://codeberg.org/pkal/0x0.el")
   :commands (0x0-upload 0x0-upload-file)
   :custom (0x0-default-service 'x0))
 #+end_src
 *** The =zfc-base.el= section for calling provide
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+"emacs-gcmh"
+"emacs-wgrep"
+"emacs-project-x"
+"emacs-dired-preview"
+
+;; ready-player
+"mpv"
+"ffmpeg"
+"ffmpegthumbnailer"
+
+
+"emacs-smartparens"
+
+"emacs-consult"
+"emacs-consult-dir"
+"emacs-helpful"
+"emacs-elisp-demos"
+"emacs-devdocs"
+"emacs-vertico"
+"emacs-orderless"
+"emacs-marginalia"
+"emacs-embark"
+"emacs-ace-window"
+"emacs-0x0"
+
+#+end_src
 #+begin_src emacs-lisp
 (provide 'zfc-base)
 #+end_src
 ** The =zfc-dev.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle emacs/user-lisp/zfc-dev.el
+:header-args:emacs-lisp: :tangle emacs/lisp/zfc-dev.el
 :END:
 *** The =zfc-dev.el= section about completion
 #+begin_src emacs-lisp
 ;;; -*- lexical-binding: t -*-
 
 (use-package completion-preview
-  :ensure nil
   :demand t
   :bind
   ( :map completion-preview-active-mode-map
@@ -1073,7 +1096,6 @@ embark
   (global-completion-preview-mode 1))
 
 (use-package minibuffer
-  :ensure nil
   :demand t
   :bind
   ( :map completion-in-region-mode-map
@@ -1123,7 +1145,6 @@ embark
 
 ;; A few more useful configurations...
 (use-package emacs
-  :ensure nil
   :custom
   ;; TAB cycle if there are only few candidates
   ;; (completion-cycle-threshold 3)
@@ -1268,7 +1289,6 @@ auto format
 use built-in lsp client
 #+begin_src emacs-lisp
 (use-package eglot
-  :ensure nil
   :bind
   (:map eglot-mode-map
         ("C-c SPC a" . eglot-code-actions)
@@ -1320,7 +1340,6 @@ use built-in lsp client
 #+end_src
 #+begin_src emacs-lisp
 (use-package eldoc
-  :ensure nil
   :custom
   (eldoc-help-at-pt t)
   (eldoc-echo-area-use-multiline-p nil)
@@ -1346,22 +1365,13 @@ use built-in lsp client
 #+end_src
 #+begin_src emacs-lisp
 (use-package flymake
-  :ensure nil
   :custom
   (flymake-show-diagnostics-at-end-of-line 'fancy))
 
 (use-package jinx
-  :ensure nil
   ;; :hook (emacs-startup . global-jinx-mode)
   :bind (("M-$" . jinx-correct)
          ("C-M-$" . jinx-languages)))
-#+end_src
-~emacs-packages~
-#+begin_src scheme :noweb-ref emacs-packages
-;; jinx
-"emacs-jinx"
-"hunspell"
-"hunspell-dict-en-us"
 #+end_src
 
 *** The =zfc-dev.el= section about lisp development
@@ -1385,32 +1395,50 @@ use built-in lsp client
 *** The =zfc-dev.el= section about treesitter
 #+begin_src emacs-lisp
 (use-package treesit
-  :ensure nil
   :custom
   (treesit-auto-install-grammar 'always)
   (treesit-enabled-modes t))
 
-;; (use-package qml-ts-mode
-;;   :vc (:url "https://github.com/xhcoding/qml-ts-mode"))
 (use-package markdown-ts-mode
-  :ensure nil
   :config
   (add-to-list 'major-mode-remap-alist '(markdown-mode . markdown-ts-mode)))
 #+end_src
 
 *** The =zfc-dev.el= section for calling provide
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+"emacs-corfu"
+"emacs-nerd-icons-corfu"
+"emacs-cape"
+"emacs-tempel"
+"emacs-tempel-collection"
+"emacs-yasnippet"
+"emacs-yasnippet-snippets"
+"emacs-apheleia"
+"emacs-consult-eglot"
+"emacs-eldoc-box"
+"emacs-flymake"
+"emacs-dape"
+
+"emacs-jinx"
+"hunspell"
+"hunspell-dict-en-us"
+
+"emacs-eros"
+"emacs-macrostep"
+"emacs-inspector"
+#+end_src
 #+begin_src emacs-lisp
 (provide 'zfc-dev)
 #+end_src
 ** The =zfc-org.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle emacs/user-lisp/zfc-org.el
+:header-args:emacs-lisp: :tangle emacs/lisp/zfc-org.el
 :END:
 *** The =zfc-org.el= section about basic org
 #+begin_src emacs-lisp
 ;;; -*- lexical-binding: t -*-
 (use-package org
-  :ensure nil
   :bind
   ("C-c c" . org-capture)
   ("C-c C-a" . org-agenda)
@@ -1455,7 +1483,6 @@ use built-in lsp client
 (use-package org-tree-slide)
 
 (use-package org
-  :ensure nil
   :config
   (let ((with-time (concat ":PROPERTIES:\n"
                            ":CAPTURED: %U\n"
@@ -1501,7 +1528,6 @@ org babel
         (lambda (lang)
           (let ((name (symbol-name lang)))
             `(use-package ,(intern (concat "ob-" name))
-               :ensure nil
                :autoload
                (,(intern (concat "org-babel-execute:" name))
                 ,(intern (concat "org-babel-expand-body:" name))
@@ -1511,7 +1537,6 @@ org babel
 (fc/ob-autoload '(rust lua python shell))
 
 (use-package ob-C
-  :ensure nil
   :autoload
   (org-babel-execute:cpp
    org-babel-expand-body:cpp))
@@ -1542,7 +1567,6 @@ org babel
   (org-mode . org-appear-mode))
 
 (use-package org-modern-indent
-  :vc (:url "https://github.com/jdtsmith/org-modern-indent")
   :config
   (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
 #+end_src
@@ -1560,6 +1584,7 @@ org babel
   (org-download-enable))
 
 (use-package verb
+  :disabled
   :after org
   :config
   (define-key org-mode-map (kbd "C-c C-r") verb-command-map)
@@ -1594,7 +1619,6 @@ org babel
            (call-interactively 'org-insert-link)))))
 
 (use-package org
-  :ensure nil
   :bind
   (:map org-mode-map
    ("C-c C-l" . fc/org-insert-link-dwim)))
@@ -1703,29 +1727,46 @@ org babel
 *** The =zfc-org.el= section about extra ui
 #+begin_src emacs-lisp
 (use-package org-timegrid
-  :vc (:url "https://github.com/Gleek/org-timegrid" :rev :newest)
   :after org-agenda
   :config
   (add-to-list 'org-agenda-custom-commands
                '("g" "TimeGrid week" org-timegrid-week)))
 
 (use-package org-habit-stats
+  :ensure t
   :bind
   (:map org-agenda-mode-map
         ("H" . org-habit-stats-view-habit-at-point-agenda)))
 #+end_src
 
 #+begin_src emacs-lisp
-(use-package org-ql)
+(use-package org-ql
+  :ensure t)
 #+end_src
 *** The =zfc-org.el= section for calling provide
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+"emacs-org-tree-slide"
+"emacs-org-modern"
+"emacs-org-modern-indent"
+"emacs-org-appear"
+"emacs-org-contrib"
+"emacs-org-download"
+"emacs-denote"
+"emacs-denote-org"
+"emacs-denote-journal"
+"emacs-denote-sequence"
+"emacs-consult-denote"
+"emacs-org-timegrid"
+"emacs-org-ql"
+#+end_src
 #+begin_src emacs-lisp
 (provide 'zfc-org)
 #+end_src
 
 ** The =zfc-tool.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle emacs/user-lisp/zfc-tool.el
+:header-args:emacs-lisp: :tangle emacs/lisp/zfc-tool.el
 :END:
 *** The =zfc-tool.el= section about documents
 reader
@@ -1735,20 +1776,11 @@ reader
   :bind
   (:map reader-mode-map
         ("d" . reader-dark-mode))
-  :ensure nil
   :hook (reader-mode .
 					 (lambda ()
                        (hl-line-mode 0)
                        (set-window-dedicated-p (selected-window) nil)
                        (delete-other-windows))))
-#+end_src
-~dev-use~
-#+begin_src scheme :noweb-ref dev-use
-#:use-module (zfc packages emacs-xyz)
-#+end_src
-~dev-pkgs~
-#+begin_src scheme :noweb-ref dev-pkgs
-emacs-reader
 #+end_src
 
 nov
@@ -1827,11 +1859,11 @@ elfeed
   (setq rmh-elfeed-org-files '("~/Documents/elfeed.org"))
   (elfeed-org))
 #+end_src
+
 *** The =zfc-tool.el= section about social media
 telegram
 #+begin_src emacs-lisp
 (use-package telega
-  :ensure nil
   :bind
   ("C-c t" . telega)
   :commands telega
@@ -1848,12 +1880,6 @@ telegram
   (add-hook 'telega-chat-mode-hook #'telega-chat-auto-fill-mode))
 #+end_src
 
-~emacs-packages~
-#+begin_src scheme :noweb-ref emacs-packages
-;; telega
-"emacs-telega"
-#+end_src
-
 *** The =zfc-tool.el= section about git
 #+begin_src emacs-lisp
 (use-package magit
@@ -1863,7 +1889,6 @@ telegram
   (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 
 (use-package majutsu
-  :vc (:url "https://github.com/0WD0/majutsu" :rev :newest)
   :bind
   ("C-x j" . majutsu)
   :custom
@@ -1907,9 +1932,6 @@ diff-hl
   :after magit)
 #+end_src
 #+begin_src emacs-lisp
-(use-package git-timemachine)
-#+end_src
-#+begin_src emacs-lisp
 (use-package git-modes)
 #+end_src
 *** The =zfc-tool.el= section about IME
@@ -1923,16 +1945,12 @@ rime
   (setq rime-user-data-dir "~/.local/share/fcitx5/rime/")
   (setq rime-share-data-dir "/usr/share/rime-data/"))
 #+end_src
-~emacs-packages~
-#+begin_src scheme :noweb-ref emacs-packages
-;; rime
-"emacs-rime"
-#+end_src
 
 *** The =zfc-tool.el= section about dev tools
 emacs-everywhere
 #+begin_src emacs-lisp
 (use-package emacs-everywhere
+  :disabled
   :config
   (setq emacs-everywhere-system-configs
 		(append emacs-everywhere-system-configs
@@ -1966,23 +1984,12 @@ emacs-everywhere
 		   :title window-title
 		   :geometry window-geometry))))))
 #+end_src
-~emacs-packages~
-#+begin_src scheme :noweb-ref emacs-packages
-;; emacs-everywhere
-"wtype"
-#+end_src
 guix
 #+begin_src emacs-lisp
 (use-package guix
-  :ensure nil
   ;; override insert-file in emacs
   :bind
   ("C-x i" . guix))
-#+end_src
-~emacs-packages~
-#+begin_src scheme :noweb-ref emacs-packages
-;; guix
-"emacs-guix"
 #+end_src
 
 translator
@@ -2016,7 +2023,6 @@ timer
 sops
 #+begin_src emacs-lisp
 (use-package sops
-  ;; :ensure (:type git :host github :repo "djgoku/sops")
   ;; BUG this is so laggy
   :init
   ;; (setq sops-before-encrypt-decrypt-hook 'sops-setup-env)
@@ -2028,6 +2034,7 @@ sops
  Blue
 #+begin_src emacs-lisp
 (use-package blue
+  :ensure t
   :init
   ;; Enable custom filters to handle different escape sequences in compilation
   ;; and comint buffers.
@@ -2037,6 +2044,7 @@ sops
 ghostel
 #+begin_src emacs-lisp
 (use-package ghostel
+  :ensure t
   :custom
   (ghostel-shell "fish")
   :hook
@@ -2074,9 +2082,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (add-to-list 'ghostel-eval-cmds '("magit-status-setup-buffer" magit-status-setup-buffer)))
 
 (use-package consult-ghostel
-  :vc (:url "https://github.com/dakra/ghostel"
-            :lisp-dir "extensions/consult-ghostel"
-            :rev :newest)
   :after (ghostel consult)
   :demand t
   :bind (:map project-prefix-map
@@ -2088,7 +2093,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 direnv
 #+begin_src emacs-lisp
 (use-package ben
-  :vc (:url "https://codeberg.org/pastor/ben.el")
   :bind-keymap
   ("C-c E" . ben-command-map)
   :config
@@ -2098,10 +2102,6 @@ direnv
         '("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏"))
   :init
   (add-hook 'after-init-hook #'ben-global-mode 99))
-#+end_src
-~emacs-packages~
-#+begin_src scheme :noweb-ref emacs-packages
-"direnv"
 #+end_src
 
 *** The =zfc-tool.el= section about ai
@@ -2127,8 +2127,6 @@ dwim
 #+end_src
 gptel
 #+begin_src emacs-lisp
-(use-package transient :ensure t)
-
 (use-package gptel
   :custom
   (gptel-default-mode #'org-mode)
@@ -2192,7 +2190,6 @@ gptel
   :config (gptel-agent-update))
 
 (use-package ob-gptel
-  :vc (:url "https://github.com/jwiegley/ob-gptel" :rev :newest)
   :config
   (add-to-list 'org-babel-load-languages '(gptel . t))
   (defun ob-gptel-setup-completions ()
@@ -2201,7 +2198,6 @@ gptel
   :hook (org-mode . ob-gptel-setup-completions))
 
 (use-package gptel-prompts
-  :vc (:url "https://github.com/jwiegley/gptel-prompts")
   :after (gptel)
   :demand t
   :custom
@@ -2213,13 +2209,7 @@ gptel
   )
 
 
-(use-package gptel-magit
-  :vc (:url "https://github.com/roife/gptel-magit")
-  :hook (magit-mode . gptel-magit-install))
-
-
 (use-package gptel-quick
-  :vc (:url "https://github.com/karthink/gptel-quick")
   :after embark
   :custom
   (gptel-quick-backend (gptel-get-backend "Flash"))
@@ -2266,7 +2256,6 @@ email
       user-mail-address "zhafacai@gmail.com")
 
 (use-package auth-source-pass
-  :ensure nil
   :config
   (auth-source-pass-enable))
 
@@ -2291,7 +2280,6 @@ email
 
 #+begin_src emacs-lisp
 (use-package notmuch
-  :ensure nil
   :hook
   (notmuch-hello-mode . notmuch-poll-and-refresh-this-buffer)
   :bind
@@ -2328,7 +2316,6 @@ email
             :key ,(kbd "c")))))
 
 (use-package browse-url
-  :ensure nil
   :custom
   (browse-url-browser-function 'eww-browse-url))
 
@@ -2351,17 +2338,19 @@ email
   :after (notmuch org))
 
 #+end_src
-~emacs-packages~ for email
+~emacs-packages~ 
 #+begin_src scheme :noweb-ref emacs-packages
 ;; notmuch
 "notmuch"
 "emacs-notmuch"
+"emacs-notmuch-indicator"
+"emacs-pass"
 "isync"
 "msmtp"
 "openssl"
 "nss-certs"
 #+end_src
-*** COMMENT The =zfc-tool.el= section about ewm
+*** The =zfc-tool.el= section about ewm
 #+begin_src emacs-lisp
 (use-package ewm
   :bind (:map ewm-mode-map
@@ -2405,21 +2394,67 @@ email
           '(("DP-5" :width 2560 :height 1440 :scale 1.2 :refresh 144))))
 #+end_src
 *** The =zfc-tool.el= section for calling provide
+~dev-use~
+#+begin_src scheme :noweb-ref dev-use
+#:use-module (rosenthal packages emacs-xyz)
+#+end_src
+~dev-pkgs~
+#+begin_src scheme :noweb-ref dev-pkgs
+;; emacs-reader
+#+end_src
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+"emacs-nov"
+"emacs-cal-china-x"
+"emacs-elfeed"
+"emacs-elfeed-org"
+"emacs-reader"
+"emacs-telega"
+"emacs-magit"
+"emacs-majutsu-dolly"
+"emacs-diff-hl"
+"emacs-browse-at-remote"
+"emacs-forge"
+"emacs-git-modes"
+"emacs-rime"
+;; emacs-everywhere
+"wtype"
+"emacs-guix"
+"emacs-gt"
+"emacs-tmr"
+"emacs-sops"
+"emacs-yaml-mode"
+
+"emacs-consult-ghostel"
+"emacs-ben"
+"direnv"
+
+"emacs-dwim-shell-command"
+"emacs-gptel"
+"emacs-gptel-agent"
+"emacs-gptel-prompts"
+"emacs-ob-gptel"
+"emacs-gptel-quick"
+"emacs-agent-shell"
+#+end_src
+
 #+begin_src emacs-lisp
 (provide 'zfc-tool)
 #+end_src
 ** The =zfc-lang.el= section
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle emacs/user-lisp/zfc-lang.el
+:header-args:emacs-lisp: :tangle emacs/lisp/zfc-lang.el
 :END:
 
 #+begin_src emacs-lisp
 ;;; -*- lexical-binding: t -*-
 (use-package uiua-mode
+  :ensure t
   :mode "\\.ua\\'")
 #+end_src
 #+begin_src emacs-lisp
 (use-package sol-mode
+  :ensure t
   :init
   (add-to-list 'treesit-language-source-alist '(solidity "https://github.com/JoranHonig/tree-sitter-solidity"))
   (add-to-list 'treesit-language-source-alist '(compact "https://github.com/midnightntwrk/compact-tree-sitter"))
@@ -2431,6 +2466,7 @@ email
 #+begin_src emacs-lisp
 ;; NOTE https://github.com/liblit/demangle-mode this one might be helpful
 (use-package disaster
+  :disabled
   :commands (disaster)
   :init
   (setq disaster-assembly-mode #'nasm-mode))
@@ -2440,6 +2476,7 @@ email
 #+end_src
 #+begin_src emacs-lisp
 (use-package uv-mode
+  :ensure t
   :hook (python-ts-mode . uv-mode-auto-activate-hook))
 #+end_src
 #+begin_src emacs-lisp
@@ -2456,12 +2493,6 @@ email
   (rustic-format-on-save t))
 #+end_src
 #+begin_src emacs-lisp
-;; (use-package lsp-tailwindcss
-;;   :init
-;;   (setq lsp-tailwindcss-add-on-mode t)
-;;   :after lsp-mode)
-#+end_src
-#+begin_src emacs-lisp
 (use-package fennel-mode
   :mode "\\.fnl\\'")
 #+end_src
@@ -2476,6 +2507,17 @@ email
 #+end_src
 
 *** The =zfc-lang.el= section for calling provide
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+"emacs-nix-ts-mode"
+"emacs-cmake-mode"
+"emacs-rustic"
+"emacs-rust-mode"
+"emacs-fennel-mode"
+"emacs-kdl-mode"
+"emacs-just-ts-mode"
+"emacs-meson-mode"
+#+end_src
 #+begin_src emacs-lisp
 (provide 'zfc-lang)
 #+end_src
@@ -2483,106 +2525,115 @@ email
 ** The =art.scm= section for system
 *** The inbox =art.scm=
 #+begin_src scheme :tangle mods/zfc/system/art.scm :noweb yes
-;; -*- mode: scheme; -*-
-(define-module (zfc system art)
-  #:use-module (gnu)
-  <<sys-use>>
-  #:use-module (gnu system nss)
-  #:use-module (gnu packages window-management)
-  #:use-module (gnu packages gnome)
-  #:use-module (gnu packages vim)
-  #:use-module (gnu services desktop)
-  #:use-module (gnu services xorg)
-  #:use-module (gnu services guix)
-  #:use-module (gnu home)
-  #:use-module (gnu home services)
-  #:use-module (nongnu packages linux)
-  #:use-module (nongnu system linux-initrd)
-  #:use-module (rosenthal utils file)
-  #:use-module (zfc home base)
-  #:use-module (zfc home dev))
+  ;; -*- mode: scheme; -*-
+  (define-module (zfc system art)
+    #:use-module (gnu)
+    <<sys-use>>
+    #:use-module (gnu system nss)
+    #:use-module (gnu packages window-management)
+    #:use-module (gnu packages gnome)
+    #:use-module (gnu packages vim)
+    #:use-module (gnu services desktop)
+    #:use-module (gnu services xorg)
+    #:use-module (gnu services sddm)
+    #:use-module (gnu services guix)
+    #:use-module (gnu home)
+    #:use-module (gnu home services)
+    #:use-module (nongnu packages linux)
+    #:use-module (nongnu system linux-initrd)
+    #:use-module (nongnu packages nvidia)
+    #:use-module (nonguix transformations)
+    #:use-module (rosenthal utils file)
+    #:use-module (zfc home base)
+    #:use-module (zfc home dev))
 
-<<sys-def>>
+  <<sys-def>>
 
-(operating-system
- (kernel linux)
- (initrd microcode-initrd)
- (firmware (list linux-firmware))
- (host-name "art")
- (timezone "Asia/Shanghai")
- (locale "en_US.utf8")
+  (define nvidia-transform
+    (nonguix-transformation-nvidia #:driver nvda-580))
 
- (keyboard-layout (keyboard-layout "us"
-                                   #:options '("ctrl:nocaps")))
+  (define %my-os 
+    (operating-system
+     (kernel linux)
+     (initrd microcode-initrd)
+     (firmware (list linux-firmware))
+     (host-name "art")
+     (timezone "Asia/Shanghai")
+     (locale "en_US.utf8")
 
- (sudoers-file
-  (plain-file "sudoers"
-              (string-append (plain-file-content %sudoers-specification)
-                             (format #f "~a ALL = NOPASSWD: ALL~%" "zfc"))))
+     (keyboard-layout (keyboard-layout "us"
+                                       #:options '("ctrl:nocaps")))
 
- (bootloader (bootloader-configuration
-              (bootloader grub-efi-bootloader)
-              (targets '("/boot/efi"))
-              (keyboard-layout keyboard-layout)
-              (theme (grub-theme
-                      (inherit (grub-theme))
-                      (gfxmode '("1024x768x32" "auto"))))))
+     (sudoers-file
+      (plain-file "sudoers"
+                  (string-append (plain-file-content %sudoers-specification)
+                                 (format #f "~a ALL = NOPASSWD: ALL~%" "zfc"))))
 
- (mapped-devices
-  (list (mapped-device
-         (source (uuid "7a3e1a89-474c-4efb-8826-2470162e7a66"))
-         (target "cryptroot")
-         (type luks-device-mapping))))
+     (bootloader (bootloader-configuration
+                  (bootloader grub-efi-bootloader)
+                  (targets '("/boot/efi"))
+                  (keyboard-layout keyboard-layout)))
 
- (file-systems (append
-                (list (file-system
-                       (device (file-system-label "root"))
-                       (mount-point "/")
-                       (type "ext4")
-                       (dependencies mapped-devices))
-                      (file-system
-                       (device (file-system-label "boot"))
-                       (mount-point "/boot/efi")
-                       (type "vfat")))
-                %base-file-systems))
+     (mapped-devices
+      (list (mapped-device
+             (source (uuid "e4498dc2-0360-4844-9328-9da4ea9d32b9"))
+             (target "cryptroot")
+             (type luks-device-mapping))))
 
- (swap-devices (list (swap-space
-                      (target "/swapfile"))))
+     (file-systems (append
+                    (list (file-system
+                           (device (file-system-label "root"))
+                           (mount-point "/")
+                           (type "ext4")
+                           (dependencies mapped-devices))
+                          (file-system
+                           (device (uuid "30E7-C51B" 'fat))
+                           (mount-point "/boot/efi")
+                           (type "vfat")))
+                    %base-file-systems))
 
- (users (cons (user-account
-               (name "zfc")
-               (comment "zhafacai")
-               (group "users")
-               (password "$6$RHK3ZQYo7KixPw/f$Wz1cc8nIU.AlQ7UuFQ/mPYQGa4.jt0vzZ8UeHlpS0znTEM7qg3ael8RJbCczYMp.I8YqIP0x7Nrg9A6opT1TU0")
-               (supplementary-groups '("wheel" "netdev"
-                                       "libvirt"
-                                       "audio" "video")))
-              %base-user-accounts))
+     (swap-devices (list (swap-space
+                          (target "/swapfile"))))
+
+     (users (cons (user-account
+                   (name "zfc")
+                   (comment "zhafacai")
+                   (group "users")
+                   (password "$6$RHK3ZQYo7KixPw/f$Wz1cc8nIU.AlQ7UuFQ/mPYQGa4.jt0vzZ8UeHlpS0znTEM7qg3ael8RJbCczYMp.I8YqIP0x7Nrg9A6opT1TU0")
+                   (supplementary-groups '("wheel" "netdev"
+                                           "libvirt"
+                                           "audio" "video")))
+                  %base-user-accounts))
 
 
- (packages (append (list
-                    neovim
-                    niri
-                    xdg-desktop-portal-gnome
-					<<sys-pkgs>>
-                    gvfs)
-                   %base-packages))
+     (packages (append (list
+                        neovim
+                        niri
+                        xdg-desktop-portal-gnome
+  					  <<sys-pkgs>>
+                        gvfs)
+                       %base-packages))
 
- (services (append (list
-                    <<sys-services>>
-                    (service guix-home-service-type
-							 `(("zfc" ,(home-environment
-										(packages (append (home-base-packages)
-														  (%zfc-dev-packages)))
-										(services (append home-base-services
-														  %zfc-dev-services))))))
-                    polkit-wheel-service)
-                   (modify-services %desktop-services
-									<<sys-modify>>
-									)))
+     (services (append (list
+                        <<sys-services>>
+                        (service plasma-desktop-service-type)
+  		      (service sddm-service-type)
+                        (service guix-home-service-type
+  							   `(("zfc" ,(home-environment
+  										  (packages (append (home-base-packages)
+  														    (%zfc-dev-packages)))
+  										  (services (append home-base-services
+  														    %zfc-dev-services))))))
+                        polkit-wheel-service)
+                       (modify-services %desktop-services
+                                        (delete  gdm-service-type)
+  									  <<sys-modify>>
+  									  )))
 
- ;; Allow resolution of '.local' host names with mDNS.
- (name-service-switch %mdns-host-lookup-nss))
+     ;; Allow resolution of '.local' host names with mDNS.
+     (name-service-switch %mdns-host-lookup-nss)))
+
+  (nvidia-transform %my-os)
 #+end_src
 *** COMMENT The =art.scm= section about sops.
 ~sys-services~
@@ -2778,10 +2829,10 @@ here is =sops= secrets config for my dae config.
 ~home-specs~
 #+begin_src scheme :noweb-ref home-specs
 ;; wm
-"noctalia"
+"noctalia-shell"
 "xwayland-satellite"
 ;; apps
-"librewolf"
+"firefox"
 "qutebrowser"
 "qtwayland"
 "virt-manager"
@@ -2852,6 +2903,7 @@ here is =sops= secrets config for my dae config.
   #:use-module (gnu services)
   #:use-module (gnu home)
   #:use-module (gnu home services)
+  #:use-module (gnu home services shepherd)
   <<dev-use>>
   #:use-module (guix gexp)
   #:export (%zfc-dev-packages %zfc-dev-services))
@@ -3354,7 +3406,7 @@ blue
 #+begin_src scheme :noweb-ref home-pkgs
 mihomo
 #+end_src
-*** COMMENT The saayix for =channels.scm=
+*** The saayix for =channels.scm=
 ~channels~
 #+begin_src scheme :noweb-ref channels
 (channel
