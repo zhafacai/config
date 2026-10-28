@@ -68,6 +68,11 @@
                        (mount-point "/")
                        (type "ext4")
                        (dependencies mapped-devices))
+                      ;; TODO remove this
+                      (file-system
+                       (device "/dev/nvme1n1p5")
+                       (mount-point "/home/zfc/Windows/")
+                       (type "ntfs"))
                       (file-system
                        (device (uuid "30E7-C51B" 'fat))
                        (mount-point "/boot/efi")

@@ -118,6 +118,7 @@
                               ;; notmuch
                               "notmuch"
                               "emacs-notmuch"
+                              "emacs-ol-notmuch"
                               "emacs-notmuch-indicator"
                               "emacs-pass"
                               "isync"
