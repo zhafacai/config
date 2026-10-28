@@ -76,6 +76,27 @@
   (setq rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed.org"))
   (elfeed-org))
 
+(use-package elfeed-tube
+  :after elfeed
+  :demand t
+  :config
+  (setq elfeed-tube-auto-save-p nil)
+  (setq elfeed-tube-auto-fetch-p t)
+  (elfeed-tube-setup)
+
+  :bind (:map elfeed-show-mode-map
+              ("F" . elfeed-tube-fetch)
+              ([remap save-buffer] . elfeed-tube-save)
+              :map elfeed-search-mode-map
+              ("F" . elfeed-tube-fetch)
+              ([remap save-buffer] . elfeed-tube-save))
+  ;; :config
+  ;; (elfeed-tube-add-feeds '("https://www.youtube.com/@MrBeast"
+  ;;                          "https://www.youtube.com/@protesilaos"
+  ;;                          "https://www.youtube.com/@abcdw"
+  ;;                          "https://www.youtube.com/@karthink"))
+  )
+
 (use-package telega
   :bind
   ("C-c t" . telega)
@@ -389,6 +410,16 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :config
   (setq gptel-quick-system-message (lambda (count)
 								     (format "Explain in %d words or fewer in Chinese." count))))
+
+
+(use-package gptel-preset-collection
+  :after gptel)
+
+(use-package gptel-inline
+  :after gptel)
+
+(use-package gptel-annotate
+  :after gptel)
 
 (use-package agent-shell
   :bind

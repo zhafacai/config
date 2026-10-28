@@ -6,6 +6,7 @@
   #:use-module (gnu home services shepherd)
   #:use-module (rosenthal packages emacs-xyz)
   #:use-module (zfc home packages rime-ice)
+  #:use-module (zfc packages emacs-xyz)
   #:use-module (gnu packages shells)
   #:use-module (gnu home services shells)
   #:use-module (zfc config common)
@@ -28,6 +29,9 @@
   (append
    (list
     emacs-rime-zfc
+    emacs-gptel-preset-collection
+    emacs-gptel-inline
+    emacs-gptel-annotate
     blue
     )
    (specifications->packages (list
@@ -129,6 +133,8 @@
                               "emacs-nov"
                               "emacs-cal-china-x"
                               "emacs-elfeed"
+                              "emacs-elfeed-tube"
+                              "yt-dlp"
                               "emacs-elfeed-org"
                               "emacs-reader"
                               "emacs-telega"

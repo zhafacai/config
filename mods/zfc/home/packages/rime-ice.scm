@@ -30,44 +30,7 @@
 
 (define-public emacs-rime-zfc
   (package
+    (inherit emacs-rime)
     (name "emacs-rime-zfc")
-    (version "1.0.5")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://github.com/DogLooksGood/emacs-rime")
-              (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0z0iwsqr92g8ykxb51gkawwxwzx0faw0027zgdi7c38ngjqld237"))))
-    (build-system emacs-build-system)
-    (arguments
-     '(#:include (cons "\\.so$" %default-include)
-       #:test-command (list "emacs" "--batch" "-l" "test.el")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-rime-data-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (make-file-writable "rime.el")
-             (emacs-substitute-variables "rime.el"
-               ("rime-share-data-dir"
-                (search-input-directory inputs
-                                        "share/rime-data")))))
-         (add-before 'install 'build-emacs-module
-           (lambda _
-             (invoke "make" "lib")))
-         (add-before 'check 'pre-check
-           (lambda _
-             (setenv "HOME" (getenv "TMPDIR"))
-             (mkdir-p (string-append (getenv "HOME")
-                                     "/.emacs.d/rime")))))))
     (inputs
-     (list librime rime-ice))
-    (propagated-inputs
-     (list emacs-dash emacs-popup emacs-posframe))
-    (home-page "https://github.com/DogLooksGood/emacs-rime")
-    (synopsis "Rime input method in Emacs")
-    (description
-     "Rime is an Emacs input method built upon Rime input method engine.")
-    (license license:gpl3+)))
+     (list librime rime-ice))))

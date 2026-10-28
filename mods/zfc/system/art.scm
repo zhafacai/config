@@ -22,18 +22,18 @@
   #:use-module (zfc home base)
   #:use-module (zfc home dev))
 
-  (define %network-manager-ipv6-privacy
-    `("ip6-privacy.conf"
-  	,(ini-file "ip6-privacy.conf"
-  	   #~'(("connection"
-  			("ipv6.ip6-privacy" . 2))))))
-  
-  (define %network-manager-random-mac-address
-    `("random-mac-address.conf"
-      ,(ini-file "random-mac-address.conf"
-         #~'(("connection-mac-randomization"
-              ("ethernet.cloned-mac-address" . "stable")
-              ("wifi.cloned-mac-address" . "stable"))))))
+(define %network-manager-ipv6-privacy
+  `("ip6-privacy.conf"
+	,(ini-file "ip6-privacy.conf"
+	   #~'(("connection"
+			("ipv6.ip6-privacy" . 2))))))
+
+(define %network-manager-random-mac-address
+  `("random-mac-address.conf"
+    ,(ini-file "random-mac-address.conf"
+       #~'(("connection-mac-randomization"
+            ("ethernet.cloned-mac-address" . "stable")
+            ("wifi.cloned-mac-address" . "stable"))))))
 
 (operating-system
  (kernel linux)
@@ -70,7 +70,7 @@
                        (dependencies mapped-devices))
                       ;; TODO remove this
                       (file-system
-                       (device "/dev/nvme1n1p5")
+                       (device (uuid "9CBE79B6BE798992" 'ntfs))
                        (mount-point "/home/zfc/Windows/")
                        (type "ntfs"))
                       (file-system
