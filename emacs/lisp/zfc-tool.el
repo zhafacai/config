@@ -328,24 +328,21 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
                   (setq-local gptel-cache t)))
   :bind
   (("C-c a p" . gptel)
-   ("C-c a m" . gptel-menu)
-   ;; TODO remove these two if needed
-   ("C-c a a" . gptel-add)
-   ("C-c a f" . gptel-add-file))
+   ("C-c <return>" . gptel-send)
+   ("C-c C-<return>" . gptel-menu))
+  
   :config
-  (define-key fc/override-mode-map (kbd "C-c C-<return>") 'gptel-send)
   
   (gptel-make-openai "OpenRouter"
 	:host "openrouter.ai"
 	:endpoint "/api/v1/chat/completions"
 	:key #'gptel-api-key-from-auth-source
 	:stream t
-	:models '(apodex/apodex-1.1-mini:free
-              google/gemma-4-31b-it:free
-              google/gemma-4-26b-a4b-it:free
-              nvidia/nemotron-3.5-lightning:free
+	:models '(nvidia/nemotron-3.5-lightning:free
               nvidia/nemotron-3.5-super-vl:free
               dots-studio/dots-3-note-preview:free
+              recursive/flint-v1.0:free
+              xingchen-agi/xing4.0-29b-a4b:free
 			  nvidia/nemotron-3-ultra-550b-a55b:free))
 
   (gptel-make-openai "Nim"
@@ -416,6 +413,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :after gptel)
 
 (use-package gptel-inline
+  :bind (("C-c i" . gptel-inline))
   :after gptel)
 
 (use-package gptel-annotate

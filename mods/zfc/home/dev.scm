@@ -138,6 +138,7 @@
                               "emacs-elfeed-org"
                               "emacs-reader"
                               "emacs-telega"
+                              "emacs-tracking"
                               "emacs-magit"
                               "emacs-majutsu-dolly"
                               "emacs-diff-hl"
