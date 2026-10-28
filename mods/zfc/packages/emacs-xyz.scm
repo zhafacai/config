@@ -93,3 +93,29 @@
       (description
        "Annotate files and buffers with LLM responses.")
       (license license:gpl3+))))
+
+
+(define-public emacs-ibuffer-project
+  (let ((commit "9002abd9cb4c8753fe4f6c522d9407b4d52e7873")
+        (revision "1"))
+    (package
+      (name "emacs-ibuffer-project")
+      (version (git-version "v2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/muffinmad/emacs-ibuffer-project")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "08164kv60r1mr0y9ha613w321xqnrsmdq9s3vfmjpmz4fm058bv6"))))
+      (build-system emacs-build-system)
+      (arguments
+       (list #:tests? #f))
+      (home-page "https://github.com/muffinmad/emacs-ibuffer-project")
+      (synopsis
+       "Group ibuffer's list by project.")
+      (description
+       "Group ibuffer's list by project.")
+      (license license:unlicense))))

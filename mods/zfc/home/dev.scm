@@ -69,7 +69,7 @@
                               "ffmpeg"
                               "ffmpegthumbnailer"
                               
-                              
+                              "emacs-ibuffer-project"
                               "emacs-smartparens"
                               
                               "emacs-consult"

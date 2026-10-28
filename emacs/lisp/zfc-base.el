@@ -367,6 +367,8 @@
          ("M-s u" . consult-focus-lines)
          ;; Isearch integration
          ("M-s e" . consult-isearch-history)
+         :map help-map
+         ("TAB" . consult-info)
          :map isearch-mode-map
          ;; Keep `M-e' = isearch-edit-string (edit the current search string);
          ;; consult-isearch-history stays on `M-s e'.
