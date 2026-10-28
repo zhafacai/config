@@ -124,6 +124,7 @@
                               "msmtp"
                               "openssl"
                               "nss-certs"
+                              "password-store"
                               "emacs-nov"
                               "emacs-cal-china-x"
                               "emacs-elfeed"

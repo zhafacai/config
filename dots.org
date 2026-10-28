@@ -2344,6 +2344,7 @@ email
 "msmtp"
 "openssl"
 "nss-certs"
+"password-store"
 #+end_src
 *** The =zfc-tool.el= section about ewm
 #+begin_src emacs-lisp
