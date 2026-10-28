@@ -98,8 +98,8 @@
   )
 
 (use-package telega
-  :bind
-  ("C-c t" . telega)
+  ;; :bind
+  ;; ("C-c t" . telega)
   :commands telega
   :config
   (setq telega-use-tracking-for '(or unmuted mention)
@@ -166,43 +166,7 @@
   :config
   (setq rime-user-data-dir "~/.local/share/fcitx5/rime/"))
 
-(use-package emacs-everywhere
-  :disabled
-  :config
-  (setq emacs-everywhere-system-configs
-		(append emacs-everywhere-system-configs
-				'(((wayland . niri)
-				   :focus-command ("niri" "msg" "action" "focus-window" "--id" "%w")
-				   :paste-command ("wtype" "-M" "Shift" "-P" "Insert" "-m" "Shift" "-p" "Insert")
-				   :info-function emacs-everywhere--app-info-linux-niri))))
-
-
-  (defun emacs-everywhere--app-info-linux-niri ()
-	"Return information on the current active window, on a Linux Niri session."
-	(require 'json)
-	(let*
-		((json-raw (emacs-everywhere--call "niri" "msg" "-j" "focused-window"))
-		 (is-err (string-prefix-p "Error" json-raw)))
-	  (if is-err
-		  (progn
-			(message "[emacs-everywhere] %s" json-raw)
-			(message "[emacs-everywhere] NIRI_SOCKET=%s" (getenv "NIRI_SOCKET"))
-			(error "[emacs-everywhere] Error in `niri msg -j focused-window' (see *messages*)"))
-		(let*
-			((json (json-read-from-string json-raw)) ;; -j for json
-			 (wid (cdr (assq 'id json)))
-			 (window-id (if (numberp wid) (number-to-string wid) wid))
-			 (window-title (cdr (assq 'title json)))
-			 (app-name (cdr (assq 'app_id json)))
-			 (window-geometry nil)) ;; no geometry in niri
-		  (make-emacs-everywhere-app
-		   :id window-id
-		   :class app-name
-		   :title window-title
-		   :geometry window-geometry))))))
-
 (use-package guix
-  ;; override insert-file in emacs
   :bind
   ("C-x i" . guix))
 
@@ -219,9 +183,7 @@
 
 (use-package tmr
   :bind
-  ("C-c a t" . tmr-prefix-map)
-  :custom
-  (tmr-sound-file "/usr/share/sounds/freedesktop/stereo/message-new-instant.oga")
+  ("C-c t" . tmr-prefix-map)
   :config
   (tmr-mode-line-mode))
 
