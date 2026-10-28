@@ -163,8 +163,6 @@ toggle alpha background
 *** The =zfc-ui.el= section about themes
 #+begin_src emacs-lisp
 ;;; -*- lexical-binding: t -*-
-(add-to-list 'custom-theme-load-path (expand-file-name "lisp" user-emacs-directory))
-
 (use-package modus-themes
   :init
   (modus-themes-include-derivatives-mode 1)
@@ -1855,9 +1853,7 @@ elfeed
 
 (use-package elfeed-org
   :config
-  ;;     (setq rmh-elfeed-org-files '("~/Documents/elfeed.org"))
-  ;;   (setq rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed.org")))
-  (setq rmh-elfeed-org-files '("~/Documents/elfeed.org"))
+  (setq rmh-elfeed-org-files '("/run/user/1000/secrets/elfeed.org"))
   (elfeed-org))
 #+end_src
 
@@ -2821,7 +2817,7 @@ here is =sops= secrets config for my dae config.
 "noctalia-shell"
 "xwayland-satellite"
 ;; apps
-"firefox"
+"librewolf"
 "virt-manager"
 "wl-clipboard"
 "telegram-desktop"
@@ -3233,7 +3229,7 @@ notmuch tag +ai -- 'from:openai.com or from:openrouter.ai or from:nvidia.com or 
 #+begin_src scheme :noweb-ref dev-services
 (service home-sops-secrets-service-type
          (home-sops-service-configuration
-          ;; (gnupg-home (in-vicinity (getenv "XDG_DATA_HOME") "sops"))
+          (gnupg-home (in-vicinity (getenv "XDG_CONFIG_HOME") "sops"))
           (secrets
            (list
             (sops-secret

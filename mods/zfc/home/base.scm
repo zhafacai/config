@@ -35,7 +35,7 @@
      "noctalia-shell"
      "xwayland-satellite"
      ;; apps
-     "firefox"
+     "librewolf"
      "virt-manager"
      "wl-clipboard"
      "telegram-desktop"

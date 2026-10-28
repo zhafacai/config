@@ -237,7 +237,7 @@
            
            (service home-sops-secrets-service-type
                     (home-sops-service-configuration
-                     ;; (gnupg-home (in-vicinity (getenv "XDG_DATA_HOME") "sops"))
+                     (gnupg-home (in-vicinity (getenv "XDG_CONFIG_HOME") "sops"))
                      (secrets
                       (list
                        (sops-secret

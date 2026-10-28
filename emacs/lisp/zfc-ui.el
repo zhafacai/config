@@ -1,6 +1,4 @@
 ;;; -*- lexical-binding: t -*-
-(add-to-list 'custom-theme-load-path (expand-file-name "lisp" user-emacs-directory))
-
 (use-package modus-themes
   :init
   (modus-themes-include-derivatives-mode 1)
