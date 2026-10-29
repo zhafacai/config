@@ -109,7 +109,7 @@
                (list fcitx5-rime))))
     (service home-gpg-agent-service-type
              (home-gpg-agent-configuration
-              (pinentry-program (file-append pinentry-qt "/bin/pinentry-qt"))
+              (pinentry-program (file-append pinentry-gnome3 "/bin/pinentry-gnome3"))
               (default-cache-ttl 1800)
               (extra-content "allow-loopback-pinentry")
               (ssh-support? #t)))

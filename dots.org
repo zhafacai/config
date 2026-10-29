@@ -141,7 +141,7 @@ toggle alpha background
                              90
                            100))))
 #+end_src
-*** The =zfc-edit.el= section for calling provide
+*** The =zfc-edit.el= ending section
 ~emacs-packages~
 #+begin_src scheme :noweb-ref emacs-packages
 "emacs-avy"
@@ -399,7 +399,7 @@ default fonts
   (global-hl-line-mode 1)
   (lin-global-mode 1))
 #+end_src
-*** The =zfc-ui.el= section for calling provide
+*** The =zfc-ui.el= ending section
 ~emacs-packages~
 #+begin_src scheme :noweb-ref emacs-packages
 "emacs-modus-themes"
@@ -1041,7 +1041,7 @@ embark
   :commands (0x0-upload 0x0-upload-file)
   :custom (0x0-default-service 'x0))
 #+end_src
-*** The =zfc-base.el= section for calling provide
+*** The =zfc-base.el= ending section
 ~emacs-packages~
 #+begin_src scheme :noweb-ref emacs-packages
 "emacs-gcmh"
@@ -1405,7 +1405,7 @@ use built-in lsp client
   (add-to-list 'major-mode-remap-alist '(markdown-mode . markdown-ts-mode)))
 #+end_src
 
-*** The =zfc-dev.el= section for calling provide
+*** The =zfc-dev.el= ending section
 ~emacs-packages~
 #+begin_src scheme :noweb-ref emacs-packages
 "emacs-corfu"
@@ -1747,7 +1747,7 @@ org babel
 (use-package org-ql
   :ensure t)
 #+end_src
-*** The =zfc-org.el= section for calling provide
+*** The =zfc-org.el= ending section
 ~emacs-packages~
 #+begin_src scheme :noweb-ref emacs-packages
 "emacs-org-tree-slide"
@@ -2397,7 +2397,7 @@ email
   (setopt ewm-output-config
           '(("DP-5" :width 2560 :height 1440 :scale 1.2 :refresh 144))))
 #+end_src
-*** The =zfc-tool.el= section for calling provide
+*** The =zfc-tool.el= ending section
 ~dev-use~
 #+begin_src scheme :noweb-ref dev-use
 #:use-module (rosenthal packages emacs-xyz)
@@ -2517,7 +2517,7 @@ emacs-gptel-annotate
 (use-package meson-mode)
 #+end_src
 
-*** The =zfc-lang.el= section for calling provide
+*** The =zfc-lang.el= ending section
 ~emacs-packages~
 #+begin_src scheme :noweb-ref emacs-packages
 "emacs-nix-ts-mode"
@@ -2901,6 +2901,100 @@ here is =sops= secrets config for my dae config.
 ;; git diff pager (see gitconfig section)
 "git-delta"
 #+end_src
+*** The =base.scm= section about fcitx5
+~home-use~
+#+begin_src scheme :noweb-ref home-use
+#:use-module (gnu packages fcitx5)
+#:use-module (rosenthal services desktop)
+#:use-module (gnu home services desktop)
+#:use-module (gnu home services sound)
+#+end_src
+~home-files~
+#+begin_src scheme :noweb-ref home-files
+(".local/share/fcitx5/rime/default.custom.yaml"
+ ,(local-file "../../../files/plain/default.custom.yaml"))
+#+end_src
+
+~home-services~
+#+begin_src scheme :noweb-ref home-services
+(service home-dbus-service-type)
+(service home-graphical-session-service-type
+         (home-graphical-session-configuration
+          (wayland? #t)
+          (x11? #t)))
+(service home-fcitx5-service-type
+         (home-fcitx5-configuration
+          (wayland-frontend? #t)
+          (themes
+           (list fcitx5-material-color-theme))
+          (input-method-editors
+           (list fcitx5-rime))))
+#+end_src
+patch to use flypy
+#+begin_src yaml :tangle files/plain/default.custom.yaml
+patch:
+  __include: rime_ice_suggestion:/
+  schema_list:
+    - schema: double_pinyin_flypy
+#+end_src
+*** The =base.scm= section about GnuPG
+~dev-use~
+#+begin_src scheme :noweb-ref home-use
+#:use-module (gnu packages gnupg)
+#:use-module (gnu home services gnupg)
+#+end_src
+~dev-services~
+#+begin_src scheme :noweb-ref home-services
+(service home-gpg-agent-service-type
+         (home-gpg-agent-configuration
+          (pinentry-program (file-append pinentry-gnome3 "/bin/pinentry-gnome3"))
+          (default-cache-ttl 1800)
+          (extra-content "allow-loopback-pinentry")
+          (ssh-support? #t)))
+#+end_src
+#+begin_src scheme :noweb-ref home-specs
+"gnupg"
+#+end_src
+*** The =base.scm= section about bash
+~home-use~
+#+begin_src scheme :noweb-ref home-use
+#:use-module (gnu home services shells)
+#+end_src
+~home-services~
+#+begin_src scheme :noweb-ref home-services
+(service home-bash-service-type
+		 (home-bash-configuration
+		   (aliases '(("em" . "emacsclient")
+					  ("e" . "nvim")))
+		   (environment-variables '())
+		   (bashrc (list (local-file "../../../files/plain/.bashrc" "bashrc")))
+		   (bash-profile (list (local-file
+								"../../../files/plain/.bash_profile"
+								"bash_profile")))))
+#+end_src
+*** The =base.scm= section about theme
+~home-use~
+#+begin_src scheme :noweb-ref home-use
+#:use-module (rosenthal home services desktop)
+#:use-module (gnu packages gnome-xyz)
+#+end_src
+~home-services~
+#+begin_src scheme :noweb-ref home-services
+(service home-theme-service-type
+         (home-theme-configuration
+          (packages (list qogir-icon-theme))
+          (icon-theme "Qogir")
+          (cursor-theme "Qogir")))
+#+end_src
+*** COMMENT The =base.scm= section about open-ssh
+~home-use~
+#+begin_src scheme :noweb-ref home-use
+#:use-module (gnu home services ssh)
+#+end_src
+#+begin_src scheme :noweb-ref home-services
+(service home-openssh-service-type
+		 (home-openssh-configuration))
+#+end_src
 *** The =dev.scm= inbox
 #+begin_src scheme :tangle mods/zfc/home/dev.scm :noweb yes
 (define-module (zfc home dev)
@@ -2953,92 +3047,12 @@ here is =sops= secrets config for my dae config.
 
 (home-dev)
 #+end_src
-*** The =base.scm= section about fcitx5
-~home-use~
-#+begin_src scheme :noweb-ref home-use
-#:use-module (gnu packages fcitx5)
-#:use-module (rosenthal services desktop)
-#:use-module (gnu home services desktop)
-#:use-module (gnu home services sound)
-#+end_src
-~home-files~
-#+begin_src scheme :noweb-ref home-files
-(".local/share/fcitx5/rime/default.custom.yaml"
- ,(local-file "../../../files/plain/default.custom.yaml"))
-#+end_src
-
-~home-services~
-#+begin_src scheme :noweb-ref home-services
-(service home-dbus-service-type)
-(service home-graphical-session-service-type
-         (home-graphical-session-configuration
-          (wayland? #t)
-          (x11? #t)))
-(service home-fcitx5-service-type
-         (home-fcitx5-configuration
-          (wayland-frontend? #t)
-          (themes
-           (list fcitx5-material-color-theme))
-          (input-method-editors
-           (list fcitx5-rime))))
-#+end_src
-patch to use flypy
-#+begin_src yaml :tangle files/plain/default.custom.yaml
-patch:
-  __include: rime_ice_suggestion:/
-  schema_list:
-    - schema: double_pinyin_flypy
-#+end_src
-*** The =base.scm= section about GnuPG
-~dev-use~
-#+begin_src scheme :noweb-ref home-use
-#:use-module (gnu packages gnupg)
-#:use-module (gnu home services gnupg)
-#+end_src
-~dev-services~
-#+begin_src scheme :noweb-ref home-services
-(service home-gpg-agent-service-type
-         (home-gpg-agent-configuration
-          (pinentry-program (file-append pinentry-qt "/bin/pinentry-qt"))
-          (default-cache-ttl 1800)
-          (extra-content "allow-loopback-pinentry")
-          (ssh-support? #t)))
-#+end_src
-#+begin_src scheme :noweb-ref home-specs
-"gnupg"
-#+end_src
 *** The =dev.scm= section about environment variable
 ~dev-services~
 #+begin_src scheme :noweb-ref dev-services
 (simple-service 'base-env-vars-service
                 home-environment-variables-service-type
                 `(("EDITOR" . "emacsclient")))
-#+end_src
-*** The =base.scm= section about bash
-~home-use~
-#+begin_src scheme :noweb-ref home-use
-#:use-module (gnu home services shells)
-#+end_src
-~home-services~
-#+begin_src scheme :noweb-ref home-services
-(service home-bash-service-type
-		 (home-bash-configuration
-		   (aliases '(("em" . "emacsclient")
-					  ("e" . "nvim")))
-		   (environment-variables '())
-		   (bashrc (list (local-file "../../../files/plain/.bashrc" "bashrc")))
-		   (bash-profile (list (local-file
-								"../../../files/plain/.bash_profile"
-								"bash_profile")))))
-#+end_src
-*** COMMENT The =base.scm= section about open-ssh
-~home-use~
-#+begin_src scheme :noweb-ref home-use
-#:use-module (gnu home services ssh)
-#+end_src
-#+begin_src scheme :noweb-ref home-services
-(service home-openssh-service-type
-		 (home-openssh-configuration))
 #+end_src
 *** The =dev.scm= section about fish
 ~dev-use~
@@ -3227,20 +3241,6 @@ notmuch tag +dev -- 'from:github.com or from:gitlab.com or from:codeberg.org or 
 
 notmuch tag +ai -- 'from:openai.com or from:openrouter.ai or from:nvidia.com or from:x.ai'
 
-#+end_src
-*** The =base.scm= section about theme
-~home-use~
-#+begin_src scheme :noweb-ref home-use
-#:use-module (rosenthal home services desktop)
-#:use-module (gnu packages gnome-xyz)
-#+end_src
-~home-services~
-#+begin_src scheme :noweb-ref home-services
-(service home-theme-service-type
-         (home-theme-configuration
-          (packages (list qogir-icon-theme))
-          (icon-theme "Qogir")
-          (cursor-theme "Qogir")))
 #+end_src
 *** The =dev.scm= section about elfeed
 ~dev-use~
