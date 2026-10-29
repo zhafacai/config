@@ -91,7 +91,10 @@
                               "emacs-tempel-collection"
                               "emacs-yasnippet"
                               "emacs-yasnippet-snippets"
+                              
                               "emacs-apheleia"
+                              "nixfmt"
+                              
                               "emacs-consult-eglot"
                               "emacs-eldoc-box"
                               "emacs-flymake"

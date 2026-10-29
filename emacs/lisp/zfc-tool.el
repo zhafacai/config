@@ -386,6 +386,10 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   ("C-c a s" . agent-shell)
   :custom
   (agent-shell-preferred-agent-config '(preselect . opencode))
+  (agent-shell-qoder-acp-command '("qoderclicn" "--acp"))
+  (agent-shell-permission-responder-function
+        #'agent-shell-permission-allow-always)
+
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
   (agent-shell-opencode-default-model-id "opencode/deepseek-v4.1-flash-free"))

@@ -1,4 +1,5 @@
 .agent-shell
+.qoder/
 /test.*
 /todo.org
 /.blue-store/
