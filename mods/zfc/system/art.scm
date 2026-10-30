@@ -136,8 +136,8 @@
   		            (service sddm-service-type)
                     (service guix-home-service-type
   							 `(("zfc" ,(home-environment
-  										(packages (append (home-base-packages)
-  														  (%zfc-dev-packages)))
+  										(packages (append home-base-packages
+  														  %zfc-dev-packages))
   										(services (append home-base-services
   														  %zfc-dev-services))))))
                     polkit-wheel-service)

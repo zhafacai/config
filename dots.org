@@ -2634,8 +2634,8 @@ emacs-gptel-annotate
   		            (service sddm-service-type)
                     (service guix-home-service-type
   							 `(("zfc" ,(home-environment
-  										(packages (append (home-base-packages)
-  														  (%zfc-dev-packages)))
+  										(packages (append home-base-packages
+  														  %zfc-dev-packages))
   										(services (append home-base-services
   														  %zfc-dev-services))))))
                     polkit-wheel-service)
@@ -2810,13 +2810,7 @@ here is =sops= secrets config for my dae config.
   #:use-module (guix gexp)
   #:export (home-base-packages home-base-services))
 
-;; Package/service *components*.  Home assembly (base + dev) happens in the
-;; caller: art.scm for the system-provided home, blueprint.scm's `ugh' for
-;; a standalone `guix home' deploy.  This module neither builds a
-;; home-environment of its own nor references `(zfc home dev)', so loading
-;; it — even in the middle of a package-module scan — can never observe a
-;; half-loaded dev module.
-(define (home-base-packages)
+(define home-base-packages
   (append
    (list
     <<home-pkgs>>
@@ -3012,14 +3006,7 @@ patch:
   #:use-module (guix gexp)
   #:export (%zfc-dev-packages %zfc-dev-services))
 
-;; NOTE: %zfc-dev-packages is deliberately a *function*: calling it (instead
-;; of dereferencing a variable) keeps `specifications->packages' out of this
-;; module's load.  A specs call during module load triggers the
-;; package-module scan, which loads every module under the `-L' search
-;; path; keeping the specs call out of load means no module can ever be
-;; observed half-loaded, no matter who loads what.  Home assembly happens
-;; in the caller (art.scm / blueprint `ugh').
-(define (%zfc-dev-packages)
+(define %zfc-dev-packages
   (append
    (list
     <<dev-pkgs>>
@@ -3037,20 +3024,14 @@ patch:
            <<dev-services>>
            )))
 
-;; `home-dev' is the *value* of this file: `guix home reconfigure
-;; mods/zfc/home/dev.scm' evaluates the file and uses the last top-level
-;; form's value as the home environment.  This is the deploy target for
-;; non-Guix systems: ugh points here so the dev environment can be
-;; recovered on another distro, while the Guix machine's own home is the
-;; full base+dev assembly defined in art.scm.
-(define (home-dev)
+(define home-dev
   (home-environment
    (packages
-    (%zfc-dev-packages))
+    %zfc-dev-packages)
    (services
     %zfc-dev-services)))
 
-(home-dev)
+home-dev
 #+end_src
 *** The =dev.scm= section about environment variable
 ~dev-services~

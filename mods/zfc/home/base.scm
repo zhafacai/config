@@ -17,13 +17,7 @@
   #:use-module (guix gexp)
   #:export (home-base-packages home-base-services))
 
-;; Package/service *components*.  Home assembly (base + dev) happens in the
-;; caller: art.scm for the system-provided home, blueprint.scm's `ugh' for
-;; a standalone `guix home' deploy.  This module neither builds a
-;; home-environment of its own nor references `(zfc home dev)', so loading
-;; it — even in the middle of a package-module scan — can never observe a
-;; half-loaded dev module.
-(define (home-base-packages)
+(define home-base-packages
   (append
    (list
     ;; google-chrome-stable

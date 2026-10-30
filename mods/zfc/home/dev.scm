@@ -18,14 +18,7 @@
   #:use-module (guix gexp)
   #:export (%zfc-dev-packages %zfc-dev-services))
 
-;; NOTE: %zfc-dev-packages is deliberately a *function*: calling it (instead
-;; of dereferencing a variable) keeps `specifications->packages' out of this
-;; module's load.  A specs call during module load triggers the
-;; package-module scan, which loads every module under the `-L' search
-;; path; keeping the specs call out of load means no module can ever be
-;; observed half-loaded, no matter who loads what.  Home assembly happens
-;; in the caller (art.scm / blueprint `ugh').
-(define (%zfc-dev-packages)
+(define %zfc-dev-packages
   (append
    (list
     emacs-rime-zfc
@@ -260,17 +253,11 @@
                         (permissions #o400))))))
            )))
 
-;; `home-dev' is the *value* of this file: `guix home reconfigure
-;; mods/zfc/home/dev.scm' evaluates the file and uses the last top-level
-;; form's value as the home environment.  This is the deploy target for
-;; non-Guix systems: ugh points here so the dev environment can be
-;; recovered on another distro, while the Guix machine's own home is the
-;; full base+dev assembly defined in art.scm.
-(define (home-dev)
+(define home-dev
   (home-environment
    (packages
-    (%zfc-dev-packages))
+    %zfc-dev-packages)
    (services
     %zfc-dev-services)))
 
-(home-dev)
+home-dev
