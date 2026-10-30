@@ -7,9 +7,6 @@
   #:use-module (gnu services networking)
   #:use-module (saayix packages terminals)
   #:use-module (gnu system nss)
-  #:use-module (gnu packages window-management)
-  #:use-module (gnu packages gnome)
-  #:use-module (gnu packages vim)
   #:use-module (gnu services sddm)
   #:use-module (gnu services desktop)
   #:use-module (gnu services xorg)
@@ -94,12 +91,20 @@
 
 
  (packages (append (list
-                    neovim
-                    niri
-                    xdg-desktop-portal-gnome
-  					ghostty
-  					;; yazi
-                    gvfs)
+                    ghostty
+                    ;; yazi
+                    )
+                   (specifications->packages
+                    (list
+                     "gcr@3"
+                     "neovim"
+                     "niri"
+                     "xdg-desktop-portal-gnome"
+                     "xdg-desktop-portal-gtk"
+                     "gnome-keyring"
+                     "libsecret"
+  					 "gvfs"
+                     ))
                    %base-packages))
 
  (services (append (list
