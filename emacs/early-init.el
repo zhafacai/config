@@ -1,14 +1,10 @@
 ;;; -*- lexical-binding: t -*-
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(when (file-exists-p custom-file)
-  (load custom-file nil t))
-
-(if (getenv "WSL_DISTRO_NAME")
-    (setq select-active-regions nil))
+;; (if (getenv "WSL_DISTRO_NAME")
+;;     (setq select-active-regions nil))
 
 (add-to-list 'default-frame-alist '(fullscreen))
 
-(add-to-list 'default-frame-alist '(alpha-background . 98))
+(add-to-list 'default-frame-alist '(alpha-background . 88))
 (setq vc-handled-backends '(Git))
 
 (setq use-short-answers t)
@@ -30,4 +26,11 @@
 (setq warning-minimum-level :error)
 ;; (setq warning-suppress-types '((lexical-binding)))
 
+(setq gc-cons-threshold most-positive-fixnum
+      gc-cons-percentage 0.8)
+
 (setq package-enable-at-startup t)
+
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (file-exists-p custom-file)
+  (load custom-file nil t))

@@ -2457,6 +2457,7 @@ emacs-gptel-annotate
 :header-args:emacs-lisp: :tangle emacs/lisp/zfc-lang.el
 :END:
 
+*** The =zfc-lang.el= section about mode 
 #+begin_src emacs-lisp
 ;;; -*- lexical-binding: t -*-
 (use-package uiua-mode

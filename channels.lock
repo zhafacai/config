@@ -2,7 +2,7 @@
        (name 'guix)
        (url "https://mirror.sjtu.edu.cn/git/guix.git")
        (branch "master")
-       (commit "22f70ebd349b3addbec30770381e71ec1f571065")
+       (commit "4c412ecf03fa08c0fee8b952561a843b23ad586a")
        (introduction
         (make-channel-introduction
          "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -12,7 +12,7 @@
        (name 'nonguix)
        (url "https://gitlab.com/nonguix/nonguix")
        (branch "master")
-       (commit "c241d19ff840dc75556f722b231760d119b6adea")
+       (commit "63d83b22615e7a97a4fb0c3d9f6419e9a7fc4fe0")
        (introduction
         (make-channel-introduction
          "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
@@ -32,7 +32,7 @@
        (name 'rosenthal)
        (url "https://codeberg.org/hako/rosenthal.git")
        (branch "trunk")
-       (commit "55d68222f4cc0eaeb3ba0dca3530062784de710f")
+       (commit "bfe0d7379d399c7886e7c991d0c4bd01a3dfb015")
        (introduction
         (make-channel-introduction
          "7677db76330121a901604dfbad19077893865f35"
@@ -42,7 +42,7 @@
        (name 'saayix)
        (url "https://codeberg.org/look/saayix")
        (branch "main")
-       (commit "4103186c5043a366077c388764a6fe018e06cbad")
+       (commit "35b12cebcec341313cfa5a76b525378fcc342707")
        (introduction
         (make-channel-introduction
          "12540f593092e9a177eb8a974a57bb4892327752"
