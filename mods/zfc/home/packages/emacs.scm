@@ -31,19 +31,16 @@
    "emacs-rainbow-delimiters"
    "emacs-nyan-mode"
    "emacs-lin"
+   emacs-ibuffer-project
    "emacs-gcmh"
    "emacs-wgrep"
    "emacs-project-x"
    "emacs-dired-preview"
-   
    ;; ready-player
    "mpv"
    "ffmpeg"
    "ffmpegthumbnailer"
-   
-   emacs-ibuffer-project
    "emacs-smartparens"
-   
    "emacs-consult"
    "emacs-consult-dir"
    "emacs-helpful"
@@ -55,7 +52,6 @@
    "emacs-embark"
    "emacs-ace-window"
    "emacs-0x0"
-   
    "emacs-corfu"
    "emacs-nerd-icons-corfu"
    "emacs-cape"
@@ -63,26 +59,22 @@
    "emacs-tempel-collection"
    "emacs-yasnippet"
    "emacs-yasnippet-snippets"
-   
    "emacs-apheleia"
    "nixfmt"
-   
    "emacs-consult-eglot"
+   "emacs-dape"
    "emacs-eldoc-box"
    "emacs-flymake"
-   "emacs-dape"
-   
    "emacs-jinx"
    "hunspell"
    "hunspell-dict-en-us"
-   
    "emacs-eros"
    "emacs-macrostep"
    "emacs-inspector"
    "emacs-org-tree-slide"
    "emacs-org-modern"
-   "emacs-org-modern-indent"
    "emacs-org-appear"
+   "emacs-org-modern-indent"
    "emacs-org-contrib"
    "emacs-org-download"
    "emacs-denote"
@@ -92,30 +84,14 @@
    "emacs-consult-denote"
    "emacs-org-timegrid"
    "emacs-org-ql"
-   ;; gt
-   "sdcv"
-   ;; notmuch
-   "notmuch"
-   "emacs-notmuch"
-   "emacs-ol-notmuch"
-   "emacs-notmuch-indicator"
-   "emacs-pass"
-   "isync"
-   "msmtp"
-   "openssl"
-   "nss-certs"
-   "password-store"
-   emacs-rime-zfc
-   emacs-gptel-preset-collection
-   emacs-gptel-inline
-   emacs-gptel-annotate
+   "emacs-reader"
    "emacs-nov"
    "emacs-cal-china-x"
    "emacs-elfeed"
+   "emacs-elfeed-org"
+   ;; elfeed-tube
    "emacs-elfeed-tube"
    "yt-dlp"
-   "emacs-elfeed-org"
-   "emacs-reader"
    "emacs-telega"
    "emacs-tracking"
    "emacs-magit"
@@ -124,29 +100,41 @@
    "emacs-browse-at-remote"
    "emacs-forge"
    "emacs-git-modes"
-   
-   "wtype"
+   emacs-rime-zfc
    "emacs-guix"
    "emacs-gt"
+   "sdcv"
    "emacs-tmr"
    "emacs-sops"
    "emacs-yaml-mode"
-   
    "emacs-consult-ghostel"
    "emacs-ben"
    "direnv"
-   
    "emacs-dwim-shell-command"
    "emacs-gptel"
    "emacs-gptel-agent"
-   "emacs-gptel-prompts"
    "emacs-ob-gptel"
+   "emacs-gptel-prompts"
    "emacs-gptel-quick"
+   emacs-gptel-preset-collection
+   emacs-gptel-inline
+   emacs-gptel-annotate
    "emacs-agent-shell"
+   "emacs-pass"
+   "password-store"
+   "pass-otp"
+   "notmuch"
+   "emacs-notmuch"
+   "isync"
+   "msmtp"
+   "openssl"
+   "nss-certs"
+   "emacs-notmuch-indicator"
+   "emacs-ol-notmuch"
    "emacs-nix-ts-mode"
    "emacs-cmake-mode"
-   "emacs-rustic"
    "emacs-rust-mode"
+   "emacs-rustic"
    "emacs-fennel-mode"
    "emacs-kdl-mode"
    "emacs-just-ts-mode"

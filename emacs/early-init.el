@@ -1,6 +1,6 @@
 ;;; -*- lexical-binding: t -*-
-;; (if (getenv "WSL_DISTRO_NAME")
-;;     (setq select-active-regions nil))
+(if (getenv "WSL_DISTRO_NAME")
+    (setq select-active-regions nil))
 
 (add-to-list 'default-frame-alist '(fullscreen))
 

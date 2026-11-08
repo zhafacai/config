@@ -62,7 +62,6 @@
   ;; (corfu-history-mode)
   (corfu-popupinfo-mode))
 
-
 ;; A few more useful configurations...
 (use-package emacs
   :custom
@@ -81,6 +80,7 @@
   ;; commands are hidden, since they are not used via M-x. This setting is
   ;; useful beyond Corfu.
   (read-extended-command-predicate #'command-completion-default-include-p))
+
 (use-package nerd-icons-corfu
   :config
   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))

@@ -21,6 +21,7 @@
   (setq disaster-assembly-mode #'nasm-mode))
 ;; (Disaster is only autoloaded; bind it per-mode with use-package :bind if
 ;;  wanted.  The Doom `map!' macro is not used in this config anymore.)
+
 (use-package cmake-mode)
 
 (use-package uv-mode
@@ -47,6 +48,7 @@
 
 ;; (use-package justl)
 (use-package just-ts-mode)
+
 (use-package meson-mode)
 
 (provide 'zfc-lang)

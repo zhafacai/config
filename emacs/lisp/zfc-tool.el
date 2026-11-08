@@ -356,7 +356,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   ;; (gptel-prompts-add-update-watchers)
   )
 
-
 (use-package gptel-quick
   :after embark
   :custom
@@ -369,7 +368,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :config
   (setq gptel-quick-system-message (lambda (count)
 								     (format "Explain in %d words or fewer in Chinese." count))))
-
 
 (use-package gptel-preset-collection
   :after gptel)
@@ -387,13 +385,13 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :custom
   (agent-shell-preferred-agent-config '(preselect . opencode))
   (agent-shell-qoder-acp-command '("qoderclicn" "--acp"))
-  (agent-shell-permission-responder-function
-        #'agent-shell-permission-allow-always)
 
   ;; BUG https://github.com/niri-wm/niri/issues/2664
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
-  (agent-shell-opencode-default-model-id "opencode/deepseek-v4.1-flash-free"))
-
+  (agent-shell-opencode-default-model-id "opencode/deepseek-v4.1-flash-free")
+  :config
+  (setq agent-shell-permission-responder-function
+        #'agent-shell-permission-allow-always))
 
 (use-package agent-shell-dashboard
   :vc (:url "https://github.com/wandersoncferreira/agent-shell-dashboard")
@@ -471,8 +469,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 (use-package browse-url
   :custom
   (browse-url-browser-function 'eww-browse-url))
-
-
 
 (use-package notmuch-indicator
   :config

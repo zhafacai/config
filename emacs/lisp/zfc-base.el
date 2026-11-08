@@ -442,6 +442,7 @@
   ("C-h v" . helpful-variable)
   ("C-h k" . helpful-key)
   ("C-h c" . helpful-command))
+
 (use-package elisp-demos
   :after helpful
   :config
@@ -547,7 +548,6 @@
   (aw-dispatch-always nil)
   :bind
   ("M-o" . ace-window))
-
 
 (use-package tramp
   :commands (sudo-find-file sudo-this-file)

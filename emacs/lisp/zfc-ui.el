@@ -35,7 +35,6 @@
   (add-to-list 'ef-themes-light-themes 'oxocarbon-light)
   (load-theme 'oxocarbon :no-confirm))
 
-
 (use-package spacious-padding
   :custom
   (spacious-padding-widths

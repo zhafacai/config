@@ -49,7 +49,7 @@
      "home" "reconfigure" "-L" "mods" "mods/zfc/home/dev.scm"))
 
 (define-command (upgrade-emacs-command args)
-  ((invoke "upe")
+  ((invoke "ude")
    (category 'system)
    (synopsis "Deploy stand-alone Emacs environment")
    (help "

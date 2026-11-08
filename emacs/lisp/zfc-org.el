@@ -40,7 +40,6 @@
   (org-startup-indented t)
   (org-edit-src-content-indentation 0))
 
-
 (use-package org-tree-slide)
 
 (use-package org
@@ -132,7 +131,6 @@
   :init
   (setq org-eldoc-breadcrumb-separator " → ")
   :hook (org-mode . org-eldoc-load))
-
 
 (use-package org-download
   :custom
