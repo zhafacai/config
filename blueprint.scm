@@ -48,6 +48,21 @@
   ($ "guix" "time-machine" "-C" "channels.lock" "--"
      "home" "reconfigure" "-L" "mods" "mods/zfc/home/dev.scm"))
 
+(define-command (upgrade-emacs-command args)
+  ((invoke "upe")
+   (category 'system)
+   (synopsis "Deploy stand-alone Emacs environment")
+   (help "
+  Deploy the Emacs-only home environment: the full package set and the
+  tangled config, with the config shipped from the store instead of
+  symlinked to the repo.  Machine-bound services (input method, email sync,
+  secrets, shell configs) are left out, so this is how to recover the editor
+  on a fresh host.
+  "))
+
+  ($ "guix" "time-machine" "-C" "channels.lock" "--"
+     "home" "reconfigure" "-L" "mods" "mods/zfc/home/emacs.scm"))
+
 (define-command (upgrade-guix-command args)
   ((invoke "ugg")
    (category 'system)
@@ -99,4 +114,5 @@
    update-guix-command
    upgrade-nix-command
    upgrade-home-command
+   upgrade-emacs-command
    upgrade-guix-command)))

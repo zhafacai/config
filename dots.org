@@ -3001,10 +3001,37 @@ patch:
 (service home-openssh-service-type
 		 (home-openssh-configuration))
 #+end_src
+*** Module header =packages/emacs.scm=
+The single owner of the Emacs dependency list.  Every =use-package= section
+above contributes its own ~emacs-packages~ fragment here, so a package stays
+next to the config that needs it while the resulting list is reusable from
+other home environments.
+#+begin_src scheme :tangle mods/zfc/home/packages/emacs.scm :noweb yes
+(define-module (zfc home packages emacs)
+  #:use-module (gnu packages)
+  #:export (%zfc-emacs %zfc-emacs-pkg-specs %zfc-emacs-packages))
+
+(define-public %zfc-emacs-pkg-specs
+  (list
+   <<emacs-packages>>
+   ))
+
+(define-public %zfc-emacs
+  (specification->package "emacs-pgtk"))
+
+;; Everything needed for a usable Emacs: the interpreter, its elisp packages
+;; and the external programs the config shells out to (mpv and ffmpeg for
+;; ready-player, hunspell for jinx, sdcv for gt, isync/msmtp/notmuch for
+;; email, yt-dlp for elfeed-tube, ...).
+(define-public %zfc-emacs-packages
+  (cons %zfc-emacs
+        (specifications->packages %zfc-emacs-pkg-specs)))
+#+end_src
 *** The =dev.scm= inbox
 #+begin_src scheme :tangle mods/zfc/home/dev.scm :noweb yes
 (define-module (zfc home dev)
   #:use-module (gnu packages)
+  #:use-module (zfc home packages emacs)
   #:use-module (gnu services)
   #:use-module (gnu home)
   #:use-module (gnu home services)
@@ -3018,13 +3045,14 @@ patch:
    (list
     <<dev-pkgs>>
     )
+   ;; Core CLI tools unrelated to the Emacs set; everything Emacs needs
+   ;; (its own packages plus the programs it shells out to) comes from
+   ;; packages/emacs.scm.
    (specifications->packages (list
-                              "emacs-pgtk"
-                              ;; core
                               "ripgrep"
 				              "fd"
-                              <<emacs-packages>>
-				              ))))
+				              ))
+   %zfc-emacs-packages))
 
 (define %zfc-dev-services
   (append (list
@@ -3270,6 +3298,44 @@ notmuch tag +ai -- 'from:openai.com or from:openrouter.ai or from:nvidia.com or 
                         "guix-gc"
                         "exec guix gc -F 50G\n"))
                   #:documentation "Run 'guix gc -F 50G' every Sunday at 04:00.")))
+#+end_src
+*** Module header =home/emacs.scm=
+The lean recovery environment: on any host this yields a working Emacs with
+the complete package set and the tangled config, without the machine-bound
+services (input method, email sync, secrets, shell configs).  The main
+machine keeps its hand-made =~/.config/emacs= symlinks so that tangling takes
+effect immediately; this environment deliberately ships the config from the
+store instead, which is what makes it portable.  Deploy with ~blue run upe~.
+#+begin_src scheme :tangle mods/zfc/home/emacs.scm :noweb yes
+(define-module (zfc home emacs)
+  #:use-module (gnu services)
+  #:use-module (gnu home)
+  #:use-module (gnu home services)
+  #:use-module (guix gexp)
+  #:use-module (zfc home packages emacs)
+  #:export (%zfc-emacs-config-files zfc-emacs-home))
+
+(define %zfc-emacs-config-files
+  (service home-files-service-type
+           `((".config/emacs/init.el"
+              ,(local-file "../../../emacs/init.el"))
+             (".config/emacs/early-init.el"
+              ,(local-file "../../../emacs/early-init.el"))
+             (".config/emacs/lisp"
+              ,(local-file "../../../emacs/lisp" #:recursive? #t))
+             (".config/emacs/templates"
+              ,(local-file "../../../files/plain/emacs-templates")))))
+
+(define zfc-emacs-home
+  (home-environment
+   (packages %zfc-emacs-packages)
+   (services
+    (list %zfc-emacs-config-files
+          (simple-service 'emacs-editor
+                          home-environment-variables-service-type
+                          `(("EDITOR" . "emacsclient")))))))
+
+zfc-emacs-home
 #+end_src
 ** The inbox =channels.scm=
 #+begin_src scheme :tangle channels.scm :noweb yes
