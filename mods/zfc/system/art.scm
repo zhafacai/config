@@ -51,7 +51,13 @@
  (bootloader (bootloader-configuration
               (bootloader grub-efi-bootloader)
               (targets '("/boot/efi"))
-              (keyboard-layout keyboard-layout)))
+              (keyboard-layout keyboard-layout)
+              (menu-entries
+               (list
+                (menu-entry
+                 (label "MS")
+                 (device (uuid "30E7-C51B" 'fat))
+                 (chain-loader "/EFI/Microsoft/Boot/bootmgfw.efi"))))))
 
  (mapped-devices
   (list (mapped-device
