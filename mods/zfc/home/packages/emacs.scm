@@ -1,8 +1,15 @@
 (define-module (zfc home packages emacs)
   #:use-module (gnu packages)
-  #:export (%zfc-emacs %zfc-emacs-pkg-specs %zfc-emacs-packages))
+  #:use-module (guix packages)
+  #:use-module (srfi srfi-1)
+  #:use-module (zfc packages emacs-xyz)
+  #:use-module (zfc home packages rime-ice))
 
-(define-public %zfc-emacs-pkg-specs
+;; A dependency is either a channel package specification (a string) or, for a
+;; package defined in this repository, the package variable itself: name
+;; lookups only consult the channel package database, which knows nothing
+;; about -L mods.
+(define-public %zfc-emacs-deps
   (list
    "emacs-avy"
    "emacs-expand-region"
@@ -34,7 +41,7 @@
    "ffmpeg"
    "ffmpegthumbnailer"
    
-   "emacs-ibuffer-project"
+   emacs-ibuffer-project
    "emacs-smartparens"
    
    "emacs-consult"
@@ -98,6 +105,10 @@
    "openssl"
    "nss-certs"
    "password-store"
+   emacs-rime-zfc
+   emacs-gptel-preset-collection
+   emacs-gptel-inline
+   emacs-gptel-annotate
    "emacs-nov"
    "emacs-cal-china-x"
    "emacs-elfeed"
@@ -146,13 +157,21 @@
    "fzf"
    ))
 
-(define-public %zfc-emacs
-  (specification->package "emacs-pgtk"))
-
-;; Everything needed for a usable Emacs: the interpreter, its elisp packages
-;; and the external programs the config shells out to (mpv and ffmpeg for
-;; ready-player, hunspell for jinx, sdcv for gt, isync/msmtp/notmuch for
-;; email, yt-dlp for elfeed-tube, ...).
-(define-public %zfc-emacs-packages
-  (cons %zfc-emacs
-        (specifications->packages %zfc-emacs-pkg-specs)))
+;; Everything Emacs needs to be usable: the interpreter, its elisp packages,
+;; and the programs the config shells out to (mpv and ffmpeg for ready-player,
+;; hunspell for jinx, sdcv for gt, isync/msmtp/notmuch for email, yt-dlp for
+;; elfeed-tube, ...).  Strings go through specifications->packages, exactly as
+;; they did when the list was inlined in dev.scm, so output selection is
+;; unchanged.
+;;
+;; A procedure rather than a variable, so that no lookup runs while this module
+;; is still being defined: consulting the package database loads every module on
+;; the load path, the other entry files of this tree included, and those would
+;; then see a half-loaded module and report %zfc-emacs-packages as unbound.
+(define-public (%zfc-emacs-packages)
+  (cons (specification->package "emacs-pgtk")
+        (append-map (lambda (dep)
+                      (if (package? dep)
+                          (list dep)
+                          (specifications->packages (list dep))))
+                    %zfc-emacs-deps)))

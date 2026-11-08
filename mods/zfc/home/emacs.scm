@@ -19,7 +19,7 @@
 
 (define zfc-emacs-home
   (home-environment
-   (packages %zfc-emacs-packages)
+   (packages (%zfc-emacs-packages))
    (services
     (list %zfc-emacs-config-files
           (simple-service 'emacs-editor

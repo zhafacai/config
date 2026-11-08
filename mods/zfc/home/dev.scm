@@ -1,13 +1,9 @@
 (define-module (zfc home dev)
   #:use-module (gnu packages)
-  #:use-module (zfc home packages emacs)
   #:use-module (gnu services)
   #:use-module (gnu home)
   #:use-module (gnu home services)
   #:use-module (gnu home services shepherd)
-  #:use-module (rosenthal packages emacs-xyz)
-  #:use-module (zfc home packages rime-ice)
-  #:use-module (zfc packages emacs-xyz)
   #:use-module (gnu packages shells)
   #:use-module (gnu home services shells)
   #:use-module (zfc config common)
@@ -17,15 +13,12 @@
   #:use-module (sops home services sops)
   #:use-module (bluebox packages blue)
   #:use-module (guix gexp)
+  #:use-module (zfc home packages emacs)
   #:export (%zfc-dev-packages %zfc-dev-services))
 
 (define %zfc-dev-packages
   (append
    (list
-    emacs-rime-zfc
-    emacs-gptel-preset-collection
-    emacs-gptel-inline
-    emacs-gptel-annotate
     blue
     )
    ;; Core CLI tools unrelated to the Emacs set; everything Emacs needs
@@ -35,7 +28,7 @@
                               "ripgrep"
 				              "fd"
 				              ))
-   %zfc-emacs-packages))
+   (%zfc-emacs-packages)))
 
 (define %zfc-dev-services
   (append (list

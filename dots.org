@@ -1054,7 +1054,7 @@ embark
 "ffmpeg"
 "ffmpegthumbnailer"
 
-"emacs-ibuffer-project"
+emacs-ibuffer-project
 "emacs-smartparens"
 
 "emacs-consult"
@@ -2398,21 +2398,15 @@ email
           '(("DP-5" :width 2560 :height 1440 :scale 1.2 :refresh 144))))
 #+end_src
 *** The =zfc-tool.el= ending section
-~dev-use~
-#+begin_src scheme :noweb-ref dev-use
-#:use-module (rosenthal packages emacs-xyz)
-#:use-module (zfc home packages rime-ice)
-#:use-module (zfc packages emacs-xyz)
-#+end_src
-~dev-pkgs~
-#+begin_src scheme :noweb-ref dev-pkgs
+The Emacs packages I package myself.  They enter the dependency list as
+variables: a quoted name would be looked up in the channel database, which
+knows nothing about ~-L mods~.
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
 emacs-rime-zfc
 emacs-gptel-preset-collection
 emacs-gptel-inline
 emacs-gptel-annotate
-#+end_src
-~emacs-packages~
-#+begin_src scheme :noweb-ref emacs-packages
 "emacs-nov"
 "emacs-cal-china-x"
 "emacs-elfeed"
@@ -3009,35 +3003,50 @@ other home environments.
 #+begin_src scheme :tangle mods/zfc/home/packages/emacs.scm :noweb yes
 (define-module (zfc home packages emacs)
   #:use-module (gnu packages)
-  #:export (%zfc-emacs %zfc-emacs-pkg-specs %zfc-emacs-packages))
+  #:use-module (guix packages)
+  #:use-module (srfi srfi-1)
+  #:use-module (zfc packages emacs-xyz)
+  #:use-module (zfc home packages rime-ice))
 
-(define-public %zfc-emacs-pkg-specs
+;; A dependency is either a channel package specification (a string) or, for a
+;; package defined in this repository, the package variable itself: name
+;; lookups only consult the channel package database, which knows nothing
+;; about -L mods.
+(define-public %zfc-emacs-deps
   (list
    <<emacs-packages>>
    ))
 
-(define-public %zfc-emacs
-  (specification->package "emacs-pgtk"))
-
-;; Everything needed for a usable Emacs: the interpreter, its elisp packages
-;; and the external programs the config shells out to (mpv and ffmpeg for
-;; ready-player, hunspell for jinx, sdcv for gt, isync/msmtp/notmuch for
-;; email, yt-dlp for elfeed-tube, ...).
-(define-public %zfc-emacs-packages
-  (cons %zfc-emacs
-        (specifications->packages %zfc-emacs-pkg-specs)))
+;; Everything Emacs needs to be usable: the interpreter, its elisp packages,
+;; and the programs the config shells out to (mpv and ffmpeg for ready-player,
+;; hunspell for jinx, sdcv for gt, isync/msmtp/notmuch for email, yt-dlp for
+;; elfeed-tube, ...).  Strings go through specifications->packages, exactly as
+;; they did when the list was inlined in dev.scm, so output selection is
+;; unchanged.
+;;
+;; A procedure rather than a variable, so that no lookup runs while this module
+;; is still being defined: consulting the package database loads every module on
+;; the load path, the other entry files of this tree included, and those would
+;; then see a half-loaded module and report %zfc-emacs-packages as unbound.
+(define-public (%zfc-emacs-packages)
+  (cons (specification->package "emacs-pgtk")
+        (append-map (lambda (dep)
+                      (if (package? dep)
+                          (list dep)
+                          (specifications->packages (list dep))))
+                    %zfc-emacs-deps)))
 #+end_src
 *** The =dev.scm= inbox
 #+begin_src scheme :tangle mods/zfc/home/dev.scm :noweb yes
 (define-module (zfc home dev)
   #:use-module (gnu packages)
-  #:use-module (zfc home packages emacs)
   #:use-module (gnu services)
   #:use-module (gnu home)
   #:use-module (gnu home services)
   #:use-module (gnu home services shepherd)
   <<dev-use>>
   #:use-module (guix gexp)
+  #:use-module (zfc home packages emacs)
   #:export (%zfc-dev-packages %zfc-dev-services))
 
 (define %zfc-dev-packages
@@ -3052,7 +3061,7 @@ other home environments.
                               "ripgrep"
 				              "fd"
 				              ))
-   %zfc-emacs-packages))
+   (%zfc-emacs-packages)))
 
 (define %zfc-dev-services
   (append (list
@@ -3328,7 +3337,7 @@ store instead, which is what makes it portable.  Deploy with ~blue run upe~.
 
 (define zfc-emacs-home
   (home-environment
-   (packages %zfc-emacs-packages)
+   (packages (%zfc-emacs-packages))
    (services
     (list %zfc-emacs-config-files
           (simple-service 'emacs-editor
