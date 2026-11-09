@@ -2197,9 +2197,7 @@ rime
 #+begin_src emacs-lisp
 (use-package rime
   :custom
-  (default-input-method "rime")
-  :config
-  (setq rime-user-data-dir "~/.local/share/fcitx5/rime/"))
+  (default-input-method "rime"))
 #+end_src
 #+begin_src scheme :noweb-ref emacs-packages
 emacs-rime-zfc
@@ -3224,7 +3222,7 @@ here is =sops= secrets config for my dae config.
 patch to use flypy
 #+begin_src yaml :tangle files/plain/default.custom.yaml
 patch:
-  __include: rime_ice_suggestion:/
+  # __include: rime_ice_suggestion:/
   schema_list:
     - schema: double_pinyin_flypy
 #+end_src

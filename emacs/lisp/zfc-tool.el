@@ -162,9 +162,7 @@
 
 (use-package rime
   :custom
-  (default-input-method "rime")
-  :config
-  (setq rime-user-data-dir "~/.local/share/fcitx5/rime/"))
+  (default-input-method "rime"))
 
 (use-package guix
   :bind
