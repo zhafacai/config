@@ -40,6 +40,7 @@
             gemini-cli
             qwen-code
             qoder-cli-cn
+            codebuddy-code
             zcode
           ]);
       };

@@ -390,6 +390,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (agent-shell-screenshot-command '("niri" "msg" "action" "screenshot" "--path"))
   (agent-shell-opencode-default-model-id "opencode/deepseek-v4.1-flash-free")
   :config
+  (setopt agent-shell-inhibit-system-sleep nil)
   (setq agent-shell-permission-responder-function
         #'agent-shell-permission-allow-always))
 

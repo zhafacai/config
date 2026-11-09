@@ -77,6 +77,7 @@
              (service home-sops-secrets-service-type
                       (home-sops-service-configuration
                        (gnupg-home (in-vicinity (getenv "XDG_CONFIG_HOME") "sops"))
+                       (verbose? #t)
                        (secrets
                         (list
                          (sops-secret
