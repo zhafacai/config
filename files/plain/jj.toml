@@ -10,4 +10,5 @@ key = "ED968D008768C653"
 show-cryptographic-signatures = true
 [git]
 private-commits = "description('\\[wip\\] *')"
-sign-on-push = true
+[revsets]
+git-sign-on-push = "~signed() & mine()"
