@@ -40,6 +40,7 @@
    "mpv"
    "ffmpeg"
    "ffmpegthumbnailer"
+   "emacs-emms"
    "emacs-smartparens"
    "emacs-consult"
    "emacs-consult-dir"

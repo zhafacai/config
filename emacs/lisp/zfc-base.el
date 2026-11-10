@@ -10,10 +10,10 @@
    ([remap capitalize-word] . capitalize-dwim)       ; Make M-c work on regions
    ([remap downcase-word] . downcase-dwim)           ; Make M-l work on regions
    ([remap upcase-word] . upcase-dwim)               ; Make M-u work on regions
-   ([remap kill-buffer] . kill-current-buffer)       ; C-x k stops prompting for buffer to kill
+   ([remap kill-buffer] . kill-current-buffer)       ; C-x k stops ; prompting for ; buffer to kill
    ([remap delete-horizontal-space] . cycle-spacing)
    :map ctl-x-x-map
-         ("l" . visual-line-mode))
+   ("l" . visual-line-mode))
   :custom
   (completion-ignore-case t)
   (completions-detailed t)
@@ -83,11 +83,11 @@
 (use-package repeat
   :hook
   (after-init . repeat-mode))
-  
+
 (use-package repeat-help
   :ensure t
   :custom
-  (repeat-help-auto nil)
+  (repeat-help-auto t)
   :config
   (repeat-help-mode 1))
 
@@ -229,7 +229,86 @@
   :ensure t
   :config
   (setq ready-player-my-media-collection-location "~/Windows/Music")
+  (setq ready-player-set-global-bindings nil)
   (ready-player-mode +1))
+
+(use-package emms
+  :bind
+  (("C-c m b" . emms-browser)
+   ("C-c m l" . emms-playlist-mode-go)
+
+   ;; Add / play media
+   ("C-c m a" . emms-add-directory-tree)
+   ("C-c m A" . emms-add-file)
+   ("C-c m f" . emms-play-file)
+   ("C-c m d" . emms-play-directory-tree)
+
+   ;; Playback
+   ("C-c m RET" . emms-start)
+   ("C-c m SPC" . emms-pause)
+   ("C-c m s" . emms-stop)
+   ("C-c m n" . emms-next)
+   ("C-c m p" . emms-previous)
+
+   ;; Playlist
+   ("C-c m S" . emms-shuffle)
+   ("C-c m r" . emms-toggle-repeat-playlist)
+   ("C-c m R" . emms-toggle-repeat-track)
+   ("C-c m z" . emms-toggle-random-playlist)
+
+   ;; Seeking
+   ("C-c m >" . emms-seek-forward)
+   ("C-c m <" . emms-seek-backward)
+
+   ;; Volume
+   ("C-c m +" . emms-volume-raise)
+   ("C-c m =" . emms-volume-lower)
+
+   ;; Information
+   ("C-c m ?" . emms-show)
+
+   ;; Repeat map
+   (:repeat-map fc/emms-repeat-map
+    ("n" . emms-next)
+    ("p" . emms-previous)
+    ("SPC" . emms-pause)
+    ("s" . emms-stop)
+    ("RET" . emms-start)
+    (">" . emms-seek-forward)
+    ("<" . emms-seek-backward)
+    ("+" . emms-volume-raise)
+    ("-" . emms-volume-lower)))
+
+  :config
+  (emms-all)
+
+  ;; Player
+  (setq emms-player-list '(emms-player-mpv))
+
+  ;; Metadata
+  (setq emms-info-functions '(emms-info-native))
+
+  ;; Music directory
+  (setq emms-source-file-default-directory
+        (expand-file-name "~/Windows/Music/"))
+
+  ;; Modeline
+  (setq emms-mode-line-format " 🎼 %s"
+        emms-playing-time-display-format " [%s]")
+  
+  ;; Show only the song title in modeline.
+  (defun fc/emms-mode-line-track-title ()
+    (let* ((track (emms-playlist-current-selected-track))
+           (title (or (emms-track-get track 'info-title)
+                      (file-name-base (emms-track-name track)))))
+      (format emms-mode-line-format title)))
+
+  (setq emms-mode-line-mode-line-function
+        #'fc/emms-mode-line-track-title)
+
+  (emms-mode-line 1)
+
+  (emms-playing-time-mode 1))
 
 (use-package dired
   :custom
