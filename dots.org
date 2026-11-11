@@ -839,6 +839,7 @@ emacs-material-icons
 
   (emms-playing-time-mode 1))
 #+end_src
+
 #+begin_src scheme :noweb-ref emacs-packages
 "emacs-emms"
 #+end_src
