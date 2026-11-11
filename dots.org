@@ -3607,6 +3607,7 @@ private-commits = "description('\\[wip\\] *')"
 [revsets]
 git-sign-on-push = "~signed() & mine()"
 #+end_src
+
 git config
 #+begin_src gitconfig :tangle files/plain/gitconfig
 [user]
