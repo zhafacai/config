@@ -178,8 +178,6 @@
   (project-x-mode 1))
 
 (use-package material-icons
-  ;; TODO package this 
-  :vc (:url "https://github.com/zHaOdANiuu/material-icons.el" :rev :newest)
   :hook
   (dired-mode . material-icons-dired-icons-mode)
   (ibuffer-mode . material-icons-ibuffer-icons-mode)

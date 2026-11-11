@@ -393,7 +393,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
         #'agent-shell-permission-allow-always))
 
 (use-package agent-shell-dashboard
-  :vc (:url "https://github.com/wandersoncferreira/agent-shell-dashboard")
   :bind
   ("C-c a d" . agent-shell-dashboard)
   :custom

@@ -92,7 +92,6 @@
   "))
   ($ "nix" "profile" "upgrade" "config"))
 
-
 (define-command (edit-sops-command args)
   ((invoke "eds")
    (category 'system)
@@ -106,10 +105,24 @@
     
     ($ "sops" "edit" file-path)))
 
+(define-command (build-emacs-packages-command args)
+  ((invoke "bep")
+   (category 'system)
+   (synopsis "build emacs packages")
+   (help "[EMACS_PACKAGE]
+  Build emacs packages in mods."))
+  
+  (and-let* (((not (null? args)))
+			 (name (car args))
+			 (file-path (format #f "(@ (zfc packages emacs-xyz) ~a)" name)))
+    
+    ($ "guix" "build" "-e" file-path "-L" "mods")))
+
 (blueprint
  (commands
   (list
    edit-sops-command
+   build-emacs-packages-command
    update-nix-command
    update-guix-command
    upgrade-nix-command

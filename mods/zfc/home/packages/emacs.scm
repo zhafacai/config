@@ -35,6 +35,7 @@
    "emacs-gcmh"
    "emacs-wgrep"
    "emacs-project-x"
+   emacs-material-icons
    "emacs-dired-preview"
    ;; ready-player
    "mpv"
@@ -121,6 +122,7 @@
    emacs-gptel-inline
    emacs-gptel-annotate
    "emacs-agent-shell"
+   emacs-agent-shell-dashboard
    "emacs-pass"
    "password-store"
    "pass-otp"

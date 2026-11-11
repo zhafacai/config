@@ -119,3 +119,60 @@
       (description
        "Group ibuffer's list by project.")
       (license license:unlicense))))
+
+(define-public emacs-agent-shell-dashboard
+  (let ((commit "e99436e78a2736c3eebdfd036d31f46b22214cde")
+        (revision "1"))
+    (package
+      (name "emacs-agent-shell-dashboard")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/wandersoncferreira/agent-shell-dashboard")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0zhnr3jz18xb72m88gsslzhxjikh0fsrqfy94ndcybgd5z16k845"))))
+      (build-system emacs-build-system)
+      (arguments
+       (list #:tests? #f))
+      (propagated-inputs (list emacs-agent-shell))
+      (home-page "https://github.com/wandersoncferreira/agent-shell-dashboard")
+      (synopsis
+       "A dashboard for agent-shell.")
+      (description
+       "A dashboard for agent-shell.")
+      (license license:expat-0))))
+
+(define-public emacs-material-icons
+  (let ((commit "230d44da047083faf3a90dc56ade06430ad49e7e")
+        (revision "1"))
+    (package
+      (name "emacs-material-icons")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/zHaOdANiuu/material-icons.el")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "11plvjkjhqwlmmm57fy2r9mkam3rzm4q490g14rk3767da19lj0c"))))
+      (build-system emacs-build-system)
+      (arguments
+       (list
+        #:tests? #f
+        #:include #~(cons "^icons/" %default-include)
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'unpack-icons
+              (lambda _
+                (invoke "tar" "-xzf" "icons.tar.gz")
+                #t)))))
+      (home-page "https://github.com/zHaOdANiuu/material-icons.el")
+      (synopsis "Material icons for Emacs.")
+      (description "Material icons for Emacs.")
+      (license license:gpl3))))
