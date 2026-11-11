@@ -3596,11 +3596,10 @@ jj config
 [signing]
 behavior = "drop"
 backend = "gpg"
+key = "ED968D008768C653"
 [user]
 name = "zhafacai"
 email = "zhafacai@gmail.com"
-# key = "5ABCBDEC900FD06A"
-key = "ED968D008768C653"
 [ui]
 show-cryptographic-signatures = true
 [git]
@@ -3613,7 +3612,6 @@ git config
 [user]
 	name = zhafacai
 	email = zhafacai@gmail.com
-	# signingkey = 5ABCBDEC900FD06A!
 	signingkey = ED968D008768C653
 [commit]
 	gpgsign = true

@@ -1,11 +1,10 @@
 [signing]
 behavior = "drop"
 backend = "gpg"
+key = "ED968D008768C653"
 [user]
 name = "zhafacai"
 email = "zhafacai@gmail.com"
-# key = "5ABCBDEC900FD06A"
-key = "ED968D008768C653"
 [ui]
 show-cryptographic-signatures = true
 [git]
