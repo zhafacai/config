@@ -215,16 +215,12 @@
         ("C-c SPC p" . eldoc-box-scroll-down)
         ("C-c SPC n" . eldoc-box-scroll-up)
         ("C-c SPC d" . eldoc-box-help-at-point))
+  :bind
+  (:repeat-map eldoc-box-repeat-map
+               ("n" . eldoc-box-scroll-up)
+               ("p" . eldoc-box-scroll-down))
   :hook
-  (eglot-managed-mode . eldoc-box-hover-mode)
-  :config
-  (defvar-keymap eldoc-box-repeat-map
-    :repeat t
-    "n" #'eldoc-box-scroll-up
-    "p" #'eldoc-box-scroll-down)
-  
-  (put 'eldoc-box-scroll-down 'repeat-map 'eldoc-box-repeat-map)
-  (put 'eldoc-box-scroll-up 'repeat-map 'eldoc-box-repeat-map))
+  (eglot-managed-mode . eldoc-box-hover-mode))
 
 (use-package flymake
   :custom

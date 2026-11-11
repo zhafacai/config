@@ -220,6 +220,9 @@ toggle alpha background
   :bind
   ("C-c w d" . ef-themes-load-random-dark)
   ("C-c w l" . ef-themes-load-random-light)
+  (:repeat-map ef-themes-repeat-map
+               ("d" . ef-themes-load-random-dark)
+               ("l" . ef-themes-load-random-light))
   :config
   (add-to-list 'ef-themes-dark-themes 'oxocarbon)
   (add-to-list 'ef-themes-light-themes 'oxocarbon-light)
@@ -1597,16 +1600,12 @@ use built-in lsp client
         ("C-c SPC p" . eldoc-box-scroll-down)
         ("C-c SPC n" . eldoc-box-scroll-up)
         ("C-c SPC d" . eldoc-box-help-at-point))
+  :bind
+  (:repeat-map eldoc-box-repeat-map
+               ("n" . eldoc-box-scroll-up)
+               ("p" . eldoc-box-scroll-down))
   :hook
-  (eglot-managed-mode . eldoc-box-hover-mode)
-  :config
-  (defvar-keymap eldoc-box-repeat-map
-    :repeat t
-    "n" #'eldoc-box-scroll-up
-    "p" #'eldoc-box-scroll-down)
-  
-  (put 'eldoc-box-scroll-down 'repeat-map 'eldoc-box-repeat-map)
-  (put 'eldoc-box-scroll-up 'repeat-map 'eldoc-box-repeat-map))
+  (eglot-managed-mode . eldoc-box-hover-mode))
 #+end_src
 #+begin_src scheme :noweb-ref emacs-packages
 "emacs-eldoc-box"

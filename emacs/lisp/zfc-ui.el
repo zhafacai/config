@@ -30,6 +30,9 @@
   :bind
   ("C-c w d" . ef-themes-load-random-dark)
   ("C-c w l" . ef-themes-load-random-light)
+  (:repeat-map ef-themes-repeat-map
+               ("d" . ef-themes-load-random-dark)
+               ("l" . ef-themes-load-random-light))
   :config
   (add-to-list 'ef-themes-dark-themes 'oxocarbon)
   (add-to-list 'ef-themes-light-themes 'oxocarbon-light)

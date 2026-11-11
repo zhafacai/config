@@ -34,3 +34,19 @@
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file nil t))
+
+;; NOTE FIXED BY CHATGPT
+(defun fc/custom--frame-color-default (orig frame attribute
+                                            resource-attr resource-class
+                                            tty-default x-default)
+  "Prevent white frame background during theme transitions."
+  (let ((color (funcall orig frame attribute
+                        resource-attr resource-class
+                        tty-default x-default)))
+    (if (and (eq attribute :background)
+             (equal color "white"))
+        (frame-parameter frame 'background-color)
+      color)))
+
+(advice-add 'custom--frame-color-default
+            :around #'fc/custom--frame-color-default)
