@@ -164,7 +164,7 @@
   									                     %default-authorized-guix-keys))
   									            (substitute-urls '("https://mirror.sjtu.edu.cn/guix/"
   																   "https://cache-cdn.guix.moe"
-  									                               "https://substitutes.nonguix.org"
+  									                               ;; "https://substitutes.nonguix.org"
   									                               "https://ci.guix.gnu.org"))))
   									)))
 

@@ -9,7 +9,6 @@
   #:use-module (gnu home services shells)
   #:use-module (rosenthal home services desktop)
   #:use-module (gnu packages gnome-xyz)
-  ;; #:use-module (nongnu packages chrome)
   #:use-module (rosenthal packages networking)
   #:use-module (gnu services)
   #:use-module (gnu home)
@@ -20,7 +19,6 @@
 (define home-base-packages
   (append
    (list
-    ;; google-chrome-stable
     mihomo
     )
    (specifications->packages

@@ -3138,7 +3138,7 @@ here is =sops= secrets config for my dae config.
                      %default-authorized-guix-keys))
             (substitute-urls '("https://mirror.sjtu.edu.cn/guix/"
 							   "https://cache-cdn.guix.moe"
-                               "https://substitutes.nonguix.org"
+                               ;; "https://substitutes.nonguix.org"
                                "https://ci.guix.gnu.org"))))
 #+end_src
 *** COMMENT The =art.scm= section about dae.
@@ -3757,7 +3757,7 @@ notmuch tag +ai -- 'from:openai.com or from:openrouter.ai or from:nvidia.com or 
    (openpgp-fingerprint
     "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
 #+end_src
-*** The nonguix for =channels.scm=
+*** COMMENT The nonguix for =channels.scm=
 ~channels~
 #+begin_src scheme :noweb-ref channels
 (channel
