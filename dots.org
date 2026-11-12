@@ -3748,7 +3748,7 @@ notmuch tag +ai -- 'from:openai.com or from:openrouter.ai or from:nvidia.com or 
 #+begin_src scheme :noweb-ref channels
 (channel
  (name 'guix)
- (url "https://mirror.sjtu.edu.cn/git/guix.git")
+ (url "https://mirror.nju.edu.cn/git/guix.git")
  ;; (url "https://git.guix.gnu.org/guix.git")
  (branch "master")
  (introduction
@@ -3757,7 +3757,7 @@ notmuch tag +ai -- 'from:openai.com or from:openrouter.ai or from:nvidia.com or 
    (openpgp-fingerprint
     "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
 #+end_src
-*** COMMENT The nonguix for =channels.scm=
+*** The nonguix for =channels.scm=
 ~channels~
 #+begin_src scheme :noweb-ref channels
 (channel
