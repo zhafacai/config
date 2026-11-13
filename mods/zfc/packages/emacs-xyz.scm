@@ -176,3 +176,101 @@
       (synopsis "Material icons for Emacs.")
       (description "Material icons for Emacs.")
       (license license:gpl3))))
+
+
+(define-public emacs-cursory
+  (let ((commit "3f381309f461920ce931085045d456db63b13949")
+        (revision "1"))
+    (package
+      (name "emacs-cursory")
+      (version (git-version "1.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/protesilaos/cursory")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0177d0p5gnw927ghs20f6dwbh1b49yv11vvn1i8h5j3bmcv3av6p"))))
+      (build-system emacs-build-system)
+      (arguments
+       (list
+        #:tests? #f))
+      (home-page "https://github.com/protesilaos/cursory")
+      (synopsis "Manage Emacs cursor styles using presets.")
+      (description "Manage Emacs cursor styles using presets.")
+      (license license:unlicense))))
+
+
+(define-public emacs-repeat-help
+  (let ((commit "41dea6fba2edd6ac748d0ca7a6da4058290feede")
+        (revision "1"))
+    (package
+      (name "emacs-repeat-help")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/karthink/repeat-help")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1lnwb2z8y9cjah545n27j62a5pdksid0rah2bzws9xi8c7dgavkm"))))
+      (build-system emacs-build-system)
+      (arguments
+       (list
+        #:tests? #f))
+      (home-page "https://github.com/karthink/repeat-help")
+      (synopsis "Key descriptions for Emacs Repeat Mode.")
+      (description "Key descriptions for Emacs Repeat Mode.")
+      (license license:gpl3))))
+
+(define-public emacs-ready-player
+  (let ((commit "e7737e59f9bc70872935a46da67eef919b9141c4")
+        (revision "1"))
+    (package
+      (name "emacs-ready-player")
+      (version (git-version "0.33.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/xenodium/ready-player")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "14jlwx8y6fvyhrv9w4w4rmri8xm9xzh27c5bgzg1lgbycyly2zqm"))))
+      (build-system emacs-build-system)
+      (arguments
+       (list
+        #:tests? #f))
+      (home-page "https://github.com/xenodium/ready-player")
+      (synopsis "An Emacs major mode to open media (audio/video) files like any other file (via find-file, dired, etc).")
+      (description "An Emacs major mode to open media (audio/video) files like any other file (via find-file, dired, etc).")
+      (license license:gpl3))))
+
+(define-public emacs-sol-mode
+  (let ((commit "0d66f4ea4a113520e17ed60ddc237395392402e9")
+        (revision "1"))
+    (package
+      (name "emacs-sol-mode")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/nlordell/sol-mode")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "04s8jh1zskryqsrykqshyp2nrga4f3jx666vp5qkfiay6s6a65df"))))
+      (build-system emacs-build-system)
+      (arguments
+       (list
+        #:tests? #f))
+      (home-page "https://github.com/nlordell/sol-mode")
+      (synopsis "Emacs major mode for editing Solidity code.")
+      (description "Emacs major mode for editing Solidity code.")
+      (license license:gpl3))))

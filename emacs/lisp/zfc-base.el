@@ -85,7 +85,6 @@
   (after-init . repeat-mode))
 
 (use-package repeat-help
-  :ensure t
   :custom
   (repeat-help-auto t)
   :config
@@ -192,7 +191,6 @@
   (setq wdired-create-parent-directories t))
 
 (use-package dired-subtree
-  :ensure t
   :after dired
   :config
   (defun fc/dired-subtree-up (&optional arg)
@@ -207,7 +205,6 @@
         ("h" . fc/dired-subtree-up)))
 
 (use-package dired-filter
-  :ensure t
   :after dired)
 
 (use-package dired-preview
@@ -224,7 +221,6 @@
   (setq dired-preview-delay 0.2))
 
 (use-package ready-player
-  :ensure t
   :config
   (setq ready-player-my-media-collection-location "~/Windows/Music")
   (setq ready-player-set-global-bindings nil)
@@ -415,7 +411,7 @@
          ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
          ;; Custom M-# bindings for fast register access
          ("M-#" . consult-register-load)
-         ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+         ;; ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
          ("C-M-#" . consult-register)
          ;; Other custom bindings
          ("M-y" . consult-yank-pop)                ;; orig. yank-pop
@@ -616,8 +612,7 @@
                  nil
                  (window-parameters (mode-line-format . none)))))
 
-(use-package embark-consult
-  :ensure t)
+(use-package embark-consult)
 
 (use-package ace-window
   :custom

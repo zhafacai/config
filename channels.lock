@@ -2,7 +2,7 @@
        (name 'guix)
        (url "https://mirror.nju.edu.cn/git/guix.git")
        (branch "master")
-       (commit "6a02e47093312343c14ae9fc8e0c9fff81d86c0c")
+       (commit "51cf86919987222d214612b43884dd6d33c1f4ac")
        (introduction
         (make-channel-introduction
          "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -42,7 +42,7 @@
        (name 'saayix)
        (url "https://codeberg.org/look/saayix")
        (branch "main")
-       (commit "4c6b35208703baf129dfd0d3ab2dd08c1268c6f5")
+       (commit "a9f3814de1f77a10bbcbfcded4f2e52cddb1ecbf")
        (introduction
         (make-channel-introduction
          "12540f593092e9a177eb8a974a57bb4892327752"

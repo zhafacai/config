@@ -266,12 +266,11 @@
                '("g" "TimeGrid week" org-timegrid-week)))
 
 (use-package org-habit-stats
-  :ensure t
+  :disabled
   :bind
   (:map org-agenda-mode-map
         ("H" . org-habit-stats-view-habit-at-point-agenda)))
 
-(use-package org-ql
-  :ensure t)
+(use-package org-ql)
 
 (provide 'zfc-org)

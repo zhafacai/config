@@ -80,12 +80,13 @@ surround / expand region
 #+end_src
 
 #+begin_src emacs-lisp
-(use-package embrace
-  :ensure t
-  :bind
-  (("C-c e a" . embrace-add)
-   ("C-c e c" . embrace-change)
-   ("C-c e d" . embrace-delete)))
+(use-package surround
+  :bind-keymap ("M-'" . surround-keymap))
+#+end_src
+
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+"emacs-surround"
 #+end_src
 
 #+begin_src emacs-lisp
@@ -325,7 +326,6 @@ nice cursor
 (use-package cursory
   ;; :disabled
   ;; BUG this package is conflict with ewm
-  :ensure t
   :init
   (setq cursory-presets
         '((box
@@ -369,6 +369,10 @@ nice cursor
   (cursory-mode 1))
 #+end_src
 
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+"emacs-cursory"
+#+end_src
 
 default fonts
 #+begin_src emacs-lisp
@@ -568,7 +572,6 @@ basic packages which extend core features in emacs
   (after-init . repeat-mode))
 
 (use-package repeat-help
-  :ensure t
   :custom
   (repeat-help-auto t)
   :config
@@ -612,7 +615,10 @@ basic packages which extend core features in emacs
   :bind
   ("C-x C-b" . ibuffer))
 #+end_src
-
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+"emacs-repeat-help"
+#+end_src
 #+begin_src emacs-lisp
 (use-package ibuffer-project
   :after (ibuffer project)
@@ -711,7 +717,6 @@ emacs-material-icons
   (setq wdired-create-parent-directories t))
 
 (use-package dired-subtree
-  :ensure t
   :after dired
   :config
   (defun fc/dired-subtree-up (&optional arg)
@@ -726,10 +731,12 @@ emacs-material-icons
         ("h" . fc/dired-subtree-up)))
 
 (use-package dired-filter
-  :ensure t
   :after dired)
 #+end_src
-
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+"emacs-dired-hacks"
+#+end_src
 #+begin_src emacs-lisp
 (use-package dired-preview
   :after dired
@@ -750,14 +757,13 @@ emacs-material-icons
 
 #+begin_src emacs-lisp
 (use-package ready-player
-  :ensure t
   :config
   (setq ready-player-my-media-collection-location "~/Windows/Music")
   (setq ready-player-set-global-bindings nil)
   (ready-player-mode +1))
 #+end_src
 #+begin_src scheme :noweb-ref emacs-packages
-;; ready-player
+"emacs-ready-player"
 "mpv"
 "ffmpeg"
 "ffmpegthumbnailer"
@@ -963,7 +969,7 @@ consult
          ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
          ;; Custom M-# bindings for fast register access
          ("M-#" . consult-register-load)
-         ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+         ;; ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
          ("C-M-#" . consult-register)
          ;; Other custom bindings
          ("M-y" . consult-yank-pop)                ;; orig. yank-pop
@@ -1211,8 +1217,7 @@ embark
 #+end_src
 
 #+begin_src emacs-lisp
-(use-package embark-consult
-  :ensure t)
+(use-package embark-consult)
 #+end_src
 
 #+begin_src emacs-lisp
@@ -2028,15 +2033,14 @@ org babel
 
 #+begin_src emacs-lisp
 (use-package org-habit-stats
-  :ensure t
+  :disabled
   :bind
   (:map org-agenda-mode-map
         ("H" . org-habit-stats-view-habit-at-point-agenda)))
 #+end_src
 
 #+begin_src emacs-lisp
-(use-package org-ql
-  :ensure t)
+(use-package org-ql)
 #+end_src
 #+begin_src scheme :noweb-ref emacs-packages
 "emacs-org-ql"
@@ -2367,13 +2371,15 @@ sops
  Blue
 #+begin_src emacs-lisp
 (use-package blue
-  :ensure t
   :init
   ;; Enable custom filters to handle different escape sequences in compilation
   ;; and comint buffers.
   (blue-prettify-compilation-mode 1))
 #+end_src
-
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+"emacs-blue"
+#+end_src
 ghostel
 #+begin_src emacs-lisp
 (use-package ghostel
@@ -2815,16 +2821,19 @@ email
 #+begin_src emacs-lisp
 ;;; -*- lexical-binding: t -*-
 (use-package uiua-mode
-  :ensure t
+  :disabled
   :mode "\\.ua\\'")
 #+end_src
 #+begin_src emacs-lisp
 (use-package sol-mode
-  :ensure t
   :init
   (add-to-list 'treesit-language-source-alist '(solidity "https://github.com/JoranHonig/tree-sitter-solidity"))
   (add-to-list 'treesit-language-source-alist '(compact "https://github.com/midnightntwrk/compact-tree-sitter"))
   :mode "\\.sol\\'")
+#+end_src
+~emacs-packages~
+#+begin_src scheme :noweb-ref emacs-packages
+"emacs-sol-mode"
 #+end_src
 #+begin_src emacs-lisp
 (use-package nix-ts-mode
@@ -2852,7 +2861,7 @@ email
 #+end_src
 #+begin_src emacs-lisp
 (use-package uv-mode
-  :ensure t
+  :disabled
   :hook (python-ts-mode . uv-mode-auto-activate-hook))
 #+end_src
 #+begin_src emacs-lisp

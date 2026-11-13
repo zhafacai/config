@@ -195,7 +195,6 @@
   :mode ("\\.yaml\\'" . yaml-mode))
 
 (use-package blue
-  :ensure t
   :init
   ;; Enable custom filters to handle different escape sequences in compilation
   ;; and comint buffers.

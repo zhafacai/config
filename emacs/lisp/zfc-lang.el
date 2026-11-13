@@ -1,10 +1,9 @@
 ;;; -*- lexical-binding: t -*-
 (use-package uiua-mode
-  :ensure t
+  :disabled
   :mode "\\.ua\\'")
 
 (use-package sol-mode
-  :ensure t
   :init
   (add-to-list 'treesit-language-source-alist '(solidity "https://github.com/JoranHonig/tree-sitter-solidity"))
   (add-to-list 'treesit-language-source-alist '(compact "https://github.com/midnightntwrk/compact-tree-sitter"))
@@ -25,7 +24,7 @@
 (use-package cmake-mode)
 
 (use-package uv-mode
-  :ensure t
+  :disabled
   :hook (python-ts-mode . uv-mode-auto-activate-hook))
 
 (add-to-list 'major-mode-remap-alist

@@ -108,7 +108,6 @@
 (use-package cursory
   ;; :disabled
   ;; BUG this package is conflict with ewm
-  :ensure t
   :init
   (setq cursory-presets
         '((box
