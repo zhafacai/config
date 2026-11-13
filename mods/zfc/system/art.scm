@@ -97,8 +97,8 @@
 
 
  (packages (append (list
+                    ;; TODO deprecated this when it's merged into main stream
                     ghostty
-                    ;; yazi
                     )
                    (specifications->packages
                     (list
