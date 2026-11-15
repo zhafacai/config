@@ -42,10 +42,15 @@
 (use-package surround
   :bind-keymap ("M-'" . surround-keymap))
 
-(use-package move-text
-  :bind
-  (("C-c e N" . move-text-down)
-   ("C-c e P" . move-text-up)))
+(use-package flash
+  :commands (flash-jump flash-jump-continue flash-action flash-action-undo
+             flash-treesitter)
+  :bind ("M-j" . flash-jump)
+  :custom
+  (flash-rainbow t)
+  :config
+  (require 'flash-isearch)
+  (flash-isearch-mode 1))
 
 (use-package crux
   :bind

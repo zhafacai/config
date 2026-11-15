@@ -2,7 +2,7 @@
        (name 'guix)
        (url "https://mirror.nju.edu.cn/git/guix.git")
        (branch "master")
-       (commit "51cf86919987222d214612b43884dd6d33c1f4ac")
+       (commit "3f81f6643f69194f7b0c3243c214e3dbbdc3b805")
        (introduction
         (make-channel-introduction
          "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -52,7 +52,7 @@
        (name 'sops-guix)
        (url "https://github.com/fishinthecalculator/sops-guix.git")
        (branch "main")
-       (commit "c53e27e533836ea8595626ba6796dee5362f8c4a")
+       (commit "c3045852cec9e1d4ffa125661789ed22a673cffb")
        (introduction
         (make-channel-introduction
          "0bbaf1fdd25266c7df790f65640aaa01e6d2dbc9"

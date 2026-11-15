@@ -52,7 +52,7 @@
    "emacs-avy"
    "emacs-expand-region"
    "emacs-surround"
-   "emacs-move-text"
+   "emacs-flash"
    "emacs-crux"
    "emacs-mwim"
    "emacs-undo-fu-session"

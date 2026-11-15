@@ -321,7 +321,6 @@ basic packages which extend core features in emacs
   :bind
   (
    ("C-x C-z" . nil)
-   ("M-j" . fc/join-line-vim-style)
    ([remap zap-to-char] . zap-up-to-char)
    ([remap capitalize-word] . capitalize-dwim)       ; Make M-c work on regions
    ([remap downcase-word] . downcase-dwim)           ; Make M-l work on regions
@@ -379,10 +378,6 @@ basic packages which extend core features in emacs
   (show-paren-style 'parenthesis)
   (view-read-only t)
   :config
-  (defun fc/join-line-vim-style ()
-    "Join the current line with the next line, like Vim's J."
-    (interactive)
-    (join-line 1))
   ;; Only use ripgrep when it is actually available (e.g. in the Guix/Nix
   ;; profile); fall back to Emacs' defaults otherwise.
   (when (executable-find "rg")
@@ -1178,13 +1173,20 @@ surround / expand region
 #+end_src
 
 #+begin_src emacs-lisp
-(use-package move-text
-  :bind
-  (("C-c e N" . move-text-down)
-   ("C-c e P" . move-text-up)))
+(use-package flash
+  :commands (flash-jump flash-jump-continue flash-action flash-action-undo
+             flash-treesitter)
+  :bind ("M-j" . flash-jump)
+  :custom
+  (flash-rainbow t)
+  :config
+  (require 'flash-isearch)
+  (flash-isearch-mode 1))
 #+end_src
+
+~emacs-packages~
 #+begin_src scheme :noweb-ref emacs-packages
-"emacs-move-text"
+"emacs-flash"
 #+end_src
 
 #+begin_src emacs-lisp
@@ -1208,6 +1210,7 @@ surround / expand region
 ;;   ("M-g n" . flymake-goto-next-error)
 ;;   ("M-g p" . flymake-goto-previous-error))
 #+end_src
+
 #+begin_src scheme :noweb-ref emacs-packages
 "emacs-mwim"
 #+end_src

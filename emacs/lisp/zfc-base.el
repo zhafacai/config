@@ -5,7 +5,6 @@
   :bind
   (
    ("C-x C-z" . nil)
-   ("M-j" . fc/join-line-vim-style)
    ([remap zap-to-char] . zap-up-to-char)
    ([remap capitalize-word] . capitalize-dwim)       ; Make M-c work on regions
    ([remap downcase-word] . downcase-dwim)           ; Make M-l work on regions
@@ -63,10 +62,6 @@
   (show-paren-style 'parenthesis)
   (view-read-only t)
   :config
-  (defun fc/join-line-vim-style ()
-    "Join the current line with the next line, like Vim's J."
-    (interactive)
-    (join-line 1))
   ;; Only use ripgrep when it is actually available (e.g. in the Guix/Nix
   ;; profile); fall back to Emacs' defaults otherwise.
   (when (executable-find "rg")
