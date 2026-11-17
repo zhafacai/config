@@ -634,6 +634,7 @@ emacs-material-icons
     ("n" . emms-next)
     ("p" . emms-previous)
     ("SPC" . emms-pause)
+    ("S" . emms-shuffle)
     ("s" . emms-stop)
     ("RET" . emms-start)
     (">" . emms-seek-forward)
@@ -2237,7 +2238,7 @@ telegram
                               (seq-drop cols pos))))))
 #+end_src
 #+begin_src scheme :noweb-ref emacs-packages
-"emacs-majutsu-dolly"
+"emacs-majutsu-zfc"
 #+end_src
 diff-hl
 #+begin_src emacs-lisp

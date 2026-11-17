@@ -101,7 +101,7 @@
    "emacs-telega"
    "emacs-tracking"
    "emacs-magit"
-   "emacs-majutsu-dolly"
+   "emacs-majutsu-zfc"
    "emacs-diff-hl"
    "emacs-browse-at-remote"
    "emacs-forge"

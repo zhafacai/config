@@ -261,6 +261,7 @@
     ("n" . emms-next)
     ("p" . emms-previous)
     ("SPC" . emms-pause)
+    ("S" . emms-shuffle)
     ("s" . emms-stop)
     ("RET" . emms-start)
     (">" . emms-seek-forward)
